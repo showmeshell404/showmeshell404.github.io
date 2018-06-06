@@ -8,19 +8,19 @@
   <link rel="dns-prefetch" href="http://www.showmeshell.top">
   <title>如何防止软件被别人逆向 | 翔翔澜澜的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="如何防止软件被别人分析在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a">
+  <meta name="description" content="在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a user-mode">
 <meta name="keywords" content="reverse">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何防止软件被别人逆向">
 <meta property="og:url" content="http://www.showmeshell.top/2018/06/06/如何防止软件被别人逆向/index.html">
 <meta property="og:site_name" content="翔翔澜澜的博客">
-<meta property="og:description" content="如何防止软件被别人分析在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a">
+<meta property="og:description" content="在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a user-mode">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.showmeshell.top/2018/06/06/如何防止软件被别人逆向/IDA-1.png">
-<meta property="og:updated_time" content="2018-06-06T14:37:27.226Z">
+<meta property="og:updated_time" content="2018-06-06T14:39:17.198Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何防止软件被别人逆向">
-<meta name="twitter:description" content="如何防止软件被别人分析在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a">
+<meta name="twitter:description" content="在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a user-mode">
 <meta name="twitter:image" content="http://www.showmeshell.top/2018/06/06/如何防止软件被别人逆向/IDA-1.png">
   
     <link rel="alternative" href="/atom.xml" title="翔翔澜澜的博客" type="application/atom+xml">
@@ -171,7 +171,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="如何防止软件被别人分析"><a href="#如何防止软件被别人分析" class="headerlink" title="如何防止软件被别人分析"></a>如何防止软件被别人分析</h1><p>在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。</p>
+        <p>在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。</p>
 <h2 id="1-反调试技术"><a href="#1-反调试技术" class="headerlink" title="1.反调试技术"></a>1.反调试技术</h2><h3 id="1-IsDebuggerPresent"><a href="#1-IsDebuggerPresent" class="headerlink" title="1.IsDebuggerPresent"></a>1.IsDebuggerPresent</h3><p><strong>IsDebuggerPresent</strong> ：</p>
 <p>Determines whether the calling process is being debugged by a user-mode debugger.</p>
 <p>一种能够检测是否挂载了调试器的 API 函数，通过返回值是否为 0 可以判断调试器的挂载状态。</p>
