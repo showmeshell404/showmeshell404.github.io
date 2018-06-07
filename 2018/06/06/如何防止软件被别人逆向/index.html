@@ -17,7 +17,7 @@
 <meta property="og:description" content="在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a user-mode">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://www.showmeshell.top/2018/06/06/如何防止软件被别人逆向/IDA-1.png">
-<meta property="og:updated_time" content="2018-06-06T14:39:17.198Z">
+<meta property="og:updated_time" content="2018-06-07T05:46:21.957Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何防止软件被别人逆向">
 <meta name="twitter:description" content="在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。 1.反调试技术1.IsDebuggerPresentIsDebuggerPresent ： Determines whether the calling process is being debugged by a user-mode">
@@ -175,6 +175,7 @@
 <h2 id="1-反调试技术"><a href="#1-反调试技术" class="headerlink" title="1.反调试技术"></a>1.反调试技术</h2><h3 id="1-IsDebuggerPresent"><a href="#1-IsDebuggerPresent" class="headerlink" title="1.IsDebuggerPresent"></a>1.IsDebuggerPresent</h3><p><strong>IsDebuggerPresent</strong> ：</p>
 <p>Determines whether the calling process is being debugged by a user-mode debugger.</p>
 <p>一种能够检测是否挂载了调试器的 API 函数，通过返回值是否为 0 可以判断调试器的挂载状态。</p>
+<p><a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx" target="_blank" rel="noopener">具体见MASN文档</a></p>
 <p>可以通过简单的小程序说明一下。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(IsDebuggerPresent())&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"on debugger\n"</span>);<span class="comment">//在调试器上运行！</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"not on debugger\n"</span>);<span class="comment">// 在调试器上不运行</span></span><br><span class="line">    &#125;</span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>如何用</strong>：开发时用 ifdef 或者注释来暂时禁用 IsDebuggerPresent 的调用，在发布版上再启用，在检测到调试器时改变程序的逻辑。</p>
@@ -197,8 +198,10 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00401000                main:</span><br><span class="line">00401000 EB FF            jmp   short near ptr main+1</span><br><span class="line">00401002 15 00 20 40 00   adc   eax, offset __imp__</span><br><span class="line">IsDebuggerPresent@0</span><br><span class="line">00401007 85 C0            test  eax, eax</span><br><span class="line">00401009 74 17            jz    short loc_401022</span><br></pre></td></tr></table></figure>
 <p>在IDA中看到的就是上面的代码：call指令消失变成jmp adc test jz。然而机器语言的实际功能没有变化，因为<code>EB FF</code> 相当于向前跳转了一个字节，即<code>00401001</code></p>
 <p><strong>关键</strong>：在于 <code>00401001</code>处的 FF，它可以当作前面 jmp 指令的一部分，也可以当作后面 call 指令的一部分。而 IDA 会从前往后按顺序进行反汇编，因此显示出的代码可能会和实际执行的代码不同。这就是所谓混淆。书里有个链接还不错，可以瞅瞅。</p>
+<p><a href="http://www.cs.arizona.edu/solar/papers/CCS2003.pdf" target="_blank" rel="noopener">混淆可执行代码以提高对静态反汇编的抵抗力</a>:</p>
 <h2 id="3-可执行文件压缩"><a href="#3-可执行文件压缩" class="headerlink" title="3.可执行文件压缩"></a>3.可执行文件压缩</h2><p>打包器（我们俗称壳）：packer，市场有很多，比如UPX，ASPack，VM等</p>
 <p>UPX开源支持ELF，DLL，COFF等多种可执行文件格式。</p>
+<p><a href="http://upx.sourceforge.net" target="_blank" rel="noopener">UPX</a>:<br><a href="http://www.aspack.com" target="_blank" rel="noopener">ASPack:</a></p>
 <h3 id="1-压缩"><a href="#1-压缩" class="headerlink" title="1.压缩"></a>1.压缩</h3><p><strong>压缩壳</strong>：将原本可执行文件中的代码和数据进行压缩，然后将解压缩用的代码附加在前面，运行的时候先将原本的可执行数据解压缩出来，然后再运行解压缩后的数据。</p>
 <p><strong>尝试分析：</strong></p>
 <p>调用 IsDebuggerPresent 检测调试器是否存在。然后，如果向程序传递的参数为 xxxxxxxxx 这个字符串，则显示 correct!，否则显示 auth error。</p>
