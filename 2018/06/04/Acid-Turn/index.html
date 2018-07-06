@@ -193,7 +193,7 @@
 <p>点击进去后发现有一个输入框，提醒你输入序列号，然后点击Check it Baby，程序会进行校验，校验失败会弹出下面窗口，提醒你Failed！</p>
 <p><img src="/2018/06/04/Acid-Turn/3.png" alt="3"></p>
 <p>按照压缩包里面给的要求，需要破解的点有三个：</p>
-<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主程序界面之前的NAG窗口</span><br><span class="line"><span class="built_in">Serial</span>/Name校验页面</span><br><span class="line"><span class="built_in">Serial</span>校验页面</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主程序界面之前的NAG窗口</span><br><span class="line">Serial/Name校验页面</span><br><span class="line">Serial校验页面</span><br></pre></td></tr></table></figure>
 <h2 id="3-NAG窗口"><a href="#3-NAG窗口" class="headerlink" title="3.NAG窗口"></a>3.NAG窗口</h2><p>打开OD的第一步就可以先试试程序的流程，F8单步，<code>call Acid_bur.00429F8C</code>,NAG窗口出现。</p>
 <p><img src="/2018/06/04/Acid-Turn/4.png" alt="4"></p>
 <p>由此可知NAG窗口的主函数在这个CALL里面，F2，Ctrl+F2（重新加载），F9，F7进入这个call，接着F8单步跟。</p>
