@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://www.showmeshell.top">
-  <title>Archives: 2018/5 | Esther-Cheung And ShowMeShell &#39;s Blog</title>
+  <title>代码注入 | Esther-Cheung And ShowMeShell &#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
+  <meta name="description" content="在其它进程中运行任意代码的手法：代码注入（Code Injection)。网上有一篇好多年前关于DLL注入的文章，”Three Ways to Inject Your Code into Another Process”。 有链接：https://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Anothe">
 <meta name="keywords" content="IDA,Ollydbg,Security,Coder">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta property="og:url" content="http://www.showmeshell.top/archives/2018/05/index.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代码注入">
+<meta property="og:url" content="http://www.showmeshell.top/2018/07/05/代码注入/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="在其它进程中运行任意代码的手法：代码注入（Code Injection)。网上有一篇好多年前关于DLL注入的文章，”Three Ways to Inject Your Code into Another Process”。 有链接：https://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Anothe">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-07-05T09:54:51.279Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="代码注入">
+<meta name="twitter:description" content="在其它进程中运行任意代码的手法：代码注入（Code Injection)。网上有一篇好多年前关于DLL注入的文章，”Three Ways to Inject Your Code into Another Process”。 有链接：https://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Anothe">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell &#39;s Blog" type="application/atom+xml">
   
@@ -148,60 +149,225 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-代码注入" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/29/成都/" class="archive-article-date">
-  	<time datetime="2018-05-29T09:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-29</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/29/成都/">成都</a>
+    <h1 class="article-title" itemprop="name">
+      代码注入
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">travel</a>
-        		</li>
-      		
-		</ul>
-	</div>
+        
+        <a href="/2018/07/05/代码注入/" class="archive-article-date">
+  	<time datetime="2018-07-05T07:33:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在其它进程中运行任意代码的手法：代码注入（Code Injection)。网上有一篇好多年前关于DLL注入的文章，”Three Ways to Inject Your Code into Another Process”。</p>
+<p>有链接：<a href="https://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Process" target="_blank" rel="noopener">https://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Process</a></p>
+<h2 id="1-SetWindowsHookEx劫持系统消息"><a href="#1-SetWindowsHookEx劫持系统消息" class="headerlink" title="1. SetWindowsHookEx劫持系统消息"></a>1. SetWindowsHookEx劫持系统消息</h2><p>如下三个 API 函数，可以劫持系统消息。可以用于单个线程也可以用于进程。</p>
+<ul>
+<li>SetWindowsHookEx </li>
+<li>CallNextHookEx </li>
+<li>UnhookWindowsHookEx</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SetWindowsHookEx</span></span><br><span class="line"><span class="function">HHOOK <span class="title">SetWindowsHookEx</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> idHook,        <span class="comment">// 钩子类型</span></span></span></span><br><span class="line"><span class="function"><span class="params">    HOOKPROC lpfn,     <span class="comment">// 钩子过程</span></span></span></span><br><span class="line"><span class="function"><span class="params">    HINSTANCE hMod,    <span class="comment">// 应用程序实例的句柄</span></span></span></span><br><span class="line"><span class="function"><span class="params">    DWORD dwThreadId   <span class="comment">// 线程ID</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"><span class="comment">//CallNextHookEx</span></span><br><span class="line"><span class="function">LRESULT <span class="title">CallNextHookEx</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    HHOOK hhk,         <span class="comment">// 当前钩子的句柄</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> nCode,         <span class="comment">// 传递给钩子过程的代码</span></span></span></span><br><span class="line"><span class="function"><span class="params">    WPARAM wParam,     <span class="comment">// 传递给钩子过程的值</span></span></span></span><br><span class="line"><span class="function"><span class="params">    LPARAM lParam      <span class="comment">// 传递给钩子过程的值</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br><span class="line"><span class="comment">//UnhookWindowsHookEx</span></span><br><span class="line"><span class="function">BOOL <span class="title">UnhookWindowsHookEx</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    HHOOK hhk          <span class="comment">// 要解除的对象的钩子过程句柄</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//loging.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> LOGING_EXPORTS</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGING_API extern <span class="meta-string">"C"</span> __declspec(dllexport)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> LOGING_API extern <span class="meta-string">"C"</span> __declspec(dllimport)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">LOGING_API <span class="keyword">int</span> <span class="title">CallSetWindowsHookEx</span><span class="params">(VOID)</span></span>;</span><br><span class="line"><span class="function">LOGING_API <span class="keyword">int</span> <span class="title">CallUnhookWindowsHookEx</span><span class="params">(VOID)</span></span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//loging.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"loging.h"</span></span></span><br><span class="line"></span><br><span class="line">HHOOK g_hhook = <span class="literal">NULL</span>;</span><br><span class="line"><span class="comment">//将GetMsgProc设为钩子，在系统消息在传递给目标线程原有的窗口之前，会先由GetMsgProc来进行处理。</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> LRESULT WINAPI <span class="title">GetMsgProc</span><span class="params">(<span class="keyword">int</span> code, WPARAM wParam, LPARAM</span></span></span><br><span class="line"><span class="function"><span class="params">lParam)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span>(CallNextHookEx(<span class="literal">NULL</span>, code, wParam, lParam));</span><br><span class="line">    <span class="comment">//调用CallNextHookEx函数，消息会继续传递给下一个钩子过程。</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">LOGING_API <span class="keyword">int</span> <span class="title">CallSetWindowsHookEx</span><span class="params">(VOID)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(g_hhook != <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    MEMORY_BASIC_INFORMATION mbi;</span><br><span class="line">    <span class="keyword">if</span>(VirtualQuery(CallSetWindowsHookEx, &amp;mbi, <span class="keyword">sizeof</span>(mbi)) == <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    HMODULE hModule = (HMODULE) mbi.AllocationBase;</span><br><span class="line"></span><br><span class="line">    g_hhook = SetWindowsHookEx(</span><br><span class="line">        WH_GETMESSAGE, GetMsgProc, hModule, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(g_hhook == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"><span class="comment">//SetWindowsHookEx的功能是将原本传递给窗口过程的消息劫持下来，交给第2参数中所指定的函数来进行处理。</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">LOGING_API <span class="keyword">int</span> <span class="title">CallUnhookWindowsHookEx</span><span class="params">(VOID)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(g_hhook == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    UnhookWindowsHookEx(g_hhook);</span><br><span class="line">    g_hhook = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上API是用来劫持消息的，但如果要劫持其他进程的窗口过程消息，就需要”在其他进程中“加载DLL。将loging.cpp编译成DLL，然后调用SetWindowsHookEx,就可以对持有窗口过程的进程和线程应用钩子，让这些进程加载DLL。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dllmain.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">WriteLog</span><span class="params">(TCHAR *szData)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    TCHAR szTempPath[<span class="number">1024</span>];</span><br><span class="line">    GetTempPath(<span class="keyword">sizeof</span>(szTempPath), szTempPath);</span><br><span class="line">    lstrcat(szTempPath, <span class="string">"loging.log"</span>);</span><br><span class="line"></span><br><span class="line">    TCHAR szModuleName[<span class="number">1024</span>];</span><br><span class="line">    GetModuleFileName(GetModuleHandle(<span class="literal">NULL</span>),</span><br><span class="line">        szModuleName, <span class="keyword">sizeof</span>(szModuleName));</span><br><span class="line"></span><br><span class="line">    TCHAR szHead[<span class="number">1024</span>];</span><br><span class="line">    wsprintf(szHead, <span class="string">"[PID:%d][Module:%s] "</span>,</span><br><span class="line">        GetCurrentProcessId(), szModuleName);</span><br><span class="line"></span><br><span class="line">    HANDLE hFile = CreateFile(</span><br><span class="line">        szTempPath, GENERIC_WRITE, <span class="number">0</span>, <span class="literal">NULL</span>,</span><br><span class="line">        OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">if</span>(hFile == INVALID_HANDLE_VALUE)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">    SetFilePointer(hFile, <span class="number">0</span>, <span class="literal">NULL</span>, FILE_END);</span><br><span class="line"></span><br><span class="line">    DWORD dwWriteSize;</span><br><span class="line">    WriteFile(hFile, szHead, lstrlen(szHead), &amp;dwWriteSize, <span class="literal">NULL</span>);</span><br><span class="line">    WriteFile(hFile, szData, lstrlen(szData), &amp;dwWriteSize, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    CloseHandle(hFile);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">( HMODULE hModule,</span></span></span><br><span class="line"><span class="function"><span class="params">                       DWORD ul_reason_for_call,</span></span></span><br><span class="line"><span class="function"><span class="params">                       LPVOID lpReserved</span></span></span><br><span class="line"><span class="function"><span class="params">                     )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (ul_reason_for_call)</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">        WriteLog(<span class="string">"DLL_PROCESS_ATTACH\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">        WriteLog(<span class="string">"DLL_PROCESS_DETACH\n"</span>);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使的在DLL成功加载之后，向%TEMP%目录输出一个名为loging.log的日志文件。日志的内容包括进程ID和模块路径。</p>
+<p>将dllmain.cpp和loging.cpp，loging.h进行编译，然后编写一个加载这个DLL并调用CallSetWindowsHookEx。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// setwindowshook.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"%s &lt;DLL Name&gt;\n"</span>, argv[<span class="number">0</span>]);</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	HMODULE h = LoadLibrary(argv[<span class="number">1</span>]);</span><br><span class="line">	<span class="keyword">if</span>(h == <span class="literal">NULL</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> (__stdcall *fcall) (VOID);</span><br><span class="line">	fcall = (<span class="keyword">int</span> (WINAPI *)(VOID))</span><br><span class="line">		GetProcAddress(h, <span class="string">"CallSetWindowsHookEx"</span>);</span><br><span class="line">	<span class="keyword">if</span>(fcall == <span class="literal">NULL</span>)&#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"ERROR: GetProcAddress\n"</span>);</span><br><span class="line">		<span class="keyword">goto</span> _Exit;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">int</span> (__stdcall *ffree) (VOID);</span><br><span class="line">	ffree = (<span class="keyword">int</span> (WINAPI *)(VOID))</span><br><span class="line">		GetProcAddress(h, <span class="string">"CallUnhookWindowsHookEx"</span>);</span><br><span class="line">	<span class="keyword">if</span>(ffree == <span class="literal">NULL</span>)&#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"ERROR: GetProcAddress\n"</span>);</span><br><span class="line">		<span class="keyword">goto</span> _Exit;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(fcall())&#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"ERROR: CallSetWindowsHookEx\n"</span>);</span><br><span class="line">		<span class="keyword">goto</span> _Exit;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Call SetWindowsHookEx\n"</span>);</span><br><span class="line"></span><br><span class="line">	getchar();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(ffree())&#123;</span><br><span class="line">		<span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"ERROR: CallUnhookWindowsHookEx\n"</span>);</span><br><span class="line">		<span class="keyword">goto</span> _Exit;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Call UnhookWindowsHookEx\n"</span>);</span><br><span class="line"></span><br><span class="line">_Exit:</span><br><span class="line">	FreeLibrary(h);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">C:\&gt;setwindowshook<span class="selector-class">.exe</span> loging.dll</span><br><span class="line">Call SetWindowsHookEx</span><br></pre></td></tr></table></figure>
+<p>打开 <code>C:\Documents and Settings\Campers\Local Settings\Temp\loging.log</code> 文件，我们可以查看加载 DLL 的日志（Windows Vista 及以上版本的系统中，这个文件位于<code>C:\Users\ 用户名 \AppData\Local\Temp\loging.log</code>）。我们可以看到，其他进程已经加载了 loging.dll</p>
+<h2 id="2-将DLL路径配置到注册表的AppInit-DLLs项"><a href="#2-将DLL路径配置到注册表的AppInit-DLLs项" class="headerlink" title="2.将DLL路径配置到注册表的AppInit_DLLs项"></a>2.将DLL路径配置到注册表的AppInit_DLLs项</h2><p>SetWindowsHookEx 可以在调用时将 DLL 映射到其他进程中，不过如果我们将 DLL 的路径配置在注册表的 AppInit_DLLs 项中，就可以在系统启动时将任意 DLL 加载到其他进程中。</p>
+<p>运行 regedit，找到下面的路径。</p>
+<blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> //运行 regedit，找到下面的路径。</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> </span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> HKEY_LOCAL_MACHINE\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">   SOFTWARE\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">     Microsoft\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">       Windows NT\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">         CurrentVersion\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">           Windows\</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">             AppInit_DLLs         在这里填写DLL路径，以逗号分隔</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash">             LoadAppInit_DLLs     AppInit_DLLs启用/禁用标志</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"></span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>Windows XP 中没有 LoadAppInit_DLLs 这一项。此外，在 Windows 7 中，多了一个叫作 RequireSignedAppInit_DLLs 的项，这一项代表只允许加载经过签名的 DLL（</p>
+<table>
+<thead>
+<tr>
+<th>Only load code-signed DLLs.\${REMOVE}\$</th>
+<th>0x0 – Load any DLLs.</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>0x1 – Load only code-signed DLLs.</td>
+</tr>
+</tbody>
+</table>
+<p>）。<a href="https://docs.microsoft.com/zh-cn/windows/desktop/Win7AppQual/appinit-dlls-in-windows-7-and-windows-server-2008-r2" target="_blank" rel="noopener">https://docs.microsoft.com/zh-cn/windows/desktop/Win7AppQual/appinit-dlls-in-windows-7-and-windows-server-2008-r2</a></p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//在 64 位系统 中，关于 32 位程序的相关设定已被重定向到 Wow6432Node 中。</span><br><span class="line"></span><br><span class="line">HKEY_LOCAL_MACHINE<span class="tag">\</span></span><br><span class="line">  SOFTWARE<span class="tag">\</span></span><br><span class="line">    Wow6432Node<span class="tag">\</span></span><br><span class="line">      Microsoft<span class="tag">\</span></span><br><span class="line">        Windows NT<span class="tag">\</span></span><br><span class="line">          C</span><br><span class="line">urrentVersion<span class="tag">\</span></span><br><span class="line">            Windows<span class="tag">\</span></span><br><span class="line">              AppInit_DLLs      在这里填写DLL路径，以逗号分隔</span><br><span class="line">              LoadAppInit_DLLs  AppInit_DLLs启用/禁用标志</span><br></pre></td></tr></table></figure>
+<p>AppInit_DLLs 中所配置的 DLL 是通过 user32.dll 来加载的，因此，对于原本就不依赖（不加载）user32.dll 的进程来说，这一配置是无效的。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//writeappinit.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"stdafx.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _tmain(<span class="keyword">int</span> argc, _TCHAR* argv[])</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"%s &lt;DLL Name&gt;\n"</span>, argv[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    HKEY hKey;</span><br><span class="line">    LSTATUS lResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE,</span><br><span class="line">        <span class="string">"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Windows"</span>,</span><br><span class="line">        <span class="literal">NULL</span>, KEY_ALL_ACCESS, &amp;hKey);</span><br><span class="line">    <span class="keyword">if</span>(lResult != ERROR_SUCCESS)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Error: RegOpenKeyEx failed.\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    DWORD dwSize, dwType;</span><br><span class="line">    TCHAR szDllName[<span class="number">256</span>];</span><br><span class="line"></span><br><span class="line">    RegQueryValueEx(hKey,</span><br><span class="line">        <span class="string">"AppInit_DLLs"</span>, <span class="literal">NULL</span>, &amp;dwType, <span class="literal">NULL</span>, &amp;dwSize);</span><br><span class="line">    RegQueryValueEx(hKey,</span><br><span class="line">        <span class="string">"AppInit_DLLs"</span>, <span class="literal">NULL</span>, &amp;dwType, (LPBYTE)szDllName, &amp;dwSize);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"AppInit_DLLs: %s -&gt; "</span>, szDllName);</span><br><span class="line">    lstrcpy(szDllName, argv[<span class="number">1</span>]);</span><br><span class="line"></span><br><span class="line">    lResult = RegSetValueEx(hKey, <span class="string">"AppInit_DLLs"</span>,</span><br><span class="line">        <span class="number">0</span>, REG_SZ, (PBYTE)szDllName, lstrlen(szDllName) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span>(lResult != ERROR_SUCCESS)&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"Error: RegSetValueEx failed.\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    RegQueryValueEx(hKey,</span><br><span class="line">        <span class="string">"AppInit_DLLs"</span>, <span class="literal">NULL</span>, &amp;dwType, <span class="literal">NULL</span>, &amp;dwSize);</span><br><span class="line">    RegQueryValueEx(hKey,</span><br><span class="line">        <span class="string">"AppInit_DLLs"</span>, <span class="literal">NULL</span>, &amp;dwType, (LPBYTE)szDllName, &amp;dwSize);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%s\n"</span>, szDllName);</span><br><span class="line"></span><br><span class="line">    RegCloseKey(hKey);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">C:</span>\&gt;writeappinit.exe <span class="string">"C:\\loging.dll"</span></span><br><span class="line"><span class="string">AppInit_DLLs:</span> -&gt; <span class="string">C:</span>\\loging.dll</span><br></pre></td></tr></table></figure>
+<p>writeappinit.cpp 可以向注册表的 AppInit_DLLs 项写入任意值，因此我们可以指定 loging.dll 的路径并运行这个程序。</p>
+<p>从此以后，凡是加载了 user32.dll 的进程，同时也会加载 loging.dll。可以尝试用OD打开某一个exe文件，查看模块列表，其中就会有loging.dll。</p>
+<p>以上的源代码及二进制文件：链接: <a href="https://pan.baidu.com/s/1ATRUJno87ByRIZhbKhNT7A" target="_blank" rel="noopener">https://pan.baidu.com/s/1ATRUJno87ByRIZhbKhNT7A</a> 密码: cfjq</p>
+<h2 id="3-通过CreateRemoteThread在其他进程中创建线程"><a href="#3-通过CreateRemoteThread在其他进程中创建线程" class="headerlink" title="3.通过CreateRemoteThread在其他进程中创建线程"></a>3.通过CreateRemoteThread在其他进程中创建线程</h2><p>我们可以用 CreateRemoteThread 这个 API 函数在其他进程中创建线程，这个函数可以在新线程中运行 LoadLibrary，从而使得其他进程强制加载某个 DLL。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">HANDLE <span class="title">CreateRemoteThread</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    HANDLE hProcess,       <span class="comment">// 进程句柄</span></span></span></span><br><span class="line"><span class="function"><span class="params">    LPSECURITY_ATTRIBUTES lpThreadAttributes,</span></span></span><br><span class="line"><span class="function"><span class="params">    DWORD dwStackSize,     <span class="comment">// 栈初始长度（字节数）</span></span></span></span><br><span class="line"><span class="function"><span class="params">    LPTHREAD_START_ROUTINE lpStartAddress,</span></span></span><br><span class="line"><span class="function"><span class="params">    LPVOID lpParameter,    <span class="comment">// 新线程的参数指针</span></span></span></span><br><span class="line"><span class="function"><span class="params">    DWORD dwCreationFlags, <span class="comment">// 创建标志</span></span></span></span><br><span class="line"><span class="function"><span class="params">    LPDWORD lpThreadId     <span class="comment">// 分配的线程ID指针</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>但是LoadLibrary的参数必须位于目标进程内部，因此，LoadLibrary所需要的参数字符串必须事先写入目标进程的内存空间中。</p>
 
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.showmeshell.top/2018/07/05/代码注入/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/07/06/缓冲区溢出及防御/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          缓冲区溢出及防御
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2018/07/05/调试器原理/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">调试器原理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -238,8 +404,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
