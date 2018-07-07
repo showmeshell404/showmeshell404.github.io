@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://www.showmeshell.top/2018/07/07/Detours/</loc>
+    <lastmod>2018-07-07T03:46:28.699Z</lastmod>
+    <data>
+        <display>
+        <title>Detours</title>
+        <pubTime>2018-07-07T03:34:51.000Z</pubTime>
+        
+        <tag>reverse</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://www.showmeshell.top/2018/07/06/API%E9%92%A9%E5%AD%90/</loc>
     <lastmod>2018-07-06T12:48:18.594Z</lastmod>
     <data>
