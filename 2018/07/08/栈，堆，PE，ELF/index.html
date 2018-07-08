@@ -6,19 +6,35 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://www.showmeshell.top">
-  <title>Archives: 2018 | Esther-Cheung And ShowMeShell &#39;s Blog</title>
+  <title>栈，堆，PE，ELF | Esther-Cheung And ShowMeShell &#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="IDA,Ollydbg,Security,Coder">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta property="og:url" content="http://www.showmeshell.top/archives/2018/index.html">
+  <meta name="description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
+<meta name="keywords" content="reverse">
+<meta property="og:type" content="article">
+<meta property="og:title" content="栈，堆，PE，ELF">
+<meta property="og:url" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/2.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/3.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/4.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/5.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/6.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/7.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/8.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/9.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/10.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/11.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/12.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/13.png">
+<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/14.png">
+<meta property="og:updated_time" content="2018-07-08T10:26:14.762Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell &#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="栈，堆，PE，ELF">
+<meta name="twitter:description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
+<meta name="twitter:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell &#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +164,156 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-栈，堆，PE，ELF" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      栈，堆，PE，ELF
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/08/栈，堆，PE，ELF/" class="archive-article-date">
+
+        
+        <a href="/2018/07/08/栈，堆，PE，ELF/" class="archive-article-date">
   	<time datetime="2018-07-08T10:23:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-08</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/08/栈，堆，PE，ELF/">栈，堆，PE，ELF</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-地址转换"><a href="#1-地址转换" class="headerlink" title="1. 地址转换"></a>1. 地址转换</h1><p><img src="/2018/07/08/栈，堆，PE，ELF/1.png" alt="1"></p>
+<p>线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第12~21位查找PTE（Page Table Entry，页面表项）（标识使用的内存页），最后，线性地址的第0~11位用作在页面里定位请求的数据的偏移量。</p>
+<h1 id="2-栈"><a href="#2-栈" class="headerlink" title="2 .栈"></a>2 .栈</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> variable_zero;</span><br><span class="line"><span class="comment">//zero，全局变量，未被初始化，编译器为其二进制文件里分配空间并填充零，位于BSS段。</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> variable_one=<span class="number">0x1234</span>;</span><br><span class="line"><span class="comment">//one，全局变量，已被初始化，编译器在二进制文件里为其分配空间，把数据保存在数据段（.data）</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="comment">//main 函数，代码段（.text）</span></span><br><span class="line">    <span class="keyword">void</span> *variable_two=<span class="built_in">malloc</span>(<span class="number">0x1234</span>);</span><br><span class="line">    <span class="comment">//指针本事是函数的一部分，动态分配的，存在于栈段之中，与函数的生命周期相同。</span></span><br><span class="line">    <span class="comment">// malloc返回的指针存在于堆中，动态分配，具有全局作用域及“use-until-free”生命周期。</span></span><br><span class="line">    [....]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>栈：所有的自动或局部变量都保存在它上面，<strong>当一个函数被调用时，任何它声明的不是静态或类似的局部变量都会在栈上分配相应的空间。</strong></p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/2.png" alt="n2"></p>
+<p>栈指针是esp寄存器，通常指向栈段的顶端，SS：ESP指向栈段的顶端。</p>
+<p>栈帧指的是与当前正在指执行的函数有关的当前视图，当处理器进入新过程时，会执行预处理例程。</p>
+<p>（procedure prologue）：首先把调用帧里下一条指令的地址压入栈，接着把当前栈的基址（EBP）保存在栈上，然后把ESP寄存器复制到EBP寄存器里，最后把ESP寄存器里的值减去一部分，从而为函数里的变量的分配空间。函数调用时，函数的参数逆序入栈。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">push ebp</span><br><span class="line">mov ebp,esp</span><br><span class="line">sub esp,0x1234</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/3.png" alt="3"></p>
+<p>扫尾例程：（procedure epilogue）恢复预处理所做的改变，包括调大栈指针的值（取消分配的局部变量），调用leave和ret指令（移去保存的帧指针和返回地址，并把执行流返回给调用函数）。</p>
+<ul>
+<li>在IA-32平台上，栈向着较小的地址增长。</li>
+<li>栈以LIFO的顺序移去或增加数据。</li>
+<li>局部变量及只存在与函数生命周期的变量随着栈的取消而结束。</li>
+<li>每个函数都会有包含局部变量的栈帧（除非编译器故意忽略）。</li>
+<li>在每个函数的栈帧之前有保存的帧指针，返回地址和例程的参数。</li>
+<li>栈帧在预处理期间构造，在扫尾例程执行期间取消。</li>
+</ul>
+<h1 id="3-堆"><a href="#3-堆" class="headerlink" title="3.堆"></a>3.堆</h1><p>堆只是内存中的一个区段（主要供那些动态分配的变量使用，这些变量需存在与当前栈帧之外）。</p>
+<p>大多数对象和应用程序使用的大量数据都会保存在堆上，堆通常是随机映射的，或是数据段的动态扩展。</p>
+<p>在初始化时，堆向操作系统请求尽可能大的内存区段，然后按应用程序的需求分给小的内存块。这些块包含内联的元数据，指示块大小及其他元素，例如前一块内存的大小。</p>
+<p>通过指向给定块的指针，再加上它（给定块）的大小就可以找到下一个块，或者通过把块开头地址减去前一个块的大小来发现前一个块。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/4.png" alt="4"></p>
+<p>已分配的块是通过大小来遍历（前一个快的大小，块大小，以及指示各种状态条件的元数据）</p>
+<p>空闲的内存块直接通过链表遍历（指向链表里下一个空闲的内存块，指向链表里前一个内存块）</p>
+<h1 id="4-PE-COFF"><a href="#4-PE-COFF" class="headerlink" title="4.PE-COFF"></a>4.PE-COFF</h1><p>Protable Executable and Common Object File Format：可移植可执行和通用对象文件格式。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/5.png" alt="5"></p>
+<p>DOS Stub：保存向后兼容。指向PE头部的偏移量。</p>
+<p>从文件头开始向后偏移0x3c处就是这个偏移量，指向从文件开头偏移多少是PE头部。</p>
+<p>PE头：以另外的字段标识PE文件的开始，通常是PE\0\0。在此之后是COFF文件头，该格式第一个字段是机器类型，2个字节长。<img src="/2018/07/08/栈，堆，PE，ELF/6.png" alt="6"></p>
+<p>可选文件头部布局：<img src="/2018/07/08/栈，堆，PE，ELF/7.png" alt="7"></p>
+<p>可选头部中COFF标准字段，Windows特定字段。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/8.png" alt="8"></p>
+<p>DLLCharacteristics：DLL特征字段，只适用于DLL，指定与DLL有关的特性。有意义的字段是0x0040，表明基地可以动态分配并允许ASLR（Address Space Layout Randomization，地址空间布局随机化），0x0080表明已经做过代码完整性检查，0x0100表明这个映像兼容NX（no-execute），最后0x0040，表明这个文件不使用SEH（Structured Exception Handling，结构化异常处理），从而预防SEH处理程序指向这个DLL，最后一个元素指定了可选头部中下一个子区段包含的元素数量。</p>
+<p>数据目录：</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/9.png" alt="9"></p>
+<p>输出表：指定了文件输出的函数（.edata区段）</p>
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输出目录表</td>
+<td>描述了全部的输出信息。包含了在映像中用于决定输入到输出函数的地址信息。</td>
+</tr>
+<tr>
+<td>输出地址表</td>
+<td>包含了输出入口点的地址，相关数据和绝对地址。</td>
+</tr>
+<tr>
+<td>名字指针表</td>
+<td>输出名表中对应的RVA组成的数组。</td>
+</tr>
+<tr>
+<td>序数表</td>
+<td>输出地址表的16位序数数组。</td>
+</tr>
+<tr>
+<td>输出名表</td>
+<td>已输出函数/数据等的以NULL结束的变长字符串名。</td>
+</tr>
+</tbody>
+</table>
+<p>这些表都并不需要都存在，如果输出只通过序数完成，那么只需EDT（Export Directory Table输出目录表）及EAT（Export Address Table输出地址表）。</p>
+<p>输入表：（.idata区段） 输入符号时会用到三个主要结构：IDT（Import Directory Table，输入目录表），ILT（Import Lookup Table，输入查找表）和提示/名称表。</p>
+<p>加载配置结构：在WinXp及更新系统中，SafeSEH用这个区段注册有效的系统异常处理程序，从而避免攻击者覆盖SEH条目，引发系统异常并执行代码的问题。如果可选头部中的DLL特性字段里的IMAGE_DLLCHARACTERISTICS_NO_SHE字段没有置位，且异常处理程序在系统试图调用它时不在这个列表里，将停止处理。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/10.png" alt="10"></p>
+<p>SecurityCookie并不是真的是cookie，而是一个指向它的指针。这个cookie有多种使用方式，最知名的就是在微软编译器中指定/GS标志时，实现栈Cookie阻止基于栈的缓冲区溢出。SEHandler table是排过序的RVA表，它对应特定映像的有效SEH处理程序。SEHandlerCount是处理程序总数。</p>
+<h1 id="5-ELF"><a href="#5-ELF" class="headerlink" title="5.ELF"></a>5.ELF</h1><p>ELF（Executable and Linking Format）</p>
+<p>ELF头部，没有严格规定好的大小，每部分的大小都是根据处理器的原生大小而定的，多种处理器都这样用。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/11.png" alt="11"></p>
+<p>ELF文件里每一个区段都有一个区段头部描述它，尽管存在空区段和区段本事不重叠的现象，但区段描述是连续的。区段头部的元素如图：</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/12.png" alt="12"></p>
+<p>通用区段：名字前带”.“的区段是保留给系统使用的。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/13.png" alt="13"></p>
+<p>程序头部结构：程序头部表是程序头部结构的一个数组，这些结构定义了段（segment），以及怎样将二进制载入OS。表的大小及其包含的条目数量是在ELF头部中指定的。</p>
+<p><img src="/2018/07/08/栈，堆，PE，ELF/14.png" alt="14"></p>
+<p>p_type字段表示描述的是什么类型的段，并告诉系统怎样解释它的内容。</p>
+<p>p_offset成员指定从文件头开始的段偏移量。</p>
+<p>p_vaddr成员指定段的首选VA。</p>
+<p>p_filesz和p_memsz元素分别表示段在物理文件和内存中的大小。</p>
+<p>p_flags指定段的属性，PF_R,PF_W,PF_X分别对于读，写和执行。</p>
+<p><strong>可执行映像，共享库映像，采用ASLR的映像之间的差异：</strong></p>
+<p>可执行映像，为了加载可执行映像，在建立映像时必须包括每个段使用的地址，这个地址由段的p_vaddr成员指定。如果地址被改变的话，将导致对这个映像的绝对引用被中止。</p>
+<p>ASLR映像和共享库映像可以通过使用所谓的PIC（Position Independent Code，位置无关代码）绕过此限制。PIC隐含的意思就是不再采用绝对引用指向某段数据，而是改为相对引用。</p>
+<p>!!!之后，得好好研究研究一下，ELF文件格式了～</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,361 +325,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/07/ROPGuard/" class="archive-article-date">
-  	<time datetime="2018-07-07T10:34:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-07</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/07/07/ROPGuard/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Anti-ROP-ROPGuard</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/07/ROPGuard/">Anti-ROP-ROPGuard</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/07/Detours/" class="archive-article-date">
-  	<time datetime="2018-07-07T03:34:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/07/Detours/">Detours</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/06/API钩子/" class="archive-article-date">
-  	<time datetime="2018-07-06T12:25:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/06/API钩子/">API钩子</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/06/调试器原理/" class="archive-article-date">
-  	<time datetime="2018-07-06T07:18:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/06/调试器原理/">调试器原理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/06/缓冲区溢出及防御/" class="archive-article-date">
-  	<time datetime="2018-07-06T06:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/06/缓冲区溢出及防御/">缓冲区溢出及防御</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/05/代码注入/" class="archive-article-date">
-  	<time datetime="2018-07-05T07:33:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/05/代码注入/">代码注入</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/06/如何防止软件被别人逆向/" class="archive-article-date">
-  	<time datetime="2018-06-06T14:35:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/06/如何防止软件被别人逆向/">如何防止软件被别人逆向</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/04/Acid-Turn/" class="archive-article-date">
-  	<time datetime="2018-06-04T14:29:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/04/Acid-Turn/">Acid-Turn</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/05/29/成都/" class="archive-article-date">
-  	<time datetime="2018-05-29T09:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/05/29/成都/">成都</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">travel</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -580,8 +461,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
