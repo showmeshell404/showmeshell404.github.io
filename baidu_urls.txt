@@ -1,3 +1,5 @@
+http://www.showmeshell.top/2018/07/11/Relocatable code injection-based binary patching/
+http://www.showmeshell.top/2018/07/11/The-ELF-Binary-Format/
 http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/
 http://www.showmeshell.top/2018/07/07/ROPGuard/
 http://www.showmeshell.top/2018/07/07/Detours/

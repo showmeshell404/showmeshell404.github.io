@@ -4,6 +4,40 @@
 
     
   <url>
+    <loc>http://www.showmeshell.top/2018/07/11/Relocatable%20code%20injection-based%20binary%20patching/</loc>
+    <lastmod>2018-07-11T01:49:32.750Z</lastmod>
+    <data>
+        <display>
+        <title>基于二进制修补的重定位代码注入</title>
+        <pubTime>2018-07-11T01:40:06.000Z</pubTime>
+        
+        <tag>pwn</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://www.showmeshell.top/2018/07/11/The-ELF-Binary-Format/</loc>
+    <lastmod>2018-07-11T01:44:14.780Z</lastmod>
+    <data>
+        <display>
+        <title>The ELF Binary Format</title>
+        <pubTime>2018-07-11T01:36:06.000Z</pubTime>
+        
+        <tag>reverse</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://www.showmeshell.top/2018/07/08/%E6%A0%88%EF%BC%8C%E5%A0%86%EF%BC%8CPE%EF%BC%8CELF/</loc>
     <lastmod>2018-07-08T10:26:14.762Z</lastmod>
     <data>
