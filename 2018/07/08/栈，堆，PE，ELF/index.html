@@ -5,38 +5,38 @@
   
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <link rel="dns-prefetch" href="http://www.showmeshell.top">
-  <title>栈，堆，PE，ELF | Esther-Cheung And ShowMeShell &#39;s Blog</title>
+  <link rel="dns-prefetch" href="http://showmeshell.top">
+  <title>栈，堆，PE，ELF | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
 <meta name="keywords" content="reverse">
 <meta property="og:type" content="article">
 <meta property="og:title" content="栈，堆，PE，ELF">
-<meta property="og:url" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/index.html">
-<meta property="og:site_name" content="Esther-Cheung And ShowMeShell &#39;s Blog">
+<meta property="og:url" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/index.html">
+<meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
 <meta property="og:description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/2.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/3.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/4.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/5.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/6.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/7.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/8.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/9.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/10.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/11.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/12.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/13.png">
-<meta property="og:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/14.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/2.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/3.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/4.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/5.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/6.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/7.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/8.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/9.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/10.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/11.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/12.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/13.png">
+<meta property="og:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/14.png">
 <meta property="og:updated_time" content="2018-07-08T10:26:14.762Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="栈，堆，PE，ELF">
 <meta name="twitter:description" content="1. 地址转换 线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第">
-<meta name="twitter:image" content="http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
+<meta name="twitter:image" content="http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/1.png">
   
-    <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell &#39;s Blog" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -375,7 +375,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://www.showmeshell.top/2018/07/08/栈，堆，PE，ELF/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/07/08/栈，堆，PE，ELF/" alt="微信分享二维码">
     </div>
 </div>
 
