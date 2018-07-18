@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://www.showmeshell.top/2018/07/18/Start-learning-Android/</loc>
+    <lastmod>2018-07-18T04:06:10.239Z</lastmod>
+    <data>
+        <display>
+        <title>Start learning Android</title>
+        <pubTime>2018-07-18T03:34:31.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://www.showmeshell.top/2018/07/11/Relocatable%20code%20injection-based%20binary%20patching/</loc>
     <lastmod>2018-07-11T01:49:32.750Z</lastmod>
     <data>
