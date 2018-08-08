@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/08/08/Dalvik/</loc>
+    <lastmod>2018-08-08T07:50:26.192Z</lastmod>
+    <data>
+        <display>
+        <title>Dalvik</title>
+        <pubTime>2018-08-08T07:47:12.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/02/Debian%E4%BF%AE%E5%A4%8D/</loc>
     <lastmod>2018-08-02T12:50:20.515Z</lastmod>
     <data>
