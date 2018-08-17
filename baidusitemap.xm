@@ -4,6 +4,40 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/08/17/dex%E6%96%87%E4%BB%B6%E9%AA%8C%E8%AF%81/</loc>
+    <lastmod>2018-08-17T03:52:09.904Z</lastmod>
+    <data>
+        <display>
+        <title>dex文件验证</title>
+        <pubTime>2018-08-17T03:50:38.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/08/17/odex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%AF%A6%E8%A7%A3/</loc>
+    <lastmod>2018-08-17T03:50:20.915Z</lastmod>
+    <data>
+        <display>
+        <title>odex文件格式详解</title>
+        <pubTime>2018-08-17T03:47:17.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/15/dex%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%AF%A6%E8%A7%A3/</loc>
     <lastmod>2018-08-15T03:56:44.524Z</lastmod>
     <data>

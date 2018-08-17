@@ -6,19 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Archives: 2018/8 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>dex文件验证 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/archives/2018/08/index.html">
+  <meta name="description" content="dex文件的验证 验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件 一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可 但会引起部分资源难以从内存中释放，比如加载的native动态库 让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好     Android提供了一个专门验证与优化dex文件的工具dexopt 在加载一个dex文件时，通过指定的验证">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dex文件验证">
+<meta property="og:url" content="http://showmeshell.top/2018/08/17/dex文件验证/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="dex文件的验证 验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件 一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可 但会引起部分资源难以从内存中释放，比如加载的native动态库 让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好     Android提供了一个专门验证与优化dex文件的工具dexopt 在加载一个dex文件时，通过指定的验证">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://showmeshell.top/2018/08/17/dex文件验证/1.png">
+<meta property="og:updated_time" content="2018-08-17T03:52:09.904Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="dex文件验证">
+<meta name="twitter:description" content="dex文件的验证 验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件 一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可 但会引起部分资源难以从内存中释放，比如加载的native动态库 让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好     Android提供了一个专门验证与优化dex文件的工具dexopt 在加载一个dex文件时，通过指定的验证">
+<meta name="twitter:image" content="http://showmeshell.top/2018/08/17/dex文件验证/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +151,148 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-dex文件验证" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      dex文件验证
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/17/dex文件验证/" class="archive-article-date">
+
+        
+        <a href="/2018/08/17/dex文件验证/" class="archive-article-date">
   	<time datetime="2018-08-17T03:50:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/17/dex文件验证/">dex文件验证</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="dex文件的验证"><a href="#dex文件的验证" class="headerlink" title="dex文件的验证"></a>dex文件的验证</h3><ul>
+<li>验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件<ul>
+<li>一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可<ul>
+<li>但会引起部分资源难以从内存中释放，比如加载的native动态库</li>
+<li>让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Android提供了一个专门验证与优化dex文件的工具dexopt<ul>
+<li>在加载一个dex文件时，通过指定的验证与优化选项来调用dexopt进行相应的验证与优化操作。</li>
+</ul>
+</li>
+</ul>
+<p>dexopt的整个验证与优化过程：</p>
+<p><img src="/2018/08/17/dex文件验证/1.png" alt="1"></p>
+<ul>
+<li>dexopt的主程序代码为OptMain.cpp</li>
+<li>处理apk/jar/zip文件中classes.dex的函数为extractAndProcessZip()</li>
+<li>通过dexZipFindEntry()函数检查目标文件中是否拥有classes.dex</li>
+<li>调用<strong>dexZipGetEntryInfo()</strong>函数来读取classes.dex的<strong>时间戳与crc检验值</strong></li>
+<li>调用dexZipExtractEntryTo-File()函数释放classes.dex为缓存文件<ul>
+<li>开始解析传递过来的验证与优化选项，验证选项使用“v=”指出，优化选项使用“o=”指出</li>
+</ul>
+</li>
+<li>调用<strong>dvmPrepForDexOpt()</strong>函数启动一个<strong>虚拟机进程</strong><ul>
+<li>优化选项dexOptMode与验证选项verifyMode被传递到了全局DvmGlobals结构gDvm的dexOptMode与classVerifyMode字段中,初始化工作完成</li>
+</ul>
+</li>
+<li>dexopt调用<strong>dvmContinueOptimization()</strong>函数开始<strong>真正的验证与优化工作</strong><ul>
+<li>函数首先对dex文件做简单的检查，确保传递进来的目标文件属于dex或odex</li>
+<li>接着调用<strong>mmap()</strong>函数将<strong>整个文件映射到内存中</strong></li>
+<li>然后根据gDvm的dexOptMode与classVerifyMode字段来设置doVerify与doOpt两个布尔值</li>
+<li>接着调用<strong>rewriteDex()</strong>函数来<strong>重写dex文件</strong><ul>
+<li>重写内容包括字符序调整、结构重新对齐、类验证信息以及辅助数据</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数调用dexSwapAndVerify()调整字节序</li>
+<li>调用dvmDexFileOpenPartial()创建DexFile结构<ul>
+<li>dvmDexFileOpenPartial()函数的实现在Android系统源码dalvik\vm\DvmDex.cpp文件</li>
+<li>该函数调用<strong>dexFileParse()函数解析dex文件</strong><ul>
+<li>dexFileParse()函数读取dex文件的头部</li>
+<li>根据需要调用验证<strong>dexComputeChecksum()函数</strong>或调用<strong>dexComputeOptChecksum()函数</strong>来</li>
+<li><strong>验证dex或odex文件头的checksum与signature字段</strong></li>
+<li>验证成功后</li>
+</ul>
+</li>
+<li>调用allocateAuxStructures()函数设置DexFile结构辅助数据的相关字段</li>
+<li>执行完后返回到rewriteDex()函数</li>
+</ul>
+</li>
+<li>rewriteDex()调用<strong>loadAllClasses()</strong>加载dex文件中所有的类</li>
+<li>调用<strong>verifyAndOptimizeClasses()函数</strong>优化与验证具体的类<ul>
+<li>调用dvmVerifyClass()函数进行验证<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\DexVerify.cpp文件</li>
+<li>调用<strong>verifyMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>验证</strong><ul>
+<li>先调用verifyInstructions()函数来验证方法中的指令及其数目的正确性</li>
+<li>再调用dvmVerifyCodeFlow()函数来验证代码流的正确性</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>调用dvmOptimizeClass()函数进行优化<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\Optimize.cpp文件</li>
+<li>调用<strong>optimizeMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>优化</strong><ul>
+<li>优化的主要工作是进行“<strong>指令替换</strong>”<ul>
+<li>替换原则的优先级为“volatile”替换-正确性替换-高性能替换</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数返回后</li>
+</ul>
+</li>
+<li>再次调用dvmDexFileOpenPartial()来验证odex文件</li>
+<li>调用dvmGenerateRegisterMaps()函数来填充辅助数据区结构</li>
+<li>调用updateChecksum()函数重写dex文件的checksum值</li>
+</ul>
+<p>完整的流程，学习的一遍，对于dex如何优化，大概流程已经知道啦~</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,285 +304,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/17/dex文件验证/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/17/odex文件格式详解/" class="archive-article-date">
-  	<time datetime="2018-08-17T03:47:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/08/17/odex文件格式详解/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">odex文件格式详解</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/17/odex文件格式详解/">odex文件格式详解</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/15/dex文件格式详解/" class="archive-article-date">
-  	<time datetime="2018-08-15T03:53:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/15/dex文件格式详解/">dex文件格式详解</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/14/CVE-2015-3636/" class="archive-article-date">
-  	<time datetime="2018-08-14T07:35:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/14/CVE-2015-3636/">CVE-2015-3636</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/08/Android程序的生成步骤/" class="archive-article-date">
-  	<time datetime="2018-08-08T09:14:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/08/Android程序的生成步骤/">Android程序的生成步骤</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/08/Dalvik/" class="archive-article-date">
-  	<time datetime="2018-08-08T07:47:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/08/Dalvik/">Dalvik</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/02/Debian修复/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:39:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/02/Debian修复/">Debian修复</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/02/Android锁屏密码分析/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:36:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/02/Android锁屏密码分析/">Android锁屏密码分析</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -504,8 +440,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
