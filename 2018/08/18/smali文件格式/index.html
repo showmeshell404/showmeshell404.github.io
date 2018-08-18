@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Tag: reverse | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>smali文件格式 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/tags/reverse/page/2/index.html">
+  <meta name="description" content="smali文件格式普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放 1.smali文件头3行12345678910111213141516.class&amp;lt;访问权限&amp;gt;[修饰关键字]&amp;lt;类名&amp;gt;.super&amp;lt;父类名&amp;gt;.source&amp;lt;源文件名&amp;gt;//baksmali解析dex文件时，通过这3个字段来获取相应的值//classId">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="smali文件格式">
+<meta property="og:url" content="http://showmeshell.top/2018/08/18/smali文件格式/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="smali文件格式普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放 1.smali文件头3行12345678910111213141516.class&amp;lt;访问权限&amp;gt;[修饰关键字]&amp;lt;类名&amp;gt;.super&amp;lt;父类名&amp;gt;.source&amp;lt;源文件名&amp;gt;//baksmali解析dex文件时，通过这3个字段来获取相应的值//classId">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-18T08:33:55.901Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="smali文件格式">
+<meta name="twitter:description" content="smali文件格式普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放 1.smali文件头3行12345678910111213141516.class&amp;lt;访问权限&amp;gt;[修饰关键字]&amp;lt;类名&amp;gt;.super&amp;lt;父类名&amp;gt;.source&amp;lt;源文件名&amp;gt;//baksmali解析dex文件时，通过这3个字段来获取相应的值//classId">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,63 +149,232 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-smali文件格式" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/06/04/Acid-Turn/" class="archive-article-date">
-  	<time datetime="2018-06-04T14:29:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-04</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/06/04/Acid-Turn/">Acid-Turn</a>
+    <h1 class="article-title" itemprop="name">
+      smali文件格式
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/08/18/smali文件格式/" class="archive-article-date">
+  	<time datetime="2018-08-18T08:32:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="smali文件格式"><a href="#smali文件格式" class="headerlink" title="smali文件格式"></a>smali文件格式</h3><p>普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放</p>
+<h4 id="1-smali文件头3行"><a href="#1-smali文件头3行" class="headerlink" title="1.smali文件头3行"></a>1.smali文件头3行</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.class&lt;访问权限&gt;[修饰关键字]&lt;类名&gt;</span><br><span class="line">.super&lt;父类名&gt;</span><br><span class="line">.source&lt;源文件名&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//baksmali解析dex文件时，通过这3个字段来获取相应的值</span></span><br><span class="line"><span class="comment">//classIdx，superclassIdx，sourceFileIdx</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><u>经过混淆的dex文件，反编译出来的smali代码可能没有源文件信息，“.source”行的代码可能为空。</u></p>
+<p><strong>前3行代码过后就是类的主体部分了，一个类可以由多个字段或方法组成</strong></p>
+<h4 id="2-smali字段"><a href="#2-smali字段" class="headerlink" title="2.smali字段"></a>2.smali字段</h4><p>smali文件中字段的声明使用“<code>.field</code>”指令</p>
+<p>字段有静态字段与实例字段两种</p>
+<ul>
+<li>静态字段的声明<ul>
+<li><em># static fields</em></li>
+<li><em>.field &lt;访问权限&gt; static [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
+</ul>
+</li>
+<li>实例字段的声明<ul>
+<li><em># instance fields</em></li>
+<li><em>.field &lt;访问权限&gt; [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
+</ul>
+</li>
+</ul>
+<h4 id="3-smali方法"><a href="#3-smali方法" class="headerlink" title="3.smali方法"></a>3.smali方法</h4><p>smali文件中方法的声明使用“<code>.method</code>”指令</p>
+<p>方法有直接方法与虚方法两种</p>
+<ul>
+<li><p>直接方法的声明</p>
+<ul>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># direct methods</span></span><br><span class="line">.method &lt;访问权限&gt; [修饰关键字]&lt;方法原型&gt;<span class="comment">//方法原型描述了方法的名称、参数与返回值</span></span><br><span class="line">    &lt;.locals&gt;	<span class="comment">//使用的局部变量的个数</span></span><br><span class="line">	[.parameter]	<span class="comment">//指定了方法的参数，比如3个参数，就3条指令</span></span><br><span class="line">    [.prologue]		<span class="comment">//代码的开始处，混淆过的代码可能去掉了该指令</span></span><br><span class="line">    [.line]			<span class="comment">//该处指令在源代码中的行号，混淆过的代码可能去除了行号信息</span></span><br><span class="line">	&lt;代码体&gt;</span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>虚方法的声明与直接方法相同，只是起始处的注释为“<code>virtual methods</code>”</p>
+</li>
+</ul>
+<h4 id="4-smali接口"><a href="#4-smali接口" class="headerlink" title="4.smali接口"></a>4.smali接口</h4><p>smali文件中使用“<code>.implements</code>”指令指出一个类实现了接口</p>
+<ul>
+<li><p>格式声明</p>
+<ul>
+<li><em># interfaces</em></li>
+<li><em>.implements &lt;接口名&gt;</em><ul>
+<li>接口名是<code>DexClassDef</code>结构中<code>interfacesOff</code>字段指定的内容</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-smali注解"><a href="#5-smali注解" class="headerlink" title="5.smali注解"></a>5.smali注解</h4><p>smali文件中使用“<code>.annotation</code>”指令指出类使用了注解</p>
+<ul>
+<li><p>格式声明</p>
+<ul>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#annotations</span></span><br><span class="line">.annotation[注解属性]&lt;注解类名&gt;</span><br><span class="line">	[注解字段=值]</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注解的作用范围可以是类、方法或字段</p>
+<ul>
+<li>注解的作用范围是类，“<code>.annotation</code>”指令会直接定义在smali文件中</li>
+<li>注解的作用范围是方法或字段，“<code>.annotation</code>”指令则会包含在方法或字段定义中</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/18/smali文件格式/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/08/17/dex文件验证/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">dex文件验证</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/tags/reverse/">&laquo; Prev</a><a class="page-number" href="/tags/reverse/">1</a><span class="page-number current">2</span>
-    </nav>
+  
+
+  
+
   
 
 
@@ -242,9 +412,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
