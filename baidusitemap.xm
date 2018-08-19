@@ -4,6 +4,74 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/08/19/IDA%E4%B8%8EDex%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</loc>
+    <lastmod>2018-08-19T12:58:27.593Z</lastmod>
+    <data>
+        <display>
+        <title>IDA与Dex持续更新</title>
+        <pubTime>2018-08-19T12:57:55.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/08/19/Androguard/</loc>
+    <lastmod>2018-08-19T12:57:27.737Z</lastmod>
+    <data>
+        <display>
+        <title>Androguard</title>
+        <pubTime>2018-08-19T12:56:50.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/08/19/dex2jar%E7%94%A8%E6%B3%95/</loc>
+    <lastmod>2018-08-19T12:56:21.980Z</lastmod>
+    <data>
+        <display>
+        <title>dex2jar用法</title>
+        <pubTime>2018-08-19T12:55:51.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/08/19/%E5%AF%B9%E6%AF%94Java%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84%E4%B8%8ESmali%E4%BB%A3%E7%A0%81/</loc>
+    <lastmod>2018-08-19T12:54:44.752Z</lastmod>
+    <data>
+        <display>
+        <title>对比Java代码结构与Smali代码</title>
+        <pubTime>2018-08-19T12:52:08.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/18/Android%E4%B8%AD%E7%9A%84%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/</loc>
     <lastmod>2018-08-18T08:39:35.160Z</lastmod>
     <data>

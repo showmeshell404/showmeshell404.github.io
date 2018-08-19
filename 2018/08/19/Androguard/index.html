@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>基于二进制修补的重定位代码注入 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Androguard | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Relocatable code injection-based binary patching基于二进制修补的重定位代码注入的学习 1Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utiliz">
-<meta name="keywords" content="pwn">
+  <meta name="description" content="Androguard的使用方法 androapkinfo.py  用来查看apk文件的信息 会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看 ./androapkinfo.py -i ./xxx.apk   androaxml.py  用来解密apk包中的AndroidManifest.xml文件 ./androaxml.py -i ./">
+<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于二进制修补的重定位代码注入">
-<meta property="og:url" content="http://showmeshell.top/2018/07/11/Relocatable code injection-based binary patching/index.html">
+<meta property="og:title" content="Androguard">
+<meta property="og:url" content="http://showmeshell.top/2018/08/19/Androguard/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="Relocatable code injection-based binary patching基于二进制修补的重定位代码注入的学习 1Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utiliz">
+<meta property="og:description" content="Androguard的使用方法 androapkinfo.py  用来查看apk文件的信息 会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看 ./androapkinfo.py -i ./xxx.apk   androaxml.py  用来解密apk包中的AndroidManifest.xml文件 ./androaxml.py -i ./">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-07-11T01:49:32.750Z">
+<meta property="og:updated_time" content="2018-08-19T12:57:27.737Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="基于二进制修补的重定位代码注入">
-<meta name="twitter:description" content="Relocatable code injection-based binary patching基于二进制修补的重定位代码注入的学习 1Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utiliz">
+<meta name="twitter:title" content="Androguard">
+<meta name="twitter:description" content="Androguard的使用方法 androapkinfo.py  用来查看apk文件的信息 会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看 ./androapkinfo.py -i ./xxx.apk   androaxml.py  用来解密apk包中的AndroidManifest.xml文件 ./androaxml.py -i ./">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -149,41 +149,132 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Relocatable code injection-based binary patching" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Androguard" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      基于二进制修补的重定位代码注入
+      Androguard
     </h1>
   
 
         
-        <a href="/2018/07/11/Relocatable code injection-based binary patching/" class="archive-article-date">
-  	<time datetime="2018-07-11T01:40:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
+        <a href="/2018/08/19/Androguard/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:56:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="Relocatable-code-injection-based-binary-patching"><a href="#Relocatable-code-injection-based-binary-patching" class="headerlink" title="Relocatable code injection-based binary patching"></a>Relocatable code injection-based binary patching</h1><p><strong>基于二进制修补的重定位代码注入的学习</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utilize as a way to relink a binary after it&apos;s already been compiled and linked into an executable. That is, you can inject an object file into an executable, update the executable&apos;s symbol table to reflect newly inserted functionality, and perform the necessary relocations on the injected object code so that it becomes a part of the executable.</span><br></pre></td></tr></table></figure>
-<p>在二进制文件编译完成后并链接到一个可执行文件之后，通过重定位代码技术可以重新链接二进制文件。这就意味着，可以将一个目标文件注入到可执行文件中，更改可执行文件的符号表来指向新注入的功能，并对注入的目标代码进行必要的重定位，那么注入的代码就变成了可执行文件的一部分。</p>
-<p>可以使用Eresi（ELF反编译系统接口）：<a href="https://github.com/thorkill/eresi" target="_blank" rel="noopener">https://github.com/thorkill/eresi</a></p>
-<p>有2篇文章可以说明ERESI的创新性：</p>
+        <h2 id="Androguard的使用方法"><a href="#Androguard的使用方法" class="headerlink" title="Androguard的使用方法"></a>Androguard的使用方法</h2><ul>
+<li><p><strong>androapkinfo.py</strong></p>
 <ul>
-<li>Cerberus ELF interface (<a href="http://www.phrack.org/archives/issues/61/8.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/61/8.txt</a>)</li>
-<li>Embedded ELF debugging (<a href="http://www.phrack.org/archives/issues/63/9.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/63/9.txt</a>)</li>
+<li><strong>用来查看apk文件的信息</strong></li>
+<li>会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看</li>
+<li><code>./androapkinfo.py -i ./xxx.apk</code></li>
 </ul>
-<p>Ryan O‘Neill也有开发一个Quenya用于ELF反编译的工具。 下载链接：<a href="http://www.bitlackeys.org/projects/quenya_32bit.tgz" target="_blank" rel="noopener">http://www.bitlackeys.org/projects/quenya_32bit.tgz</a>.可以向可执行文件中注入代码：如果向劫持一个给定的函数来修复二进制文件，那么Quenya的代码注入功能可用。</p>
-<p>如果想攻击一个32位的程序，在该程序中调用puts（）函数用来打印HelloWorld。目标是劫持puts函数，调用evil_puts（）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//evil_puts.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _write (<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">int</span> count)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">long</span> ret;</span><br><span class="line"></span><br><span class="line">  __asm__ __volatile__ (<span class="string">"pushl %%ebx\n\t"</span></span><br><span class="line"><span class="string">"movl %%esi,%%ebx\n\t"</span></span><br><span class="line"><span class="string">"int $0x80\n\t"</span><span class="string">"popl %%ebx"</span>:<span class="string">"=a"</span> (ret)</span><br><span class="line">                        :<span class="string">"0"</span> (SYS_write), <span class="string">"S"</span> ((<span class="keyword">long</span>) fd),</span><br><span class="line"><span class="string">"c"</span> ((<span class="keyword">long</span>) buf), <span class="string">"d"</span> ((<span class="keyword">long</span>) count));</span><br><span class="line">  <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) ret;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">evil_puts</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	 _write(<span class="number">1</span>, <span class="string">"HAHA puts() has been hijacked!\n"</span>, <span class="number">31</span>);   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//现在将evil_puts.c编译成evil_puts.o文件，然后注入到./hello_world程序中</span></span><br><span class="line">$ ./hello_world</span><br><span class="line">Hello World</span><br><span class="line"><span class="comment">#//调用了puts("hello world\n");</span></span><br><span class="line">***************************************</span><br><span class="line">[Quenya v0.1@alchemy] reloc evil_puts.o hello_world</span><br><span class="line">0x08048624  addr: 0x8048612</span><br><span class="line">0x080485c4 _write addr: 0x804861e</span><br><span class="line">0x080485c4  addr: 0x804868f</span><br><span class="line">0x080485c4  addr: 0x80486b7</span><br><span class="line">Injection/Relocation succeeded</span><br><span class="line"><span class="comment">#//可执行文件hello_world中已经为之前的evil_puts.o目标文件的write（）函数在0x804861e处分配了一个地址，并进行了重定位。</span></span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//hijack命令重写了全局偏移表的条目，使用evil_puts()的地址替代了puts()：</span></span><br><span class="line">[Quenya v0.1@alchemy] hijack binary hello_world evil_puts puts</span><br><span class="line">Attempting to hijack <span class="keyword">function</span>: puts</span><br><span class="line">Modifying GOT entry <span class="keyword">for</span> puts</span><br><span class="line">Successfully hijacked <span class="keyword">function</span>: puts</span><br><span class="line">Committing changes into executable file</span><br><span class="line">[Quenya v0.1@alchemy] quit</span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//现在输出的内容：</span></span><br><span class="line">ryan@alchemy:~/quenya$ ./hello_world</span><br><span class="line">HAHA puts() has been hijacked!</span><br></pre></td></tr></table></figure>
-<p>已经成功将一个目标文件重定位到可执行文件中，通过改变可执行文件的控制流，来执行注入的代码。使用readelf -s hello_world命令，可以看到evil_puts()的符号。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Quenya中利用了ELF重定位机制的代码</span></span><br><span class="line"><span class="keyword">switch</span>(obj.shdr[i].sh_type)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">case</span> SHT_REL: <span class="comment">/* Section contains ElfN_Rel records */</span></span><br><span class="line">rel = (Elf32_Rel *)(obj.mem + obj.shdr[i].sh_offset);</span><br><span class="line"><span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; obj.shdr[i].sh_size / <span class="keyword">sizeof</span>(Elf32_Rel); j++, rel++)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* symbol table */</span> </span><br><span class="line">symtab = (Elf32_Sym *)obj.section[obj.shdr[i].sh_link]; </span><br><span class="line"></span><br><span class="line"><span class="comment">/* symbol we are applying relocation to */</span></span><br><span class="line">symbol = &amp;symtab[ELF32_R_SYM(rel-&gt;r_info)];</span><br><span class="line"></span><br><span class="line"><span class="comment">/* section to modify */</span></span><br><span class="line">TargetSection = &amp;obj.shdr[obj.shdr[i].sh_info];</span><br><span class="line">TargetIndex = obj.shdr[i].sh_info;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* target location */</span></span><br><span class="line">TargetAddr = TargetSection-&gt;sh_addr + rel-&gt;r_offset;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* pointer to relocation target */</span></span><br><span class="line">RelocPtr = (Elf32_Addr *)(obj.section[TargetIndex] + rel-&gt;r_offset);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* relocation value */</span></span><br><span class="line">RelVal = symbol-&gt;st_value; </span><br><span class="line">RelVal += obj.shdr[symbol-&gt;st_shndx].sh_addr;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"0x%08x %s addr: 0x%x\n"</span>,RelVal, &amp;SymStringTable[symbol-&gt;st_name], TargetAddr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> (ELF32_R_TYPE(rel-&gt;r_info)) </span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* R_386_PC32      2    word32  S + A - P */</span> </span><br><span class="line"><span class="keyword">case</span> R_386_PC32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">*RelocPtr -= TargetAddr;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* R_386_32        1    word32  S + A */</span></span><br><span class="line"><span class="keyword">case</span> R_386_32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//RelocPtr指向的重定位目标是根据重定位类型（eg：R_386_32）所规定的重定位操作来进行修补的。</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>androaxml.py</strong></p>
+<ul>
+<li>用来<strong>解密apk包中的AndroidManifest.xml文件</strong></li>
+<li><code>./androaxml.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androcsign.py</strong></p>
+<ul>
+<li>用于<strong>添加apk文件的签名信息到一个数据库文件中</strong></li>
+<li>Androguard工具目录下的signatures/dbandroguard文件为收集的恶意软件信息数据库</li>
+<li>使用androcsign.py前需要为apk文件编写一个sign文件,json格式：eg</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"SAMPLE"</span>:<span class="string">"apks/xxx.apk"</span>     /*SAMPLE指定需要添加信息的apk文件*/</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        "BASE":"AndroidOS",			/*BASE指定文件运行的系统，目前固定为AndroidOS*/</span><br><span class="line">        "NAME":"DroidDream",		/*NAME是该签名的名字*/</span><br><span class="line">        "SIGNATURE":[				/*具体的签名规则*/</span><br><span class="line">            &#123;</span><br><span class="line">                "TYPE":"METHSIM",	/*TYPE用来指定签名的类型，METHSIM表示的是方法的签名，CLASSSIM表示为类签名*/</span><br><span class="line">                "CN":"Lcom/droider/xxx/MainActivity$SNChecker;", /*指定方法所在的类*/</span><br><span class="line">                "MN":"isRegistered"，	/*指定了方法名*/</span><br><span class="line">                "D":"()Z"				/*D指定了方法的签名信息*/</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        "BF":"0"					/*BF用来指定签名的检测规则*/</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>(json不允许/* //注释，需要则去掉注释部分)</p>
+<ul>
+<li><code>./androcsign.py -i signatures/xxx.apk -o signatures/dbandroguard</code></li>
+</ul>
+</li>
+<li><p><strong>androdd.py</strong></p>
+<ul>
+<li><strong>用来生成apk文件中每个类的方法的调用流程图</strong></li>
+<li><code>./androdd.py -i ./xxx.apk -o ./out -d -f PNG</code><ul>
+<li>-o选项强制指定一个输入目录，-d指定生成dot图形文件，-f用来指定输出的图片格式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>androdiff.py</strong></p>
+<ul>
+<li><strong>用来比较两个apk文件的差异</strong></li>
+<li><code>./androdiff.py -i ./xxx.apk ./xxx1.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androdump.py</strong></p>
+<ul>
+<li><strong>用来dump一个Linux进程的信息</strong></li>
+<li><code>./androdump.py -i pid</code></li>
+</ul>
+</li>
+<li><p><strong>androgexf.py</strong></p>
+<ul>
+<li><strong>用来生成APK的GEXF格式的图形文件</strong></li>
+<li>可以使用Gephi查看gexf格式的图像</li>
+<li><code>./androgext.py -i ./xxx.apk -o ./xxx.gexf</code></li>
+</ul>
+</li>
+<li><p><strong>andromercury.py</strong></p>
+<ul>
+<li>Mercury工具的框架</li>
+<li><strong>功能是对Mercury的包装</strong></li>
+</ul>
+</li>
+<li><p><strong>androrisk.py</strong></p>
+<ul>
+<li><strong>用于评估apk文件中潜在的风险</strong></li>
+<li><code>./androrisk.py -m -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androsign.py</strong></p>
+<ul>
+<li><strong>用于检测apk的信息是否存在于特定的数据库中</strong>，作用与androcsign.py相反</li>
+<li><code>./androsign.py -i apks/xxx.apk -b signatures/dbandroguard -c signatures/dbconfig</code></li>
+</ul>
+</li>
+<li><p><strong>androsim.py</strong></p>
+<ul>
+<li><strong>用于计算两个apk文件的相似度</strong></li>
+<li><code>./androsim.py -i ./xxx.apk ./xxx1.apk</code></li>
+<li>Windows移植版=androsim.exe</li>
+</ul>
+</li>
+<li><p><strong>androxgmml.py</strong></p>
+<ul>
+<li><strong>用来生成apk/jar/class/dex文件的控制流程及功能调用图</strong>，输出格式为xgmml<br>   <code>./androxgmml.py -i  ./xxx.apk    -o xxx.xgmml</code></li>
+</ul>
+</li>
+<li><p><strong>apkviewer.py</strong></p>
+<ul>
+<li>用来为<strong>apk文件中每一个类生成一个独立的graphml图形文件</strong></li>
+<li><code>./apkviewer.py -i ./xxx.apk -o output</code></li>
+<li>Gephi打开生成后的graphml文件,图形中的每个节点是指令级别</li>
+</ul>
+</li>
+<li><p><strong>androlyze.py</strong></p>
+<ul>
+<li>强大的静态分析工具，它提供的一个<strong>独立的Shell环境</strong></li>
+<li><code>./androlyze.py-s</code>进入androlyze的shell交互环境</li>
+<li>androlyze.py通过访问<u>对象的字段与方法的方式</u>来提供反馈结果，可用到3个对象：apk文件对象、dex文件对象、分析结果对象<ul>
+<li>apk文件对象 <code>a=APK(&quot;./xxx.apk&quot;)</code>            (a.+tab 可显示该类所有方法与字段)</li>
+<li>dex文件对象<code>d=DalvikVMFormat(a.get_dex())</code></li>
+<li>分析结果对象 <code>dx=VMAnalysis(d)</code></li>
+<li>或一条命令解决 <code>a,d,dx=AnalyzeAPK(&quot;./xxx.apk&quot;, decompiler=&quot;dad&quot;)</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.get_permissions()：输出apk用到的全部权限</span><br><span class="line">a.get_providers()：输出程序中所有的Content Provider</span><br><span class="line">a.get_receivers()：输出程序中所有的Broadcast Receiver</span><br><span class="line">a.get_services()：输出程序中所有的Service</span><br><span class="line">d.CLASS_Lcom_droider_XXX_MainActivity_2.METHOD_onClick.pretty_show():查看MainActivity$2的OnClick()方法.//source()显示Java源码</span><br><span class="line">dx.tainted_variables.get_string(&lt;要搜索的字符串&gt;)</span><br><span class="line">show_Path(d,dx.tainted_packages.search_packages(&lt;包名&gt;))</span><br></pre></td></tr></table></figure>
 
       
 
@@ -228,7 +319,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
         		</li>
       		
 		</ul>
@@ -284,7 +375,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/07/11/Relocatable code injection-based binary patching/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/19/Androguard/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -298,18 +389,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/07/18/Start-learning-Android/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/08/19/IDA与Dex持续更新/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          Start learning Android
+          IDA与Dex持续更新
         
       </div>
     </a>
   
   
-    <a href="/2018/07/11/The-ELF-Binary-Format/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">The ELF Binary Format</div>
+    <a href="/2018/08/19/dex2jar用法/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">dex2jar用法</div>
       <i class="icon-circle-right"></i>
     </a>
   
