@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/08/22/Hello-ARM/</loc>
+    <lastmod>2018-08-22T07:53:11.362Z</lastmod>
+    <data>
+        <display>
+        <title>Hello ARM</title>
+        <pubTime>2018-08-22T07:49:01.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/19/IDA%E4%B8%8EDex%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0/</loc>
     <lastmod>2018-08-19T12:58:27.593Z</lastmod>
     <data>
