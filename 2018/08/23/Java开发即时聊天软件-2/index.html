@@ -6,42 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>dex文件格式详解 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Java开发即时聊天软件(2) | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="dex文件格式Android 4.0源码Dalvik/docs目录下文档dex-format.html有详细介绍dex文件格式 1.dex文件中的数据结构 dex文件使用到的数据类型  u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。 每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。">
-<meta name="keywords" content="Android">
+  <meta name="description" content="##Java开发即时聊天软件(2)个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="dex文件格式详解">
-<meta property="og:url" content="http://showmeshell.top/2018/08/15/dex文件格式详解/index.html">
+<meta property="og:title" content="Java开发即时聊天软件(2)">
+<meta property="og:url" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="dex文件格式Android 4.0源码Dalvik/docs目录下文档dex-format.html有详细介绍dex文件格式 1.dex文件中的数据结构 dex文件使用到的数据类型  u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。 每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。">
+<meta property="og:description" content="##Java开发即时聊天软件(2)个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d1.jpg">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d2.jpg">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d3.jpg">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d4.jpg">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d5.jpg">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/6.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/7.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/8.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/9.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/10.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/11.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/12.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/15.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/16.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/17.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/18.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/19.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/20.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/21.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/7.png">
-<meta property="og:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/22.jpg">
-<meta property="og:updated_time" content="2018-08-15T03:56:44.524Z">
+<meta property="og:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/2.png">
+<meta property="og:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/3.png">
+<meta property="og:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/4.png">
+<meta property="og:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/5.png">
+<meta property="og:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/6.png">
+<meta property="og:updated_time" content="2018-08-23T08:12:31.439Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="dex文件格式详解">
-<meta name="twitter:description" content="dex文件格式Android 4.0源码Dalvik/docs目录下文档dex-format.html有详细介绍dex文件格式 1.dex文件中的数据结构 dex文件使用到的数据类型  u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。 每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。">
-<meta name="twitter:image" content="http://showmeshell.top/2018/08/15/dex文件格式详解/d1.jpg">
+<meta name="twitter:title" content="Java开发即时聊天软件(2)">
+<meta name="twitter:description" content="##Java开发即时聊天软件(2)个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576">
+<meta name="twitter:image" content="http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/2.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -171,277 +155,32 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-dex文件格式详解" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Java开发即时聊天软件-2" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      dex文件格式详解
+      Java开发即时聊天软件(2)
     </h1>
   
 
         
-        <a href="/2018/08/15/dex文件格式详解/" class="archive-article-date">
-  	<time datetime="2018-08-15T03:53:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-15</time>
+        <a href="/2018/08/23/Java开发即时聊天软件-2/" class="archive-article-date">
+  	<time datetime="2018-08-23T08:09:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-23</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="dex文件格式"><a href="#dex文件格式" class="headerlink" title="dex文件格式"></a>dex文件格式</h3><p><code>Android 4.0</code>源码<code>Dalvik/docs</code>目录下文档<code>dex-format.html</code>有详细介绍dex文件格式</p>
-<h4 id="1-dex文件中的数据结构"><a href="#1-dex文件中的数据结构" class="headerlink" title="1.dex文件中的数据结构"></a>1.dex文件中的数据结构</h4><p><img src="/2018/08/15/dex文件格式详解/d1.jpg" alt="d1"></p>
-<p><strong>dex文件使用到的数据类型</strong></p>
-<ul>
-<li>u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。</li>
-<li>每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。</li>
-<li>LEB128，每个字节只有7位为有效位，如果第1个字节的最高位为1，表示LEB128需要使用到第2个字节，如果第2个字节的最高位为1，表示会使用到第3个字节，以此类推，直到最后的字节最高位为0，当然，LEB128最多只会使用到5个字节，如果读取5个字节后下一个字节最高位仍为1，则表示该dex文件无效，Dalvik虚拟机在验证dex时会失败返回。</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d2.jpg" alt="d2"></p>
-<p><code>Android</code>源码<code>dalvik\libdex\Leb128.h</code>文件中可以找到LEB128的实现，读取无符号LEB128（uleb128）数据的代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readUnsignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第1个字节最高位为1</span></span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第2个字节最高位为1</span></span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于有符号的LEB128（sleb128）来说，计算方法与无符号的LEB128是一样的，只是对无符号LEB128最后一个字节的最高有效位进行了符号扩展。读取有符号LEB128数据的代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readSignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&lt;=<span class="number">0x7f</span>)&#123;				<span class="comment">//小于0x7f表示第1个字节的最高位不为1</span></span><br><span class="line">        result=(result&lt;&lt;<span class="number">25</span>)&gt;&gt;<span class="number">25</span>;	<span class="comment">//对第1个字节的最高有效位进行符号扩展</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;	</span><br><span class="line">            result=(result&lt;&lt;<span class="number">18</span>)&gt;&gt;<span class="number">18</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                result=(result&lt;&lt;<span class="number">11</span>)&gt;&gt;<span class="number">11</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    result=(result&lt;&lt;<span class="number">4</span>)&gt;&gt;<span class="number">4</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>uleb128p1类型很简单，值为uleb128的值加1。</p>
-<p><code>c0 83 92 25</code>计算uleb128值：</p>
-<p>第1个字节0xc0大于0x7f，表示需要用到第2个字节。<code>result=0xc0&amp;0x7f</code></p>
-<p>第2个字节0x83大于0x7f，表示需要用到第3个字节。<code>result2 = result1 + (0x83 &amp; 0x7f) &lt;&lt; 7</code></p>
-<p>第3个字节0x92大于0x7f，表示需要用到第4个字节。<code>result3 = result2 + (0x92 &amp; 0x7f) &lt;&lt; 14</code></p>
-<p>第4个字节0x25小于0x7f，表示到了结尾。<code>result4 = result3 + (0x25 &amp; 0x7f) &lt;&lt; 21</code></p>
-<p>最后计算结果为<code>0x40 + 0x180 + 0x48000 + 0x4a00000 = 0x4a481c0</code></p>
-<h4 id="2-dex文件整体结构"><a href="#2-dex文件整体结构" class="headerlink" title="2.dex文件整体结构"></a>2.dex文件整体结构</h4><p>dex文件由多个结构体组合而成。</p>
-<p><img src="/2018/08/15/dex文件格式详解/d3.jpg" alt="d3"></p>
-<ul>
-<li>dex header：dex文件头，它指定了dex文件的一些属性，并记录了其它6部分数据结构在dex文件中的物理偏移</li>
-<li>string_ids到class_def结构为“索引结构区”，真实的数据存放在data数据区</li>
-<li>link_data：静态链接数据区</li>
-</ul>
-<p>未经过优化的dex文件结构：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFile</span>&#123;</span></span><br><span class="line">    DexHeader	Header;</span><br><span class="line">    DexStringId	StringIds[stringIdsSize];</span><br><span class="line">    DexTypeId	TypeIds[typeIdsSzie];</span><br><span class="line">    DexProtoId	ProtoIds[protoIdsSize];</span><br><span class="line">    DexFieldId	FieldIds[fieldIdsSize];</span><br><span class="line">    DexMethodId	MethodIds[methodIdsSize];</span><br><span class="line">    DexData		Data[];</span><br><span class="line">    DexLink		LinkData;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>(DexFile结构的声明在Android系统源码<code>dalvik\libdex\DexFile.h</code>文件中的，是dex文件被映射到内存中的结构，保存的是各个结构的指针，其中还包括了DexOptHeader与DexFile尾部的附加数据)</p>
-<ul>
-<li>DexHeader结构占用0x70个字节</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d4.jpg" alt="d4"></p>
-<ul>
-<li>70个字节解释如下：    <ul>
-<li>magic字段标识了一个有效的dex文件，值固定为<code>64 65 78 0a 30 33 35 00</code>，转换为字符串为<code>dex.035</code></li>
-<li>checksum段为dex文件的校验和，通过它来判断dex文件是否被损坏或篡改。</li>
-<li>signature字段用来识别最佳化之前的dex文件</li>
-<li>fileSize字段记录了包括DexHeader在内的整个dex文件的大小</li>
-<li>headerSize字段记录了DexHeader结构本身占用的字节数，目前它的值为0x70。</li>
-<li>endianTag字段指定了dex运行环境的cpu字节序，预设值ENDIAN_CONSTANT等于0x12345678，表示默认采用Little-Endian字节序</li>
-<li>linkSize字段与linkOff字段指定链接段的大小与文件偏移，大多数情况下它们的值都为0。</li>
-<li>mapOff字段指定了DexMapList结构的文件偏移</li>
-<li>接下来的字段分别表示DexStringId、DexTypeId、DexProtoId、DexFieldId、DexMethodId、DexClassDef以及数据段的大小与文件偏移。<ul>
-<li>DexHeader结构下面的数据为”索引结构区“与”数据区“</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>“索引结构区”中各数据结构的偏移地址都是从DexHeader结构的stringIdsOff～classDefsOff字段的值指定的，它们并非真正的类数据，而是指向dex文件的data数据区（DexData字段，实际上是ubyte字节数组，包含了程序所有使用到的数据）的偏移或数据结构索引。</li>
-</ul>
-<h4 id="3-dex文件结构分析"><a href="#3-dex文件结构分析" class="headerlink" title="3.dex文件结构分析"></a>3.dex文件结构分析</h4><p>Dalvik虚拟机解析dex文件的内容，最终将其映射成DexMapList数据结构。</p>
-<ul>
-<li>DexHeader结构的mapOff字段指明了DexMapList结构在dex文件中的偏移：</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapList</span>&#123;</span></span><br><span class="line">    u4	size;				<span class="comment">//DexMapItem的个数</span></span><br><span class="line">    DexMapItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexMapItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//size字段表示接下来有多少个DexMapItem结构</span></span><br><span class="line"><span class="comment">//DexMapItem的结构如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapItem</span>&#123;</span></span><br><span class="line">    u2	type;				<span class="comment">//kDexType开头的类型</span></span><br><span class="line">    u2	unused;				<span class="comment">//未使用，用于字节对齐</span></span><br><span class="line">    u4	size;				<span class="comment">//指定类型的个数</span></span><br><span class="line">    u4	offset;				<span class="comment">//指令类型数据的文件偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>type字段为一个枚举常量，通过类型名称很容易判断具体类型：</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d5.jpg" alt="d5"></p>
-<ul>
-<li><p>DexMapItem中的size字段指定了特定类型的个数，它们以特定的类型在dex文件中连续存放。</p>
-</li>
-<li><p>offset为该类型的文件起始偏移地址。</p>
-</li>
-<li><p>以Hello.dex为例，DexHeader结构的mapOff字段值为0x290，读取0x290处的一个双字值为0x0d，表明接下来会有13个DexMapItem结构。使用任意的十六进制编辑器打开Hello.dex，我使用的是winhex</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Hello.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (a + b) * (a - b);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argc)</span> </span>&#123;</span><br><span class="line">		Hello hello = <span class="keyword">new</span> Hello();</span><br><span class="line">		System.out.println(hello.foo(<span class="number">5</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/6.png" alt="6"></p>
-<p>根据结构描述，可以整理出13个<strong>DexMapItem</strong>结构如表：</p>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<p>对比文件头DexHeader部分：</p>
-<p><img src="/2018/08/15/dex文件格式详解/8.png" alt="8"></p>
-<p>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间，而接下来的kDexTypeStringIdItem～kDexTypeClassDefItem与DexHeader当中对应的类型及类型个数字段的值是相同的。</p>
-<ul>
-<li>kDexTypeHeaderItem<ul>
-<li>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeStringIdItem</p>
-<ul>
-<li><p>比如kDexTypeStringIdItem对应了DexHeader的stringIdsSize与stringIdsOff字段，表明了在0x70偏移处，有连续0x10个DexStringId对象。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DexStringId结构声明</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexStringId</span>&#123;</span></span><br><span class="line">    u4	stringDataOff;		<span class="comment">//字符串数据偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>DexStringId结构只有一个stringDataOff字段，直接指向字符串数据，从0x70开始，整理16个字符串。</p>
-<p><img src="/2018/08/15/dex文件格式详解/9.png" alt="9"></p>
-<p><img src="/2018/08/15/dex文件格式详解/10.png" alt="10"></p>
-<p>上表中的字符串并非普通的ascii字符串，它们是由MUTF-8编码来表示的。</p>
-<ul>
-<li><p>MUTF-8含义为Modified UTF-8，即经过修改的UTF-8编码，它与传统的UTF-8很相似，但有以下几点区别：</p>
-<ul>
-<li>MUTF-8使用1～3字节编码长度。</li>
-<li>大于16位的Unicode编码U+10000~U+10ffff使用3字节来编码。</li>
-<li>U+0000采用2字节来编码。</li>
-<li>采用类似于C语言中的空字符null作为字符串的结尾。</li>
-</ul>
-</li>
-<li><p>MUTF-8可表示的有效字符范围有大小写字母与数字、“$”、“-”、“_”、U+00a1~U+1fff、U+2010~U+2027、U+2030~U+d7ff、U+e000~U+ffef、U+10000~U+10ffff。它的实现代码如下：</p>
-</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">dexGetStringData</span><span class="params">(<span class="keyword">const</span> DexFile* pDexFile,<span class="keyword">const</span> DexStringId* pStringId)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> u1* ptr=pDexFile-&gt;baseAddr+pStringId-&gt;stringDataOff;</span><br><span class="line">    <span class="comment">//指向MUTF-8字符串的指针</span></span><br><span class="line">    <span class="comment">//Skip the uleb128 length.</span></span><br><span class="line">    <span class="keyword">while</span>(*(ptr++)&gt;<span class="number">0x7f</span>) <span class="comment">/*empty*/</span>;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">const</span> <span class="keyword">char</span>*) ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>MUTF-8字符串的头部存放的是由u1eb128编码的字符的个数。注意：这里是个数，如字符序列“<code>02 e4 bd a0 e5 a5 bd 00</code>”头部的02即表示字符串有两个字符，“e4 bd a0”是UTF-8编码字符“你”，“e5 a5 bd”是UTF-8编码字符“好”，而最后的空字符0表示字符串结尾，不过字符个数好像没有算上它。</p>
-<p>eg:<code>0A 48 65 6C 6C 6F 2E 6A 61 76 61 00</code>=&gt;10个字符+hello.java+00</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeTypeIdItem</p>
-<ul>
-<li><p>kDexTypeStringIdItem对应DexHeader中的typeIdsSize与typeIdsOff字段，指向的结构体为DexTypeId，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeId</span>&#123;</span></span><br><span class="line">    u4	descriptorIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   descriptorIdx为指向DexStringId列表的索引，它对应的字符串代表了具体类的类型。从0xb0开始有7个DexTypeId结构，也就是有7个字符串的索引，整理后：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/11.png" alt="11"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/12.png" alt="12"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeProtoIdItem</p>
-<ul>
-<li><p>kDexTypeProtoIdItem对应DexHeader中的protoIdsSize与protoIdsOff字段，指向的结构体为DexProtoId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexProtoId</span>&#123;</span></span><br><span class="line">    u4	shortyIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">    u4	returnTypeIdx;	<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">    u4	parametersOff;	<span class="comment">//指向DexTypeList的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>DexProtoId是一个方法声明结构体:</p>
-<ul>
-<li>shortyIdx为方法声明字符串</li>
-<li>returnTypeIdx为方法返回类型字符串</li>
-<li><p><strong>parametersOff指向一个DexTypeList结构体，存放了方法的参数列表</strong>，DexTypeList声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeList</span>&#123;</span></span><br><span class="line">    u4	size;	<span class="comment">//接下来DexTypeItem的个数</span></span><br><span class="line">    DexTypeItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexTypeItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexTypeItem声明如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeItem</span>&#123;</span></span><br><span class="line">    u2 typeIdx;		<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>DexTypeItem中的typeIdx最终也是指向一个字符串.</strong></p>
-<p>从0xcc开始有4个DexProtoId结构，整理后如表</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<pre><code>![13](dex文件格式详解\13.png)
-
-![14](dex文件格式详解\14.png)
-
-通过上表可以发现，**方法声明由返回类型与参数列表组成，并且返回类型位于参数列表的前面。**
-</code></pre><ul>
-<li><p>kDexTypeFieldIdItem</p>
-<ul>
-<li><p>kDexTypeFieldIdItem对应DexHeader中的fieldIdsSize与fieldIdsOff字段，指向的结构体为DexFieldId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFieldId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	typeIdx;	<span class="comment">//字段的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//字段名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexFieldId结构中的数据全部是索引值，指明了字段所在的类、字段的类型以及字段名。</p>
-<p>   从0xfc开始共有1个DexFieldId结构，整理后如：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/15.png" alt="15"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/16.png" alt="16"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeMethodIdItem</p>
-<ul>
-<li><p>kDexTypeMethodIdItem对应DexHeader中的methodIdsSize与methodIdsOff字段，指向的结构体为DexFieldId，声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethodId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	protoIdx;	<span class="comment">//声明类型，指向DexprotoId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//方法名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexMethodId结构的数据也都是索引值，指明了方法所在的类、方法的声明以及方法名。</p>
-<p>   从0x104开始共有5个DexMethodId结构，整理后的结果</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/17.png" alt="17"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/18.png" alt="18"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeClassDefItem</p>
-<ul>
-<li><p>kDexTypeClassDefItem对应DexHeader中的classDefsSize与classDefsOff字段，指向的结构体为DexClassDef，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>classIdx字段是一个索引值，表明类的类型</li>
-<li>accessFlags字段是类的访问标志，它是以ACC_开头的一个枚举值</li>
-<li>superclassIdx字段是父类类型索引值</li>
-<li>如果类中含有接口声明或实现，interfacesOff字段会指向1个DexTypeList结构，否则这里的值为0</li>
-<li>sourceFileIdx字段是字符串索引值，表示类所在的源文件名称</li>
-<li>annotationsOff字段指向注解目录结构，根据类型不同会有注解类、注解方法、注解字段与注解参数，如果类中没有注解，这里的值则为0</li>
-<li><strong>classDataOff字段指向DexClassData结构，它是类的数据部分</strong></li>
-<li><p>staticValuesOff字段指向DexEncodedArray结构，记录了类中的静态数据</p>
-<p><img src="/2018/08/15/dex文件格式详解/19.png" alt="19"></p>
-</li>
-</ul>
-</li>
-<li><p>DexClassData结构的声明在DexClass.h文件中，它的声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassData</span>&#123;</span></span><br><span class="line">    DexClassDataHeader	header;			<span class="comment">//指定字段与方法的个数</span></span><br><span class="line">    DexField*			staticFields;	<span class="comment">//静态字段，DexField结构</span></span><br><span class="line">    DexField*			instanceFiels;	<span class="comment">//实例字段，DexField结构</span></span><br><span class="line">    DexMethod*			directMethods;	<span class="comment">//直接方法，DexMethod结构</span></span><br><span class="line">    DexMethod*			virtualMethods;	<span class="comment">//虚方法，DexMethod结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexClassDataHeader结构记录了当前类中字段与方法的数目</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">DexClassDataHeader</span>&#123;</span></span><br><span class="line">    u4	staticFieldsSize;				<span class="comment">//静态字段个数</span></span><br><span class="line">    u4	instanceFieldsSize;				<span class="comment">//实例字段个数</span></span><br><span class="line">    u4	directMethodsSize;				<span class="comment">//直接方法个数</span></span><br><span class="line">    u4	virtualMethodsSize;				<span class="comment">//虚方法个数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   <u>DexClassDataHeader的结构与DexClassData一样，都是在DexClass.h文件中声明的。</u></p>
-<p>   （为什么不是在DexFile.h中声明呢？它们都是DexFile文件结构的一部分！可能的原因是DexClass.h文件中所有结构的u4类型的字段其实都是uleb128类型，u1eb128使用1～5个字节来表示一个32位的值，大多数情况下，字段中这些数据可以用小于2个字节的空间来表示，因此，采用uleb128会节省更多的存储空间。</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexField</span>&#123;</span></span><br><span class="line">    u4	fieldIdx;		<span class="comment">//指向DexFieldId的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>fieldIdx字段为指向DexFieldId的索引</li>
-<li><p>accessFlags字段与DexClassDef中的相应字段的类型相同。</p>
-<p>DexMethod结构描述方法的原型、名称、访问标志以及代码数据块，它的结构声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethod</span>&#123;</span></span><br><span class="line">    u4	methodIdx;		<span class="comment">//指向DexMethodId的索引</span></span><br><span class="line">    u4 	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	codeOff;		<span class="comment">//指向DexCode结构的偏移</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexCode</span>&#123;</span></span><br><span class="line">    u2	registersSize;	<span class="comment">//使用的寄存器个数</span></span><br><span class="line">    u2	insSize;		<span class="comment">//参数个数</span></span><br><span class="line">    u2	outsSize;		<span class="comment">//调用其他方法时使用的寄存器个数</span></span><br><span class="line">    u2	triesSize;		<span class="comment">//Try/Catch个数</span></span><br><span class="line">    u4	debugInfoOff;	<span class="comment">//指向调试信息的偏移</span></span><br><span class="line">    u4	insnsSize;		<span class="comment">//指令集个数，以2字节为单位</span></span><br><span class="line">    u2	insns[<span class="number">1</span>];		<span class="comment">//指令集</span></span><br><span class="line">    <span class="comment">//2字节空间用于结构对齐</span></span><br><span class="line">    <span class="comment">//try_item[triesSize]	DexTry结构</span></span><br><span class="line">    <span class="comment">//Try/Catch中handler的个数</span></span><br><span class="line">    <span class="comment">//catch_handler_item[handlersSize],DexCatchHandler结构</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>通过上面层层的分析，到这里终于看到存放指令集的结构。</p>
-</li>
-<li><p>registersSize字段指定了方法中使用的寄存器个数，即Smali语法时的“.register”指令的值。</p>
-</li>
-<li>insSize字段指定了方法的参数个数，即Smali语法中的“.paramter”指令。</li>
-<li>outsSize指定方法调用外部方法时使用的寄存器个数</li>
-<li>triesSize字段指定方法中Try/Catch的个数</li>
-<li>如果dex文件保留了调试信息，debugInfoOff字段会指向它，调试信息的解码函数为dexDecodeDebugInfo()。可在DexDebugInfo.cpp文件中查看其实现</li>
-<li>insnsSize字段指定了接下来的指令个数</li>
-<li><p>insns字段即为真正的代码部分</p>
-<p><img src="/2018/08/15/dex文件格式详解/20.png" alt="20"></p>
-</li>
-<li><p>0x27b开始先读取DexClassDataHeader结构，为4个uleb128值，结果分别为0、0、2、1，表示该类不含字段，有2个直接方法与1个虚方法。</p>
-</li>
-<li><p>由于类中不含字段，因此DexClassData结构中的两个DexField结构也就没戏了，从0x27f开始直接解析DexMethod</p>
-</li>
-<li><p>第1个字段为0，指向的DexMethodId为第1条，也就是”<code>&lt;init&gt;</code>“方法</p>
-</li>
-<li><p>第2个字段“81 80 04”为10001，访问标志为<code>ACC_PUBLIC | ACC_CONSTRUCTOR</code></p>
-</li>
-<li><p>第3个字段“cc 02”为14c，指向DexCode结构</p>
-<p><strong>(uleb如何计算：<code>[cc&amp;7f+（02&amp;7f）&lt;&lt;7]=14c</code>)</strong></p>
-<p><img src="/2018/08/15/dex文件格式详解/21.png" alt="21"></p>
-</li>
-<li><p>从0x14c开始解析DexCode，得出结果为：寄存器个数、参数、内部函数使用寄存器都为1个</p>
-</li>
-<li>方法中有4条指令，指令为“<code>7010 0400 0000 0e00</code>”</li>
-<li><a href="https://pan.baidu.com/s/1-uIjwkgonQNqLPY-yvfIPw" target="_blank" rel="noopener">dalvik-bytecode.html</a>:[密码: cewq]中查找到70的Opcode为invoke-direct，格式为35c</li>
-<li><p><a href="https://pan.baidu.com/s/1ex45xhKoYCIM7JhA6Knkgw" target="_blank" rel="noopener">instruction-formats.html</a>:[密码: k6n6],查找到35c的指令格式为<code>A|G|op BBBB F|E|D|C</code>,有7中表达方式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, meth@BBBB</span><br><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, type@BBBB</span><br><span class="line">[A=4] op &#123;vC, vD, vE, vF&#125;, kind@BBBB</span><br><span class="line">[A=3] op &#123;vC, vD, vE&#125;, kind@BBBB</span><br><span class="line">[A=2] op &#123;vC, vD&#125;, kind@BBBB</span><br><span class="line">[A=1] op &#123;vC&#125;, kind@BBBB</span><br><span class="line">[A=0] op &#123;&#125;, kind@BBBB</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*指令7010中A为1，G为0，表示采用代码为“[A=1] op &#123;vC&#125;, kind@BBBB”方式,且其中的vC为v0寄存器;</span></span><br><span class="line"><span class="comment">指令后面的BBBB与“F|E|D|C”都是16位，7010后面的两个16位都为0，因此BBBB=4且F=E=D=C=0;</span></span><br><span class="line"><span class="comment">BBBB为kind@类型，它是指向DexMethodId列表的索引值，通过查找得到方法名为“&lt;init&gt;”;</span></span><br><span class="line"><span class="comment">指令0e00直接查表得到return-void;*/</span></span><br><span class="line"><span class="number">7010</span> <span class="number">0400</span> <span class="number">0000</span>	invoke-direct&#123;v0&#125;,Ljava/lang/Object;.&lt;init&gt;:()V</span><br><span class="line"><span class="number">0e00</span>			<span class="keyword">return</span>-<span class="keyword">void</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>观察DexMapItem结构：</p>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<ul>
-<li>分析整体结构：<ul>
-<li>kDexTypeCodeItem与上面分析的DexCode结构相对应</li>
-<li>kDexTypeTypeList与上面分析的DexTypeList结构相对应</li>
-<li>kDexTypeStringDataItem则指向了DexStringId字符串列表的首地址</li>
-<li>kDexTypeDebugInfoItem指向了调试信息偏移，与DexCode的debugInfoOff字段指向的内容相同</li>
-<li>kDexTypeClassDataItem指向了DexClassData结构</li>
-<li>kDexTypeMapList指向了DexMapItem结构自身</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/22.jpg" alt="22"></p>
-<p>自此：DEX文件格式分析完了，仔细让我琢磨了好多天。。。</p>
+        <p>##Java开发即时聊天软件(2)<br><strong>个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//个人资料的界面设计GerenziliaoFrame.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JComboBox;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JPanel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JRadioButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextArea;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.EtchedBorder;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.TitledBorder;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GerenziliaoFrame</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTextArea textArea;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_3;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_2;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_2;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_1;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					GerenziliaoFrame frame = <span class="keyword">new</span> GerenziliaoFrame();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">GerenziliaoFrame</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"个人资料"</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">482</span>, <span class="number">399</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">10</span>, <span class="number">63</span>, <span class="number">63</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">79</span>, <span class="number">10</span>, <span class="number">385</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		textField_1 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_1.setBounds(<span class="number">79</span>, <span class="number">51</span>, <span class="number">385</span>, <span class="number">22</span>);</span><br><span class="line">		getContentPane().add(textField_1);</span><br><span class="line">		<span class="keyword">final</span> JPanel panel = <span class="keyword">new</span> JPanel();</span><br><span class="line">		panel.setLayout(<span class="keyword">null</span>);</span><br><span class="line">		panel.setBorder(<span class="keyword">new</span> TitledBorder(<span class="keyword">null</span>, <span class="string">"个人资料"</span>, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, <span class="keyword">null</span>, <span class="keyword">null</span>));</span><br><span class="line">		panel.setBounds(<span class="number">10</span>, <span class="number">94</span>, <span class="number">454</span>, <span class="number">265</span>);</span><br><span class="line">		getContentPane().add(panel);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_1 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_1.setText(<span class="string">"真实名字:"</span>);</span><br><span class="line">		label_1.setBounds(<span class="number">10</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_2 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_2.setText(<span class="string">"性别:"</span>);</span><br><span class="line">		label_2.setBounds(<span class="number">236</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_2);</span><br><span class="line">		textField_2 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_2.setBounds(<span class="number">75</span>, <span class="number">35</span>, <span class="number">132</span>, <span class="number">22</span>);</span><br><span class="line">		panel.add(textField_2);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton.setText(<span class="string">"男"</span>);</span><br><span class="line">		radioButton.setBounds(<span class="number">279</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton_1 = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton_1.setText(<span class="string">"女"</span>);</span><br><span class="line">		radioButton_1.setBounds(<span class="number">323</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_3 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_3.setText(<span class="string">"出生年月:"</span>);</span><br><span class="line">		label_3.setBounds(<span class="number">10</span>, <span class="number">76</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_3);</span><br><span class="line">		comboBox = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox.setBounds(<span class="number">75</span>, <span class="number">72</span>, <span class="number">66</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox);</span><br><span class="line">		comboBox_2 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_2.setBounds(<span class="number">179</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_2);</span><br><span class="line">		comboBox_3 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_3.setBounds(<span class="number">264</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_3);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_4 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_4.setText(<span class="string">"年"</span>);</span><br><span class="line">		label_4.setBounds(<span class="number">147</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_4);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_5 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_5.setText(<span class="string">"月"</span>);</span><br><span class="line">		label_5.setBounds(<span class="number">236</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_5);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_6 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_6.setText(<span class="string">"日"</span>);</span><br><span class="line">		label_6.setBounds(<span class="number">323</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_6);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_7 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_7.setText(<span class="string">"备　　注:"</span>);</span><br><span class="line">		label_7.setBounds(<span class="number">10</span>, <span class="number">116</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_7);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">75</span>, <span class="number">116</span>, <span class="number">358</span>, <span class="number">133</span>);</span><br><span class="line">		panel.add(scrollPane);</span><br><span class="line">		textArea = <span class="keyword">new</span> JTextArea();</span><br><span class="line">		scrollPane.setViewportView(textArea);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//查询好友的界面设计SearchFriend.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.Vector;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTable;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SearchFriend</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTable table;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		test.Main.main(args);</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					SearchFriend frame = <span class="keyword">new</span> SearchFriend();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;	</span><br><span class="line">	Vector cols=<span class="keyword">new</span> Vector();</span><br><span class="line">	Vector rows=<span class="keyword">new</span> Vector();</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">SearchFriend</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"查找好友"</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">469</span>, <span class="number">422</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setText(<span class="string">"昵称:"</span>);</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">22</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">50</span>, <span class="number">14</span>, <span class="number">326</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		<span class="keyword">final</span> JButton button = <span class="keyword">new</span> JButton();</span><br><span class="line">		button.setText(<span class="string">"查找"</span>);</span><br><span class="line">		button.setBounds(<span class="number">382</span>, <span class="number">17</span>, <span class="number">66</span>, <span class="number">28</span>);</span><br><span class="line">		getContentPane().add(button);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">10</span>, <span class="number">63</span>, <span class="number">438</span>, <span class="number">307</span>);</span><br><span class="line">		getContentPane().add(scrollPane);</span><br><span class="line">		cols.add(<span class="string">"昵称"</span>);</span><br><span class="line">		cols.add(<span class="string">"在线"</span>); 		</span><br><span class="line">		table = <span class="keyword">new</span> JTable(rows,cols);</span><br><span class="line">		scrollPane.setViewportView(table);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/2.png" alt="2"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/3.png" alt="3"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/4.png" alt="4"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/5.png" alt="5"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/6.png" alt="6"></p>
 
       
 
@@ -486,7 +225,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
         		</li>
       		
 		</ul>
@@ -542,7 +281,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/15/dex文件格式详解/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/23/Java开发即时聊天软件-2/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -556,18 +295,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/08/17/odex文件格式详解/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          odex文件格式详解
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/08/14/CVE-2015-3636/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">CVE-2015-3636</div>
+    <a href="/2018/08/22/Java开发即时聊天软件-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java开发即时聊天软件(1)</div>
       <i class="icon-circle-right"></i>
     </a>
   

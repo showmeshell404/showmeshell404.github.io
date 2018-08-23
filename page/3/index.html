@@ -150,6 +150,180 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Start-learning-Android" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/18/Start-learning-Android/">Start learning Android</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/18/Start-learning-Android/" class="archive-article-date">
+  	<time datetime="2018-07-18T03:34:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一直都琢磨者去弄弄移动安全，就拖着在，最近下定决心开始学着。</p>
+<p>首先推荐一个公开课：</p>
+<p><a href="http://open.163.com/special/opencourse/developingandroidapplications.html" target="_blank" rel="noopener">http://open.163.com/special/opencourse/developingandroidapplications.html</a></p>
+<p>密西西比河谷州立大学的 Android应用程序开发 就6讲，适合入门，而且讲的还不错，毕竟国外的教学模式还是可以的～</p>
+<p>先慢慢悠悠的在linux上装好了环境，解决了一大堆bug，调试了很久，装各种SDK，ADT，CDT等花了不少时间，总算用上了Eclipse（最新版本的photon，好想汉化！）</p>
+<p>花了几天看看教程，敲了2个Android小应用，扔gayhub了。</p>
+<p><a href="https://github.com/showmeshell404/MultiFunctionClock" target="_blank" rel="noopener">https://github.com/showmeshell404/MultiFunctionClock</a></p>
+<p>多功能的小闹钟，界面巨丑。</p>
+<p><a href="https://github.com/showmeshell404/2048Game" target="_blank" rel="noopener">https://github.com/showmeshell404/2048Game</a></p>
+<p>2048的小游戏。</p>
+<p>还有一个elf-parser 由elf文件格式，打印程序头和节头。</p>
+<p><a href="https://github.com/showmeshell404/elf-parser" target="_blank" rel="noopener">https://github.com/showmeshell404/elf-parser</a></p>
+<p>差不多熟悉熟悉Android流程就开始慢慢尝试Android安全了～</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/18/Start-learning-Android/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Relocatable code injection-based binary patching" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/11/Relocatable code injection-based binary patching/">基于二进制修补的重定位代码注入</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/11/Relocatable code injection-based binary patching/" class="archive-article-date">
+  	<time datetime="2018-07-11T01:40:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Relocatable-code-injection-based-binary-patching"><a href="#Relocatable-code-injection-based-binary-patching" class="headerlink" title="Relocatable code injection-based binary patching"></a>Relocatable code injection-based binary patching</h1><p><strong>基于二进制修补的重定位代码注入的学习</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utilize as a way to relink a binary after it&apos;s already been compiled and linked into an executable. That is, you can inject an object file into an executable, update the executable&apos;s symbol table to reflect newly inserted functionality, and perform the necessary relocations on the injected object code so that it becomes a part of the executable.</span><br></pre></td></tr></table></figure>
+<p>在二进制文件编译完成后并链接到一个可执行文件之后，通过重定位代码技术可以重新链接二进制文件。这就意味着，可以将一个目标文件注入到可执行文件中，更改可执行文件的符号表来指向新注入的功能，并对注入的目标代码进行必要的重定位，那么注入的代码就变成了可执行文件的一部分。</p>
+<p>可以使用Eresi（ELF反编译系统接口）：<a href="https://github.com/thorkill/eresi" target="_blank" rel="noopener">https://github.com/thorkill/eresi</a></p>
+<p>有2篇文章可以说明ERESI的创新性：</p>
+<ul>
+<li>Cerberus ELF interface (<a href="http://www.phrack.org/archives/issues/61/8.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/61/8.txt</a>)</li>
+<li>Embedded ELF debugging (<a href="http://www.phrack.org/archives/issues/63/9.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/63/9.txt</a>)</li>
+</ul>
+<p>Ryan O‘Neill也有开发一个Quenya用于ELF反编译的工具。 下载链接：<a href="http://www.bitlackeys.org/projects/quenya_32bit.tgz" target="_blank" rel="noopener">http://www.bitlackeys.org/projects/quenya_32bit.tgz</a>.可以向可执行文件中注入代码：如果向劫持一个给定的函数来修复二进制文件，那么Quenya的代码注入功能可用。</p>
+<p>如果想攻击一个32位的程序，在该程序中调用puts（）函数用来打印HelloWorld。目标是劫持puts函数，调用evil_puts（）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//evil_puts.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _write (<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">int</span> count)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">long</span> ret;</span><br><span class="line"></span><br><span class="line">  __asm__ __volatile__ (<span class="string">"pushl %%ebx\n\t"</span></span><br><span class="line"><span class="string">"movl %%esi,%%ebx\n\t"</span></span><br><span class="line"><span class="string">"int $0x80\n\t"</span><span class="string">"popl %%ebx"</span>:<span class="string">"=a"</span> (ret)</span><br><span class="line">                        :<span class="string">"0"</span> (SYS_write), <span class="string">"S"</span> ((<span class="keyword">long</span>) fd),</span><br><span class="line"><span class="string">"c"</span> ((<span class="keyword">long</span>) buf), <span class="string">"d"</span> ((<span class="keyword">long</span>) count));</span><br><span class="line">  <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) ret;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">evil_puts</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	 _write(<span class="number">1</span>, <span class="string">"HAHA puts() has been hijacked!\n"</span>, <span class="number">31</span>);   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//现在将evil_puts.c编译成evil_puts.o文件，然后注入到./hello_world程序中</span></span><br><span class="line">$ ./hello_world</span><br><span class="line">Hello World</span><br><span class="line"><span class="comment">#//调用了puts("hello world\n");</span></span><br><span class="line">***************************************</span><br><span class="line">[Quenya v0.1@alchemy] reloc evil_puts.o hello_world</span><br><span class="line">0x08048624  addr: 0x8048612</span><br><span class="line">0x080485c4 _write addr: 0x804861e</span><br><span class="line">0x080485c4  addr: 0x804868f</span><br><span class="line">0x080485c4  addr: 0x80486b7</span><br><span class="line">Injection/Relocation succeeded</span><br><span class="line"><span class="comment">#//可执行文件hello_world中已经为之前的evil_puts.o目标文件的write（）函数在0x804861e处分配了一个地址，并进行了重定位。</span></span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//hijack命令重写了全局偏移表的条目，使用evil_puts()的地址替代了puts()：</span></span><br><span class="line">[Quenya v0.1@alchemy] hijack binary hello_world evil_puts puts</span><br><span class="line">Attempting to hijack <span class="keyword">function</span>: puts</span><br><span class="line">Modifying GOT entry <span class="keyword">for</span> puts</span><br><span class="line">Successfully hijacked <span class="keyword">function</span>: puts</span><br><span class="line">Committing changes into executable file</span><br><span class="line">[Quenya v0.1@alchemy] quit</span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//现在输出的内容：</span></span><br><span class="line">ryan@alchemy:~/quenya$ ./hello_world</span><br><span class="line">HAHA puts() has been hijacked!</span><br></pre></td></tr></table></figure>
+<p>已经成功将一个目标文件重定位到可执行文件中，通过改变可执行文件的控制流，来执行注入的代码。使用readelf -s hello_world命令，可以看到evil_puts()的符号。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Quenya中利用了ELF重定位机制的代码</span></span><br><span class="line"><span class="keyword">switch</span>(obj.shdr[i].sh_type)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">case</span> SHT_REL: <span class="comment">/* Section contains ElfN_Rel records */</span></span><br><span class="line">rel = (Elf32_Rel *)(obj.mem + obj.shdr[i].sh_offset);</span><br><span class="line"><span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; obj.shdr[i].sh_size / <span class="keyword">sizeof</span>(Elf32_Rel); j++, rel++)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* symbol table */</span> </span><br><span class="line">symtab = (Elf32_Sym *)obj.section[obj.shdr[i].sh_link]; </span><br><span class="line"></span><br><span class="line"><span class="comment">/* symbol we are applying relocation to */</span></span><br><span class="line">symbol = &amp;symtab[ELF32_R_SYM(rel-&gt;r_info)];</span><br><span class="line"></span><br><span class="line"><span class="comment">/* section to modify */</span></span><br><span class="line">TargetSection = &amp;obj.shdr[obj.shdr[i].sh_info];</span><br><span class="line">TargetIndex = obj.shdr[i].sh_info;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* target location */</span></span><br><span class="line">TargetAddr = TargetSection-&gt;sh_addr + rel-&gt;r_offset;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* pointer to relocation target */</span></span><br><span class="line">RelocPtr = (Elf32_Addr *)(obj.section[TargetIndex] + rel-&gt;r_offset);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* relocation value */</span></span><br><span class="line">RelVal = symbol-&gt;st_value; </span><br><span class="line">RelVal += obj.shdr[symbol-&gt;st_shndx].sh_addr;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"0x%08x %s addr: 0x%x\n"</span>,RelVal, &amp;SymStringTable[symbol-&gt;st_name], TargetAddr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> (ELF32_R_TYPE(rel-&gt;r_info)) </span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* R_386_PC32      2    word32  S + A - P */</span> </span><br><span class="line"><span class="keyword">case</span> R_386_PC32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">*RelocPtr -= TargetAddr;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* R_386_32        1    word32  S + A */</span></span><br><span class="line"><span class="keyword">case</span> R_386_32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//RelocPtr指向的重定位目标是根据重定位类型（eg：R_386_32）所规定的重定位操作来进行修补的。</span></span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/11/Relocatable code injection-based binary patching/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-The-ELF-Binary-Format" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1584,264 +1758,6 @@
 
 
   
-    <article id="post-如何防止软件被别人逆向" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/06/如何防止软件被别人逆向/">如何防止软件被别人逆向</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/06/如何防止软件被别人逆向/" class="archive-article-date">
-  	<time datetime="2018-06-06T14:35:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。</p>
-<h2 id="1-反调试技术"><a href="#1-反调试技术" class="headerlink" title="1.反调试技术"></a>1.反调试技术</h2><h3 id="1-IsDebuggerPresent"><a href="#1-IsDebuggerPresent" class="headerlink" title="1.IsDebuggerPresent"></a>1.IsDebuggerPresent</h3><p><strong>IsDebuggerPresent</strong> ：</p>
-<p>Determines whether the calling process is being debugged by a user-mode debugger.</p>
-<p>一种能够检测是否挂载了调试器的 API 函数，通过返回值是否为 0 可以判断调试器的挂载状态。</p>
-<p><a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx" target="_blank" rel="noopener">具体见MASN文档</a></p>
-<p>可以通过简单的小程序说明一下。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(IsDebuggerPresent())&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"on debugger\n"</span>);<span class="comment">//在调试器上运行！</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"not on debugger\n"</span>);<span class="comment">// 在调试器上不运行</span></span><br><span class="line">    &#125;</span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>如何用</strong>：开发时用 ifdef 或者注释来暂时禁用 IsDebuggerPresent 的调用，在发布版上再启用，在检测到调试器时改变程序的逻辑。</p>
-<p>类似的还有一些API函数，比如</p>
-<h3 id="2-CheckRemoteDebuggerPresent"><a href="#2-CheckRemoteDebuggerPresent" class="headerlink" title="2.CheckRemoteDebuggerPresent"></a>2.CheckRemoteDebuggerPresent</h3><p><strong>CheckRemoteDebuggerPresent</strong>：</p>
-<p>Determines whether the specified process is being debugged.</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL WINAPI <span class="title">CheckRemoteDebuggerPresent</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  _In_    HANDLE hProcess,</span></span></span><br><span class="line"><span class="function"><span class="params">  _Inout_ PBOOL  pbDebuggerPresent</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
-<h3 id="3-popf和SINGLE-STEP异常"><a href="#3-popf和SINGLE-STEP异常" class="headerlink" title="3.popf和SINGLE_STEP异常"></a>3.popf和SINGLE_STEP异常</h3><p>利用 popf 和 SINGLE_STEP 异常来检测调试器的方法。当返回值为 0 时为正常，为 1 则表示挂载了调试器。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">__declspec(naked) int __stdcall antidebugger1(void)</span><br><span class="line">&#123;</span><br><span class="line">    __asm&#123;</span><br><span class="line">        pushad</span><br><span class="line">        push ok</span><br><span class="line">        push dword ptr fs:[0]</span><br><span class="line">        mov dword ptr fs:[0], esp</span><br><span class="line">        mov buff, esp</span><br><span class="line">        push 100h      ;用push将100h入栈</span><br><span class="line">        popf           ;用pop将100h取出至标志</span><br><span class="line">        jmp error</span><br><span class="line">ok:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        ret</span><br><span class="line">error:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        inc eax</span><br><span class="line">        ret</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="4-int-2dh"><a href="#4-int-2dh" class="headerlink" title="4.int 2dh"></a>4.int 2dh</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">__declspec(naked) int __stdcall antidebugger2(void)</span><br><span class="line">&#123;</span><br><span class="line">    __asm&#123;</span><br><span class="line">        pushad</span><br><span class="line">        push ok</span><br><span class="line">        push dword ptr fs:[0]</span><br><span class="line">        mov dword ptr fs:[0], esp</span><br><span class="line">        mov buff, esp</span><br><span class="line">        xor eax, eax</span><br><span class="line">        int 2dh         ;执行int 2dh</span><br><span class="line">        jmp error</span><br><span class="line">ok:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        ret</span><br><span class="line">error:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        inc eax</span><br><span class="line">        ret</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>返回 0 为正常，返回 1 表示挂载了调试器。</p>
-<p>以后慢慢添加一些反调试技术。popf和int2d的原理，google：“anti- debug popf”和“anti-debug int2d”</p>
-<h2 id="2-通过代码混淆防止分析"><a href="#2-通过代码混淆防止分析" class="headerlink" title="2.通过代码混淆防止分析"></a>2.通过代码混淆防止分析</h2><p>反调试技术使用方便，但如果用IDA这种静态分析，找到检测调试器的逻辑，最直接明了的就是查看调用这些API函数的地方，从而破解。</p>
-<p>举个栗子:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">00401000 main proc near</span><br><span class="line">00401000   call  ds:__imp__IsDebuggerPresent@0 改写</span><br><span class="line">00401006   test  eax, eax</span><br><span class="line">00401008   jz    short loc_401021</span><br><span class="line">0040100A   push  offset aOnDebugger ; &quot;on debugger\n&quot;</span><br><span class="line">0040100F   call  ds:__imp__printf</span><br><span class="line">00401015   add   esp, 4</span><br><span class="line">00401018   call  ds:__imp__getchar</span><br><span class="line">0040101E   xor   eax, eax</span><br><span class="line">00401020   retn</span><br><span class="line">00401021 loc_401021:</span><br><span class="line">00401021   push  offset aNotOnDebugger ; &quot;not on debugger\n&quot;</span><br><span class="line">00401026   call  ds:__imp__printf</span><br><span class="line">0040102C   add   esp, 4</span><br><span class="line">0040102F   call  ds:__imp__getchar</span><br><span class="line">00401035   xor   eax, eax</span><br><span class="line">00401037   retn</span><br></pre></td></tr></table></figure>
-<p>轻易找到API函数位置，容易分析，从而破解掉。</p>
-<h3 id="1-代码混淆"><a href="#1-代码混淆" class="headerlink" title="1.代码混淆"></a>1.代码混淆</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">00401000                   main proc near</span><br><span class="line">00401000 FF 15 00 20 40 00   call  ds:__imp__IsDebuggerPresent@0</span><br><span class="line">00401006 85 C0               test  eax, eax</span><br><span class="line">00401008 74 17               jz    short loc_401021</span><br></pre></td></tr></table></figure>
-<p><strong>IsDebuggerPresent</strong>:调用的地方，机器码：<code>FF 15 00 20 40 00 85 C0 74 17</code></p>
-<p>现在增加EB——&gt;<code>EB FF 15 00 20 40 00 85 C0 74 17</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00401000                main:</span><br><span class="line">00401000 EB FF            jmp   short near ptr main+1</span><br><span class="line">00401002 15 00 20 40 00   adc   eax, offset __imp__</span><br><span class="line">IsDebuggerPresent@0</span><br><span class="line">00401007 85 C0            test  eax, eax</span><br><span class="line">00401009 74 17            jz    short loc_401022</span><br></pre></td></tr></table></figure>
-<p>在IDA中看到的就是上面的代码：call指令消失变成jmp adc test jz。然而机器语言的实际功能没有变化，因为<code>EB FF</code> 相当于向前跳转了一个字节，即<code>00401001</code></p>
-<p><strong>关键</strong>：在于 <code>00401001</code>处的 FF，它可以当作前面 jmp 指令的一部分，也可以当作后面 call 指令的一部分。而 IDA 会从前往后按顺序进行反汇编，因此显示出的代码可能会和实际执行的代码不同。这就是所谓混淆。书里有个链接还不错，可以瞅瞅。</p>
-<p><a href="http://www.cs.arizona.edu/solar/papers/CCS2003.pdf" target="_blank" rel="noopener">混淆可执行代码以提高对静态反汇编的抵抗力</a>:</p>
-<h2 id="3-可执行文件压缩"><a href="#3-可执行文件压缩" class="headerlink" title="3.可执行文件压缩"></a>3.可执行文件压缩</h2><p>打包器（我们俗称壳）：packer，市场有很多，比如UPX，ASPack，VM等</p>
-<p>UPX开源支持ELF，DLL，COFF等多种可执行文件格式。</p>
-<p><a href="http://upx.sourceforge.net" target="_blank" rel="noopener">UPX</a>:<br><a href="http://www.aspack.com" target="_blank" rel="noopener">ASPack:</a></p>
-<h3 id="1-压缩"><a href="#1-压缩" class="headerlink" title="1.压缩"></a>1.压缩</h3><p><strong>压缩壳</strong>：将原本可执行文件中的代码和数据进行压缩，然后将解压缩用的代码附加在前面，运行的时候先将原本的可执行数据解压缩出来，然后再运行解压缩后的数据。</p>
-<p><strong>尝试分析：</strong></p>
-<p>调用 IsDebuggerPresent 检测调试器是否存在。然后，如果向程序传递的参数为 xxxxxxxxx 这个字符串，则显示 correct!，否则显示 auth error。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"$packed.exe &lt;password&gt;\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(IsDebuggerPresent())&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"on debugger\n"</span>);<span class="comment">// 在调试器上运行</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">// 在调试器上不运行  </span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">strcmp</span>(argv[<span class="number">1</span>], <span class="string">"xxxxxxxxx"</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"correct!\n"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"auth error\n"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>IDA编译:得到packed.exe</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">00401000 main   proc near</span><br><span class="line">00401000 arg_0  = dword ptr  8</span><br><span class="line">00401000 arg_4  = dword ptr  0Ch</span><br><span class="line">00401000        push    ebp</span><br><span class="line">00401001        mov     ebp, esp</span><br><span class="line">00401003        cmp     [ebp+arg_0], 2</span><br><span class="line">00401007        jge     short loc_401028</span><br><span class="line">00401009        push    offset &quot;$packed.exe &lt;password&gt;\n&quot;</span><br><span class="line">0040100E        call    ds:__imp____iob_func</span><br><span class="line">00401014        add     eax, 40h</span><br><span class="line">00401017        push    eax    ; FILE *</span><br><span class="line">00401018        call    ds:__imp__fprintf</span><br><span class="line">0040101E        add     esp, 8</span><br><span class="line">00401021        mov     eax, 1</span><br><span class="line">00401026        pop     ebp</span><br><span class="line">00401027        retn</span><br><span class="line">00401028 loc_401028:</span><br><span class="line">00401028        call    ds:__imp__IsDebuggerPresent@0</span><br><span class="line">0040102E        test    eax, eax</span><br><span class="line">00401030        jz      short loc_401045</span><br><span class="line">00401032        push    offset aOnDebugger ; &quot;on debugger\n&quot;</span><br><span class="line">00401037        call    ds:__imp__printf</span><br><span class="line">0040103D        add     esp, 4</span><br><span class="line">00401040        or      eax, 0FFFFFFFFh</span><br><span class="line">00401043        pop     ebp</span><br><span class="line">00401044        retn</span><br><span class="line">00401045 loc_401045:</span><br><span class="line">00401045        mov     eax, [ebp+arg_4]</span><br><span class="line">00401048        mov     eax, [eax+4]</span><br><span class="line">0040104B        mov     ecx, offset aXxxxxxxx ; &quot;xxxxxxxx&quot;</span><br><span class="line">00401050 loc_401050:</span><br><span class="line">00401050        mov     dl, [eax]</span><br><span class="line">00401052        cmp     dl, [ecx]</span><br><span class="line">00401054        jnz     short loc_401070</span><br><span class="line">00401056        test    dl, dl</span><br><span class="line">00401058        jz      short loc_40106C</span><br><span class="line">0040105A        mov     dl, [eax+1]</span><br><span class="line">0040105D        cmp     dl, [ecx+1]</span><br><span class="line">00401060        jnz     short loc_401070</span><br><span class="line">00401062        add     eax, 2</span><br><span class="line">00401065        add     ecx, 2</span><br><span class="line">00401068        test    dl, dl</span><br><span class="line">0040106A        jnz     short loc_401050</span><br><span class="line">0040106C loc_40106C:</span><br><span class="line">0040106C        xor     eax, eax</span><br><span class="line">0040106E        jmp     short loc_401075</span><br><span class="line">00401070 loc_401070:</span><br><span class="line">00401070        sbb     eax, eax</span><br><span class="line">00401072        sbb     eax, 0FFFFFFFFh</span><br><span class="line">00401075 loc_401075:</span><br><span class="line">00401075        test    eax, eax</span><br><span class="line">00401077        jnz     short loc_401091</span><br><span class="line">00401079        push    offset aCorrect ; &quot;correct!\n&quot;</span><br><span class="line">0040107E        call    ds:__imp__printf</span><br><span class="line">00401084        add     esp, 4</span><br><span class="line">00401087        call    ds:__imp__getchar</span><br><span class="line">0040108D        xor     eax, eax</span><br><span class="line">0040108F        pop     ebp</span><br><span class="line">00401090        retn</span><br><span class="line">00401091 loc_401091:</span><br><span class="line">00401091        push    offset aAuthError ; &quot;auth error\n&quot;</span><br><span class="line">00401096        call    ds:__imp__printf</span><br><span class="line">0040109C        add     esp, 4</span><br><span class="line">0040109F        or      eax, 0FFFFFFFFh</span><br><span class="line">004010A2        pop     ebp</span><br><span class="line">004010A3        retn</span><br></pre></td></tr></table></figure>
-<p>程序逻辑和流程，还是用于对比参数的字符串，以及输出的内容,相比源程序还是很好分析的。</p>
-<h3 id="2-UPX加壳"><a href="#2-UPX加壳" class="headerlink" title="2.UPX加壳"></a>2.UPX加壳</h3><p><code>upx.exe packed.exe</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">        File size         Ratio      Format      Name</span><br><span class="line">   --------------------   ------   -----------   -----------</span><br><span class="line">      7168 -&gt;      5120   71.43%    win32/pe     packed.exe</span><br><span class="line">Packed 1 file.</span><br></pre></td></tr></table></figure>
-<p>IDA打开后流程变得复杂，二进制编辑器打开可执行文件，也找不到correct，auth，error等字符串。</p>
-<p><img src="/2018/06/06/如何防止软件被别人逆向/IDA-1.png" alt="IDA-1"></p>
-<h3 id="3-UPX脱壳"><a href="#3-UPX脱壳" class="headerlink" title="3.UPX脱壳"></a>3.UPX脱壳</h3><p>upx壳直接-d就可以解包，也可以手工脱。</p>
-<p><code>upx.exe -d packed.exe</code></p>
-<p>手工脱壳就不说了，教程蛮多。</p>
-<p>溜了溜了，先从最基础的来，以后再慢慢添加，弄点深层次的~</p>
-<p>两个正经写博客的程序猿：)  </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/06/如何防止软件被别人逆向/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Acid-Turn" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/04/Acid-Turn/">Acid-Turn</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/04/Acid-Turn/" class="archive-article-date">
-  	<time datetime="2018-06-04T14:29:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="CrackMe——Acid-burn"><a href="#CrackMe——Acid-burn" class="headerlink" title="CrackMe——Acid_burn"></a>CrackMe——Acid_burn</h1><p>感觉光学着逆向基础知识，学了写脱壳，学了写破解，但是不操作操作还是很难进步的。寻思着，要不做做160个crackme？</p>
-<h2 id="1-实验环境"><a href="#1-实验环境" class="headerlink" title="1.实验环境"></a>1.实验环境</h2><p>52pojie的虚拟机，Ollydbg</p>
-<h2 id="2-源程序"><a href="#2-源程序" class="headerlink" title="2.源程序"></a>2.源程序</h2><p>程序运行时会弹出一个NAG窗口，标题是”hello you have to kill me”，这窗口需要去除。</p>
-<p><img src="/2018/06/04/Acid-Turn/1.png" alt="1"></p>
-<p>然后点击确定后进入主窗口。</p>
-<p><img src="/2018/06/04/Acid-Turn/2.png" alt="2"></p>
-<p>进去后发现有两个按钮，根据按钮上的字符串判断应该是需要输入序列号和名称的位置。</p>
-<p>首先看下左边那个按钮，点击进去看下情况，发现有两个输入框，分别是输入用户名和序列号，然后点击Check it Baby，程序会进行校验，校验失败会弹出下面窗口，提醒你try again！</p>
-<p>可以发现上面这个位置是一个需要破解的点。</p>
-<p>然后点击I give up按钮返回到程序的主界面，看下右边那个按钮的情况。</p>
-<p>点击进去后发现有一个输入框，提醒你输入序列号，然后点击Check it Baby，程序会进行校验，校验失败会弹出下面窗口，提醒你Failed！</p>
-<p><img src="/2018/06/04/Acid-Turn/3.png" alt="3"></p>
-<p>按照压缩包里面给的要求，需要破解的点有三个：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">主程序界面之前的NAG窗口</span><br><span class="line">Serial/Name校验页面</span><br><span class="line">Serial校验页面</span><br></pre></td></tr></table></figure>
-<h2 id="3-NAG窗口"><a href="#3-NAG窗口" class="headerlink" title="3.NAG窗口"></a>3.NAG窗口</h2><p>打开OD的第一步就可以先试试程序的流程，F8单步，<code>call Acid_bur.00429F8C</code>,NAG窗口出现。</p>
-<p><img src="/2018/06/04/Acid-Turn/4.png" alt="4"></p>
-<p>由此可知NAG窗口的主函数在这个CALL里面，F2，Ctrl+F2（重新加载），F9，F7进入这个call，接着F8单步跟。</p>
-<p>可看到<code>call dword ptr ds:[esi+0x24]</code>,NAG窗口再次出现。</p>
-<p><img src="/2018/06/04/Acid-Turn/5.png" alt="5"></p>
-<p>接着上面的步骤来，<code>call dword ptr ds:[ebx+0x1CC]</code>,NAG窗口出现。</p>
-<p><img src="/2018/06/04/Acid-Turn/6.png" alt="6"></p>
-<p>注意此次跳转上面的汇编代码：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0042562F                /74 12         je XAcid_bur.00425643</span><br><span class="line">00425631              . |8B5D FC       mov ebx,dword ptr ss:[ebp-0x4]</span><br><span class="line">00425634              . |8B55 FC       mov edx,dword ptr ss:[ebp-0x4]</span><br><span class="line">00425637              . |8B83 D0010000 mov eax,dword ptr ds:[ebx+0x1D0]</span><br><span class="line">0042563D              . |FF93 CC010000 call dword ptr ds:[ebx+0x1CC]        ;第三次进入，弹窗函数</span><br><span class="line">00425643              &amp;gt; \33C0          xor eax,eax</span><br></pre></td></tr></table></figure>
-<p>je XAcid_bur.00425643====&gt;zf=1,则跳转，zf=0则不跳转。可以暴力破解je—-&gt;jmp</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0042562F                /74 12         jmp 00425643</span><br><span class="line">00425631              . |8B5D FC       mov ebx,dword ptr ss:[ebp-0x4]</span><br><span class="line">00425634              . |8B55 FC       mov edx,dword ptr ss:[ebp-0x4]</span><br><span class="line">00425637              . |8B83 D0010000 mov eax,dword ptr ds:[ebx+0x1D0]</span><br><span class="line">0042563D              . |FF93 CC010000 call dword ptr ds:[ebx+0x1CC]        ;第三次进入，弹窗函数</span><br><span class="line">00425643              &amp;gt; \33C0          xor eax,eax</span><br></pre></td></tr></table></figure>
-<p>程序运行到0042562F处直接跳到00425643处，越过弹窗函数。</p>
-<p>修改完毕后我们右键-复制到可执行文件-所有修改，选择全部复制，然后跳到D窗口，右键-保存文件，将程序重命名为Acid_burn1.exe。</p>
-<p>然后F3加载Acid_burn1.exe程序，F9直接运行可以发现没有了NAG窗口，第一个NAG窗口去除成功。</p>
-<h2 id="4-Serial-Name窗口"><a href="#4-Serial-Name窗口" class="headerlink" title="4.Serial/Name窗口"></a>4.Serial/Name窗口</h2><h3 id="1-暴力破解"><a href="#1-暴力破解" class="headerlink" title="1.暴力破解"></a>1.暴力破解</h3><p>OD加载Acid_burn1.exe程序，我们在name和serial输入框随意输入一个字符串和序列号时，此时点击Check it Baby，会弹出try again窗口，内容是sorry，the serial is incorect。</p>
-<p>记录下窗口的字符串内容，然后在OD的C窗口右键-查找-所有参考文本字串，在新窗口位置右键-查找文本，输入窗口内容字符串&quot;the serial is incorect&quot;，然后找到对应的记录。</p>
-<p><img src="/2018/06/04/Acid-Turn/7.png" alt="7"></p>
-<p>先看看第一条，双击，来到OD主窗口。</p>
-<p><img src="/2018/06/04/Acid-Turn/8.png" alt="8"></p>
-<p><strong>往上翻：</strong></p>
-<p>jge+cmp，call函数的返回值eax与4进行比对，如果小于4则不跳转，执行弹窗函数；如果大于等于4则跳转向下执行。与破解无关。</p>
-<p>再看第二条记录。</p>
-<p><img src="/2018/06/04/Acid-Turn/9.png" alt="9"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0042FAFE             |.  E8 F93EFDFF   call Acid_bur.004039FC               ;关键函数；ZF=1则成功</span><br><span class="line">0042FB03                 75 1A         jnz XAcid_bur.0042FB1F</span><br><span class="line">0042FB05                 6A 00         push 0×0</span><br><span class="line">0042FB07                 B9 CCFB4200   mov ecx,Acid_bur.0042FBCC            ;  Congratz !;</span><br><span class="line">0042FB0C                 BA D8FB4200   mov edx,Acid_bur.0042FBD8            ;  Good job dude;</span><br><span class="line">0042FB11                 A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042FB16                 8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042FB18                 E8 53A6FFFF   call Acid_bur.0042A170</span><br><span class="line">0042FB1D                 EB 18         jmp XAcid_bur.0042FB37</span><br><span class="line">0042FB1F                 6A 00         push 0×0</span><br><span class="line">0042FB21                 B9 74FB4200   mov ecx,Acid_bur.0042FB74            ; Try Again!&amp;quot;</span><br><span class="line">0042FB26                 BA 80FB4200   mov edx,Acid_bur.0042FB80            ;  Sorry , The serial is incorect !;</span><br></pre></td></tr></table></figure>
-<p>call=&gt;ZF=1的话，则不跳转；ZF=0的话，则跳转。</p>
-<p>分析可得call函数是判断name和serial是否是正确的关键函数。尝试暴力破解jnz—-&gt;nop</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0042FAFE             |.  E8 F93EFDFF   call Acid_bur.004039FC               ;关键函数；ZF=1则成功</span><br><span class="line">0042FB03                 90            nop</span><br><span class="line">0042FB04                 90            nop</span><br><span class="line">0042FB05                 6A 00         push 0×0</span><br><span class="line">0042FB07                 B9 CCFB4200   mov ecx,Acid_bur.0042FBCC            ;  Congratz !;</span><br><span class="line">0042FB0C                 BA D8FB4200   mov edx,Acid_bur.0042FBD8            ;  Good job dude;</span><br><span class="line">0042FB11                 A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042FB16                 8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042FB18                 E8 53A6FFFF   call Acid_bur.0042A170</span><br><span class="line">0042FB1D                 EB 18         jmp XAcid_bur.0042FB37</span><br><span class="line">0042FB1F                 6A 00         push 0×0</span><br><span class="line">0042FB21                 B9 74FB4200   mov ecx,Acid_bur.0042FB74            ; Try Again!&amp;quot;</span><br><span class="line">0042FB26                 BA 80FB4200   mov edx,Acid_bur.0042FB80            ;  Sorry , The serial is incorect !;</span><br></pre></td></tr></table></figure>
-<p>同样保存为Acid burn2.exe。运行，serial和name输入框内随意输入函数，点击check，都会弹出成功的信息。</p>
-<h3 id="2-注册机"><a href="#2-注册机" class="headerlink" title="2.注册机"></a>2.注册机</h3><p>验证方式：需要输入username与key，程序会根据username计算key，符合规则则弹出正确提示。</p>
-<p>此CrackMe用消息框反馈结果，直接下消息框断点。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0042F998  /.  55            push ebp</span><br><span class="line">0042F999  |.  8BEC          mov ebp,esp</span><br><span class="line">0042F99B  |.  33C9          xor ecx,ecx</span><br><span class="line">0042F99D  |.  51            push ecx</span><br><span class="line">0042F99E  |.  51            push ecx</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/06/04/Acid-Turn/10.png" alt="10"></p>
-<p>分析流程：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">0042F9C8  |.  E8 8BB0FEFF   call Acid_bur.0041AA58                  ;  得到输入的username</span><br><span class="line">0042F9CD  |.  8B45 F0       mov eax,[local.4]</span><br><span class="line">0042F9D0  |.  E8 DB40FDFF   call Acid_bur.00403AB0</span><br><span class="line">0042F9D5  |.  A3 6C174300   mov dword ptr ds:[0x43176C],eax         ;  username存入0x43176c</span><br><span class="line">0042F9DA  |.  8D55 F0       lea edx,[local.4]</span><br><span class="line">0042F9DD  |.  8B83 DC010000 mov eax,dword ptr ds:[ebx+0x1DC]</span><br><span class="line">0042F9E3  |.  E8 70B0FEFF   call Acid_bur.0041AA58</span><br><span class="line">0042F9E8  |.  8B45 F0       mov eax,[local.4]</span><br><span class="line">0042F9EB  |.  0FB600        movzx eax,byte ptr ds:[eax]             ;  取第一位</span><br><span class="line">0042F9EE  |.  8BF0          mov esi,eax</span><br><span class="line">0042F9F0  |.  C1E6 03       shl esi,0x3                             ;  esi左移三位 esi=188</span><br><span class="line">0042F9F3  |.  2BF0          sub esi,eax                             ;  eax=esi-eax</span><br><span class="line">0042F9F5  |.  8D55 EC       lea edx,[local.5]</span><br><span class="line">0042F9F8  |.  8B83 DC010000 mov eax,dword ptr ds:[ebx+0x1DC]</span><br><span class="line">0042F9FE  |.  E8 55B0FEFF   call Acid_bur.0041AA58</span><br><span class="line">0042FA03  |.  8B45 EC       mov eax,[local.5]</span><br><span class="line">0042FA06  |.  0FB640 01     movzx eax,byte ptr ds:[eax+0x1]         ;  取第二位</span><br><span class="line">0042FA0A  |.  C1E0 04       shl eax,0x4                             ;  eax左移四位</span><br><span class="line">0042FA0D  |.  03F0          add esi,eax                             ;  加上上次运算的结果</span><br><span class="line">0042FA0F      8935 54174300 mov dword ptr ds:[0x431754],esi         ;  存放到 0x431754</span><br><span class="line">0042FA15  |.  8D55 F0       lea edx,[local.4]</span><br><span class="line">0042FA18  |.  8B83 DC010000 mov eax,dword ptr ds:[ebx+0x1DC]</span><br><span class="line">0042FA1E  |.  E8 35B0FEFF   call Acid_bur.0041AA58</span><br><span class="line">0042FA23  |.  8B45 F0       mov eax,[local.4]</span><br><span class="line">0042FA26  |.  0FB640 03     movzx eax,byte ptr ds:[eax+0x3]         ;  取第四位</span><br><span class="line">0042FA2A  |.  6BF0 0B       imul esi,eax,0xB                        ;  esi=eax*0xB</span><br><span class="line">0042FA2D  |.  8D55 EC       lea edx,[local.5]</span><br><span class="line">0042FA30  |.  8B83 DC010000 mov eax,dword ptr ds:[ebx+0x1DC]</span><br><span class="line">0042FA36  |.  E8 1DB0FEFF   call Acid_bur.0041AA58</span><br><span class="line">0042FA3B  |.  8B45 EC       mov eax,[local.5]</span><br><span class="line">0042FA3E  |.  0FB640 02     movzx eax,byte ptr ds:[eax+0x2]         ;  取第三位</span><br><span class="line">0042FA42  |.  6BC0 0E       imul eax,eax,0xE                        ;  eax=eax*0xE</span><br><span class="line">0042FA45  |.  03F0          add esi,eax                             ;  加上第四位运算结果</span><br><span class="line">0042FA47  |.  8935 58174300 mov dword ptr ds:[0x431758],esi         ;  存放到0x431758</span><br><span class="line">0042FA4D  |.  A1 6C174300   mov eax,dword ptr ds:[0x43176C]</span><br><span class="line">0042FA52  |.  E8 D96EFDFF   call Acid_bur.00406930</span><br><span class="line">0042FA57  |.  83F8 04       cmp eax,0x4                             ;  //判断输入的用户名小于4位则提示错误---------</span><br><span class="line">0042FA5A  |.  7D 1D         jge short Acid_bur.0042FA79</span><br><span class="line">0042FA5C  |.  6A 00         push 0x0</span><br><span class="line">0042FA5E  |.  B9 74FB4200   mov ecx,Acid_bur.0042FB74               ;  Try Again!</span><br><span class="line">0042FA63  |.  BA 80FB4200   mov edx,Acid_bur.0042FB80               ;  Sorry , The serial is incorect !</span><br><span class="line">0042FA68  |.  A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042FA6D  |.  8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042FA6F  |.  E8 FCA6FFFF   call Acid_bur.0042A170</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">0042FA87  |.  8B45 F0       mov eax,[local.4]                       ;  输入的内容存入EAX</span><br><span class="line">0042FA8A  |.  0FB600        movzx eax,byte ptr ds:[eax]             ;  取第一位存入EAX</span><br><span class="line">0042FA8D  |.  F72D 50174300 imul dword ptr ds:[0x431750]</span><br><span class="line">0042FA93  |.  A3 50174300   mov dword ptr ds:[0x431750],eax</span><br><span class="line">0042FA98  |.  A1 50174300   mov eax,dword ptr ds:[0x431750]</span><br><span class="line">0042FA9D  |.  0105 50174300 add dword ptr ds:[0x431750],eax         ;  [0x431750]=EAX*[0x431750]*2</span><br><span class="line">0042FAA3  |.  8D45 FC       lea eax,[local.1]</span><br><span class="line">0042FAA6  |.  BA ACFB4200   mov edx,Acid_bur.0042FBAC               ;  CW</span><br><span class="line">0042FAAB  |.  E8 583CFDFF   call Acid_bur.00403708</span><br><span class="line">0042FAB0  |.  8D45 F8       lea eax,[local.2]</span><br><span class="line">0042FAB3  |.  BA B8FB4200   mov edx,Acid_bur.0042FBB8               ;  CRACK</span><br><span class="line">0042FAB8  |.  E8 4B3CFDFF   call Acid_bur.00403708</span><br><span class="line">0042FABD  |.  FF75 FC       push [local.1]</span><br><span class="line">0042FAC0  |.  68 C8FB4200   push Acid_bur.0042FBC8                  ;  -</span><br><span class="line">0042FAC5  |.  8D55 E8       lea edx,[local.6]</span><br><span class="line">0042FAC8  |.  A1 50174300   mov eax,dword ptr ds:[0x431750]</span><br><span class="line">0042FACD  |.  E8 466CFDFF   call Acid_bur.00406718                  ; 运算规则</span><br><span class="line">0042FAD2  |.  FF75 E8       push [local.6]</span><br><span class="line">0042FAD5  |.  68 C8FB4200   push Acid_bur.0042FBC8                  ;  -</span><br><span class="line">0042FADA  |.  FF75 F8       push [local.2]                          ;  msctf.752379E5</span><br></pre></td></tr></table></figure>
-<p>0x431750在程序开头会直接赋值0x29 <code>mov dword ptr ds:[0x431750],0x29</code></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">0042FACD  |.  E8 466CFDFF   call Acid_bur.00406718                  ;  运算规则</span><br><span class="line">0042FAD2  |.  FF75 E8       push [local.6]</span><br><span class="line">0042FAD5  |.  68 C8FB4200   push Acid_bur.0042FBC8                  ;  -</span><br><span class="line">0042FADA  |.  FF75 F8       push [local.2]</span><br><span class="line">0042FADD  |.  8D45 F4       lea eax,[local.3]</span><br><span class="line">0042FAE0  |.  BA 05000000   mov edx,0x5</span><br><span class="line">0042FAE5  |.  E8 C23EFDFF   call Acid_bur.004039AC</span><br><span class="line">0042FAEA  |.  8D55 F0       lea edx,[local.4]</span><br><span class="line">0042FAED  |.  8B83 E0010000 mov eax,dword ptr ds:[ebx+0x1E0]</span><br><span class="line">0042FAF3  |.  E8 60AFFEFF   call Acid_bur.0041AA58</span><br><span class="line">0042FAF8  |.  8B55 F0       mov edx,[local.4]</span><br><span class="line">0042FAFB  |.  8B45 F4       mov eax,[local.3]</span><br><span class="line">0042FAFE  |.  E8 F93EFDFF   call Acid_bur.004039FC</span><br><span class="line">0042FB03  |.  75 1A         jnz short Acid_bur.0042FB1F</span><br><span class="line">0042FB05  |.  6A 00         push 0x0</span><br><span class="line">0042FB07  |.  B9 CCFB4200   mov ecx,Acid_bur.0042FBCC               ;  Congratz !!</span><br><span class="line">0042FB0C  |.  BA D8FB4200   mov edx,Acid_bur.0042FBD8               ;  Good job dude =)</span><br><span class="line">0042FB11  |.  A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042FB16  |.  8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042FB18  |.  E8 53A6FFFF   call Acid_bur.0042A170</span><br><span class="line">0042FB1D  |.  EB 18         jmp short Acid_bur.0042FB37</span><br><span class="line">0042FB1F  |&gt;  6A 00         push 0x0</span><br><span class="line">0042FB21  |.  B9 74FB4200   mov ecx,Acid_bur.0042FB74               ;  Try Again!</span><br><span class="line">0042FB26  |.  BA 80FB4200   mov edx,Acid_bur.0042FB80               ;  Sorry , The serial is incorect !</span><br><span class="line">0042FB2B  |.  A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042FB30  |.  8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042FB32  |.  E8 39A6FFFF   call Acid_bur.0042A170</span><br></pre></td></tr></table></figure>
-<p><code>0042FAFE  |.  E8 F93EFDFF   call Acid_bur.004039FC</code>最终CALL，进入</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">00406DC2  |$  B9 0A000000   mov ecx,0xA                             ;  Case 55 (&apos;U&apos;) of switch 00406D9A</span><br><span class="line">00406DC7  |&gt;  8D75 C4       lea esi,[local.15]</span><br><span class="line">00406DCA  |&gt;  31D2          /xor edx,edx</span><br><span class="line">00406DCC  |.  F7F1          |div ecx                                ;  计算循环----------</span><br><span class="line">00406DCE  |.  80C2 30       |add dl,0x30</span><br><span class="line">00406DD1  |.  80FA 3A       |cmp dl,0x3A</span><br><span class="line">00406DD4  |.  72 03         |jb short Acid_bur.00406DD9</span><br><span class="line">00406DD6  |.  80C2 07       |add dl,0x7</span><br><span class="line">00406DD9  |&gt;  4E            |dec esi</span><br><span class="line">00406DDA  |.  8816          |mov byte ptr ds:[esi],dl</span><br><span class="line">00406DDC  |.  09C0          |or eax,eax</span><br><span class="line">00406DDE  |.^ 75 EA         \jnz short Acid_bur.00406DCA</span><br><span class="line">00406DE0  |.  8D4D C4       lea ecx,[local.15]</span><br><span class="line">00406DE3  |.  29F1          sub ecx,esi</span><br><span class="line">00406DE5  |.  8B55 E0       mov edx,[local.8]</span><br><span class="line">00406DE8  |.  83FA 10       cmp edx,0x10</span><br><span class="line">00406DEB  |.  72 01         jb short Acid_bur.00406DEE</span><br><span class="line">00406DED  |.  C3            retn</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">00406DCA  |&gt;  31D2          /xor edx,edx</span><br><span class="line">00406DCC  |.  F7F1          |div ecx</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0042FA87  |.  8B45 F0       mov eax,[local.4]                        ;  输入的内容存入EAX</span><br><span class="line">0042FA8A  |.  0FB600        movzx eax,byte ptr ds:[eax]              ;  取第一位存入EAX</span><br><span class="line">0042FA8D  |.  F72D 50174300 imul dword ptr ds:[0x431750]</span><br><span class="line">0042FA93  |.  A3 50174300   mov dword ptr ds:[0x431750],eax</span><br><span class="line">0042FA98  |.  A1 50174300   mov eax,dword ptr ds:[0x431750]</span><br><span class="line">0042FA9D  |.  0105 50174300 add dword ptr ds:[0x431750],eax          ;  [0x431750]=EAX*[0x431750]*2</span><br><span class="line">0042FAA3  |.  8D45 FC       lea eax,[local.1]</span><br></pre></td></tr></table></figure>
-<p>脚本：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> binascii</span><br><span class="line">strUserName = raw_input(<span class="string">"userNaem: "</span>)</span><br><span class="line">a = int(binascii.b2a_hex(strUserName[<span class="number">0</span>]),<span class="number">16</span>) * int(<span class="string">'0x29'</span>,<span class="number">16</span>) * <span class="number">2</span></span><br><span class="line"><span class="keyword">print</span> str(hex(a))</span><br><span class="line">strA = <span class="string">''</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">4</span>):</span><br><span class="line">	b = a % <span class="number">10</span></span><br><span class="line">	a = a / <span class="number">10</span></span><br><span class="line">	strA = str(b) + strA</span><br><span class="line"><span class="keyword">print</span> <span class="string">'CW-'</span> + str(strA) + <span class="string">'-CRACKED'</span></span><br></pre></td></tr></table></figure>
-<h2 id="5-serial窗口"><a href="#5-serial窗口" class="headerlink" title="5.serial窗口"></a>5.<strong>serial窗口</strong></h2><p>C窗口右键-查找-所有参考文本字串，在新窗口位置右键-查找文本，输入窗口内容字符串,Failed;</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">0042F4D0             |.  E8 2745FDFF   call Acid_bur.004039FC               ;成功函数点；ZF=1成功</span><br><span class="line">0042F4D5                 75 1A         jnz XAcid_bur.0042F4F1</span><br><span class="line">0042F4D7             |.  6A 00         push 0×0</span><br><span class="line">0042F4D9             |.  B9 64F54200   mov ecx,Acid_bur.0042F564            ; Congratz!;</span><br><span class="line">0042F4DE             |.  BA 70F54200   mov edx,Acid_bur.0042F570            ; God Job dude !;</span><br><span class="line">0042F4E3             |.  A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br><span class="line">0042F4E8             |.  8B00          mov eax,dword ptr ds:[eax]</span><br><span class="line">0042F4EA             |.  E8 81ACFFFF   call Acid_bur.0042A170</span><br><span class="line">0042F4EF             |.  EB 18         jmp XAcid_bur.0042F509</span><br><span class="line">0042F4F1             |&amp;gt;  6A 00         push 0×0</span><br><span class="line">0042F4F3             |.  B9 84F54200   mov ecx,Acid_bur.0042F584            ; Failed!;</span><br><span class="line">0042F4F8             |.  BA 8CF54200   mov edx,Acid_bur.0042F58C            ; Try Again!;</span><br><span class="line">0042F4FD             |.  A1 480A4300   mov eax,dword ptr ds:[0x430A48]</span><br></pre></td></tr></table></figure>
-<p><code>call Acid_bur.004039FC</code>，该函数执行后返回的结果ZF=1则不跳转，弹出成功的窗口；ZF=0则跳转弹出失败的窗口。依旧NOP掉JNZ。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0042F4D0             |.  E8 2745FDFF   call Acid_bur.004039FC               ;成功函数点；ZF=1成功</span><br><span class="line">0042F4D5                 90            nop</span><br><span class="line">0042F4D6                 90            nop</span><br><span class="line">0042F4D7             |.  6A 00         push 0×0</span><br></pre></td></tr></table></figure>
-<p>修改完毕后，同样的右键-复制到可执行文件-全部赋值，保存该文件，重新命名为Acid burn3.exe。运行Acid burn3.exe程序，我们可以看到在serial窗口随便输入字符串都可以弹出成功的窗口。</p>
-<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6.总结"></a>6.总结</h2><p>简单做做题，避免光学不实践呀。以上的破解过程，注册机等参考了一些大佬的写的文章，简直666！</p>
-<p>先学学PC端逆向吧，等有空了，搞一波移动端的。</p>
-<p>两个正经写博客的程序猿：）</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/04/Acid-Turn/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1953,15 +1869,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">others</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
