@@ -6,20 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Android中的静态分析 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Java开发即时聊天软件(3) | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="静态分析 如何静态分析Android程序： 阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件 使用文本编辑器阅读baksmali反编译生成的smali文件 阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码   如何快速定位Android程序的关键代码 AndroidManifest.xml文件 记录着软件的一些基">
-<meta name="keywords" content="Android">
+  <meta name="description" content="Java开发即时聊天软件(3)ChatRoom_server开发~流程及代码   123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android中的静态分析">
-<meta property="og:url" content="http://showmeshell.top/2018/08/18/Android中的静态分析/index.html">
+<meta property="og:title" content="Java开发即时聊天软件(3)">
+<meta property="og:url" content="http://showmeshell.top/2018/08/24/Java开发即时聊天软件-3/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="静态分析 如何静态分析Android程序： 阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件 使用文本编辑器阅读baksmali反编译生成的smali文件 阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码   如何快速定位Android程序的关键代码 AndroidManifest.xml文件 记录着软件的一些基">
+<meta property="og:description" content="Java开发即时聊天软件(3)ChatRoom_server开发~流程及代码   123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-18T08:39:35.160Z">
+<meta property="og:image" content="http://showmeshell.top/2018/08/24/Java开发即时聊天软件-3/1.png">
+<meta property="og:image" content="http://showmeshell.top/2018/08/24/Java开发即时聊天软件-3/2.png">
+<meta property="og:updated_time" content="2018-08-24T09:58:12.802Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android中的静态分析">
-<meta name="twitter:description" content="静态分析 如何静态分析Android程序： 阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件 使用文本编辑器阅读baksmali反编译生成的smali文件 阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码   如何快速定位Android程序的关键代码 AndroidManifest.xml文件 记录着软件的一些基">
+<meta name="twitter:title" content="Java开发即时聊天软件(3)">
+<meta name="twitter:description" content="Java开发即时聊天软件(3)ChatRoom_server开发~流程及代码   123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384">
+<meta name="twitter:image" content="http://showmeshell.top/2018/08/24/Java开发即时聊天软件-3/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -149,107 +152,30 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Android中的静态分析" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Java开发即时聊天软件-3" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Android中的静态分析
+      Java开发即时聊天软件(3)
     </h1>
   
 
         
-        <a href="/2018/08/18/Android中的静态分析/" class="archive-article-date">
-  	<time datetime="2018-08-18T08:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+        <a href="/2018/08/24/Java开发即时聊天软件-3/" class="archive-article-date">
+  	<time datetime="2018-08-24T09:56:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><ul>
-<li><h4 id="如何静态分析Android程序："><a href="#如何静态分析Android程序：" class="headerlink" title="如何静态分析Android程序："></a>如何静态分析Android程序：</h4><ul>
-<li>阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件</li>
-<li>使用文本编辑器阅读baksmali反编译生成的smali文件</li>
-<li>阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码</li>
-</ul>
-</li>
-<li><h4 id="如何快速定位Android程序的关键代码"><a href="#如何快速定位Android程序的关键代码" class="headerlink" title="如何快速定位Android程序的关键代码"></a>如何快速定位Android程序的关键代码</h4><ul>
-<li>AndroidManifest.xml文件<ul>
-<li>记录着软件的一些基本信息，包括软件的包名、运行的系统版本、用到的组件等。</li>
-</ul>
-</li>
-<li><p>程序的主Activity</p>
-<ul>
-<li><p>每个Android程序有且只有一个主Activity（隐藏程序除外，它没有主Activity），它是程序启动的第一个Activity</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:label</span>=<span class="string">"@string/title_activity_main"</span> </span></span><br><span class="line"><span class="tag">		  <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>android:label指定Activity的标题</p>
-</li>
-<li>android:name指定具体的Activity类<ul>
-<li>“.MainActivity”前面省略了程序的包名，完整类名应该为com.droider.xxx.MainActivity</li>
-</ul>
-</li>
-<li>intent-filter指定了Activity的启动意图<ul>
-<li><code>android.intent.action.MAIN</code>表示这个<strong>Activity是程序的主Activity</strong></li>
-<li><code>android.intent.category.LAUNCHER</code>表示这个Activity可以通过LAUNCHER来启动</li>
-<li>(如果AndroidMenifest.xml中，所有的Activity都没有添加<code>android.intent.category.LAUNCHER</code>，那么该程序安装到Android设备上后，在程序列表中是不可见的,如果没有指定<code>android.intent.action.MAIN</code>，Android系统的LAUNCHER就无法匹配程序的主Activity，因此该程序也不会有图标出现)</li>
-</ul>
-</li>
-<li>找到主Activity后，可以直接去<strong>查看其所在类的OnCreate()方法</strong>的反汇编代码:<strong>大多数程序的代码入口处</strong>。</li>
-</ul>
-</li>
-<li>Application类<ul>
-<li>在程序的组件之间传递全局变量，或在Activity启动之前做初始化工作</li>
-<li>类继承自android.app.Application，重写它的OnCreate()方法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Application类启动的最早，会有授权验证代码转移到该类中。注意OnCreate()方法</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><h4 id="如何定位关键代码"><a href="#如何定位关键代码" class="headerlink" title="如何定位关键代码"></a>如何定位关键代码</h4><ul>
-<li>信息反馈<ul>
-<li><strong>字符串做为突破点</strong>：2种<ul>
-<li>字符串会存储在String.xml文件：<ul>
-<li>以id的形式访问，在反汇编代码中搜索字符串的id值</li>
-</ul>
-</li>
-<li>字符串硬编码到程序代码:<ul>
-<li>反汇编代码中直接搜索字符串</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>特征函数法<ul>
-<li>反馈需调用<strong>Android SDK中提供的相关API函数</strong>来完成<ul>
-<li>eg:弹出注册码错误的提示信息需调用<strong>Toast.MakeText().Show()</strong>方法，在反汇编代码中搜索Toast就可定位</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>顺序查看法<ul>
-<li>软件的启动代码开始，逐行的向下分析，执行流程</li>
-</ul>
-</li>
-<li>代码注入法<ul>
-<li>手动修改apk文件的反汇编代码，加入Log输出，配合LogCat查看程序执行到特定点时的状态数据</li>
-</ul>
-</li>
-<li>栈跟踪法<ul>
-<li>输出运行时的栈跟踪信息，然后查看栈上的函数调用序列来理解方法的执行流程</li>
-</ul>
-</li>
-<li>Method Profiling<ul>
-<li>记录每个函数占用的CPU时间外，还可跟踪所有的函数调用关系，并提供比栈跟踪法更详细的函数调用序列报告</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
+        <h2 id="Java开发即时聊天软件-3"><a href="#Java开发即时聊天软件-3" class="headerlink" title="Java开发即时聊天软件(3)"></a>Java开发即时聊天软件(3)</h2><p>ChatRoom_server开发~流程及代码</p>
+<p><img src="/2018/08/24/Java开发即时聊天软件-3/1.png" alt="1"></p>
+<p><img src="/2018/08/24/Java开发即时聊天软件-3/2.png" alt="2"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LoginServer.java登录服务器主要负责登录</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="comment">//登录服务器主要负责登录</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginServer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> Socket socket = <span class="keyword">null</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">LoginServer</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//线程方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">openServer</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 线程池</span></span><br><span class="line">		ExecutorService execute = Executors.newFixedThreadPool(<span class="number">2000</span>);</span><br><span class="line">		<span class="comment">// 开启了TCP4001端口用于登录业务</span></span><br><span class="line">		ServerSocket server = <span class="keyword">new</span> ServerSocket(<span class="number">4001</span>);</span><br><span class="line">		<span class="comment">// 死循环目的是可以无限服务</span></span><br><span class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">			Socket socket = server.accept();</span><br><span class="line">			socket.setSoTimeout(<span class="number">10000</span>);</span><br><span class="line">			execute.execute(<span class="keyword">new</span> LoginServer(socket));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//UserInfo.java 用户个人信息</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserInfo</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String uid;</span><br><span class="line">	<span class="keyword">private</span> String phone;</span><br><span class="line">	<span class="keyword">private</span> String email;</span><br><span class="line">	<span class="keyword">private</span> Socket socket;</span><br><span class="line">	<span class="keyword">private</span> String udpip;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> udpport;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUid</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> uid;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUid</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.uid = uid;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getPhone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> phone;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPhone</span><span class="params">(String phone)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.phone = phone;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> email;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEmail</span><span class="params">(String email)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.email = email;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Socket <span class="title">getSocket</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSocket</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUdpip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> udpip;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUdpip</span><span class="params">(String udpip)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.udpip = udpip;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getUdpport</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> udpport;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUdpport</span><span class="params">(<span class="keyword">int</span> udpport)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.udpport = udpport;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//UserOnLineList.java在线用户列表</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 在线用户列表</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ShowMeShell</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserOnLineList</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">UserOnLineList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> UserOnLineList userOnLineList = <span class="keyword">new</span> UserOnLineList();</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> UserOnLineList <span class="title">getUserOnLineList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userOnLineList;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 把所有在线账户 全部登记在集合中 键值对</span></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * String是用户编号</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">private</span> HashMap&lt;String, UserInfo&gt; hashMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册在线用户</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">regOnline</span><span class="params">(String uid, Socket socket, String email, String phoneNumber)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 判断其他客户端是否登录一样的用户名，一样则强行下线</span></span><br><span class="line">		UserInfo userInfo = hashMap.get(uid);</span><br><span class="line">		<span class="keyword">if</span> (userInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					userInfo.getSocket().getOutputStream().write(<span class="number">4</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				&#125;</span><br><span class="line">				userInfo.getSocket().close();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		userInfo = <span class="keyword">new</span> UserInfo();</span><br><span class="line">		userInfo.setUid(uid);</span><br><span class="line">		userInfo.setEmail(email);</span><br><span class="line">		userInfo.setPhone(phoneNumber);</span><br><span class="line">		userInfo.setSocket(socket);</span><br><span class="line">		<span class="comment">// 登记在线</span></span><br><span class="line">		hashMap.put(uid, userInfo);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 更新客户端的UDP信息</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 *            用户编号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> ip</span></span><br><span class="line"><span class="comment">	 *            udp IP地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> port</span></span><br><span class="line"><span class="comment">	 *            udp端口</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> NullPointerException</span></span><br><span class="line"><span class="comment">	 *             空指针异常</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateOnLineUDP</span><span class="params">(String uid, String ip, <span class="keyword">int</span> port)</span> <span class="keyword">throws</span> NullPointerException </span>&#123;</span><br><span class="line">		UserInfo userInfo = hashMap.get(uid);</span><br><span class="line">		userInfo.setUdpip(ip);</span><br><span class="line">		userInfo.setUdpport(port);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断用户是否在线 如果是true在线 false不在线</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isUserOnLine</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.containsKey(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 获得在线用户信息</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> UserInfo <span class="title">getOnLineUserInfo</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.get(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 下线了</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logout</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		hashMap.remove(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 获得所有的在线信息</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Set&lt;String&gt; <span class="title">getUserInfos</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.keySet();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
 
@@ -294,7 +220,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
         		</li>
       		
 		</ul>
@@ -350,7 +276,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/18/Android中的静态分析/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/24/Java开发即时聊天软件-3/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -364,18 +290,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/08/19/对比Java代码结构与Smali代码/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          对比Java代码结构与Smali代码
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/08/18/Android程序中的类/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Android程序中的类</div>
+    <a href="/2018/08/23/Java开发即时聊天软件-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java开发即时聊天软件(2)</div>
       <i class="icon-circle-right"></i>
     </a>
   
