@@ -150,6 +150,355 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android中的静态分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/18/Android中的静态分析/">Android中的静态分析</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/18/Android中的静态分析/" class="archive-article-date">
+  	<time datetime="2018-08-18T08:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><ul>
+<li><h4 id="如何静态分析Android程序："><a href="#如何静态分析Android程序：" class="headerlink" title="如何静态分析Android程序："></a>如何静态分析Android程序：</h4><ul>
+<li>阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件</li>
+<li>使用文本编辑器阅读baksmali反编译生成的smali文件</li>
+<li>阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码</li>
+</ul>
+</li>
+<li><h4 id="如何快速定位Android程序的关键代码"><a href="#如何快速定位Android程序的关键代码" class="headerlink" title="如何快速定位Android程序的关键代码"></a>如何快速定位Android程序的关键代码</h4><ul>
+<li>AndroidManifest.xml文件<ul>
+<li>记录着软件的一些基本信息，包括软件的包名、运行的系统版本、用到的组件等。</li>
+</ul>
+</li>
+<li><p>程序的主Activity</p>
+<ul>
+<li><p>每个Android程序有且只有一个主Activity（隐藏程序除外，它没有主Activity），它是程序启动的第一个Activity</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:label</span>=<span class="string">"@string/title_activity_main"</span> </span></span><br><span class="line"><span class="tag">		  <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>android:label指定Activity的标题</p>
+</li>
+<li>android:name指定具体的Activity类<ul>
+<li>“.MainActivity”前面省略了程序的包名，完整类名应该为com.droider.xxx.MainActivity</li>
+</ul>
+</li>
+<li>intent-filter指定了Activity的启动意图<ul>
+<li><code>android.intent.action.MAIN</code>表示这个<strong>Activity是程序的主Activity</strong></li>
+<li><code>android.intent.category.LAUNCHER</code>表示这个Activity可以通过LAUNCHER来启动</li>
+<li>(如果AndroidMenifest.xml中，所有的Activity都没有添加<code>android.intent.category.LAUNCHER</code>，那么该程序安装到Android设备上后，在程序列表中是不可见的,如果没有指定<code>android.intent.action.MAIN</code>，Android系统的LAUNCHER就无法匹配程序的主Activity，因此该程序也不会有图标出现)</li>
+</ul>
+</li>
+<li>找到主Activity后，可以直接去<strong>查看其所在类的OnCreate()方法</strong>的反汇编代码:<strong>大多数程序的代码入口处</strong>。</li>
+</ul>
+</li>
+<li>Application类<ul>
+<li>在程序的组件之间传递全局变量，或在Activity启动之前做初始化工作</li>
+<li>类继承自android.app.Application，重写它的OnCreate()方法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Application类启动的最早，会有授权验证代码转移到该类中。注意OnCreate()方法</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h4 id="如何定位关键代码"><a href="#如何定位关键代码" class="headerlink" title="如何定位关键代码"></a>如何定位关键代码</h4><ul>
+<li>信息反馈<ul>
+<li><strong>字符串做为突破点</strong>：2种<ul>
+<li>字符串会存储在String.xml文件：<ul>
+<li>以id的形式访问，在反汇编代码中搜索字符串的id值</li>
+</ul>
+</li>
+<li>字符串硬编码到程序代码:<ul>
+<li>反汇编代码中直接搜索字符串</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>特征函数法<ul>
+<li>反馈需调用<strong>Android SDK中提供的相关API函数</strong>来完成<ul>
+<li>eg:弹出注册码错误的提示信息需调用<strong>Toast.MakeText().Show()</strong>方法，在反汇编代码中搜索Toast就可定位</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>顺序查看法<ul>
+<li>软件的启动代码开始，逐行的向下分析，执行流程</li>
+</ul>
+</li>
+<li>代码注入法<ul>
+<li>手动修改apk文件的反汇编代码，加入Log输出，配合LogCat查看程序执行到特定点时的状态数据</li>
+</ul>
+</li>
+<li>栈跟踪法<ul>
+<li>输出运行时的栈跟踪信息，然后查看栈上的函数调用序列来理解方法的执行流程</li>
+</ul>
+</li>
+<li>Method Profiling<ul>
+<li>记录每个函数占用的CPU时间外，还可跟踪所有的函数调用关系，并提供比栈跟踪法更详细的函数调用序列报告</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/18/Android中的静态分析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Android程序中的类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/18/Android程序中的类/">Android程序中的类</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/18/Android程序中的类/" class="archive-article-date">
+  	<time datetime="2018-08-18T08:34:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Android程序中的类"><a href="#Android程序中的类" class="headerlink" title="Android程序中的类"></a>Android程序中的类</h3><p>分析Android程序中的类，便于分析反编译后文件的层次结构与文件名对于的含义。</p>
+<h4 id="1-内部类（Inner-Class）"><a href="#1-内部类（Inner-Class）" class="headerlink" title="1.内部类（Inner Class）"></a>1.内部类（Inner Class）</h4><p>类中定义的类为内部类（Inner Class），可分为成员内部类、静态嵌套类、方法内部类、匿名内部类</p>
+<p>内部类作为一个独立的类，拥有自己独立的smali文件</p>
+<ul>
+<li>内部类的文件名形式为<em>[外部类]$[内部类].smali</em></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Outer</span></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Inner</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/18/Android程序中的类/1.png" alt="1"></p>
+<ul>
+<li><p>观察实例字段：sn是字符串类型，this$0是MainActivity类型，synthetic关键字表明它是“合成”的</p>
+<ul>
+<li>this$0是<strong>内部类自动保留的一个指向所在外部类的引用</strong></li>
+<li>this表示为父类的引用，数值0表示引用的层数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Outer</span></span>&#123;						<span class="comment">//this$0</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FirstInner</span></span>&#123;			<span class="comment">//this$1</span></span><br><span class="line">        <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondInner</span></span>&#123;		<span class="comment">//this$2</span></span><br><span class="line">            <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThirdInner</span></span>&#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构造函数，初始化过程：</p>
+</li>
+</ul>
+<p><img src="/2018/08/18/Android程序中的类/2.png" alt="2"></p>
+<p>使用“.parameter”指令指定了两个参数，而实际上却使用了p0～p2共3个寄存器：</p>
+<p><strong>对于一个非静态的方法而言，会隐含的使用p0寄存器当作类的this引用</strong>，p0表示<code>MainActivity$SNChecker</code>自身的引用，p1表示<code>MainActivity</code>的引用，p2表示<code>sn</code>字符串</p>
+<ul>
+<li>内部类的初始化步骤：<ul>
+<li><u>保存外部类的引用到本类的一个synthetic字段</u>中，以便内部类的其它方法使用</li>
+<li>然后是<u>调用内部类的父类的构造函数来初始化父类</u></li>
+<li>最后是对<u>内部类自身进行初始化</u></li>
+</ul>
+</li>
+</ul>
+<h4 id="2-监听器"><a href="#2-监听器" class="headerlink" title="2.监听器"></a>2.监听器</h4><p>Android开发中使用了大量监听器，比如Button的点击事件响应OnClickListener、Button的长按事件响应OnLongClickListener、ListView列表项的点击事件响应OnItemSelectedListener等。</p>
+<p><strong>实际编写代码的过程中，多采用匿名内部类的形式来实现</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">btn.setOnClickListener(<span class="keyword">new</span> android.view.view.OnClickListener()&#123;</span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span></span>&#123;</span><br><span class="line">        .......</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//监听器的实质就是接口</span></span><br><span class="line"><span class="comment">//OnClickListener监听器代码如下</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnClickListener</span></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *Called when a view has been clicked.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    *<span class="doctag">@param</span> v The view that was clicked</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//设置按钮点击事件的监听器只需要实现View.OnClickListener的onClick()方法即可</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//某smali文件OnCreate（）方法中设置按钮点击事件监听器</span></span><br><span class="line"><span class="meta"># virtual methods</span></span><br><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">onCreate</span><span class="params">(Landroid/os/Bundle;)</span>V</span></span><br><span class="line">    .locals 2</span><br><span class="line">    .parameter <span class="string">"savedInstanceState"</span></span><br><span class="line">    ......</span><br><span class="line">    .line <span class="number">32</span></span><br><span class="line">    iget-object v0, p0, Lcom/droider/crackme0502/MainActivity;-&gt;btnAnno:Landroid/widget/Button;</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">new</span>-instance v1, Lcom/droider/crackme0502/MainActivity$<span class="number">1</span>;</span><br><span class="line">	#新建一个MainActivity$<span class="number">1</span>实例</span><br><span class="line">    invoke-direct &#123;v1, p0&#125;, Lcom/droider/crackme0502/MainActivity$<span class="number">1</span>;-&gt;&lt;init&gt;(Lcom/droider/crackme0502/MainActivity;)V</span><br><span class="line">	#初始化MainActivity$<span class="number">1</span>实例</span><br><span class="line">    invoke-<span class="keyword">virtual</span> &#123;v0, v1&#125;, Landroid/widget/Button;-&gt;setOnClickListener(Landroid/view/View$OnClickListener;)V</span><br><span class="line">    #设置按钮点击事件监听器</span><br></pre></td></tr></table></figure>
+<p>按钮传入了一个<code>MainActivity$1</code>对象的引用,在<code>MainActivity$1.smali</code>文件的开头使用了“<code>.implements</code>”指令指定该类实现了按钮点击事件的监听器接口。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># interfaces</span><br><span class="line">.implements Landroid/view/View$OnClickListener;</span><br></pre></td></tr></table></figure>
+<p>因此：这个类实现了它的OnClick()方法。</p>
+<h4 id="3-注解类"><a href="#3-注解类" class="headerlink" title="3.注解类"></a>3.注解类</h4><ul>
+<li>Android系统中涉及到注解的包共有两个<ul>
+<li>一个是<code>dalvik.annotation</code><ul>
+<li>该程序包下的注解不对外开放，仅供核心库与代码测试使用</li>
+<li>注解声明位于Android系统源码的<code>libcore\dalvik\src\main\java\dalvik\annotation</code>目录下</li>
+</ul>
+</li>
+<li>一个是<code>android.annotation</code><ul>
+<li>注解声明位于Android系统源码的<code>frameworks\base\core\java\android\annotation</code>目录下</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>注解类大概有以下几种</li>
+<li>MemberClasses</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/MemberClasses;</span><br><span class="line">    value = &#123;</span><br><span class="line">        Lcom/droider/crackme0502/MainActivity$SNChecker;</span><br><span class="line">    &#125;</span><br><span class="line">.end annotation</span><br><span class="line"><span class="comment">//MemberClasses注解是编译时自动加上的</span></span><br><span class="line"><span class="comment">//MemberClasses注解源码</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* A "system annotation" used to provide the MemberClasses list.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.ANNOTATION_TYPE)    </span><br><span class="line"><span class="meta">@interface</span> MemberClasses&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>MemberClasses注解是一个“系统注解”，<strong>作用是为父类提供一个MemberClasses列表</strong>。即<strong>子类成员集合，一个内部类列表</strong></p>
+<ul>
+<li>EnclosingMethod</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/EnclosingMethod;</span><br><span class="line">    value = Lcom/droider/crackme0502/MainActivity;-&gt;onCreate(Landroid/os/Bundle;)V</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+<p>EnclosingMethod注解用来说明<strong>整个类的作用范围,</strong>Method表明它作用于<strong>一个方法</strong>,value表明它位于MainActivity的onCreate()方法中</p>
+<ul>
+<li>EnclosingClass</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/EnclosingClass;</span><br><span class="line">    value = Lcom/droider/crackme0502/MainActivity;</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+<p>EnclosingClass注解<strong>表明其作用于一个类，</strong>value表明这个类是MainActivity</p>
+<ul>
+<li>InnerClass</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.annotation system Ldalvik/annotation/InnerClass;</span><br><span class="line">    accessFlags = <span class="number">0x1</span>		<span class="comment">//访问标志</span></span><br><span class="line">    name = <span class="string">"SNChecker"</span>		<span class="comment">//内部类的名称</span></span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+<p>InnerClass表明自身是一个<strong>内部类</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//accessFlags为一枚举值</span></span><br><span class="line"><span class="keyword">enum</span>&#123;</span><br><span class="line">    kDexVisibilityBuild		= <span class="number">0x00</span>,		<span class="comment">//annotation visibility</span></span><br><span class="line">    kDexVisibilityRuntime	= <span class="number">0x01</span>,</span><br><span class="line">    kDexVisibilitySystem	= <span class="number">0x02</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>AnnotationDefault</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># annotations</span></span><br><span class="line">.annotation system Ldalvik/annotation/AnnotationDefault;</span><br><span class="line">    value = .subannotation Lcom/droider/anno/MyAnnoClass;</span><br><span class="line">        value = <span class="string">"MyAnnoClass"</span>	<span class="comment">//MyAnnoClass类有一个默认值为“MyAnnoClass”</span></span><br><span class="line">    .end subannotation</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+<p>注解类在声明时提供了<strong>默认值</strong>，那么程序中会使用到AnnotationDefault注解。</p>
+<ul>
+<li>Signature</li>
+</ul>
+<p><strong>Signature注解用于验证方法的签名</strong>,在smali中方法的原型与Signature注解的value值是一致的。</p>
+<ul>
+<li>Throws</li>
+</ul>
+<p>如果方法的声明中使用throws关键字抛出异常，则会生成相应的Throws注解。</p>
+<p>以上的注解都是自动生成的，用户不可以在代码中添加使用</p>
+<ul>
+<li>SuppressLint</li>
+</ul>
+<p>作用是辅助开发人员去除代码检查器（Lint API check）添加的警告信息</p>
+<ul>
+<li>TargetApi</li>
+</ul>
+<p>程序代码中使用到的API等级比<code>AndroidManifest.xml</code>文件中定义的<code>minSdkVersio</code>n要高，则在方法或方法所在类的前面添加“<code>@TargetApi(9)</code>”</p>
+<h4 id="4-自动生成的类"><a href="#4-自动生成的类" class="headerlink" title="4.自动生成的类"></a>4.自动生成的类</h4><ul>
+<li><p>R类</p>
+<ul>
+<li>工程res目录下的每个资源都会有一个id值，这些资源的类型可以是字符串、图片、样式、颜色</li>
+<li>这些资源类都是R类的内部类，因此它们都会独立生成一个类文件</li>
+<li><code>R.smali、R$attr.smali、R$dimen.smali、R$drawable.smali、R$id.smali</code>等</li>
+</ul>
+</li>
+<li><p>BuildConfig类</p>
+<ul>
+<li>类中只有一个boolean类型的名为DEBUG的字段</li>
+<li>用来标识程序发布的版本类型</li>
+<li>值默认是true，即程序以调试版本发布</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//# BuildConfig.smali</span><br><span class="line"># static fields</span><br><span class="line">.field public static final DEBUG:Z = true</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注解类</p>
+<ul>
+<li>代码中使用了SuppressLint或TargetApi注解</li>
+<li><code>smali\android\annotation</code>目录下生成相应的smali文件</li>
+</ul>
+</li>
+<li><p>support</p>
+<ul>
+<li>提供了高版本才有的如Fragment、ViewPager等控件供低版本的程序调用情况</li>
+<li><code>smali\android\support</code>目录下生成相应的smali文件</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/18/Android程序中的类/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-smali文件格式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1566,181 +1915,6 @@
 
 
   
-    <article id="post-Android锁屏密码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/02/Android锁屏密码分析/">Android锁屏密码分析</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/02/Android锁屏密码分析/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:36:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="1-输入密码算法"><a href="#1-输入密码算法" class="headerlink" title="1.输入密码算法"></a>1.输入密码算法</h3><ul>
-<li>在设置锁屏的界面用Android SDK目录中Android-sdk-linux/tools/uiautomatorviewer.bat，分析获取锁屏View类为LockPatternView，锁屏工具类为LockPatternUtils.java。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//passwordToHash方法   </span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">byte</span>[] passwordToHash(String password, <span class="keyword">int</span> userId) &#123;</span><br><span class="line">     <span class="keyword">if</span> (password == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        String algo = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">byte</span>[] hashed = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//核心加密算法：password+salt值</span></span><br><span class="line">            <span class="keyword">byte</span>[] saltedPassword = (password + getSalt(userId)).getBytes();</span><br><span class="line">            <span class="keyword">byte</span>[] sha1 = MessageDigest.getInstance(algo = <span class="string">"SHA-1"</span>).digest(saltedPassword);</span><br><span class="line">            <span class="keyword">byte</span>[] md5 = MessageDigest.getInstance(algo = <span class="string">"MD5"</span>).digest(saltedPassword);</span><br><span class="line">            hashed = (toHex(sha1) + toHex(md5)).getBytes();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Failed to encode string because of missing algorithm: "</span> + algo);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> hashed;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//将加盐后的password经过SHA-1和MD5加密，转化为hex值再+</span></span><br><span class="line"><span class="comment">//hashed为最终保存在本地的加密密码内容</span></span><br><span class="line"><span class="comment">/*******************寻找getSalt方法，在passwordToHash方法上***********************/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String LOCK_PASSWORD_SALT_KEY = <span class="string">"lockscreen.password_salt"</span>;</span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getSalt</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> salt = getLong(LOCK_PASSWORD_SALT_KEY, <span class="number">0</span>, userId);</span><br><span class="line">        <span class="keyword">if</span> (salt == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                salt = SecureRandom.getInstance(<span class="string">"SHA1PRNG"</span>).nextLong();</span><br><span class="line">                setLong(LOCK_PASSWORD_SALT_KEY, salt, userId);</span><br><span class="line">                Log.v(TAG, <span class="string">"Initialized lock password salt for user: "</span> + userId);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line"> <span class="comment">// Throw an exception rather than storing a password we'll never be able to recover</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Couldn't get SecureRandom number"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Long.toHexString(salt);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//lockscreen.password_salt从一个地方获取salt值，为0，随机生产一个，存lockscreen.password_salt中，最后Long.toHexString(salt)即可。</span></span><br><span class="line"><span class="comment">/*****************************下一步就是去找getLong******************************/</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getLong</span><span class="params">(String secureSettingKey, <span class="keyword">long</span> defaultValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> getLockSettings().getLong(secureSettingKey, defaultValue,</span><br><span class="line">                    getCurrentOrCallingUserId());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException re) &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/*******************************跟踪getLockSettings（）**************************/</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ILockSettings <span class="title">getLockSettings</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mLockSettingsService == <span class="keyword">null</span>) &#123;</span><br><span class="line">            ILockSettings service = ILockSettings.Stub.asInterface(</span><br><span class="line">                    ServiceManager.getService(<span class="string">"lock_settings"</span>));</span><br><span class="line">            mLockSettingsService = service;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mLockSettingsService;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//通过在ServiceManager中获取一个服务来进行操作，在Android中，类似这种服务于***Service类实现。</span></span><br><span class="line"><span class="comment">//在包中寻找LockSettingsService.java类，查看getLong方法</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getLong</span><span class="params">(String key, <span class="keyword">long</span> defaultValue, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        checkReadPermission(key, userId);</span><br><span class="line">        String value = getStringUnchecked(key, <span class="keyword">null</span>, userId);</span><br><span class="line">        <span class="keyword">return</span> TextUtils.isEmpty(value) ? defaultValue : Long.parseLong(value);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//找到LockSettingsService方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LockSettingsService</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Injector(context));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@VisibleForTesting</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">LockSettingsService</span><span class="params">(Injector injector)</span> </span>&#123;</span><br><span class="line">        mInjector = injector;</span><br><span class="line">        mContext = injector.getContext();</span><br><span class="line">        *******</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//与文件中的injector有关</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">injector</span></span>&#123;</span><br><span class="line">    *****</span><br><span class="line"><span class="function"><span class="keyword">public</span> LockSettingsStorage <span class="title">getStorage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> LockSettingsStorage storage = <span class="keyword">new</span> LockSettingsStorage(mContext);</span><br><span class="line">            storage.setDatabaseOnCreateCallback(<span class="keyword">new</span> LockSettingsStorage.Callback() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">                    <span class="comment">// Get the lockscreen default from a system property, if available</span></span><br><span class="line">                    <span class="keyword">boolean</span> lockScreenDisable = SystemProperties.getBoolean(</span><br><span class="line">                            <span class="string">"ro.lockscreen.disable.default"</span>, <span class="keyword">false</span>);</span><br><span class="line">                    <span class="keyword">if</span> (lockScreenDisable) &#123;</span><br><span class="line">                        storage.writeKeyValue(db, LockPatternUtils.DISABLE_LOCKSCREEN_KEY, <span class="string">"1"</span>, <span class="number">0</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="keyword">return</span> storage;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//发现SQLiteDatabase，故在数据库中存储</span></span><br><span class="line"><span class="comment">/*************************下一步找到LockSettingsStorage.java类*********************/</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DatabaseHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"LockSettingsDB"</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DATABASE_NAME = <span class="string">"locksettings.db"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DATABASE_VERSION = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> IDLE_CONNECTION_TIMEOUT_MS = <span class="number">30000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> Callback mCallback;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">DatabaseHelper</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(context, DATABASE_NAME, <span class="keyword">null</span>, DATABASE_VERSION);</span><br><span class="line">            setWriteAheadLoggingEnabled(<span class="keyword">true</span>);</span><br><span class="line">            <span class="comment">// Memory optimization - close idle connections after 30s of inactivity</span></span><br><span class="line">            setIdleConnectionTimeout(IDLE_CONNECTION_TIMEOUT_MS);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">            mCallback = callback;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createTable</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">            db.execSQL(<span class="string">"CREATE TABLE "</span> + TABLE + <span class="string">" ("</span> +</span><br><span class="line">                    <span class="string">"_id INTEGER PRIMARY KEY AUTOINCREMENT,"</span> +</span><br><span class="line">                    COLUMN_KEY + <span class="string">" TEXT,"</span> +</span><br><span class="line">                    COLUMN_USERID + <span class="string">" INTEGER,"</span> +</span><br><span class="line">                    COLUMN_VALUE + <span class="string">" TEXT"</span> +</span><br><span class="line">                    <span class="string">");"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">            createTable(db);</span><br><span class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mCallback.initialize(db);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> currentVersion)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> upgradeVersion = oldVersion;</span><br><span class="line">            <span class="keyword">if</span> (upgradeVersion == <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="comment">// Previously migrated lock screen widget settings. Now defunct.</span></span><br><span class="line">                upgradeVersion = <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (upgradeVersion != DATABASE_VERSION) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Failed to upgrade database!"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//确定了数据库名称locksettings.db</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SYSTEM_DIRECTORY = <span class="string">"/system/"</span>；</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LEGACY_LOCK_PASSWORD_FILE = <span class="string">"password.key"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LEGACY_LOCK_PATTERN_FILE = <span class="string">"gesture.key"</span>;</span><br></pre></td></tr></table></figure>
-<p>find / -name locksettings.db，在/data/system下可以找到db文件。可以用SQlite工具查看即可。</p>
-<p>链接: <a href="https://pan.baidu.com/s/1UWLB7-bzX8vJ5lHOWwjLvQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1UWLB7-bzX8vJ5lHOWwjLvQ</a> 密码: bgyd</p>
-<p>在SQLite工具中可以看到salt值，数据库中的是long类型，hex化之后，运用LockPatternUtils.java中加密算法。</p>
-<p><code>MD5（输入明文密码+设备的salt值）.Hex+SHA1（输入明文密码+设备的salt值）.Hex</code>就是最终的加密内容。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如何通过反射机制获取设备的salt值，新建一个Android项目：</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	Class&lt;?&gt; clazz1= Class.forName(<span class="string">"com.android.internal.widget.LockPatternUtils"</span>);</span><br><span class="line">	Object lockUtils=clazz1.getConstructor(Context.class).newInstance(<span class="keyword">this</span>);</span><br><span class="line">	Class&lt;?&gt; lockUtilsClazz=lockUtils.getClass();</span><br><span class="line">	Method getSaltM=lockUtilsClazz.getDeclaredMethod(<span class="string">"getSalt"</span>, <span class="keyword">int</span>.class);</span><br><span class="line">	getSaltM.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">	Object saltObj=getSaltM.invoke(lockUtils, <span class="number">0</span>);</span><br><span class="line">	Log.i(<span class="string">"gs"</span>，<span class="string">"salt:"</span>+saltObj);<span class="comment">//gs=getSalt</span></span><br><span class="line">&#125;<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">	Log.i(<span class="string">"gs"</span>,<span class="string">"err:"</span>+Log.getStackTraceString(e));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后就可以直接利用adb打印日志：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">**:\&gt;adb logcat -s gs</span><br></pre></td></tr></table></figure>
-<h3 id="2-手势密码算法"><a href="#2-手势密码算法" class="headerlink" title="2.手势密码算法"></a>2.手势密码算法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] patternToHash(List&lt;LockPatternView.Cell&gt; pattern) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pattern == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> patternSize = pattern.size();</span><br><span class="line">    <span class="keyword">byte</span>[] res = <span class="keyword">new</span> <span class="keyword">byte</span>[patternSize];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; patternSize; i++) &#123;</span><br><span class="line">        LockPatternView.Cell cell = pattern.get(i);</span><br><span class="line">        res[i] = (<span class="keyword">byte</span>) (cell.getRow() * <span class="number">3</span> + cell.getColumn());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        MessageDigest md = MessageDigest.getInstance(<span class="string">"SHA-1"</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] hash = md.digest(res);</span><br><span class="line">        <span class="keyword">return</span> hash;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException nsa) &#123;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>手势密码比较简单，就只是需要将九宫格图案转化为字节数组，然后SHA-1加密。</p>
-<p>比如L就为<code>00 03 06 07 08</code>字节码。</p>
-<p>源码加上手势点数据：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List&lt;LockPatternView.Cell&gt; pattern = <span class="keyword">new</span> ArraryList&lt;LockPatternView.Cell&gt;();</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">pattern.add(cell1);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">3</span>);</span><br><span class="line">pattern.add(cell2);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">6</span>);</span><br><span class="line">pattern.add(cell3);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">7</span>);</span><br><span class="line">pattern.add(cell4);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">8</span>);</span><br><span class="line">pattern.add(cell5);</span><br><span class="line">System.out.println(<span class="string">"pattern:"</span>+toHex(patternToHash(pattern)));</span><br></pre></td></tr></table></figure>
-<p>可以比对2个结果。</p>
-<h3 id="3-SUM"><a href="#3-SUM" class="headerlink" title="3.SUM"></a>3.SUM</h3><ul>
-<li>输入密码算法：对输入的明文密码+设备的salt值进行MD5和SHA1值操作后，之后转化为Hex值进行拼接就可以。 加密信息保存在/data/system/password.key。</li>
-<li>手势密码算法：将九宫格手势密码中的点数据转化成对立的字节数组，然后直接进行SHA-1加密即可。加密信息保存在/data/system/gesture.key。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/02/Android锁屏密码分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-爬虫二" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/22/爬虫二/">爬虫二</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/22/爬虫二/" class="archive-article-date">
-  	<time datetime="2018-07-22T03:08:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="爬虫-百度股票"><a href="#爬虫-百度股票" class="headerlink" title="爬虫-百度股票"></a>爬虫-百度股票</h2><ul>
-<li>选择百度股票来爬取。(<a href="http://gupiao.baidu.com/stock/" target="_blank" rel="noopener">http://gupiao.baidu.com/stock/</a>)</li>
-<li>同时由于该网站未提供一个包含所有股票list的界面，我们选择东方财富网，来获取所有股票名称信息。(<a href="http://quote.eastmoney.com/stocklist.html" target="_blank" rel="noopener">http://quote.eastmoney.com/stocklist.html</a>)</li>
-<li>将爬取结果输出到csv文件中</li>
-<li>requests 库、bs4库、pandas库</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取页面</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_html_text</span><span class="params">(url, code=<span class="string">'utf-8'</span>)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        r = requests.get(url)</span><br><span class="line">        r.raise_for_status</span><br><span class="line">        r.encoding = code</span><br><span class="line">        <span class="keyword">return</span> (r.text)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获得包含所有股票信息的列表</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_stock_list</span><span class="params">(lst, stock_url)</span>:</span></span><br><span class="line">    html = get_html_text(stock_url, <span class="string">'GB2312'</span>)</span><br><span class="line">    soup = BeautifulSoup(html, <span class="string">'html.parser'</span>)</span><br><span class="line">    <span class="comment"># a=soup中包含的所有&lt;a&gt;标签的列表</span></span><br><span class="line">    a = soup.find_all(<span class="string">'a'</span>)</span><br><span class="line">    <span class="comment"># 遍历所用&lt;a&gt;标签(不是所用的&lt;a&gt;标签都有着包含着我们所需要的信息的结构，所以用try,except)</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> a:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            href = i.attrs[<span class="string">'href'</span>]</span><br><span class="line">            <span class="comment"># 用正则表达式寻找以sz开头的后面跟着6个数字的上证股票代码</span></span><br><span class="line">            lst.append(re.findall(<span class="string">r'[s][z]\d&#123;6&#125;'</span>, href)[<span class="number">0</span>])</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_stock_info</span><span class="params">(lst, stock_url, out_file)</span>:</span></span><br><span class="line">    count = <span class="number">0</span>  <span class="comment"># 循环计数</span></span><br><span class="line">    lst2 = []  <span class="comment"># 存放1st中各股信息字典</span></span><br><span class="line">    <span class="keyword">for</span> stock <span class="keyword">in</span> lst:</span><br><span class="line">        print(<span class="string">'\r当前进度:&#123;:.2f&#125;%'</span>.format(count * <span class="number">100</span> / <span class="number">88</span>), end=<span class="string">''</span>)</span><br><span class="line">        <span class="comment"># 设置爬虫数量88条</span></span><br><span class="line">        <span class="keyword">if</span> count &gt; <span class="number">87</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="comment"># 构造对于的url</span></span><br><span class="line">        url = stock_url + stock + <span class="string">".html"</span></span><br><span class="line">        html = get_html_text(url)</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            infoDict = &#123;&#125;</span><br><span class="line">            soup = BeautifulSoup(html, <span class="string">'html.parser'</span>)</span><br><span class="line">            stockInfo = soup.find(<span class="string">'div'</span>, attrs=&#123;<span class="string">'class'</span>: <span class="string">'stock-bets'</span>&#125;)</span><br><span class="line">            name = stockInfo.find_all(attrs=&#123;<span class="string">'class'</span>: <span class="string">'bets-name'</span>&#125;)[<span class="number">0</span>]</span><br><span class="line">            <span class="keyword">if</span> name <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            infoDict.update(&#123;<span class="string">'a股票名称'</span>: name.text.strip()&#125;)</span><br><span class="line"></span><br><span class="line">            keylist = stockInfo.find_all(<span class="string">'dt'</span>)</span><br><span class="line">            valuelist = stockInfo.find_all(<span class="string">'dd'</span>)</span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> range(len(keylist)):</span><br><span class="line">                key = keylist[i].text</span><br><span class="line">                val = valuelist[i].text</span><br><span class="line">                infoDict[key] = val  <span class="comment"># 向字典中新增内容</span></span><br><span class="line">            count += <span class="number">1</span></span><br><span class="line">            lst2.append(infoDict)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">    <span class="comment"># 将由字典组成的列表lst2转换为二维数组,输出到out_file</span></span><br><span class="line">    df = pd.DataFrame(lst2)</span><br><span class="line">    df.rename(columns=&#123;<span class="string">'a股票名称'</span>: <span class="string">'股票名称'</span>&#125;, inplace=<span class="keyword">True</span>)</span><br><span class="line">    df.to_csv(out_file, index=<span class="keyword">False</span>, sep=<span class="string">','</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    stock_list_url = <span class="string">'http://quote.eastmoney.com/stocklist.html'</span></span><br><span class="line">    stock_info_url = <span class="string">'https://gupiao.baidu.com/stock/'</span></span><br><span class="line">    output_file = <span class="string">'/home/showmeshell/Desktop/worm/BaiduStockInfo.csv'</span></span><br><span class="line">    lst = []</span><br><span class="line">    get_stock_list(lst, stock_list_url)  <span class="comment"># 获得股票列表</span></span><br><span class="line">    get_stock_info(lst, stock_info_url, output_file)</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/07/22/爬虫二/1.png" alt="1"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spider</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/22/爬虫二/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1856,11 +2030,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">others</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color2">others</a>
               </li>
              
               <li class="article-tag-list-item">
