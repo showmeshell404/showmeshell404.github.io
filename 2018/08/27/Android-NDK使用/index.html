@@ -6,19 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Tag: others | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Android-NDK使用 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/tags/others/index.html">
+  <meta name="description" content="Android-NDK使用Android NDK原生程序交叉编译工具链的使用1234567891011121314151617181920212223路径：android-ndk\toolchains\arm-linux-androideabi-4.4.3\prebuilt\windows\binarm-linux-androideabi-addr2line.exe：将程序地址转换为文件名和行号。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-NDK使用">
+<meta property="og:url" content="http://showmeshell.top/2018/08/27/Android-NDK使用/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="Android-NDK使用Android NDK原生程序交叉编译工具链的使用1234567891011121314151617181920212223路径：android-ndk\toolchains\arm-linux-androideabi-4.4.3\prebuilt\windows\binarm-linux-androideabi-addr2line.exe：将程序地址转换为文件名和行号。">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://showmeshell.top/2018/08/27/Android-NDK使用/1.jpg">
+<meta property="og:updated_time" content="2018-08-27T05:56:43.654Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="Android-NDK使用">
+<meta name="twitter:description" content="Android-NDK使用Android NDK原生程序交叉编译工具链的使用1234567891011121314151617181920212223路径：android-ndk\toolchains\arm-linux-androideabi-4.4.3\prebuilt\windows\binarm-linux-androideabi-addr2line.exe：将程序地址转换为文件名和行号。">
+<meta name="twitter:image" content="http://showmeshell.top/2018/08/27/Android-NDK使用/1.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,60 +151,201 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Android-NDK使用" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/02/Debian修复/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:39:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/02/Debian修复/">Debian修复</a>
+    <h1 class="article-title" itemprop="name">
+      Android-NDK使用
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/08/27/Android-NDK使用/" class="archive-article-date">
+  	<time datetime="2018-08-27T05:54:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Android-NDK使用"><a href="#Android-NDK使用" class="headerlink" title="Android-NDK使用"></a>Android-NDK使用</h2><h3 id="Android-NDK原生程序交叉编译工具链的使用"><a href="#Android-NDK原生程序交叉编译工具链的使用" class="headerlink" title="Android NDK原生程序交叉编译工具链的使用"></a>Android NDK原生程序交叉编译工具链的使用</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">路径：android-ndk\toolchains\arm-linux-androideabi<span class="number">-4.4</span><span class="number">.3</span>\prebuilt\windows\bin</span><br><span class="line">arm-linux-androideabi-addr2line.exe：将程序地址转换为文件名和行号。</span><br><span class="line">arm-linux-androideabi-ar.exe：建立、修改、提取归档文件。</span><br><span class="line">arm-linux-androideabi-as.exe：gas汇编器。</span><br><span class="line">arm-linux-androideabi-c++.exe：工具链中arm-linux-androideabi-g++.exe的一个拷贝。</span><br><span class="line">arm-linux-androideabi-c++filt.exe：连接器使用它过滤符号，防止重载函数冲突。</span><br><span class="line">arm-linux-androideabi-cpp.exe：C++程序编译工具。</span><br><span class="line">arm-linux-androideabi-g++.exe：C++程序编译工具。</span><br><span class="line">arm-linux-androideabi-gcc<span class="number">-4.4</span><span class="number">.3</span>.exe：工具链中arm-linux-androideabi-gcc.exe的一个拷贝。</span><br><span class="line">arm-linux-androideabi-gcc.exe：C程序编译工具。</span><br><span class="line">arm-linux-androideabi-gcov.exe：程序覆盖度测量工具，记录代码的执行路径。</span><br><span class="line">arm-linux-androideabi-gdb.exe：调试工具。</span><br><span class="line">arm-linux-androideabi-gprof.exe：程序性能测量工具。</span><br><span class="line">arm-linux-androideabi-ld.exe：链接器，用于生成可执行程序。</span><br><span class="line">arm-linux-androideabi-nm.exe：列出目标文件中的符号。</span><br><span class="line">arm-linux-androideabi-objcopy.exe：复制目标文件中的内容到另一种类型的目标文件中。</span><br><span class="line">arm-linux-androideabi-objdump.exe：输出目标文件的信息。</span><br><span class="line">arm-linux-androideabi-ranlib.exe：产生归档文件索引，并将其保存到这个归档文件中。</span><br><span class="line">arm-linux-androideabi-readelf.exe：显示elf格式可执行文件的信息。</span><br><span class="line">arm-linux-androideabi-run.exe：ARM程序模拟器。</span><br><span class="line">arm-linux-androideabi-size.exe：列出目标文件每一段的大小以及总体的大小。</span><br><span class="line">arm-linux-androideabi-strings.exe：输出目标文件的可打印字符串。</span><br><span class="line">arm-linux-androideabi-strip.exe：去除目标文件中的符号信息。</span><br></pre></td></tr></table></figure>
+<h3 id="如何编译原生程序"><a href="#如何编译原生程序" class="headerlink" title="如何编译原生程序"></a>如何编译原生程序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">●　使用gcc编译器手动编译</span><br><span class="line">●　使用ndk-build工具手动编译</span><br><span class="line">●　使用Eclipse创建工程并自动编译</span><br><span class="line"><span class="comment">//hello.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">int</span>** argv[])</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello ARM!\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####1.使用gcc编译器手动编译</p>
+<ul>
+<li>makefile文件(windows)</li>
+</ul>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将hello.c文件编译成hello.o目标文件</span></span><br><span class="line"><span class="comment">#将hello.o目标文件与特定的原生程序启动代码及依赖库进行链接最终生成可执行文件</span></span><br><span class="line">NDK_ROOT=C:/Android/android-ndk-r15c</span><br><span class="line">TOOLCHAINS_ROOT=<span class="variable">$(NDK_ROOT)</span>/toolchains/arm-linux-androideabi-4.9/prebuilt/windows</span><br><span class="line">TOOLCHAINS_PREFIX=<span class="variable">$(TOOLCHAINS_ROOT)</span>/bin/arm-linux-androideabi</span><br><span class="line">TOOLCHAINS_INCLUDE=<span class="variable">$(TOOLCHAINS_ROOT)</span>/lib/gcc/arm-linux-androideabi/4.9.x/include-fixed</span><br><span class="line"></span><br><span class="line">PLATFORM_ROOT=<span class="variable">$(NDK_ROOT)</span>/platforms/android-14/arch-arm</span><br><span class="line">PLATFORM_INCLUDE=<span class="variable">$(PLATFORM_ROOT)</span>/usr/<span class="keyword">include</span></span><br><span class="line">PLATFORM_LIB=<span class="variable">$(PLATFORM_ROOT)</span>/usr/lib</span><br><span class="line"></span><br><span class="line">MODULE_NAME=hello</span><br><span class="line">RM=del</span><br><span class="line"><span class="comment">#gcc编译器的命令行参数增加了头文件与库文件的搜索路径及编译选项</span></span><br><span class="line">FLAGS=-I<span class="variable">$(TOOLCHAINS_INCLUDE)</span> \</span><br><span class="line">	-I<span class="variable">$(PLATFORM_INCLUDE)</span> \</span><br><span class="line">	-L<span class="variable">$(PLATFORM_LIB)</span> \</span><br><span class="line">	-nostdlib \</span><br><span class="line">	-lgcc \</span><br><span class="line">	-Bdynamic \</span><br><span class="line">	-lc</span><br><span class="line"><span class="comment">#Android并没有采用glibc作为C库，是采用了Google的Bionic C库。故编译选项中加入-nostdlib</span></span><br><span class="line">OBJS=<span class="variable">$(MODULE_NAME)</span>.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtbegin_dynamic.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtend_android.o</span><br><span class="line"><span class="comment">#all标签指定了编译程序时所需要执行的命令</span></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> -c <span class="variable">$(MODULE_NAME)</span>.c -o <span class="variable">$(MODULE_NAME)</span>.o</span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> <span class="variable">$(OBJS)</span> -o <span class="variable">$(MODULE_NAME)</span></span><br><span class="line"><span class="comment">#clean标签用于清理生成的目标文件</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(RM)</span> *.o</span><br><span class="line"><span class="comment">#install标签将生成的可执行文件安装到模拟器或手机中去	</span></span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	adb push <span class="variable">$(MODULE_NAME)</span> /data/local/</span><br><span class="line">	adb shell chmod 755 /data/local/<span class="variable">$(MODULE_NAME)</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>交叉工具链中提供的make.exe工具位于“<code>android-ndk-r8\prebuilt\windows\bin</code>目录,加入到系统或零时的PATH环境变量中，然后将hello.c与makefile文件放到一个目录</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">make install</span><br><span class="line">adb	shell /data/local/hello</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="2-使用ndk-build编译"><a href="#2-使用ndk-build编译" class="headerlink" title="2.使用ndk-build编译"></a>2.使用ndk-build编译</h4><p>ndroid NDK开发套件提供了一个ndk-build工具，方便开发者来快速地生成原生程序，在使用ndk-build工具前，需要先有一个Android工程，这个工程可以从Android NDK的samples目录中随便复制一份，也可以使用Android SDK开发包tools目录下的android脚本来生成。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">1.android list  :列出Android SDK中所有已经安装的SDK平台的版本</span><br><span class="line">2.android create project -n hello2 -p hello2 -t android-14 com.droider.hello2 -a MyActivity</span><br><span class="line">	-n指定Android工程的名称,-t指定生成Android工程所需要使用的平台版本号android list列出的版本号之一</span><br><span class="line">	-p指定生成工程的目录名，-k指定Android工程的包名，-a指定默认Activity的名称</span><br><span class="line">	android create project会根据默认Activity文件名自动生成相应的java文件，并生AndroidMenifest.xml</span><br><span class="line">3.工程的根目录下新建一个jni文件夹，并将hello.c文件复制进去</span><br><span class="line">4.ndk-build使用Android.mk与Application.mk作为它的脚本文件</span><br><span class="line">	(其中Application.mk文件是可选的，用来描述原生程序本身使用到的一些特性,如原生程序支持的ARM硬件指令集、工程编译脚本、STL支持等)</span><br><span class="line">5.Android.mk文件是工程的编译脚本，描述了编译原生程序所需的编译选项、头文件、源文件及依赖库等。</span><br><span class="line">#***********Android.mk*********#</span><br><span class="line">LOCAL_PATH := $(call my-dir)	#LOCAL_PATH定义了本地源码的路径，调用my-dir宏，返回本身所在的路径</span><br><span class="line">include $(CLEAR_VARS)			#CLEAR_VARS指定让编译系统清除掉一些已经定义过的宏</span><br><span class="line">LOCAL_ARM_MODE := arm			#指定生成的原生程序所使用的ARM指令模式</span><br><span class="line">LOCAL_MODULE    := hello		#LOCAL_MODULE指定模块的名称，原生程序生成后的文件名</span><br><span class="line">LOCAL_SRC_FILES := hello.c		#LOCAL_SRC_FILES指定C或C++源文件列表</span><br><span class="line">include $(BUILD_EXECUTABLE)		#指定生成的文件类型</span><br><span class="line">#************Android.mk*********#</span><br><span class="line">#BUILD_EXECUTABLE表示生成可执行文件</span><br><span class="line">#BUILD_SHARED_LIBRARY表示生成动态库</span><br><span class="line">#BUILD_STATIC_LIBRARY表示生成静态库</span><br><span class="line">6.Android.mk与c文件放在同一目录，进入hello2工程，输入ndk-build 会在libs目录下生成不同的可执行文件</span><br></pre></td></tr></table></figure>
+<h4 id="3-使用Eclipse创建工程并自动编译"><a href="#3-使用Eclipse创建工程并自动编译" class="headerlink" title="3.使用Eclipse创建工程并自动编译"></a>3.使用Eclipse创建工程并自动编译</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1.新建一个Android工程,hello3,其它选项保持默认，不停点击下一步完成创建。</span><br><span class="line">2.在工程中新建jni目录，然后将hello.c与Android.mk文件导入</span><br><span class="line">3.hello3工程上右键选择Properties，点击Builders选项</span><br><span class="line">4.再点击Builders选项页右侧的New按钮，然后双击Program项打开Edit Configuration对话框，</span><br><span class="line">5.在对话框的Name一栏设置Builder的名称,JNI_Builder</span><br><span class="line">6.在Location一栏输入ndk-build.cmd路径设置要执行的命令</span><br><span class="line">7.点击Working Drrectory右侧的Browse Workspace按钮选择hello3工程，最后点击Apply按钮应用更改</span><br><span class="line">8.单击Refresh标签，勾选“Refresh resources upon completion”复选框。</span><br><span class="line">9.单击Build Options标签，勾选“During auto builds”复选框，勾选“Specify working set of relevant resources”复选框</span><br><span class="line">10.点击“Specify Resources”按钮，勾选hello3工程的jni目录，点击Finish按钮，点击OK按钮关闭Edit Configuration对话框。</span><br><span class="line">11.点击OK按钮关闭Properties对话框。</span><br><span class="line">12.这时hello3工程就会自动编译，最后在libs目录下生成hello可执行文件</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/27/Android-NDK使用/1.jpg" alt="1"></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/27/Android-NDK使用/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2018/08/27/APK安全/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          APK安全
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2018/08/27/Java开发即时聊天软件-5/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Java开发即时聊天软件(5)</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -238,9 +382,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

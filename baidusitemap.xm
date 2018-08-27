@@ -4,6 +4,40 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/08/27/APK%E5%AE%89%E5%85%A8/</loc>
+    <lastmod>2018-08-27T06:00:00.523Z</lastmod>
+    <data>
+        <display>
+        <title>APK安全</title>
+        <pubTime>2018-08-27T05:57:18.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/08/27/Android-NDK%E4%BD%BF%E7%94%A8/</loc>
+    <lastmod>2018-08-27T05:56:43.654Z</lastmod>
+    <data>
+        <display>
+        <title>Android-NDK使用</title>
+        <pubTime>2018-08-27T05:54:17.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/27/Java%E5%BC%80%E5%8F%91%E5%8D%B3%E6%97%B6%E8%81%8A%E5%A4%A9%E8%BD%AF%E4%BB%B6-5/</loc>
     <lastmod>2018-08-27T05:51:35.210Z</lastmod>
     <data>
