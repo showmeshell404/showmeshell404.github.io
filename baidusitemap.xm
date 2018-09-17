@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/09/17/CVE-2012-6422/</loc>
+    <lastmod>2018-09-17T00:47:56.863Z</lastmod>
+    <data>
+        <display>
+        <title>CVE-2012-6422</title>
+        <pubTime>2018-09-17T00:45:15.000Z</pubTime>
+        
+        <tag>Android</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/08/31/Android-DIVA%E5%88%86%E6%9E%90/</loc>
     <lastmod>2018-08-31T06:45:44.575Z</lastmod>
     <data>
