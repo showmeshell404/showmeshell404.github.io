@@ -150,6 +150,314 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Hello-ARM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/22/Hello-ARM/">Hello ARM</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/22/Hello-ARM/" class="archive-article-date">
+  	<time datetime="2018-08-22T07:49:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Hello-ARM"><a href="#Hello-ARM" class="headerlink" title="Hello ARM"></a>Hello ARM</h2><p><strong>这是一篇ARM基本简介与指令介绍集合~</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//hello.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello ARM!\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//拖入IDA pro=对应main入口处</span></span><br><span class="line">                 EXPORT main						<span class="comment">//表明这个main函数是被程序导出</span></span><br><span class="line">.text:<span class="number">000082E0</span> main         ; CODE XREF: j_mainj</span><br><span class="line">.text:<span class="number">000082E0</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_C  = <span class="number">-0xC</span>						<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_8  = <span class="number">-8</span>							<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span>							</span><br><span class="line">.text:<span class="number">000082E0</span>  STMFD   SP!, &#123;R11,LR&#125;				<span class="comment">//把寄存器的值压入堆栈</span></span><br><span class="line">.text:<span class="number">000082E4</span>  ADD     R11, SP, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">000082E8</span>  SUB     SP, SP, #<span class="number">8</span></span><br><span class="line">.text:<span class="number">000082</span>EC  STR     R0, [R11,#var_8]			<span class="comment">//将R0寄存器的值保存到栈变量var_8中</span></span><br><span class="line">.text:<span class="number">000082F</span>0  STR     R1, [R11,#var_C]</span><br><span class="line">.text:<span class="number">000082F</span>4  LDR     R3, =(aHelloArm - <span class="number">0x8300</span>)</span><br><span class="line">.text:<span class="number">000082F</span>8  ADD     R3, PC, R3      ; <span class="string">"Hello ARM!"</span></span><br><span class="line">.text:<span class="number">000082F</span>C  MOV     R0, R3          ; s			<span class="comment">//把R3寄存器的值赋给R0寄存器</span></span><br><span class="line">.text:<span class="number">00008300</span>  BL      <span class="built_in">puts</span>						<span class="comment">//调用puts函数</span></span><br><span class="line">.text:<span class="number">00008304</span>  MOV     R3, #<span class="number">0</span></span><br><span class="line">.text:<span class="number">00008308</span>  SUB     SP, R11, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">00008310</span>  LDMFD   SP!, &#123;R11,PC&#125;				<span class="comment">//用于从堆栈中恢复寄存器的值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//STMFD与LDMFD是堆栈寻址指令</span></span><br><span class="line"><span class="comment">//STR与LDR是存储器访问指令</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="原生程序生成过程"><a href="#原生程序生成过程" class="headerlink" title="原生程序生成过程"></a>原生程序生成过程</h3><p>原生程序的代码是由Android NDK中提供的交叉编译（跨平台编译）工具链中的gcc编译器来编译的（交叉编译工具链：能在一种平台上编译出另一种平台上运行的程序的工具集合）</p>
+<ul>
+<li>预处理<ul>
+<li>“#include”包含的头文件会全部被编译进来，“#define”预定义、“#if”预条件处理等</li>
+<li><code>gcc -E hello.c -o hello.i</code>(gcc能搜索到Android NDK头文件路径)</li>
+</ul>
+</li>
+<li>编译<ul>
+<li>检查代码的规范性，以及是否有语法错误，gcc编译器把代码翻译成ARM汇编语言的代码</li>
+<li><code>gcc –S hello.i–o hello.s</code></li>
+</ul>
+</li>
+<li>汇编<ul>
+<li>gcc编译器会调用汇编器将汇编代码汇编成二进制目标文件</li>
+<li><code>gcc –c hello.s –o hello.o</code>.</li>
+</ul>
+</li>
+<li>链接<ul>
+<li>调用链接器将二进制的目标文件链接成Android平台可执行的ARM原生程序</li>
+<li><code>gcc hello.o –o hello</code><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#makefile</span></span><br><span class="line">NDK_ROOT=c:/android-ndk-r8 <span class="comment">#路径</span></span><br><span class="line">TOOLCHAINS_ROOT=<span class="variable">$(NDK_ROOT)</span>/toolchains/arm-linux-androideabi-4.4.3/prebuilt/windows</span><br><span class="line">TOOLCHAINS_PREFIX=<span class="variable">$(TOOLCHAINS_ROOT)</span>/bin/arm-linux-androideabi</span><br><span class="line">TOOLCHAINS_INCLUDE=<span class="variable">$(TOOLCHAINS_ROOT)</span>/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed</span><br><span class="line">PLATFORM_ROOT=<span class="variable">$(NDK_ROOT)</span>/platforms/android-14/arch-arm</span><br><span class="line">PLATFORM_INCLUDE=<span class="variable">$(PLATFORM_ROOT)</span>/usr/<span class="keyword">include</span></span><br><span class="line">PLATFORM_LIB=<span class="variable">$(PLATFORM_ROOT)</span>/usr/lib</span><br><span class="line">MODULE_NAME=hello</span><br><span class="line">RM=del</span><br><span class="line">FLAGS=-I<span class="variable">$(TOOLCHAINS_INCLUDE)</span> \</span><br><span class="line">	-I<span class="variable">$(PLATFORM_INCLUDE)</span> \</span><br><span class="line">	-L<span class="variable">$(PLATFORM_LIB)</span> \</span><br><span class="line">	-nostdlib \</span><br><span class="line">	-lgcc \</span><br><span class="line">	-Bdynamic \</span><br><span class="line">	-lc</span><br><span class="line">OBJS=<span class="variable">$(MODULE_NAME)</span>.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtbegin_dynamic.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtend_android.o</span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> -c <span class="variable">$(MODULE_NAME)</span>.c -o <span class="variable">$(MODULE_NAME)</span>.o</span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> <span class="variable">$(OBJS)</span> -o <span class="variable">$(MODULE_NAME)</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(RM)</span> *.o</span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	adb push <span class="variable">$(MODULE_NAME)</span> /data/local/</span><br><span class="line">	adb shell chmod 755 /data/local/<span class="variable">$(MODULE_NAME)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="ARM"><a href="#ARM" class="headerlink" title="ARM"></a>ARM</h3><ul>
+<li>ARM微处理器共有37个32位寄存器，其中31个为通用寄存器，6个为状态寄存器</li>
+<li>ARM处理器七种运行模式:2-7为特权模式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1．用户模式（usr）：ARM处理器正常的程序执行状态。</span><br><span class="line">2．快速中断模式（fiq）：用于高速数据传输或通道处理。</span><br><span class="line">3．外部中断模式（irq）：用于通用的中断处理。</span><br><span class="line">4．管理模式（svc）：操作系统使用的保护模式。</span><br><span class="line">5．数据访问终止模式（abt）：当数据或指令预取终止时进入该模式，可用于虚拟存储及存储保护。</span><br><span class="line">6．系统模式（sys）：运行具有特权的操作系统任务。</span><br><span class="line">7．未定义指令中止模式（und）：当未定义的指令执行时进入该模式。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>用户模式下，处理器可以访问的寄存器为<u>不分组寄存器R0～R7、分组寄存器R8～R14、程序计数器R15（PC）以及当前程序状态寄存器CPSR</u></p>
+</li>
+<li><p>ARM处理器有两种工作状态：<strong>ARM状态与Thumb状态</strong>，可以在两种状态之间随意切换。</p>
+<ul>
+<li>ARM状态时，执行32位字对齐的ARM指令</li>
+<li>Thumb状态时，执行16位对齐的Thumb指令</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//Thumb状态下对寄存器的命名与ARM有部分差异</span><br><span class="line">●　Thumb状态下的R0～R7与ARM状态下的R0～R7相同。</span><br><span class="line">●　Thumb状态下的CPSR与ARM状态下的CPSR相同。</span><br><span class="line">●　Thumb状态下的FP对应于ARM状态下的R11。</span><br><span class="line">●　Thumb状态下的IP对应于ARM状态下的R12。</span><br><span class="line">●　Thumb状态下的SP对应于ARM状态下的R13。</span><br><span class="line">●　Thumb状态下的LR对应于ARM状态下的R14。</span><br><span class="line">●　Thumb状态下的PC对应于ARM状态下R15</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="ARM程序结构"><a href="#ARM程序结构" class="headerlink" title="ARM程序结构"></a>ARM程序结构</h3><p>Android平台的ARM汇编是GNU ARM汇编格式，使用的汇编器（汇编器的功能是将汇编代码转换为二进制目标文件）为GAS（GNU Assembler，GNU汇编器），<a href="http://sourceware.org/binutils/docs/as/index.html" target="_blank" rel="noopener">语法结构在线手册</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">    .arch armv5te            	@处理器架构</span><br><span class="line">    .fpu softvfp             	@浮点协处理器类型 </span><br><span class="line">    .eabi_attribute 20, 1    	@接口属性</span><br><span class="line">    .eabi_attribute 21, 1</span><br><span class="line">    .eabi_attribute 23, 3</span><br><span class="line">    .eabi_attribute 24, 1</span><br><span class="line">    .eabi_attribute 25, 1</span><br><span class="line">    .eabi_attribute 26, 2</span><br><span class="line">    .eabi_attribute 30, 6</span><br><span class="line">    .eabi_attribute 18, 4</span><br><span class="line">    .file   &quot;hello.c&quot;       	@源文件名</span><br><span class="line">    .section    .rodata         @声明只读数据</span><br><span class="line">    .align  2               	@声明对齐方式2^2=4字节</span><br><span class="line">.LC0:                      		@标号LC0</span><br><span class="line">    .ascii  &quot;Hello ARM!\000&quot;	@声明字符串</span><br><span class="line">    .text                    	@声明代码段</span><br><span class="line">    .align  2               	@声明对齐方式4字节</span><br><span class="line">    .global main            	@全局符号main</span><br><span class="line">    .type   main, %function 	@main类型为函数</span><br><span class="line">main:                        	@标号main</span><br><span class="line">    @ args = 0, pretend = 0, frame = 8</span><br><span class="line">    @ frame_needed = 1, uses_anonymous_args = 0</span><br><span class="line">    stmfd   sp!, &#123;fp, lr&#125;   	@将fp，lr压入堆栈</span><br><span class="line">    add fp, sp, #4           	@初始化fp寄存器，设置栈帧，用于访问局部变量</span><br><span class="line">    sub sp, sp, #8           	@开辟栈空间</span><br><span class="line">    str r0, [fp, #-8]        	@保存第一个参数</span><br><span class="line">    str r1, [fp, #-12]      	@保存第二个参数</span><br><span class="line">    ldr r3, .L3              	@取标号.L3处的内容，</span><br><span class="line">.LPIC0:							@标号.LPIC0</span><br><span class="line">    add r3, pc, r3				@计算字符串的内存地址</span><br><span class="line">    mov r0, r3					@设置参数1</span><br><span class="line">    bl  puts(PLT)				@调用puts函数</span><br><span class="line">    mov r3, #0					@设置r3寄存器的值为0</span><br><span class="line">    mov r0, r3					@程序返回结果为0</span><br><span class="line">    sub sp, fp, #4				@恢复sp寄存器的值</span><br><span class="line">    ldmfd   sp!, &#123;fp, pc&#125;		@恢复fp寄存器，并将1r寄存器值赋给pc寄存器</span><br><span class="line">.L4:							@标号.L4</span><br><span class="line">    .align  2					@声明对齐方式4字节</span><br><span class="line">.L3:							@标号.L3</span><br><span class="line">    .word   .LC0-(.LPIC0+8)		@保存字符串相对“add r3, pc, r3”的偏移量</span><br><span class="line">    .size   main, .-main		@main函数的大小为当前代码行减去main标号</span><br><span class="line">    .ident  &quot;GCC: (GNU) 4.4.3&quot;	@编译器标识</span><br><span class="line">    .section    .note.GNU-stack,&quot;&quot;,%progbits	@定义.note.GNU-stack段</span><br><span class="line">；；；；；；；；；</span><br><span class="line">框架：处理器架构定义、数据段、代码段与main函数</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>处理器架构定义</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.arch armv5te            @处理器架构</span><br><span class="line">.fpu softvfp             @浮点协处理器类型 </span><br><span class="line">.eabi_attribute 20, 1    @接口属性</span><br><span class="line">.eabi_attribute 21, 1	</span><br><span class="line">.eabi_attribute 23, 3</span><br><span class="line">.eabi_attribute 24, 1</span><br><span class="line">.eabi_attribute 25, 1</span><br><span class="line">.eabi_attribute 26, 2</span><br><span class="line">.eabi_attribute 30, 6</span><br><span class="line">.eabi_attribute 18, 4</span><br></pre></td></tr></table></figure>
+<p><strong>EABI</strong>（Embedded Application Binary Interface，嵌入式应用二进制接口）是ARM制定的一套接口规范,属性值在编译多数程序时都是固定的.</p>
+<ul>
+<li><strong>段定义</strong></li>
+</ul>
+<p>ARM汇编使用“.section”指令来定义段：<code>.section name[,&quot;flags&quot;[,%type[,flag_specifi_arguments]]]</code></p>
+<p>eg:name为段名，flags为段的属性如读、写、可执行等，type指定了段的类型，如progbits表示段中包含有数据、note表示段中包含的数据非程序本身使用，flag_specific_arguments指定了一些平台相关的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.section    .rodata						定义只读数据段，属性采用默认</span><br><span class="line">.text									定义了代码段，没有使用.section关键字</span><br><span class="line">.section .note.GNU-stack,&quot;&quot;,%progbits	定义.note.GNU-stack段，它的作用是禁止生成可执行堆栈，用来保护代码安全</span><br></pre></td></tr></table></figure>
+<ul>
+<li>汇编器指令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.file：指定了源文件名。</span><br><span class="line">.align：指定代码对齐方式，后面跟的数值为2的次数方。如“.align 4”表示2^4=16字节对齐。</span><br><span class="line">.ascii：声明字符串。</span><br><span class="line">.global：声明全局符号。全局符号是指在本程序外可以访问的符号。</span><br><span class="line">.type：指定符号的类型。“.type main, %function”表示main符号为函数。</span><br><span class="line">.word：用来存放地址值。“.word .LC0-(.LPIC0+8)”存放的是一个与地址无关的偏移量。</span><br><span class="line">.size：设置指定符号的大小。“.size main, .-main”中的点“.”表示当前地址，减去main符号的地址即为整个main函数的大小。</span><br><span class="line">.ident：编译器标识，无实际用途，生成可执行程序后它的值被放置到“.comment”段中。</span><br></pre></td></tr></table></figure>
+<h3 id="ARM寻址方式"><a href="#ARM寻址方式" class="headerlink" title="ARM寻址方式"></a>ARM寻址方式</h3><ul>
+<li>立即寻址  <code>MOV R0,#1234</code></li>
+<li>寄存器选  <code>MOV R0,R1</code></li>
+<li>寄存器移位寻址 <code>MOV R0,R1,LSL #2</code> R1寄存器左移2位，“R1 &lt;&lt; 2”后赋值给R0寄存器，R0=R1*4</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">操作前需要对源寄存器操作数进行移位操作:</span><br><span class="line">LSL：逻辑左移，移位后寄存器空出的低位补0。</span><br><span class="line">LSR：逻辑右移，移位后寄存器空出的高位补0。</span><br><span class="line">ASR：算术右移，移位过程中符号位保持不变，如果源操作数为正数，则移位后空出的高位补0，否则补1。</span><br><span class="line">ROR：循环右移，移位后移出的低位填入移位空出的高位。</span><br><span class="line">RRX：带扩展的循环右移，操作数右移一位，移位空出的高位用C标志的值填充。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>寄存器间接寻址 <code>LDR R0,[R1]</code> 将R1寄存器的数值作为地址，取出地址中的值赋给R0寄存器</li>
+<li>基址寻址 <code>LDR R0,[R1, #-4]</code></li>
+<li>多寄存器寻址 <code>LDMIA R0,{R1,R2,R3,R4}</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LDM是数据加载指令，指令的后缀IA表示每次执行完加载操作后R0寄存器的值自增1个字，</span><br><span class="line">ARM指令集中，字表示的是一个32位的数值。这条指令执行后，R1=[R0]，R2=[R0+#4]，R3=[R0+#8]，R4=[R0+#12]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>堆栈寻址<ul>
+<li>ARM处理器特有寻址方式，堆栈寻址的指令有<code>LDMFA/STMFA、LDMEA/STMEA、LDMFD/STMFD、LDMED/STMED</code></li>
+</ul>
+</li>
+<li>块拷贝寻址：实现连续地址数据从存储器的某一位置拷贝到另一位置<ul>
+<li>块拷贝寻址的指令有<code>LDMIA/STMIA、LDMDA/STMDA、LDMIB/STMIB、LDMDB/STMDB</code></li>
+</ul>
+</li>
+<li>相对寻址：程序计数器PC的当前值为基地址，地址标号作为偏移量，将两者相加之后得到操作数的有效地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BL NEXT</span><br><span class="line">.....</span><br><span class="line">NEXT:</span><br><span class="line">.....</span><br><span class="line">@@@BL NEXT 是跳到NEXT标号处执行，BL采用的就是相对寻址，标号NEXT是偏移量</span><br></pre></td></tr></table></figure>
+<h3 id="ARM与Thumb指令集"><a href="#ARM与Thumb指令集" class="headerlink" title="ARM与Thumb指令集"></a>ARM与Thumb指令集</h3><h4 id="1-指令格式"><a href="#1-指令格式" class="headerlink" title="1.指令格式"></a>1.指令格式</h4><p><em>\<opcode>{\<cond>}{S}{.W|.N}\<rd>,\<rn>{,\<operand2>}</operand2></rn></rd></cond></opcode></em>        :opcode指令助记符，</p>
+<p>cond为执行条件，取值表：</p>
+<p><img src="/2018/08/22/Hello-ARM/1.png" alt="1"></p>
+<p>S指定指令是否影响CPSR寄存器的值。如ADDS、SUBS等，.W与.N为指令宽度说明符。（默认会生成16位的代码，.w为32，.N为16）。Rd为目的寄存器，Rn为第一个操作数寄存器，operand2为第二个操作数。第二个操作数可以是立即数、寄存器或寄存器移位操作。</p>
+<h4 id="2-跳转指令"><a href="#2-跳转指令" class="headerlink" title="2.跳转指令"></a>2.跳转指令</h4><p>两种方式可以实现程序跳转：一种是使用跳转指令直接跳转；一种是给PC寄存器直接赋值实现跳转。</p>
+<ul>
+<li><strong>B跳转指令</strong>    <em>B{cond}label</em></li>
+<li><strong>BL带链接的跳转指令</strong>  <em>BL{cond}label</em><ul>
+<li>当执行BL指令时，如果条件cond满足，会首先将当前指令的下一条指令的地址拷贝到R14（即LR）寄存器中，然后跳转到lable指定的地址处继续执行</li>
+<li>可以通过“<code>MOV PC, LR</code>”返回到主程序</li>
+</ul>
+</li>
+<li><strong>BX带状态切换的跳转指令</strong>  <em>BX{cond}Rm</em><ul>
+<li>当执行BX指令时，如果条件cond满足，则处理器会判断Rm的位[0]是否为1，</li>
+<li>如果为1则跳转时自动将CPSR寄存器的标志T置位，并将目标地址处的代码解释为Thumb代码来执行，即处理器会切换至Thumb状态；</li>
+<li>若Rm的位[0]为0，则跳转时自动将CPSR寄存器的标志T复位，并将目标地址处的代码解释为ARM代码来执行，即处理器会切换到ARM状态</li>
+</ul>
+</li>
+<li><strong>BLX带链接和状态切换的跳转指令</strong>  <em>BLX{cond}Rm</em> <ul>
+<li>BLX指令集合了BL与BX的功能，当条件满足时，除了设置链接寄存器，还根据Rm位[0]的值来切换处理器状态</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-存储器访问指令"><a href="#3-存储器访问指令" class="headerlink" title="3.存储器访问指令"></a>3.存储器访问指令</h4><ul>
+<li><p><strong>LDR</strong> 从存储器中加载数据到寄存器中</p>
+<ul>
+<li><p><em>LDR{type}{cond}Rd,label</em>   &amp;&amp; <em>LDRD{cond}Rd,Rd2,label</em></p>
+</li>
+<li><p>type指明了操作的数据的大小</p>
+<p><img src="/2018/08/22/Hello-ARM/2.png" alt="2"></p>
+</li>
+<li><p>cond为执行条件，Rt为要加载的寄存器</p>
+</li>
+<li><p>label为要读取的内存地址：三种表示方法</p>
+<ul>
+<li>1.直接偏移量，eg：LDR R8, [R9, #04] 、LDR R8, [R9], #04</li>
+<li>2.寄存器偏移,   eg:  LDR R8, [R9, R10, #04]</li>
+<li>3.相对PC,    eg：LDR R8, label1</li>
+</ul>
+</li>
+<li><p>LDRD一次加载双字的数据，将数据加载到Rd与Rd2寄存器中。</p>
+<ul>
+<li><code>LDRD R0,R1,label12</code> 从标号label12指向的内存中加载两个字的数据到R0与R1寄存器中。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>STR</strong> 存储数据到指定地址的存储单元</p>
+<ul>
+<li><em>STR{type}{cond}Rd,label</em>   &amp;&amp; <em>STRD{cond}Rd,Rd2,label</em></li>
+<li>type中的SB与SH对STR无效</li>
+<li><code>LDR R0, [R2, #04]</code> 将R0寄存器的数据存储到R2+4所指向的存储单元</li>
+</ul>
+</li>
+<li><p><strong>LDM</strong> 从指定的存储单元加载多个数据到一个寄存器列表</p>
+<ul>
+<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
+<li>addr_mode取值:<img src="/2018/08/22/Hello-ARM/3.png" alt="3"></li>
+<li>cond为执行条件。Rn为基地寄存器，用于存储初始地址。！为可选的后缀。有！，则最终地址将写回到Rn寄存器中。</li>
+<li>reglist为用来存储数据的寄存器列表，用大括号括起来。</li>
+<li><code>LDMIA R0!,{R1-R3}</code>  依次加载R0指向的存储单元的数据到R1，R2，R3寄存器中</li>
+</ul>
+</li>
+<li><p><strong>STM</strong> 将一个寄存器列表的数据存储到指定的存储单元</p>
+<ul>
+<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
+<li><code>STMDB R1!,{R3-R6,R11}</code>   将R3-R6，R11寄存器的内容存储到R1指向的存储单元</li>
+</ul>
+</li>
+<li><p><strong>PUSH</strong>  将寄存器推入满递减堆栈  <em>PUSH{cond}reglist</em></p>
+</li>
+<li><p><strong>POP</strong> 从满递减堆栈中弹出数据到寄存器   <em>POP{cond}reglist</em></p>
+</li>
+<li><p><strong>SWP</strong> 用于寄存器与存储器之间的数据交换 <em>SWP{B}{cond}Rd,Rm,[Rn]</em></p>
+<ul>
+<li>B是可选的字节，若有B，则交换字节，否则交换32位的字,cond为执行条件,Rd为要从存储器中加载数据的寄存器,Rm为写入数据到存储器的寄存器,Rn为需要进行数据交换的存储器地址。Rn不能与Rd和Rm相同。</li>
+<li>如果Rd与Rm相同，可实现单个寄存器与存储器的数据交换。<ul>
+<li><code>SWP R1,R1,[R0]</code>      将R1寄存器与R0指向的存储单元的内容进行交换</li>
+<li><code>SWPB R1,R2,[R0]</code>    从R0指向的存储单元读取一个字节存入R1（高24位清零），然后将R2寄存器的字节内容存储到该存储单元。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-数据处理指令"><a href="#4-数据处理指令" class="headerlink" title="4.数据处理指令"></a>4.数据处理指令</h4><p>所有的数据处理指令均<u>可选择使用S后缀，来决定是否影响状态标志</u>，比较指令不需要S后缀，它们会直接影响状态标志。</p>
+<ul>
+<li><p>数据传送指令</p>
+<ul>
+<li><strong>MOV</strong> 将8位的立即数或寄存器的内容传送到目标寄存器中 <em>MOV {cond}{S}Rd,operand2</em></li>
+<li><strong>MVN</strong>为数据非传送指令 ：将8位的立即数或寄存器按位取反后传送到目标寄存器中</li>
+</ul>
+</li>
+<li><p>算术运算指令</p>
+<ul>
+<li><strong>ADD</strong> 将Rn寄存器与operand2的值相加，结果保存到Rd寄存器 <em>ADD {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>ADC</strong>为带进位加法指令 :将Rn寄存器与operand2的值相加，再加上CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>ADC{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>SUB</strong> 用Rn寄存器减去operand2的值，结果保存到Rd寄存器中 <em>SUB {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>RSB</strong> 为逆向减法指令: 用operand2减去Rn寄存器，结果保存到Rd寄存器中 <em>RSB {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>SBC</strong> 为带进位减法指令: 用Rn寄存器减去operand2的值，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>SBC {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>RSC</strong> 为带进位逆向减法指令:用operand2减去Rn寄存器，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>RSC {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>MUL</strong> 为32位乘法指令,将Rm寄存器与Rn寄存器的值相乘，结果的低32位保存到Rd寄存器.<em>MUL {cond}{S}Rd,Rm,Rn</em></li>
+<li><strong>MLS</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再从Ra寄存器的值中减去乘积，最后将所得结果的低32位存入Rd寄存器中 <em>MLS {cond}{S}Rd,Rm,Rn,Ra</em></li>
+<li><strong>MLA</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再将乘积与Ra寄存器中的值相加，最后将结果的低32位存入Rd寄存器中 <em>MLA {cond}{S}Rd,Rm,Rn,Ra</em></li>
+<li><strong>UMULL</strong> UMULL指令将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>UMLAL</strong> 将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMULL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLAL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLAD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，最后将两个乘积与Ra寄存器的值相加并存入Rd寄存器。 <em>SMLAD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLSD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，接着使用第一个乘积减去第二个乘积，最后将所得的差值与Ra寄存器的值相加并存入Rd寄存器 <em>SMLSD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SDIV</strong> 为有符号数除法指令 <em>SDIV{cond}Rd,Rm,Rn</em></li>
+<li><strong>UDIV</strong> 为无符号数除法指令 <em>UDIV{cond}Rd,Rm,Rn</em></li>
+<li><strong>ASR</strong> 算术右移指令 将Rm寄存器算术右移operand2位，并使用符号位填充空位，移位结果保存到Rd寄存器中 <em>ASR{cond}{S}Rd,Rm,operand2</em></li>
+</ul>
+</li>
+<li><p>逻辑运算指令</p>
+<ul>
+<li><strong>AND</strong> 逻辑与指令 <em>AND{cond}{S}Rd,Rn,operand2</em> </li>
+<li><strong>ORR</strong> 逻辑或指令 <em>ORR{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>EOR</strong> 异或指令 <em>EOR{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>BIC</strong> 位清除指令 将operand2的值取反，然后将结果与Rn寄存器的值相“与”并保存到Rd寄存器中 <em>BIC{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>LSL</strong> 逻辑左移指令 将Rm寄存器逻辑左移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSL{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>LSR</strong> 逻辑右移指令 将Rm寄存器逻辑右移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSR{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>ROR</strong> 循环右移指令 将Rm寄存器循环右移operand2位，寄存器右边移出的位移回到左边，移位结果保存到Rd寄存器中 <em>ROR{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>RRX</strong> 带扩展的循环右移指令 将Rm寄存器循环右移1位，寄存器最高位用标志位的值填充，移位结果保存到Rd寄存器中  <em>RRX{cond}{S}Rd,Rm</em></li>
+</ul>
+</li>
+<li><p>比较指令</p>
+<ul>
+<li><strong>CMP</strong> 使用Rn寄存器减去operand2的值 不保存计算结果 根据比较结果设置标志位 <em>CMP{cond}Rn,operand2</em></li>
+<li><strong>CMN</strong> 将operand2的值加到Rn寄存器  不保存计算结果 根据比较结果设置标志位  <em>CMN{cond}Rn,operand2</em></li>
+<li><strong>TST</strong> 位测试指令 将Rn寄存器的值和operand2的值进行“与”运算 不保存计算结果 根据比较结果设置标志位  <em>TST{cond}Rn,operand2</em></li>
+<li><strong>TEQ</strong> 将Rn寄存器的值和operand2的值进行“异或”运算 不保存计算结果 根据比较结果设置标志位  <em>TEQ{cond}Rn,operand2</em></li>
+</ul>
+</li>
+<li><p>OTHER</p>
+<ul>
+<li><p><strong>SWI</strong> 软中断指令 用于产生软中断，实现从用户模式到管理模式的切换 <em>SWI{cond},immed_24</em></p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">immed_24为24位的中断号，在Android的系统中，系统功能调用为0号中断，使用R7寄存器存放系统调用号。</span><br><span class="line">使用R0-R3寄存器来传递系统调用的前4个参数，对于大于4个参数的调用，剩余参数采用堆栈来传递。</span><br><span class="line">MOV	R0,#0	@参数0</span><br><span class="line">MOV R7,#1	@系统功能号1为exit</span><br><span class="line">SWI	#0		@执行exit(0)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>NOP</strong> 空操作指令 用于空操作或字节对齐</p>
+</li>
+<li><p><strong>MRS</strong> 读状态寄存器指令 <em>MRS Rd,psr</em>  (psr的取值可以是CPSR或SPSR)</p>
+</li>
+<li><p><strong>MSR</strong>  写状态寄存器指令 <em>MSR Rd,psr_fielsd,operand2</em>  (field指定传送的区域)<br> <img src="/2018/08/22/Hello-ARM/4.png" alt="4"></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MRS	R0,CPSR			@读取CPSR寄存器到R0寄存器中</span><br><span class="line">BIC	R0,R0,#0x80		@清除R0寄存器第7位</span><br><span class="line">MSR	CPSR_c,R0		@开启IRQ中断</span><br><span class="line">MOV	PC,LR			@子程序返回</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="NEON与VFP指令集"><a href="#NEON与VFP指令集" class="headerlink" title="NEON与VFP指令集"></a>NEON与VFP指令集</h3><p>NEON与VFP指令集是ARM指令集的扩展，多用于多媒体编程与浮点计算。（<strong>少见</strong>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//要求</span><br><span class="line">1.在Android.mk文件中加入一行 LOCAL_ARM_NEON := true</span><br><span class="line">2.(NEON是ARMv7才支持的指令集)，需要设置TARGET_ARCH_ABI的值为armeabi-v7a</span><br><span class="line">3.Android NDK提供了一个“cpufeatures”库来让开发者在运行时检测处理器的能力,解决兼容</span><br><span class="line">4.使用“cpufeatures”库的方法</span><br><span class="line">	a.首先在Android.mk文件中添加 $(call import-module,android/cpufeatures)</span><br><span class="line">	b.C/C++代码中包含头文件 cpu-features.h </span><br><span class="line">	c.头文件中定义了一些结构体与枚举常量，并且包含了android_getCpuFamily()、android_getCpuFeatures()与android_getCpuCount()</span><br><span class="line">		A.android_getCpuFamily()函数用来获取处理器的家族信息,返回一个常量值ANDROID_CPU_FAMILY_ARM</span><br><span class="line">		B.android_getCpuFeatures()函数用来检测处理器支持的指令集,如果处理器支持NEON指令集，则返回的64			位数值中ANDROID_CPU_ARM_FEATURE_NEON标志就会被置位，如果处理器支持VFPv3指令集，则			     ANDROID_CPU_ARM_FEATURE_VFPv3就会被置位</span><br><span class="line">		C.android_getCpuCount ()函数用来获取处理器的核心数</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/22/Hello-ARM/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-IDA与Dex持续更新" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1485,333 +1793,9 @@
 
 
   
-    <article id="post-dex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/15/dex文件格式详解/">dex文件格式详解</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/15/dex文件格式详解/" class="archive-article-date">
-  	<time datetime="2018-08-15T03:53:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dex文件格式"><a href="#dex文件格式" class="headerlink" title="dex文件格式"></a>dex文件格式</h3><p><code>Android 4.0</code>源码<code>Dalvik/docs</code>目录下文档<code>dex-format.html</code>有详细介绍dex文件格式</p>
-<h4 id="1-dex文件中的数据结构"><a href="#1-dex文件中的数据结构" class="headerlink" title="1.dex文件中的数据结构"></a>1.dex文件中的数据结构</h4><p><img src="/2018/08/15/dex文件格式详解/d1.jpg" alt="d1"></p>
-<p><strong>dex文件使用到的数据类型</strong></p>
-<ul>
-<li>u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。</li>
-<li>每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。</li>
-<li>LEB128，每个字节只有7位为有效位，如果第1个字节的最高位为1，表示LEB128需要使用到第2个字节，如果第2个字节的最高位为1，表示会使用到第3个字节，以此类推，直到最后的字节最高位为0，当然，LEB128最多只会使用到5个字节，如果读取5个字节后下一个字节最高位仍为1，则表示该dex文件无效，Dalvik虚拟机在验证dex时会失败返回。</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d2.jpg" alt="d2"></p>
-<p><code>Android</code>源码<code>dalvik\libdex\Leb128.h</code>文件中可以找到LEB128的实现，读取无符号LEB128（uleb128）数据的代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readUnsignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第1个字节最高位为1</span></span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第2个字节最高位为1</span></span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于有符号的LEB128（sleb128）来说，计算方法与无符号的LEB128是一样的，只是对无符号LEB128最后一个字节的最高有效位进行了符号扩展。读取有符号LEB128数据的代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readSignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&lt;=<span class="number">0x7f</span>)&#123;				<span class="comment">//小于0x7f表示第1个字节的最高位不为1</span></span><br><span class="line">        result=(result&lt;&lt;<span class="number">25</span>)&gt;&gt;<span class="number">25</span>;	<span class="comment">//对第1个字节的最高有效位进行符号扩展</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;	</span><br><span class="line">            result=(result&lt;&lt;<span class="number">18</span>)&gt;&gt;<span class="number">18</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                result=(result&lt;&lt;<span class="number">11</span>)&gt;&gt;<span class="number">11</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    result=(result&lt;&lt;<span class="number">4</span>)&gt;&gt;<span class="number">4</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>uleb128p1类型很简单，值为uleb128的值加1。</p>
-<p><code>c0 83 92 25</code>计算uleb128值：</p>
-<p>第1个字节0xc0大于0x7f，表示需要用到第2个字节。<code>result=0xc0&amp;0x7f</code></p>
-<p>第2个字节0x83大于0x7f，表示需要用到第3个字节。<code>result2 = result1 + (0x83 &amp; 0x7f) &lt;&lt; 7</code></p>
-<p>第3个字节0x92大于0x7f，表示需要用到第4个字节。<code>result3 = result2 + (0x92 &amp; 0x7f) &lt;&lt; 14</code></p>
-<p>第4个字节0x25小于0x7f，表示到了结尾。<code>result4 = result3 + (0x25 &amp; 0x7f) &lt;&lt; 21</code></p>
-<p>最后计算结果为<code>0x40 + 0x180 + 0x48000 + 0x4a00000 = 0x4a481c0</code></p>
-<h4 id="2-dex文件整体结构"><a href="#2-dex文件整体结构" class="headerlink" title="2.dex文件整体结构"></a>2.dex文件整体结构</h4><p>dex文件由多个结构体组合而成。</p>
-<p><img src="/2018/08/15/dex文件格式详解/d3.jpg" alt="d3"></p>
-<ul>
-<li>dex header：dex文件头，它指定了dex文件的一些属性，并记录了其它6部分数据结构在dex文件中的物理偏移</li>
-<li>string_ids到class_def结构为“索引结构区”，真实的数据存放在data数据区</li>
-<li>link_data：静态链接数据区</li>
-</ul>
-<p>未经过优化的dex文件结构：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFile</span>&#123;</span></span><br><span class="line">    DexHeader	Header;</span><br><span class="line">    DexStringId	StringIds[stringIdsSize];</span><br><span class="line">    DexTypeId	TypeIds[typeIdsSzie];</span><br><span class="line">    DexProtoId	ProtoIds[protoIdsSize];</span><br><span class="line">    DexFieldId	FieldIds[fieldIdsSize];</span><br><span class="line">    DexMethodId	MethodIds[methodIdsSize];</span><br><span class="line">    DexData		Data[];</span><br><span class="line">    DexLink		LinkData;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>(DexFile结构的声明在Android系统源码<code>dalvik\libdex\DexFile.h</code>文件中的，是dex文件被映射到内存中的结构，保存的是各个结构的指针，其中还包括了DexOptHeader与DexFile尾部的附加数据)</p>
-<ul>
-<li>DexHeader结构占用0x70个字节</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d4.jpg" alt="d4"></p>
-<ul>
-<li>70个字节解释如下：    <ul>
-<li>magic字段标识了一个有效的dex文件，值固定为<code>64 65 78 0a 30 33 35 00</code>，转换为字符串为<code>dex.035</code></li>
-<li>checksum段为dex文件的校验和，通过它来判断dex文件是否被损坏或篡改。</li>
-<li>signature字段用来识别最佳化之前的dex文件</li>
-<li>fileSize字段记录了包括DexHeader在内的整个dex文件的大小</li>
-<li>headerSize字段记录了DexHeader结构本身占用的字节数，目前它的值为0x70。</li>
-<li>endianTag字段指定了dex运行环境的cpu字节序，预设值ENDIAN_CONSTANT等于0x12345678，表示默认采用Little-Endian字节序</li>
-<li>linkSize字段与linkOff字段指定链接段的大小与文件偏移，大多数情况下它们的值都为0。</li>
-<li>mapOff字段指定了DexMapList结构的文件偏移</li>
-<li>接下来的字段分别表示DexStringId、DexTypeId、DexProtoId、DexFieldId、DexMethodId、DexClassDef以及数据段的大小与文件偏移。<ul>
-<li>DexHeader结构下面的数据为”索引结构区“与”数据区“</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>“索引结构区”中各数据结构的偏移地址都是从DexHeader结构的stringIdsOff～classDefsOff字段的值指定的，它们并非真正的类数据，而是指向dex文件的data数据区（DexData字段，实际上是ubyte字节数组，包含了程序所有使用到的数据）的偏移或数据结构索引。</li>
-</ul>
-<h4 id="3-dex文件结构分析"><a href="#3-dex文件结构分析" class="headerlink" title="3.dex文件结构分析"></a>3.dex文件结构分析</h4><p>Dalvik虚拟机解析dex文件的内容，最终将其映射成DexMapList数据结构。</p>
-<ul>
-<li>DexHeader结构的mapOff字段指明了DexMapList结构在dex文件中的偏移：</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapList</span>&#123;</span></span><br><span class="line">    u4	size;				<span class="comment">//DexMapItem的个数</span></span><br><span class="line">    DexMapItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexMapItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//size字段表示接下来有多少个DexMapItem结构</span></span><br><span class="line"><span class="comment">//DexMapItem的结构如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapItem</span>&#123;</span></span><br><span class="line">    u2	type;				<span class="comment">//kDexType开头的类型</span></span><br><span class="line">    u2	unused;				<span class="comment">//未使用，用于字节对齐</span></span><br><span class="line">    u4	size;				<span class="comment">//指定类型的个数</span></span><br><span class="line">    u4	offset;				<span class="comment">//指令类型数据的文件偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>type字段为一个枚举常量，通过类型名称很容易判断具体类型：</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d5.jpg" alt="d5"></p>
-<ul>
-<li><p>DexMapItem中的size字段指定了特定类型的个数，它们以特定的类型在dex文件中连续存放。</p>
-</li>
-<li><p>offset为该类型的文件起始偏移地址。</p>
-</li>
-<li><p>以Hello.dex为例，DexHeader结构的mapOff字段值为0x290，读取0x290处的一个双字值为0x0d，表明接下来会有13个DexMapItem结构。使用任意的十六进制编辑器打开Hello.dex，我使用的是winhex</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Hello.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (a + b) * (a - b);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argc)</span> </span>&#123;</span><br><span class="line">		Hello hello = <span class="keyword">new</span> Hello();</span><br><span class="line">		System.out.println(hello.foo(<span class="number">5</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/6.png" alt="6"></p>
-<p>根据结构描述，可以整理出13个<strong>DexMapItem</strong>结构如表：</p>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<p>对比文件头DexHeader部分：</p>
-<p><img src="/2018/08/15/dex文件格式详解/8.png" alt="8"></p>
-<p>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间，而接下来的kDexTypeStringIdItem～kDexTypeClassDefItem与DexHeader当中对应的类型及类型个数字段的值是相同的。</p>
-<ul>
-<li>kDexTypeHeaderItem<ul>
-<li>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeStringIdItem</p>
-<ul>
-<li><p>比如kDexTypeStringIdItem对应了DexHeader的stringIdsSize与stringIdsOff字段，表明了在0x70偏移处，有连续0x10个DexStringId对象。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DexStringId结构声明</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexStringId</span>&#123;</span></span><br><span class="line">    u4	stringDataOff;		<span class="comment">//字符串数据偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>DexStringId结构只有一个stringDataOff字段，直接指向字符串数据，从0x70开始，整理16个字符串。</p>
-<p><img src="/2018/08/15/dex文件格式详解/9.png" alt="9"></p>
-<p><img src="/2018/08/15/dex文件格式详解/10.png" alt="10"></p>
-<p>上表中的字符串并非普通的ascii字符串，它们是由MUTF-8编码来表示的。</p>
-<ul>
-<li><p>MUTF-8含义为Modified UTF-8，即经过修改的UTF-8编码，它与传统的UTF-8很相似，但有以下几点区别：</p>
-<ul>
-<li>MUTF-8使用1～3字节编码长度。</li>
-<li>大于16位的Unicode编码U+10000~U+10ffff使用3字节来编码。</li>
-<li>U+0000采用2字节来编码。</li>
-<li>采用类似于C语言中的空字符null作为字符串的结尾。</li>
-</ul>
-</li>
-<li><p>MUTF-8可表示的有效字符范围有大小写字母与数字、“$”、“-”、“_”、U+00a1~U+1fff、U+2010~U+2027、U+2030~U+d7ff、U+e000~U+ffef、U+10000~U+10ffff。它的实现代码如下：</p>
-</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">dexGetStringData</span><span class="params">(<span class="keyword">const</span> DexFile* pDexFile,<span class="keyword">const</span> DexStringId* pStringId)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> u1* ptr=pDexFile-&gt;baseAddr+pStringId-&gt;stringDataOff;</span><br><span class="line">    <span class="comment">//指向MUTF-8字符串的指针</span></span><br><span class="line">    <span class="comment">//Skip the uleb128 length.</span></span><br><span class="line">    <span class="keyword">while</span>(*(ptr++)&gt;<span class="number">0x7f</span>) <span class="comment">/*empty*/</span>;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">const</span> <span class="keyword">char</span>*) ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>MUTF-8字符串的头部存放的是由u1eb128编码的字符的个数。注意：这里是个数，如字符序列“<code>02 e4 bd a0 e5 a5 bd 00</code>”头部的02即表示字符串有两个字符，“e4 bd a0”是UTF-8编码字符“你”，“e5 a5 bd”是UTF-8编码字符“好”，而最后的空字符0表示字符串结尾，不过字符个数好像没有算上它。</p>
-<p>eg:<code>0A 48 65 6C 6C 6F 2E 6A 61 76 61 00</code>=&gt;10个字符+hello.java+00</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeTypeIdItem</p>
-<ul>
-<li><p>kDexTypeStringIdItem对应DexHeader中的typeIdsSize与typeIdsOff字段，指向的结构体为DexTypeId，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeId</span>&#123;</span></span><br><span class="line">    u4	descriptorIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   descriptorIdx为指向DexStringId列表的索引，它对应的字符串代表了具体类的类型。从0xb0开始有7个DexTypeId结构，也就是有7个字符串的索引，整理后：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/11.png" alt="11"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/12.png" alt="12"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeProtoIdItem</p>
-<ul>
-<li><p>kDexTypeProtoIdItem对应DexHeader中的protoIdsSize与protoIdsOff字段，指向的结构体为DexProtoId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexProtoId</span>&#123;</span></span><br><span class="line">    u4	shortyIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">    u4	returnTypeIdx;	<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">    u4	parametersOff;	<span class="comment">//指向DexTypeList的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>DexProtoId是一个方法声明结构体:</p>
-<ul>
-<li>shortyIdx为方法声明字符串</li>
-<li>returnTypeIdx为方法返回类型字符串</li>
-<li><p><strong>parametersOff指向一个DexTypeList结构体，存放了方法的参数列表</strong>，DexTypeList声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeList</span>&#123;</span></span><br><span class="line">    u4	size;	<span class="comment">//接下来DexTypeItem的个数</span></span><br><span class="line">    DexTypeItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexTypeItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexTypeItem声明如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeItem</span>&#123;</span></span><br><span class="line">    u2 typeIdx;		<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>DexTypeItem中的typeIdx最终也是指向一个字符串.</strong></p>
-<p>从0xcc开始有4个DexProtoId结构，整理后如表</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<pre><code>![13](dex文件格式详解\13.png)
-
-![14](dex文件格式详解\14.png)
-
-通过上表可以发现，**方法声明由返回类型与参数列表组成，并且返回类型位于参数列表的前面。**
-</code></pre><ul>
-<li><p>kDexTypeFieldIdItem</p>
-<ul>
-<li><p>kDexTypeFieldIdItem对应DexHeader中的fieldIdsSize与fieldIdsOff字段，指向的结构体为DexFieldId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFieldId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	typeIdx;	<span class="comment">//字段的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//字段名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexFieldId结构中的数据全部是索引值，指明了字段所在的类、字段的类型以及字段名。</p>
-<p>   从0xfc开始共有1个DexFieldId结构，整理后如：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/15.png" alt="15"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/16.png" alt="16"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeMethodIdItem</p>
-<ul>
-<li><p>kDexTypeMethodIdItem对应DexHeader中的methodIdsSize与methodIdsOff字段，指向的结构体为DexFieldId，声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethodId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	protoIdx;	<span class="comment">//声明类型，指向DexprotoId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//方法名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexMethodId结构的数据也都是索引值，指明了方法所在的类、方法的声明以及方法名。</p>
-<p>   从0x104开始共有5个DexMethodId结构，整理后的结果</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/17.png" alt="17"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/18.png" alt="18"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeClassDefItem</p>
-<ul>
-<li><p>kDexTypeClassDefItem对应DexHeader中的classDefsSize与classDefsOff字段，指向的结构体为DexClassDef，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>classIdx字段是一个索引值，表明类的类型</li>
-<li>accessFlags字段是类的访问标志，它是以ACC_开头的一个枚举值</li>
-<li>superclassIdx字段是父类类型索引值</li>
-<li>如果类中含有接口声明或实现，interfacesOff字段会指向1个DexTypeList结构，否则这里的值为0</li>
-<li>sourceFileIdx字段是字符串索引值，表示类所在的源文件名称</li>
-<li>annotationsOff字段指向注解目录结构，根据类型不同会有注解类、注解方法、注解字段与注解参数，如果类中没有注解，这里的值则为0</li>
-<li><strong>classDataOff字段指向DexClassData结构，它是类的数据部分</strong></li>
-<li><p>staticValuesOff字段指向DexEncodedArray结构，记录了类中的静态数据</p>
-<p><img src="/2018/08/15/dex文件格式详解/19.png" alt="19"></p>
-</li>
-</ul>
-</li>
-<li><p>DexClassData结构的声明在DexClass.h文件中，它的声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassData</span>&#123;</span></span><br><span class="line">    DexClassDataHeader	header;			<span class="comment">//指定字段与方法的个数</span></span><br><span class="line">    DexField*			staticFields;	<span class="comment">//静态字段，DexField结构</span></span><br><span class="line">    DexField*			instanceFiels;	<span class="comment">//实例字段，DexField结构</span></span><br><span class="line">    DexMethod*			directMethods;	<span class="comment">//直接方法，DexMethod结构</span></span><br><span class="line">    DexMethod*			virtualMethods;	<span class="comment">//虚方法，DexMethod结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexClassDataHeader结构记录了当前类中字段与方法的数目</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">DexClassDataHeader</span>&#123;</span></span><br><span class="line">    u4	staticFieldsSize;				<span class="comment">//静态字段个数</span></span><br><span class="line">    u4	instanceFieldsSize;				<span class="comment">//实例字段个数</span></span><br><span class="line">    u4	directMethodsSize;				<span class="comment">//直接方法个数</span></span><br><span class="line">    u4	virtualMethodsSize;				<span class="comment">//虚方法个数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   <u>DexClassDataHeader的结构与DexClassData一样，都是在DexClass.h文件中声明的。</u></p>
-<p>   （为什么不是在DexFile.h中声明呢？它们都是DexFile文件结构的一部分！可能的原因是DexClass.h文件中所有结构的u4类型的字段其实都是uleb128类型，u1eb128使用1～5个字节来表示一个32位的值，大多数情况下，字段中这些数据可以用小于2个字节的空间来表示，因此，采用uleb128会节省更多的存储空间。</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexField</span>&#123;</span></span><br><span class="line">    u4	fieldIdx;		<span class="comment">//指向DexFieldId的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>fieldIdx字段为指向DexFieldId的索引</li>
-<li><p>accessFlags字段与DexClassDef中的相应字段的类型相同。</p>
-<p>DexMethod结构描述方法的原型、名称、访问标志以及代码数据块，它的结构声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethod</span>&#123;</span></span><br><span class="line">    u4	methodIdx;		<span class="comment">//指向DexMethodId的索引</span></span><br><span class="line">    u4 	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	codeOff;		<span class="comment">//指向DexCode结构的偏移</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexCode</span>&#123;</span></span><br><span class="line">    u2	registersSize;	<span class="comment">//使用的寄存器个数</span></span><br><span class="line">    u2	insSize;		<span class="comment">//参数个数</span></span><br><span class="line">    u2	outsSize;		<span class="comment">//调用其他方法时使用的寄存器个数</span></span><br><span class="line">    u2	triesSize;		<span class="comment">//Try/Catch个数</span></span><br><span class="line">    u4	debugInfoOff;	<span class="comment">//指向调试信息的偏移</span></span><br><span class="line">    u4	insnsSize;		<span class="comment">//指令集个数，以2字节为单位</span></span><br><span class="line">    u2	insns[<span class="number">1</span>];		<span class="comment">//指令集</span></span><br><span class="line">    <span class="comment">//2字节空间用于结构对齐</span></span><br><span class="line">    <span class="comment">//try_item[triesSize]	DexTry结构</span></span><br><span class="line">    <span class="comment">//Try/Catch中handler的个数</span></span><br><span class="line">    <span class="comment">//catch_handler_item[handlersSize],DexCatchHandler结构</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>通过上面层层的分析，到这里终于看到存放指令集的结构。</p>
-</li>
-<li><p>registersSize字段指定了方法中使用的寄存器个数，即Smali语法时的“.register”指令的值。</p>
-</li>
-<li>insSize字段指定了方法的参数个数，即Smali语法中的“.paramter”指令。</li>
-<li>outsSize指定方法调用外部方法时使用的寄存器个数</li>
-<li>triesSize字段指定方法中Try/Catch的个数</li>
-<li>如果dex文件保留了调试信息，debugInfoOff字段会指向它，调试信息的解码函数为dexDecodeDebugInfo()。可在DexDebugInfo.cpp文件中查看其实现</li>
-<li>insnsSize字段指定了接下来的指令个数</li>
-<li><p>insns字段即为真正的代码部分</p>
-<p><img src="/2018/08/15/dex文件格式详解/20.png" alt="20"></p>
-</li>
-<li><p>0x27b开始先读取DexClassDataHeader结构，为4个uleb128值，结果分别为0、0、2、1，表示该类不含字段，有2个直接方法与1个虚方法。</p>
-</li>
-<li><p>由于类中不含字段，因此DexClassData结构中的两个DexField结构也就没戏了，从0x27f开始直接解析DexMethod</p>
-</li>
-<li><p>第1个字段为0，指向的DexMethodId为第1条，也就是”<code>&lt;init&gt;</code>“方法</p>
-</li>
-<li><p>第2个字段“81 80 04”为10001，访问标志为<code>ACC_PUBLIC | ACC_CONSTRUCTOR</code></p>
-</li>
-<li><p>第3个字段“cc 02”为14c，指向DexCode结构</p>
-<p><strong>(uleb如何计算：<code>[cc&amp;7f+（02&amp;7f）&lt;&lt;7]=14c</code>)</strong></p>
-<p><img src="/2018/08/15/dex文件格式详解/21.png" alt="21"></p>
-</li>
-<li><p>从0x14c开始解析DexCode，得出结果为：寄存器个数、参数、内部函数使用寄存器都为1个</p>
-</li>
-<li>方法中有4条指令，指令为“<code>7010 0400 0000 0e00</code>”</li>
-<li><a href="https://pan.baidu.com/s/1-uIjwkgonQNqLPY-yvfIPw" target="_blank" rel="noopener">dalvik-bytecode.html</a>:[密码: cewq]中查找到70的Opcode为invoke-direct，格式为35c</li>
-<li><p><a href="https://pan.baidu.com/s/1ex45xhKoYCIM7JhA6Knkgw" target="_blank" rel="noopener">instruction-formats.html</a>:[密码: k6n6],查找到35c的指令格式为<code>A|G|op BBBB F|E|D|C</code>,有7中表达方式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, meth@BBBB</span><br><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, type@BBBB</span><br><span class="line">[A=4] op &#123;vC, vD, vE, vF&#125;, kind@BBBB</span><br><span class="line">[A=3] op &#123;vC, vD, vE&#125;, kind@BBBB</span><br><span class="line">[A=2] op &#123;vC, vD&#125;, kind@BBBB</span><br><span class="line">[A=1] op &#123;vC&#125;, kind@BBBB</span><br><span class="line">[A=0] op &#123;&#125;, kind@BBBB</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*指令7010中A为1，G为0，表示采用代码为“[A=1] op &#123;vC&#125;, kind@BBBB”方式,且其中的vC为v0寄存器;</span></span><br><span class="line"><span class="comment">指令后面的BBBB与“F|E|D|C”都是16位，7010后面的两个16位都为0，因此BBBB=4且F=E=D=C=0;</span></span><br><span class="line"><span class="comment">BBBB为kind@类型，它是指向DexMethodId列表的索引值，通过查找得到方法名为“&lt;init&gt;”;</span></span><br><span class="line"><span class="comment">指令0e00直接查表得到return-void;*/</span></span><br><span class="line"><span class="number">7010</span> <span class="number">0400</span> <span class="number">0000</span>	invoke-direct&#123;v0&#125;,Ljava/lang/Object;.&lt;init&gt;:()V</span><br><span class="line"><span class="number">0e00</span>			<span class="keyword">return</span>-<span class="keyword">void</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>观察DexMapItem结构：</p>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<ul>
-<li>分析整体结构：<ul>
-<li>kDexTypeCodeItem与上面分析的DexCode结构相对应</li>
-<li>kDexTypeTypeList与上面分析的DexTypeList结构相对应</li>
-<li>kDexTypeStringDataItem则指向了DexStringId字符串列表的首地址</li>
-<li>kDexTypeDebugInfoItem指向了调试信息偏移，与DexCode的debugInfoOff字段指向的内容相同</li>
-<li>kDexTypeClassDataItem指向了DexClassData结构</li>
-<li>kDexTypeMapList指向了DexMapItem结构自身</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/22.jpg" alt="22"></p>
-<p>自此：DEX文件格式分析完了，仔细让我琢磨了好多天。。。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/15/dex文件格式详解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -1933,6 +1917,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">

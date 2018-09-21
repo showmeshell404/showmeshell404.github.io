@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/09/21/Kali%E6%B8%97%E9%80%8F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</loc>
+    <lastmod>2018-09-21T02:13:06.676Z</lastmod>
+    <data>
+        <display>
+        <title>Kali渗透学习笔记</title>
+        <pubTime>2018-09-21T02:11:03.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/09/17/CVE-2012-6422/</loc>
     <lastmod>2018-09-17T00:47:56.863Z</lastmod>
     <data>

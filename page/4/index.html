@@ -150,6 +150,417 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-The-ELF-Binary-Format" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/11/The-ELF-Binary-Format/">The ELF Binary Format</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/11/The-ELF-Binary-Format/" class="archive-article-date">
+  	<time datetime="2018-07-11T01:36:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="The-ELF-Binary-Format"><a href="#The-ELF-Binary-Format" class="headerlink" title="The ELF Binary Format"></a>The ELF Binary Format</h1><h1 id="1-ELF-file-types"><a href="#1-ELF-file-types" class="headerlink" title="1. ELF file types"></a>1. ELF file types</h1><p>一个ELF文件可以被标记为以下几种类型之一。</p>
+<ul>
+<li><code>ET_NONE</code>: 未知类型，不确定或未定义</li>
+<li><code>ET_REL</code>:重定位文件， ELF被标记为relocatable意味者该文件被标记一段可重定位的代码，或目标文件。可重定位目标文件通常是还未被链接到可执行程序的一段位置独立的代码<strong>Position independent code</strong> (<strong>PIC</strong>)。编译完代码后可以看到.o格式的文件，这种文件包含了创建可执行文件所需要的代码和数据。</li>
+<li><code>ET_EXEC</code>: 可执行文件， ELF类型为executable，意味着该文件被标记为可执行文件。 这些类型的文件也称为程序，是一个进程开始执行的入口。</li>
+<li><code>ET_DYN</code>: 共享目标文件，ELF类型为dynamic，意味着该文件被标记为了一个动态的可链接的目标文件，也称为共享库。这类共享库会在程序运行时被装载并链接到程序的进程镜像中。</li>
+<li><code>ET_CORE</code>: 核心文件，在程序崩溃或者进程传递了一个SIGSEGV信号（分段违规）时，会在核心文件中记录整个进程的镜像消息，可以用GDB读取这类文件来辅助调试并查找程序崩溃的原因。</li>
+</ul>
+<p>使用readelf -h 可以查看ELF文件，查看原始的ELF文件头。ELF文件头从文件的0偏移开始，是除了文件头之后剩余部分文件的一个映射。随便找了一个在BSD编辑的EXEC文件，readelf -h 之后如下图</p>
+<p><img src="/2018/07/11/The-ELF-Binary-Format/1.png" alt="1"></p>
+<p>ELF头部的结构定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> EI_NIDENT 16</span></span><br><span class="line">           <span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">               <span class="keyword">unsigned</span> <span class="keyword">char</span> e_ident[EI_NIDENT];</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_type;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_machine;</span><br><span class="line">               <span class="keyword">uint32_t</span>      e_version;</span><br><span class="line">               ElfN_Addr     e_entry;</span><br><span class="line">               ElfN_Off      e_phoff;</span><br><span class="line">               ElfN_Off      e_shoff;</span><br><span class="line">               <span class="keyword">uint32_t</span>      e_flags;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_ehsize;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_phentsize;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_phnum;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_shentsize;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_shnum;</span><br><span class="line">               <span class="keyword">uint16_t</span>      e_shstrndx;</span><br><span class="line">           &#125; ElfN_Ehdr;</span><br></pre></td></tr></table></figure>
+<p>ps：readelf命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">readelf -S &lt;object&gt; //查询节头表</span><br><span class="line">readelf -l &lt;object&gt; //查询程序头表</span><br><span class="line">readelf -s &lt;object&gt; //查询符号表</span><br><span class="line">readelf -e &lt;object&gt; //查询ELF文件头数据</span><br><span class="line">readelf -r &lt;object&gt; //查询重定位入口</span><br><span class="line">readelf -d &lt;object&gt; //查询动态段</span><br></pre></td></tr></table></figure>
+<h1 id="2-ELF-program-headers"><a href="#2-ELF-program-headers" class="headerlink" title="2. ELF program headers"></a>2. ELF program headers</h1><p>ELF程序头是对二进制文件中段的描述，是程序装载必需的一部分。段（segment）是在内存装载时被解析的，描述了磁盘上可执行文件的内存布局以及如何映射到内存中。</p>
+<p>程序头描述了可执行文件（包括共享库）中段及其类型（为那种类型的数据或代码而保留的段）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//ELF32_Phdr结构，构成了32位ELF可执行文件程序头表的一个程序头条目。 program header table</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   p_type;   (segment type)</span><br><span class="line">    Elf32_Off  p_offset; (segment offset)</span><br><span class="line">    Elf32_Addr p_vaddr;   (segment <span class="keyword">virtual</span> address)</span><br><span class="line">    Elf32_Addr p_paddr;    (segment physical address)</span><br><span class="line">    <span class="keyword">uint32_t</span>   p_filesz;   (size of segment in the file)</span><br><span class="line">    <span class="keyword">uint32_t</span>   p_memsz; (size of segment in memory)</span><br><span class="line">    <span class="keyword">uint32_t</span>   p_flags; (segment flags, I.E execute|read|read)</span><br><span class="line">    <span class="keyword">uint32_t</span>   p_align;  (segment alignment in memory)</span><br><span class="line">  &#125; Elf32_Phdr;</span><br><span class="line"><span class="comment">// 这些变量描述了段在文件和内存中的布局</span></span><br></pre></td></tr></table></figure>
+<p>下面讨论5个常见的程序头类型。</p>
+<h2 id="1-PT-LOAD"><a href="#1-PT-LOAD" class="headerlink" title="1.PT_LOAD"></a>1.PT_LOAD</h2><p><strong>一个可执行文件至少有一个PT_LOAD类型的段</strong>。</p>
+<p>这类程序头描述的是可装载的段（a loadable segment），即这种类型的段将被装载或映射到内存中。</p>
+<p>一个需要动态链接的ELF可执行文件通常包含以下两个可装载的段（类型为PT_LOAD）</p>
+<ul>
+<li>存放程序代码的text段；</li>
+<li>存放全局变量和动态链接信息的data段。</li>
+</ul>
+<p>上面的两个段将会被映射到内存中，并根据p_align中存放的值在内存中对齐。</p>
+<h2 id="2-PT-DYNAMIC-动态段的Phdr"><a href="#2-PT-DYNAMIC-动态段的Phdr" class="headerlink" title="2.PT_DYNAMIC-动态段的Phdr"></a>2.PT_DYNAMIC-动态段的Phdr</h2><p>动态段是动态链接可执行文件所特有的，包含了动态链接器所必需的一些信息。在动态段中包含了一些标记值和指针，包括但不限于以下内容：</p>
+<ul>
+<li>运行时需要链接的共享库列表；</li>
+<li><strong>全局偏移表</strong>（GOT，Global offset table）的地址；</li>
+<li>重定位条目的相关信息。</li>
+</ul>
+<p>Following is complete list of the tag names：完整的标记名列表</p>
+<table>
+<thead>
+<tr>
+<th>Tag name/标记名</th>
+<th style="text-align:left">描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DT_HASH</td>
+<td style="text-align:left">符号散列表的地址</td>
+</tr>
+<tr>
+<td>DT_STRTAB</td>
+<td style="text-align:left">字符串表的地址</td>
+</tr>
+<tr>
+<td>DT_SYMTAB</td>
+<td style="text-align:left">符号表的地址</td>
+</tr>
+<tr>
+<td>DT_RELA</td>
+<td style="text-align:left">相对地址重定位表的地址</td>
+</tr>
+<tr>
+<td>DT_RELASZ</td>
+<td style="text-align:left">Rela表的字节大小</td>
+</tr>
+<tr>
+<td>DT_RELAENT</td>
+<td style="text-align:left">Rela表条目的字节大小</td>
+</tr>
+<tr>
+<td>DT_STRSZ</td>
+<td style="text-align:left">字符串表的字节大小</td>
+</tr>
+<tr>
+<td>DT_SYMENT</td>
+<td style="text-align:left">符号表条目的字节大小</td>
+</tr>
+<tr>
+<td>DT_INIT</td>
+<td style="text-align:left">初始化函数的地址</td>
+</tr>
+<tr>
+<td>DT_FINT</td>
+<td style="text-align:left">终止函数的地址</td>
+</tr>
+<tr>
+<td>DT_SONAME</td>
+<td style="text-align:left">共享目标文件名的字符串表偏移量</td>
+</tr>
+<tr>
+<td>DT_RPATH</td>
+<td style="text-align:left">库搜索路径的字符串表偏移量</td>
+</tr>
+<tr>
+<td>DT_SYMBOLIC</td>
+<td style="text-align:left">修改链接器，在可执行文件之前的共享目标文件中搜索符号</td>
+</tr>
+<tr>
+<td>DT_REL</td>
+<td style="text-align:left">Rel relocs表的地址</td>
+</tr>
+<tr>
+<td>DT_RELSZ</td>
+<td style="text-align:left">Rel表的字节大小</td>
+</tr>
+<tr>
+<td>DT_RELENT</td>
+<td style="text-align:left">Rel表条目的字节大小</td>
+</tr>
+<tr>
+<td>DT_PLTREL</td>
+<td style="text-align:left">PLT引用的reloc类型（Rela或Rel）</td>
+</tr>
+<tr>
+<td>DT_DEBUG</td>
+<td style="text-align:left">还未进行定义，为测试保留</td>
+</tr>
+<tr>
+<td>DT_TEXTREL</td>
+<td style="text-align:left">缺少此项表明重定位只能应用于可写段</td>
+</tr>
+<tr>
+<td>DT_JMPREL</td>
+<td style="text-align:left">仅用于PLT的重定位条目地址</td>
+</tr>
+<tr>
+<td>DT_BIND_NOW</td>
+<td style="text-align:left">指示动态链接器在将控制权交给可执行文件之前处理所有的重定位</td>
+</tr>
+<tr>
+<td>DT_RUNPATH</td>
+<td style="text-align:left">库搜索路径的字符串表偏移量</td>
+</tr>
+</tbody>
+</table>
+<p>动态段包含了一些结构体，在这些结构中存放着与动态链接相关的信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//32位ELF文件的动态段结构体：d_tag成员变量控制着d_un的含义。</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">Elf32_Sword    d_tag;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">Elf32_Word d_val;</span><br><span class="line">Elf32_Addr d_ptr;</span><br><span class="line">    &#125; d_un;</span><br><span class="line">&#125; Elf32_Dyn;</span><br><span class="line"><span class="keyword">extern</span> Elf32_Dyn _DYNAMIC[];</span><br></pre></td></tr></table></figure>
+<h2 id="3-PT-NOTE"><a href="#3-PT-NOTE" class="headerlink" title="3. PT_NOTE"></a>3. PT_NOTE</h2><p>PT_NOTE类型的段可能保存了与特定供应商或者系统相关的附加消息。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//ELF规范中的定义</span><br><span class="line">Sometimes a vendor or system builder needs to mark an object file with special information that other programs will check for conformance, compatibility, and so on. Sections of type SHT_NOTE and program header elements of type PT_NOTE can be used for this purpose. （SHT_NOTE类型的节section和PT_NOTE类型的程序头元素可以用于这一目的）The note information in sections and program header elements holds any number of entries, each of which is an array of 4-byte words in the format of the target processor. Labels appear below to help explain note information organization, but they are not part of the specification.</span><br></pre></td></tr></table></figure>
+<p>这一段只保存了操作系统的规范信息，在可执行文件运行时是不需要这个段的。（since the system will just assume the executable is native either way）。 容易成为病毒感染的一个地方。<br>NOTE段病毒（<a href="http://vxheavens.com/lib/vhe06.html" target="_blank" rel="noopener">http://vxheavens.com/lib/vhe06.html</a>）</p>
+<h2 id="4-PT-INTERP"><a href="#4-PT-INTERP" class="headerlink" title="4. PT_INTERP"></a>4. PT_INTERP</h2><p>PT_INTERP段只将位置和大小信息存放在一个以null为终止符的字符串中，是对程序解释器位置的描述。例如 <code>/lib/linux-ld.so.2</code>一般是指动态链接器的位置，即程序解释器的位置。</p>
+<h2 id="5-PT-PHDR"><a href="#5-PT-PHDR" class="headerlink" title="5. PT_PHDR"></a>5. PT_PHDR</h2><p>PT_PHDR段保存了程序头表本身的位置和大小。</p>
+<p>Phdr表保存了所有的Phdr对文件（以及内存镜像）中段的描述信息。</p>
+<p>使用readelf -l 命令查看文件的Phdr表：</p>
+<p><img src="/2018/07/11/The-ELF-Binary-Format/2.png" alt="2"></p>
+<p>中间部分的PT_LOAD段，从最左边的偏移量到最右边的权限标识和对齐标识。</p>
+<p><strong>text段是可读可执行的，data段是可读可写的，这两个段都有0x1000（4096）对齐标识</strong>，刚好是32位可执行文件一页的大小，该标识用于在程序装载时对齐。</p>
+<h1 id="3-ELF-section-headers"><a href="#3-ELF-section-headers" class="headerlink" title="3. ELF section headers"></a>3. ELF section headers</h1><p>段是程序执行的必要组成部分，在每个段中，会有代码或者数据被划分为不同的节。节头表是对这些节的位置和大小的描述，主要用于链接和调试。</p>
+<p>节头对于程序的执行来说不是必需的，没有节头表，程序仍可以正常执行，因为节头表没有对程序的内存布局进行描述，程序头表才对程序内存布局的描述。节头是对程序头的补充。（The section headers are really just complimentary to the program headers. ）</p>
+<p>同样可以使用readelf -l 查看节</p>
+<p>如果二进制文件缺少节头，不是说节不存在，只是没办法通过节头来引用节，对于调试器或反编译程序，只是可参考的信息变少。</p>
+<p>每一个ELF文件都有节，但是不一定有节头，可故意将节头从节头表中删去，默认是有节头的。</p>
+<p> All of GNU’s binutils such as <code>objcopy</code>, <code>objdump</code>, and other tools such as <code>gdb</code> rely on the section headers to locate symbol information that is stored in the sections specific to containing symbol data.（需要依赖节头定位到存储符号数据的节来获取符号信息） Without section headers, tools such as <code>gdb</code> and <code>objdump</code> are nearly useless.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//32位ELF节头的结构</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line"><span class="keyword">uint32_t</span>   sh_name; <span class="comment">// offset into shdr string table for shdr name</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   sh_type; <span class="comment">// shdr type I.E SHT_PROGBITS</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   sh_flags; <span class="comment">// shdr flags I.E SHT_WRITE|SHT_ALLOC</span></span><br><span class="line">    Elf32_Addr sh_addr;  <span class="comment">// address of where section begins</span></span><br><span class="line">    Elf32_Off  sh_offset; <span class="comment">// offset of shdr from beginning of file</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   sh_size;   <span class="comment">// size that section takes up on disk</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   sh_link;   <span class="comment">// points to another section</span></span><br><span class="line">    <span class="keyword">uint32_t</span>   sh_info;   <span class="comment">// interpretation depends on section type</span></span><br><span class="line"><span class="keyword">uint32_t</span>   sh_addralign; <span class="comment">// alignment for address of section</span></span><br><span class="line"><span class="keyword">uint32_t</span>   sh_entsize;  <span class="comment">// size of each certain entries that may be in section</span></span><br><span class="line">&#125; Elf32_Shdr;</span><br></pre></td></tr></table></figure>
+<p>下面是一些比较重要的节和节类型</p>
+<h2 id="1-text节"><a href="#1-text节" class="headerlink" title="1 .text节"></a>1 .text节</h2><p>.text节是保存了程序代码指令的代码节。一段可执行程序，如果存在Phdr，.text节就会存在与text段中。由于.text节保存了程序代码，类型就是SHT_PROGBITS。</p>
+<h2 id="2-rodata节"><a href="#2-rodata节" class="headerlink" title="2 .rodata节"></a>2 .rodata节</h2><p>.rodata节保存了只读的数据。只能存在于一个可执行文件的只读段节，故只能在text段找到，而不是data段找到.rodata节。</p>
+<p>eg<code>printf(&quot;hello world!\n&quot;);</code> 这条命令就存放在.rodata节。</p>
+<p>由于.rodata节是只读的，节类型就是SHT_PROGBITS。</p>
+<h2 id="3-plt节"><a href="#3-plt节" class="headerlink" title="3 .plt节"></a>3 .plt节</h2><p>.plt节中包含了动态链接器调用从共享库导入的函数所必需的相关代码。</p>
+<p>由于其存在于text段中，同样保存了代码，因此节类型为SHT_PROGBITS。</p>
+<h2 id="4-data节"><a href="#4-data节" class="headerlink" title="4 .data节"></a>4 .data节</h2><p>.data节存在于data段，保存了初始化的全局变量等数据。</p>
+<p>由于其保存了程序的变量数据，因此类型被标记为SHT_PROGBITS。</p>
+<h2 id="5-bss节"><a href="#5-bss节" class="headerlink" title="5 .bss节"></a>5 .bss节</h2><p>.bss节保存了未进行初始化的全局数据，是data段的一部分，占用空间不超过4字节，仅表示这个节本身的空间。</p>
+<p>程序加载时数据被初始化为0，在程序执行期间可以进行赋值。由于.bss节未保存实际的数据，因此节类型为SHT_NOBITS。</p>
+<h2 id="6-got-plt节"><a href="#6-got-plt节" class="headerlink" title="6 .got.plt节"></a>6 .got.plt节</h2><p>.got节保存了全局偏移表。.got节和.plt节一起提供了对导入的共享函数的访问入口，由动态链接器在运行时进行修改。</p>
+<p> This section in particular is often abused by attackers who gain a pointer-sized write primitive in heap or <code>.bss</code> exploits. </p>
+<p>.got.plt节跟程序执行有关，因为节类型被标记为SHT_PROGBITS。</p>
+<h2 id="7-dynsym节"><a href="#7-dynsym节" class="headerlink" title="7 .dynsym节"></a>7 .dynsym节</h2><p>.dynsym节保存了从共享库导入的动态符号信息，包含了描述函数名和偏移量/地址的导入/导出符号。该节保存在段中text段，节类型为SHT_DYNSYM。</p>
+<h2 id="8-dynstr节"><a href="#8-dynstr节" class="headerlink" title="8 .dynstr节"></a>8 .dynstr节</h2><p>.dynstr节保存了动态符号字符串表，表中存放了一系列字符串，这些字符串代表了符号的名称，以空字符作为终止符。</p>
+<h2 id="9-rel-节"><a href="#9-rel-节" class="headerlink" title="9 .rel.*节"></a>9 .rel.*节</h2><p>重定位节保存了重定位相关的信息，这些信息描述了如何在链接或者运行时，对ELF目标文件的某部分内容或者进程镜像进行补充或修改。</p>
+<p>重定位节保存了重定位相关的数据，节类型被标记为SHT_REL。</p>
+<h2 id="10-hash节"><a href="#10-hash节" class="headerlink" title="10 .hash节"></a>10 .hash节</h2><p>.hash节有时也称为.gnu.hash，保存了一个用于查找符号的散列表。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//散列算法，用来在ELF文件中查找符号名。</span></span><br><span class="line"><span class="keyword">uint32_t</span></span><br><span class="line">dl_new_hash(<span class="keyword">const</span> <span class="keyword">char</span> *s)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">uint32_t</span> h=<span class="number">5381</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span> c=*s;c!=<span class="string">'\0'</span>;c=*++s)</span><br><span class="line">        h=h*<span class="number">33</span>+c; <span class="comment">//也可以为 h=((h&lt;&lt;5)+h)+c;</span></span><br><span class="line">    <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="11-symtab节"><a href="#11-symtab节" class="headerlink" title="11 .symtab节"></a>11 .symtab节</h2><p>.symtab节保存了ElfN_Sym类型的符号信息。</p>
+<p>.symtab节保存了符号信息，因此类型被标记为SHT_SYMTAB。</p>
+<h2 id="12-strtab节"><a href="#12-strtab节" class="headerlink" title="12 .strtab节"></a>12 .strtab节</h2><p>.strtab节保存的是符号字符串表，表中的内容会被.symtab的ElfN_Sym结构中的st_name条目引用。</p>
+<p>由于其保存了字符串表，因此节类型被标记为SHT_STRTAB。</p>
+<h2 id="13-shstrtab节"><a href="#13-shstrtab节" class="headerlink" title="13 .shstrtab节"></a>13 .shstrtab节</h2><p>.shstrtab节保存节头字符串表，该表是一个以空字符终止的字符串的集合，字符串保存了每个节的节名，如.text，.data等。</p>
+<p>有一个名为e_shstrndx的ELF文件头条目会指向.shstrtab节，e_shstrndx中保存了.shstrtab的偏移量。This section is pointed to by the ELF file header entry called <code>e_shstrndx</code> that holds the offset of <code>.shstrtab</code>. </p>
+<p>由于其保存了字符串表，因此节类型被标记为SHT_STRTAB。</p>
+<h2 id="14-ctors和-dtors节"><a href="#14-ctors和-dtors节" class="headerlink" title="14 .ctors和.dtors节"></a>14 .ctors和.dtors节</h2><p>.ctors（构造器），.dtors（析构器）这两个节保存了指向构造函数和析构函数的函数指针，构造函数是在main函数执行之前需要执行的代码，析构函数是在main函数之前需要执行的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The __constructor__ function attribute is sometimes used by hackers and virus writers to implement a function that performs an anti-debugging trick such as calling PTRACE_TRACEME so that the process traces itself and no debuggers can attach to it. This way the anti-debugging code gets executed before the program enters into main().</span><br></pre></td></tr></table></figure>
+<p><strong>可执行文件是如何使用phdr和shdr进行布局排列：</strong></p>
+<p>text段的布局：</p>
+<ul>
+<li><code>[.text]</code>: This is the program code 程序代码</li>
+<li><code>[.rodata]</code>: This is read-only data 只读数据</li>
+<li><code>[.hash]</code>: This is the symbol hash table 符号散列表</li>
+<li><code>[.dynsym ]</code>: This is the shared object symbol data 共享目标文件符号数据</li>
+<li><code>[.dynstr ]</code>: This is the shared object symbol name 共享目标文件符号名称</li>
+<li><code>[.plt]</code>: This is the procedure linkage table 过程链接表</li>
+<li><code>[.rel.got]</code>: This is the G.O.T relocation data G.O.T重定位数据</li>
+</ul>
+<p>data段的布局：</p>
+<ul>
+<li><code>[.data]</code>: These are the globally initialized variables 全局的初始化变量</li>
+<li><code>[.dynamic]</code>: These are the dynamic linking structures and objects 动态链接结构和对象</li>
+<li><code>[.got.plt]</code>: This is the global offset table 全局偏移表</li>
+<li><code>[.bss]</code>: These are the globally uninitialized variables 全局未初始化变量</li>
+</ul>
+<p><img src="/2018/07/11/The-ELF-Binary-Format/3.png" alt="3"></p>
+<p>可重定位文件（类型为ET_REL的ELF文件）中不存在程序头，因为.o类型的文件会被链接到可执行文件中，但是不会被直接加载到内存中，故 readelf -l 不能得到想要的结果。</p>
+<p>（Linux loadable kernel modules are actually <code>ET_REL</code> objects and are an exception to the rule because they do get loaded directly into kernel memory and relocated on the fly.不过Linux中可加载内核模块LKM例外，LKM是ET_REL类型文件，它是被直接加载进内核的内存中并自动进行重定位。）</p>
+<p><img src="/2018/07/11/The-ELF-Binary-Format/4.png" alt="4"></p>
+<p>将test.o编译到可执行文件中，可以看到节头中新增了一些节，如.got.plt，.plt，.dynsym以及其他与动态链接及运行时重定位相关的节。</p>
+<h1 id="4-ELF-symbols"><a href="#4-ELF-symbols" class="headerlink" title="4 .ELF symbols"></a>4 .ELF symbols</h1><p>符号是对某些类型的数据或者代码（如全局变量或函数）的符号引用。eg：printf()函数会在动态符号表.dynsym中存在有一个指向该函数的符号条目。</p>
+<p>在大多数共享库和动态链接可执行文件中，存在两个符号表：.dynsym和.symtab。</p>
+<p>.dynsym保存了引用<strong>来自外部文件符号的全局符号</strong>，如printf这样的库函数。</p>
+<p><strong>.dynsym保存的符号是.symtab所保存符号的子集。</strong></p>
+<p>.symtab中<strong>还保存了可执行文件的本地符号</strong>，而.dynsym只保存了动态/全局符号。</p>
+<p>使用readelf -S查看可执行文件的节头表输出，<strong>.dynsym是被标记了ALLOC的，而.symtab没有标记。</strong></p>
+<p>ALLOC表示有该标记的节会被运行时分配并装载进入内存，而.symtab不是在运行时必需的，因此不会被装载进入内存。</p>
+<p>.dynsym保存的符号只能在运行时被解析，因此是运行时动态链接器所需要的唯一符号。.dynsym符号表<strong>对于动态链接可执行文件的执行来说是必需</strong>的。而.symtab符号表<strong>只是用来进行调试和链接</strong>的，有时候为了节约空间，会将.symtab符号表从产生二进制的文件中删去。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//64位ELF文件符号项的结构</span></span><br><span class="line"><span class="comment">//符号项保存在.symtab 和 .dynsym节中，因此节头项的大小与ElfN_Sym的大小相等。</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line"><span class="keyword">uint32_t</span>      st_name;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_info;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> st_other;</span><br><span class="line">    <span class="keyword">uint16_t</span>      st_shndx;</span><br><span class="line">    Elf64_Addr    st_value;</span><br><span class="line">    Uint64_t      st_size;</span><br><span class="line">&#125; Elf64_Sym;</span><br><span class="line"><span class="comment">//Symbol entries are contained within the .symtab and .dynsym sections, which is why the sh_entsize (section header entry size) for those sections are equivalent to sizeof(ElfN_Sym).</span></span><br></pre></td></tr></table></figure>
+<h2 id="1-st-name"><a href="#1-st-name" class="headerlink" title="1.st_name"></a>1.st_name</h2><p>st_name保存了指向符号表中字符串表（位于.dynstr或者.strtab）的偏移地址，偏移地址存放着符号的名称，如printf。</p>
+<h2 id="2-st-value"><a href="#2-st-value" class="headerlink" title="2. st_value"></a>2. st_value</h2><p>st_value存放符号的值（可能是地址或者位置偏移量）</p>
+<h2 id="3-st-size"><a href="#3-st-size" class="headerlink" title="3.st_size"></a>3.st_size</h2><p>st_size存放了一个符号的大小，如全局函数指针的大小，在一个32位系统中通常是4字节。</p>
+<h2 id="4-st-other"><a href="#4-st-other" class="headerlink" title="4.st_other"></a>4.st_other</h2><p>st_other变量定义了符号的可见性。</p>
+<h2 id="5-st-shndx"><a href="#5-st-shndx" class="headerlink" title="5.st_shndx"></a>5.st_shndx</h2><p>每个符号表条目的定义都与某些节对应。st_shndx变量保存了相关节头表的索引。</p>
+<h2 id="6-st-info"><a href="#6-st-info" class="headerlink" title="6.st_info"></a>6.st_info</h2><p>st_info指定符号类型及绑定属性。</p>
+<p>符号类型以STT开头，符号绑定以STB开头。</p>
+<h3 id="1-符号类型"><a href="#1-符号类型" class="headerlink" title="1.符号类型"></a>1.符号类型</h3><ul>
+<li><code>STT_NOTYPE</code>:  符号类型未定义</li>
+<li><code>STT_FUNC</code>: 表示该符号与函数或者其他可执行代码关联</li>
+<li><code>STT_OBJECT</code>: 表示该符号与数据目标文件关联</li>
+</ul>
+<h3 id="2-符号绑定"><a href="#2-符号绑定" class="headerlink" title="2.符号绑定"></a>2.符号绑定</h3><ul>
+<li><code>STB_LOCAL</code>: 本地符号在目标文件之外是不可见的，目标文件包含了符号的定义，如一个声明为static的函数</li>
+<li><code>STB_GLOBAL</code>: 全局符号对于所有要合并的目标文件来说都是可见的。一个全局符号在一个文件中进行定义后，另外一个文件可以对这个符号进行引用。</li>
+<li><code>STB_WEAK</code>: 与全局绑定类似，不过比STB_GLOBAL的优先级低，有可能会被同名的未被标记的STB_WEAK的符号覆盖。</li>
+</ul>
+<p>对绑定和类型字段进行打包和解包的宏指令：</p>
+<p>ELF32_ST_BIND(INFO) 或者 ELF64_ST_BIND(info)：从st_info中提取出一个绑定。</p>
+<p>ELF32_ST_TYPE(INFO) 或者 ELF64_ST_TYPE(info)：从st_info中提取类型。</p>
+<p>ELF32_ST_INFO(bind，type) 或者 ELF64_ST_INFO(bind，type)：将一个绑定和类型转换成st_info值。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//源码符号表</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">foochu</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="comment">/* Do nothing */</span> &#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123; <span class="comment">/* Do nothing */</span> &#125;</span><br><span class="line">_start()</span><br><span class="line">&#123;</span><br><span class="line">        func1();</span><br><span class="line">        foochu();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**********************************************************/</span></span><br><span class="line">showmeshell@parrot:~$ readelf -s test | egrep 'foochu|func1'</span><br><span class="line">     <span class="number">7</span>: <span class="number">080480</span>d8     <span class="number">5</span> FUNC    LOCAL  DEFAULT    <span class="number">2</span> foochu</span><br><span class="line">     <span class="number">8</span>: <span class="number">080480</span>dd     <span class="number">5</span> FUNC    GLOBAL DEFAULT    <span class="number">2</span> func1</span><br><span class="line"><span class="comment">//foochu 是一个有本地符号STB_LOCAL的函数STT_FUNC。本地绑定意味着符号在被定义的目标文件之外是不可见的，源于 static关键字声明，故为本地的。</span></span><br></pre></td></tr></table></figure>
+<p>如果去掉一个二进制文件的符号表，一个动态链接可执行文件会保留.dynsym，丢弃.symtab，因此只会显示导入库函数的符号。 如果一个二进制文件是通过静态编译（gcc -static） 得到的或者没有使用libc进行链接（gcc -nostdlib），然后使用strip命令进行了清理，那么这个二进制文件就不会有符号表。因为动态符号表对该二进制文件来说不是必需的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">The only thing to give us an idea where a new function starts is by examining the procedure prologue(过程序言), which is at the beginning of every function, unless (gcc -fomit-frame-pointer) has been used, in which case it becomes less obvious to identify.</span><br><span class="line">procedure prologue：The procedure prologue just sets up the stack frame（栈帧） for each new function that has been called by backing up the base pointer on the stack and setting its value to the stack pointers before the stack pointer is adjusted to make room for local variables. This way variables can be referenced as positive offsets from a fixed address stored in the base pointer register ebp/rbp.过程序言通过备份栈上的基准指针来为每个新调用的函数设置栈帧，并在栈指针为本地变量调整空间之前给栈指针赋值（先给栈指针赋值，变量随后压栈，指针随变量压栈进行调整）。首址作为一个固定地址存放基址寄存器ebp/rbp中，通过首址的正向偏移可以依次访问栈中的变量。</span><br></pre></td></tr></table></figure>
+<h1 id="5-ELF-relocations"><a href="#5-ELF-relocations" class="headerlink" title="5.ELF relocations"></a>5.ELF relocations</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// form the elf（5） man pages</span><br><span class="line">Relocation is the process of connecting symbolic references with symbolic definitions.（重定位就是将符号定义和符号引用进行连接的过程） Relocatable files must have information that describes how to modify their section contents, thus allowing executable and shared object files to hold the right information for a process&apos;s program image.（使得可执行文件和共享目标文件能够保存进程的程序镜像所需的正确信息）。</span><br></pre></td></tr></table></figure>
+<p>在重定位文件中，<strong>重定位记录保存了如何对给定的符号对应的代码进行补充的相关信息</strong>。<strong>重定位实际上一种给二进制文件打补丁的机制</strong>，如果使用了动态链接器，可以使用重定位在内存中patch hot-patching。用于创建可执行文件和共享库的链接程序/bin/ld，需要某种类型的元数据来描述如何对特定的指令进行修改。</p>
+<p>假设将2个目标文件链接到一起产生一个可执行文件，obj1.o文件中存放了调用函数foo()的代码，而函数foo()是存放在目标文件obj2.o中的。</p>
+<p>链接程序会对obj1.o和obj2.o中的重定位记录进行分析并将这两个文件链接在一起产生一个可以独立运行的可执行程序。</p>
+<p><strong>符号引用会被解析成符号定义</strong>：目标文件中的代码会被重定位到可执行文件的段中一个给定的地址。在进行重定位之前，无法确定obj1.o或者obj2.o中的符号和代码在内存中，因此无法进行引用。只能在链接器确定了可执行文件的段中存放的指令或者符号的位置之后才能够进行修改。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//64位重定位的条目</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">        Elf64_Addr r_offset;</span><br><span class="line">        Uint64_t   r_info;</span><br><span class="line">&#125; Elf64_Rel;</span><br><span class="line"><span class="comment">//有的加上了addend字段</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    	Elf64_Addr r_offset;</span><br><span class="line"> <span class="comment">//r_offset指向需要进行重定位操作的位置，重定位操作详细描述了如何对存放r_offset中的代码或数据进行修改。</span></span><br><span class="line">    	Uint64_t   r_info;</span><br><span class="line"><span class="comment">//r_info指定必须对其进行重定位的符号表索引以及要应用的重定位类型。    </span></span><br><span class="line">    	<span class="keyword">int64_t</span>    r_addend;</span><br><span class="line"><span class="comment">//r_addend指定常量加数，用于计算存储在可重定位字段中的值。    </span></span><br><span class="line">&#125;Elf64_Rela;</span><br></pre></td></tr></table></figure>
+<p><strong>隐式加数/显示加数</strong>：</p>
+<p>如果重定位记录存储在不包含r_addend字段的ElfN_Rel类型结构中，就需要隐式加数，因此隐式加数存储在重定位目标本身中。<strong>64位的可执行文件一般使用ElfN_Rela的结构，显式地对加数进行存储。</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//obj1</span></span><br><span class="line">_start()</span><br><span class="line">&#123;</span><br><span class="line">   foo();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>obj1这段代码中调用了foo()函数，但是foo()函数并没有在这个源码所在的文件中进行定义（obj2中），因此，就需要创建一个重定位条目，以便在编译时进行符号引用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ objdump -d obj1.o</span><br><span class="line">obj1.o:     file format elf32-i386</span><br><span class="line">Disassembly of section .text:</span><br><span class="line">00000000 &lt;func&gt;:</span><br><span class="line">   0:   55                      push   %ebp</span><br><span class="line">   1:   89 e5                   mov    %esp,%ebp</span><br><span class="line">   3:   83 ec 08                sub    <span class="variable">$0x8</span>,%esp</span><br><span class="line">   6:   e8 <span class="built_in">fc</span> ff ff ff          call 7 &lt;func+0x7&gt; </span><br><span class="line">   b:   c9                      leave  </span><br><span class="line">   c:   c3                      ret</span><br><span class="line"><span class="comment">#// 上面强调了对foo()的函数调用，存储的值0xfffffffc（就为-4）就是隐式加数。</span></span><br><span class="line"><span class="comment">#// call 7中，7是将要进行修改的重定位目标的偏移量。当obj1.o与obj2.o链接来产生一个可执行文件时，链接器会对偏移为7的位置所指向的重定位条目进行处理，即需要对该位置进行修补，随后在foo（）函数被包含进可执行文件后，链接器会对偏移7补齐4个字节，这样就相当于存储了foo（）函数的实际偏移地址</span></span><br><span class="line">$ readelf -r obj1.o</span><br><span class="line">Relocation section <span class="string">'.rel.text'</span> at offset 0x394 contains 1 entries:</span><br><span class="line"> Offset     Info    Type            Sym.Value  Sym. Name</span><br><span class="line">00000007  00000902 R_386_PC32        00000000   foo</span><br><span class="line"><span class="comment">#//偏移位置7处的重定位字段是由重定位条目的r_offset字段指定的。</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>R_386_PC32是重定位类型：采用“S+A-P”的方式对重定位目标进行修改。</li>
+<li>S是索引位于重定位条目中的符号的值。</li>
+<li>A是重定位条目中的加数。</li>
+<li>P是要进行重定位（使用r_offset进行计算的）的存储单元的地址（节偏移或者地址）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//32位系统中对obj1.o和obj2.o进行编译之后最终输出的可执行文件：</span></span><br><span class="line">$ gcc -nostdlib obj1.o obj2.o -o relocated</span><br><span class="line">$ objdump -d relocated</span><br><span class="line"><span class="built_in">test</span>:     file format elf32-i386</span><br><span class="line">Disassembly of section .text:</span><br><span class="line">080480d8 &lt;func&gt;:</span><br><span class="line"> 80480d8:   55                      push   %ebp</span><br><span class="line"> 80480d9:   89 e5                   mov    %esp,%ebp</span><br><span class="line"> 80480db:   83 ec 08                sub    <span class="variable">$0x8</span>,%esp</span><br><span class="line"> 80480de:   e8 05 00 00 00          call   80480e8 &lt;foo&gt;//重定位目标已经被修改成了32位的偏移量5，指向foo()函数。</span><br><span class="line"> 80480e3:   c9                      leave  </span><br><span class="line"> 80480e4:   c3                      ret    </span><br><span class="line"> 80480e5:   90                      nop</span><br><span class="line"> 80480e6:   90                      nop</span><br><span class="line"> 80480e7:   90                      nop</span><br><span class="line">080480e8 &lt;foo&gt;:</span><br><span class="line"> 80480e8:   55                      push   %ebp</span><br><span class="line"> 80480e9:   89 e5                   mov    %esp,%ebp</span><br><span class="line"> 80480eb:   5d                      pop    %ebp</span><br><span class="line"> 80480ec:   c3                      ret</span><br><span class="line"> <span class="comment">#//R386_PC_32重定位执行之后的结果为5： S + A – P: 0x80480e8 + 0xfffffffc – 0x80480df = 5 或者 0x80480e8 + (0x80480df + sizeof(uint32_t))</span></span><br></pre></td></tr></table></figure>
+<p>要将一个偏移量计算成虚拟地址，可以用下面公式：</p>
+<p><code>address_of_call + offset + 5</code>(5是调用指令的长度)</p>
+<p>所以才有：<code>0x80480de + 5 + 5 = 0x80480e8</code></p>
+<p>要将一个地址转化为偏移量：</p>
+<p><code>address – address_of_call – 4</code>（4是调用指令立即操作数的长度，为32位）</p>
+<p>所以才有：<code>0x80480e8  – 0x80480df -4  = 5</code></p>
+<h1 id="6-ELF-dynamic-linking"><a href="#6-ELF-dynamic-linking" class="headerlink" title="6.ELF dynamic linking"></a>6.ELF dynamic linking</h1><p>在动态链接方式实现以前，普通采用静态链接的方式来生成可执行文件，如果一个程序使用了外部的库函数，那么整个库都会被直接编译到可执行文件中。<strong>ELF支持动态链接，处理共享库的时候高效。</strong></p>
+<p>当一个程序被加载进内存时，动态链接器会把需要的共享库加载并绑定到该进行的地址空间中。共享库在被编译到可执行文件中时是位置独立的，因此很容易被重定位到进程的地址空间中。</p>
+<p><strong>一个共享库就是一个动态的ELF目标文件</strong>，在终端输入readelf -h lib.so命令，会看到e_type（ELF文件类型）是ET_DYN。动态目标文件与可执行文件非常类似，是由程序解释器加载的，通常没有PT_INTERP段，因此不会触发程序解释器。</p>
+<p>当一个共享库被加载进一个进程的地址空间中时，一定有指向其他共享库的重定位。动态链接器会修改可执行文件中的GOT（Global Offset Table,全局偏移表）。<strong>GOT位于数据段（.got.plt节）中，GOT必须是可写的。（只读重定位可以看做一种安全特性），故而位于数据段中。</strong></p>
+<p><strong>动态链接器会使用解析好的共享库地址来修改GOT。</strong></p>
+<h2 id="1-The-auxiliary-vector"><a href="#1-The-auxiliary-vector" class="headerlink" title="1. The auxiliary vector"></a>1. The auxiliary vector</h2><p><strong>辅助向量</strong></p>
+<p>通过系统调用sys_execve()将程序加载到内存中，对应的可执行文件会被映射到内存的地址空间，并为该进程的地址空间分配一个栈。这个栈会用特定的方式向动态链接器传递信息。这种特点的对信息的设置和安排即为<strong>辅助向量（auxv）</strong>。栈底存放了以下信息：<br><img src="/2018/07/11/The-ELF-Binary-Format/5.png" alt="5"><br>                [argc][argv][envp][auxiliary][.ascii data for argv/envp]</p>
+<p>辅助向量是一系列ElfN_auxv_t的结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="keyword">uint64_t</span> a_type;              <span class="comment">/* Entry type */</span></span><br><span class="line">  <span class="comment">//a_type指定了辅助向量的条目类型。</span></span><br><span class="line">  <span class="keyword">union</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">uint64_t</span> a_val;           <span class="comment">/* Integer value */</span></span><br><span class="line">      <span class="comment">// a_val 为辅助向量的值。</span></span><br><span class="line">    &#125; a_un;</span><br><span class="line">&#125; Elf64_auxv_t;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//动态链接器所需的一些最重要的条目类型</span></span><br><span class="line"><span class="comment">// usr/include/elf.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_EXECFD       2       <span class="comment">/* File descriptor of program */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_PHDR         3       <span class="comment">/* Program headers for program */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_PHENT        4       <span class="comment">/* Size of program header entry */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_PHNUM        5       <span class="comment">/* Number of program headers */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_PAGESZ       6       <span class="comment">/* System page size */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_ENTRY        9       <span class="comment">/* Entry point of program */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AT_UID          11      <span class="comment">/* Real uid */</span></span></span><br><span class="line"><span class="comment">//动态链接器从栈中检索可执行程序相关的信息，如程序头，程序的入口地址等。</span></span><br></pre></td></tr></table></figure>
+<p>辅助向量由内核函数create_elf_tables()设定，该内核函数在linux的源码/usr/src/linux/fs/binfmt_elf.c中。</p>
+<p>In fact, the execution process from the kernel looks something like the following:事实上，内核的执行过程跟下面的描述类似。</p>
+<ol>
+<li><code>sys_execve()</code> →.</li>
+<li>Calls <code>do_execve_common()</code> →.</li>
+<li>Calls <code>search_binary_handler()</code> →.</li>
+<li>Calls <code>load_elf_binary()</code> →.</li>
+<li>Calls <code>create_elf_tables()</code> →.</li>
+</ol>
+<p>The following is some of the code from <code>create_elf_tables()</code> in <code>/usr/src/linux/fs/binfmt_elf.c</code> that adds auxv entries:（这段代码会添加辅助向量条目）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">NEW_AUX_ENT(AT_PAGESZ, ELF_EXEC_PAGESIZE);</span><br><span class="line">NEW_AUX_ENT(AT_PHDR, load_addr + exec-&gt;e_phoff);</span><br><span class="line">NEW_AUX_ENT(AT_PHENT, <span class="keyword">sizeof</span>(struct elf_phdr));</span><br><span class="line">NEW_AUX_ENT(AT_PHNUM, exec-&gt;e_phnum);</span><br><span class="line">NEW_AUX_ENT(AT_BASE, interp_load_addr);</span><br><span class="line">NEW_AUX_ENT(AT_ENTRY, exec-&gt;e_entry);</span><br></pre></td></tr></table></figure>
+<p>ELF的入口点和程序头地址，以及其他的值，是与内核中的NEW_AUX_ENT()宏一起入栈的。</p>
+<p><strong>程序被加载进内存，辅助向量被填充好之后，控制权就交给了动态链接器。动态链接器会解析要链接到进程地址空间的用于共享库的符号和重定位。</strong></p>
+<p>默认情况下，可执行文件会动态链接GNU C库 libc.so。（ps：ldd命令能显示出一个给定的可执行文件所依赖的共享库列表）。</p>
+<h2 id="2-PLT-GOT"><a href="#2-PLT-GOT" class="headerlink" title="2. PLT/GOT"></a>2. PLT/GOT</h2><p>在可执行文件和共享库中可以看到PLT（procedure linkage table 过程链接表）和GOT（Global offset table 全局偏移表）。</p>
+<p>当一个程序调用共享库中的函数（如strcpy()或者printf())时，需要到程序运行时，才能解析这些函数调用，那么一定存在动态链接共享库并解析共享函数地址的机制。编译器编译动态链接的程序时，会使用一种特定的方式来处理共享库函数调用，与简单的本地函数调用指令截然不同。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//32位ELF可执行文件对libc.so的函数fgets（）进行调用的例子</span></span><br><span class="line"><span class="comment">#//32位可执行文件与GOT的关系容易观察。在32位文件中没有用到IP相对地址，IP相对地址是在64位可执行文件中使用的。</span></span><br><span class="line">objdump -d <span class="built_in">test</span></span><br><span class="line"> ...</span><br><span class="line"> 8048481:       e8 da fe ff ff          call   8048360&lt;fgets@plt&gt;</span><br><span class="line"> ...</span><br><span class="line"> <span class="comment">#//地址0x8048360对应函数fgets（）的PLT条目。</span></span><br><span class="line">********************************************************************</span><br><span class="line"> <span class="comment">#//查看0x8048360的内容，如下</span></span><br><span class="line"> objdump -d <span class="built_in">test</span> (grep <span class="keyword">for</span> 8048360)</span><br><span class="line">...</span><br><span class="line">08048360&lt;fgets@plt&gt;:                    /* A jmp into the GOT */</span><br><span class="line"> 8048360:       ff 25 00 a0 04 08       jmp    *0x804a000</span><br><span class="line"> <span class="comment">#//有一个间接跳转指向存放在0x804a000中的地址，这个地址就是GOT条目，存放着libc共享库中函数fgets（）的实际地址。</span></span><br><span class="line"> 8048366:       68 00 00 00 00          push   <span class="variable">$0x0</span></span><br><span class="line"> 804836b:       e9 e0 ff ff ff          jmp    8048350 &lt;_init+0x34&gt;</span><br><span class="line"><span class="comment">#//对函数fgets（）的调用会指向地址0x8048360，即函数fgets（）的PLT跳转表条目。</span></span><br></pre></td></tr></table></figure>
+<p>然而，动态链接器采用默认的<strong>lazy linking</strong> （延迟链接方式）时，不会在函数第一次调用时就对地址进行解析。<strong>lazy linking</strong> <strong>意味着动态链接器不会在程序加载时解析每一个函数，而是在调用时通过.plt和.got.plt节（分别对应各自的过程链接表和全局偏移表）来对函数进行解析。</strong>可以通过修改LD_BIND_NOW环境变量将链接方式修改为<strong>strict linking</strong>（严格加载），以便在程序加载的同时进行动态链接。</p>
+<p>动态链接器之所以默认采用lazy linking，是因为lazy Linking能够提高装载时的性能。（PS：有些安全特性，如只读重定位，只能在严格链接的模式下使用，因为.plt.got节是只读的。在动态链接器完成对.plt.got的补充之后才能够进行只读重定位，故必须使用strict linking。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//fgets()函数的重定位条目</span></span><br><span class="line">$ readelf -r <span class="built_in">test</span></span><br><span class="line">Offset   Info      Type           SymValue    SymName</span><br><span class="line">...</span><br><span class="line">0804a000  00000107 R_386_JUMP_SLOT   00000000   fgets</span><br><span class="line">...</span><br><span class="line"><span class="comment">#//R_386_JUMP_SLOT is a relocation type for PLT/GOT entries. On x86_64, it is called R_X86_64_JUMP_SLOT.</span></span><br></pre></td></tr></table></figure>
+<p> 重定位的偏移地址为0x804a000，跟fgets（）函数PLT跳转的地址相同。</p>
+<p>假设函数fgets（）是第一次被调用，动态链接器需要对fgets（）的地址进行解析，并把值存入fgets（）的GOT条目中。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//test的GOT：</span></span><br><span class="line">08049ff4 &lt;_GLOBAL_OFFSET_TABLE_&gt;:</span><br><span class="line"> 8049ff4:       28 9f 04 08 00 00       sub    %bl,0x804(%edi)</span><br><span class="line"> 8049ffa:       00 00                   add    %al,(%eax)</span><br><span class="line"> 8049ffc:       00 00                   add    %al,(%eax)</span><br><span class="line"> 8049ffe:       00 00                   add    %al,(%eax)</span><br><span class="line"> 804a000:       66 83 04 08 76          addw   <span class="variable">$0x76</span>,(%eax,%ecx,1)</span><br><span class="line"> 804a005:       83 04 08 86             addl   <span class="variable">$0xffffff86</span>,(%eax,%ecx,1)</span><br><span class="line"> 804a009:       83 04 08 96             addl   <span class="variable">$0xffffff96</span>,(%eax,%ecx,1)</span><br><span class="line"> 804a00d:       83                      .byte 0x83</span><br><span class="line"> 804a00e:       04 08                   add    <span class="variable">$0x8</span>,%al</span><br></pre></td></tr></table></figure>
+<p>重点注意地址0x08048366，该地址存储在GOT的0x804a000中， 66 83 04 08 =》08048366。</p>
+<p>由于链接器还没有对函数fgets（）进行解析，故该地址并不是函数的地址，而是执行函数fgets（）的PLT条目。</p>
+<p>再回到PLT条目：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">08048360 &lt;fgets@plt&gt;:</span><br><span class="line"> 8048360:       ff 25 00 a0 04 08       jmp    *0x804a000</span><br><span class="line"> 8048366:       68 00 00 00 00          push   <span class="variable">$0x0</span></span><br><span class="line"> <span class="comment">#// jmp *0x804a000指令跳转到地址0x804a000中存放的0x8048366，即push $0x0指令。</span></span><br><span class="line"> <span class="comment">#// 该push指令的作用是将fgets的GOT条目入栈。</span></span><br><span class="line"> 804836b:       e9 e0 ff ff ff          jmp    8048350 &lt;_init+0x34&gt;</span><br></pre></td></tr></table></figure>
+<p>fgets（）的GOT条目偏移地址0x0，对应的第一个GOT条目，是为一个共享库符号值保留的，0x0实际上是第4个GOT条目，即GOT[3]。</p>
+<p>共享库的地址并不是从GOT[0]开始，而是从GOT[3]开始的，前3个条目其它用途保留。</p>
+<ul>
+<li>GOT[0]:存放了指向可执行文件动态段的地址，动态链接器利用该地址提取动态链接相关的信息。</li>
+<li>GOT[1]:存放link_map结构的地址，动态链接器利用该地址来对符号进行解析。</li>
+<li>GOT[2]:存放了指向动态链接器 _dl_runtime_resolve()函数的地址，该函数用来解析共享库函数的实际符号地址。</li>
+</ul>
+<p>fgets（）的PLT存根（stub）的最后一条指令是 jmp 8048350 。该地址指向可执行文件的第一个PLT条目，PLT-0；</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//PLT-0</span></span><br><span class="line">8048350:       ff 35 f8 9f 04 08       pushl  0x8049ff8</span><br><span class="line"><span class="comment">#//将GOT[1]的地址压栈，存放link_map结构。</span></span><br><span class="line">8048356:       ff 25 <span class="built_in">fc</span> 9f 04 08       jmp    *0x8049ffc</span><br><span class="line"><span class="comment">#//jmp *0x8049ffc指令间接跳转到第三个GOT条目，GOT[2]，存放 _dl_runtime_resolve()地址，然后将控制权转给动态链接器，解析fgets（）函数的地址。</span></span><br><span class="line">804835c:       00 00                   add    %al,(%eax)</span><br></pre></td></tr></table></figure>
+<p> <strong>对函数fgets进行解析后，后续所有的对PLT条目fgets的调用都会跳转到fgets的代码本身，而不是重新指向PLT，再进行一遍延迟链接的过程。</strong></p>
+<p><strong>SUM++</strong>：</p>
+<ol>
+<li>调用fget@PLT（即调用fgets函数）</li>
+<li>PLT代码做一个次到GOT地址的间接跳转。</li>
+<li>GOT条目存放了指向PLT的地址，该地址存放在PUSH指令中。</li>
+<li>push $0x0 指令将fgets（）GOT条目的偏移量压栈。</li>
+<li>最后的fgets（）PLT指令是执行PLT-0代码的jmp指令。</li>
+<li>PLT-0的第一条指令将GOT[1]的地址压栈，GOT[1]中存放了指向fgets（）的link_map结构的偏移地址。</li>
+<li>PLT-0的第二条指令会跳转到GOT[2]存放的地址，该地址执行动态链接器的_dl_runtime_resolve()函数，_dl_runtime_resolve()会通过把fgets（）函数的符号值加到.got.plt节对于的GOT条目中，来处理R_386_JUMP_SLOT重定位。</li>
+<li>下一次调用fgets函数时，PLT条目直接跳转到函数本身，而不是再执行一遍重定位过程。</li>
+</ol>
+<h2 id="3-The-dynamic-segment-revisited"><a href="#3-The-dynamic-segment-revisited" class="headerlink" title="3. The dynamic segment revisited"></a>3. The dynamic segment revisited</h2><p>动态段前面说过，有一个节头，可以通过节头来引用动态段，还可以通过程序头来引用动态段。</p>
+<p>动态链接器需要在程序运行时引用动态段，但是节头不能够被加载到内存中，因此动态段需要有相关的程序头。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//动态段保存了一个由类型为ElfN_Dyn的结构体组成的数组。</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    Elf32_Sword    d_tag;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">      Elf32_Word d_val;</span><br><span class="line"><span class="comment">//d_val成员保存了一个整型值，可以存放各种不同的数据，如一个重定位条目的大小。    </span></span><br><span class="line">      Elf32_Addr d_ptr;</span><br><span class="line"><span class="comment">//d_ptr成员保存了一个内存虚址，可以指向链接器需要的各种类型的地址，eg：d_tag DT_SYMTAB符号表的地址。        </span></span><br><span class="line">    &#125; d_un;</span><br><span class="line">&#125; Elf32_Dyn;</span><br></pre></td></tr></table></figure>
+<p>d_tag字段保存了类型的定义参数。</p>
+<p>动态链接器常用比较重要的类型值：</p>
+<p>1.DT_NEEDED</p>
+<p>保存了所需的共享库名的字符串表偏移。</p>
+<p>2.DT_SYMTAB</p>
+<p>动态符号表的地址，对应的节名 .dynsym。</p>
+<p>3.DT_HASH</p>
+<p>符号散列表的地址，对应的节名 .hash （有时命名为.gnu.hash）。</p>
+<p>4.DT_STRTAB</p>
+<p>符号字符串表的地址，对应的节名.dynstr。</p>
+<p>5.DT_PLTGOT</p>
+<p>全局偏移表的地址。</p>
+<p>动态链接器利用ElfN_Dyn的d_tag来定位动态段的不同部分，每一部分都通过d_tag保存了指向某部分可执行文件的引用。如DT_SYMTAB保存了动态符号表的地址，对于的d_ptr给出了指向该符号标的虚址。</p>
+<p>动态链接器映射到内存中时，<strong>首先会处理自身的重定位</strong>，因为链接器本身就是一个共享库。接着<strong>会查看可执行程序的动态段并查找DT_NEEDED参数，该参数保存了指向所需的共享库的字符串或者路径名。</strong>当一个共享库被映射到内存后，<strong>链接器会获取到共享库的动态段，并将共享库的符号表添加到符号表链中，符号表链存储了所有映射到内存中的共享库的符号表。</strong></p>
+<p>链接器为每个共享库生成一个link_map结构的条目，并将其存入到一个链表中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">link_map</span></span></span><br><span class="line"><span class="class">  &#123;</span></span><br><span class="line">    ElfW(Addr) l_addr; <span class="comment">/* Base address shared object is loaded at.  */</span></span><br><span class="line">    <span class="keyword">char</span> *l_name;      <span class="comment">/* Absolute file name object was found in.  */</span></span><br><span class="line">    ElfW(Dyn) *l_ld;   <span class="comment">/* Dynamic section of the shared object.  */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_next</span>, *<span class="title">l_prev</span>;</span> <span class="comment">/* Chain of loaded objects.  */</span></span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+<p>链接器构建完依赖列表后，会挨个处理每个库的重定位，同时会补充每个共享库的GOT。lazy linking （延迟链接）对共享库的PLT/GOT仍然适用。故，只有当一个函数真正被调用时，才会进行GOT重定位。（type <code>R_386_JMP_SLOT</code>）。</p>
+<p>ps:书中内容整理不易，翻译部分来自 learning-Linux-BInary-Analysis ，全手敲，对理解elf文件编译链接的具体过程很有帮助～要不给个赞赏，不然我可要饿死街头了～</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/11/The-ELF-Binary-Format/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-栈，堆，PE，ELF" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1431,103 +1842,9 @@
 
 
   
-    <article id="post-成都" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/05/29/成都/">成都</a>
-    </h1>
-  
-
-        
-        <a href="/2018/05/29/成都/" class="archive-article-date">
-  	<time datetime="2018-05-29T09:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="成都"><a href="#成都" class="headerlink" title="成都"></a>成都</h1><p>乘着闲，牵着她手，飞去了梦寐以求的成都。一座有着巨大包容力的城市。<img src="/2018/05/29/成都/1.jpg" alt="1"></p>
-<p>第一次，一起飞。</p>
-<p><img src="/2018/05/29/成都/2.jpg" alt="2"></p>
-<p><strong>去过有着歌与酒热腾生活气的成都</strong>，</p>
-<p>吃遍宽窄巷子，锦里，杜甫草堂。</p>
-<p>还在成都的街头骑上了单车。</p>
-<p><img src="/2018/05/29/成都/3.jpg" alt="3"></p>
-<p><strong>锦里</strong>，一起尝过秋刀鱼，兔腿，菠萝饭，山楂，千丝饼。</p>
-<p><img src="/2018/05/29/成都/4.jpg" alt="4"></p>
-<p><strong>东南亚名宿</strong>，一起喝过红酒。<strong>杜甫草堂</strong>，拍过花，逗过鱼。</p>
-<p><img src="/2018/05/29/成都/5.jpg" alt="5"></p>
-<p><strong>成都的火锅</strong>，小龙坎，大龙燚，炉鱼，扇贝巴拉巴拉～</p>
-<p><img src="/2018/05/29/成都/6.jpg" alt="6"></p>
-<p><strong>小熊猫与大熊猫</strong>？真的不一样！！圆滚滚的屁股～</p>
-<p><img src="/2018/05/29/成都/7.jpg" alt="7"></p>
-<p>没有吃成的<strong>苍蝇馆子</strong>，用221路与锅魁弥补！</p>
-<p><img src="/2018/05/29/成都/8.jpg" alt="8"></p>
-<p><strong>好利来半熟芝士，</strong>最爱玫瑰味！<strong>钵钵鸡，猪蹄面，群光烤猪蹄</strong>。</p>
-<p>走到<strong>玉林路</strong>的尽头，坐在<strong>小酒馆</strong>的门口，在成都的街头走一走。</p>
-<p><img src="/2018/05/29/成都/9.jpg" alt="9"></p>
-<p>ps：两个正经讲故事的程序猿：）</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">travel</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/05/29/成都/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 
@@ -1649,6 +1966,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
