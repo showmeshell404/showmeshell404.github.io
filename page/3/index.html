@@ -150,6 +150,199 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-odex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/17/odex文件格式详解/">odex文件格式详解</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/17/odex文件格式详解/" class="archive-article-date">
+  	<time datetime="2018-08-17T03:47:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="odex文件格式"><a href="#odex文件格式" class="headerlink" title="odex文件格式"></a>odex文件格式</h3><p><strong>odex是OptimizedDEX的缩写，表示经过优化的dex文件。</strong></p>
+<h4 id="1-生成odex文件"><a href="#1-生成odex文件" class="headerlink" title="1.生成odex文件"></a>1.生成odex文件</h4><ul>
+<li><p>odex存在方式</p>
+<ul>
+<li>一种是从apk程序中提取出来，与apk文件存放在同一目录且文件后缀为odex的文件，这类odex文件多是Android ROM的系统程序</li>
+<li>一种是dalvik-cache缓存文件，这类odex文件仍然以dex作为后缀，存放在cache/dalvik-cache目录下<ul>
+<li>保存的形式为“apk路径@apk名@classes.dex”，eg：“system@<a href="mailto:app@Calculator.apk" target="_blank" rel="noopener">app@Calculator.apk</a>@classes.dex”表示安装在/system/app目录下Calculator.apk程序的odex文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>odex文件的优势</p>
+<ul>
+<li>由于Android程序的apk文件为<strong>zip压缩包格式</strong>，Dalvik虚拟机每次加载它们时需要从apk中读取<strong>classes.dex文件</strong>，这样会耗费很多cpu时间。</li>
+<li>采用odex方式优化的dex文件，已经<strong>包含了加载dex必须的依赖库文件列表</strong>，Dalvik虚拟机只需检测并加载所需的依赖库即可执行相应的dex文件，这大大缩短了读取dex文件所需的时间。</li>
+<li>对于部分Android系统的ROM，由于<strong>将系统app全部转换成外置的odex文件与apk放在同一目录</strong>，这样系统在启动加载这些程序时会节省更多的时间，启动速度自然也会更快。</li>
+</ul>
+</li>
+<li><p><a href="https://pan.baidu.com/s/1JcjNPNWZek1C-_zznPDlAQ" target="_blank" rel="noopener">dexopt-wrapper</a></p>
+<ul>
+<li><p>生成odex文件的工具dexopt-wrapper</p>
+</li>
+<li><p>dexopt-wrapper主程序源码DexOptWrapper.cpp文件，实现调用的是/system/bin/dexopt程序</p>
+</li>
+<li><p><strong>dexopt-wrapper生成odex文件的方法</strong>：</p>
+<ul>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb	push dexopt-wrapper /data/<span class="built_in">local</span>/</span><br><span class="line">adb	shell chmod 777 /data/<span class="built_in">local</span>/dexopt-wrapper</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Hello.dex改名为classes.dex 并打包zip文件</span></span><br><span class="line">adb	push Hello.zip /data/local/</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用dexopt-wrapper来生成odex文件</span></span><br><span class="line">./dexopt-wrapper Hello.zip Hello.odex</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//最后将odex文件pull出来</span></span><br><span class="line">adb	pull /data/local/Hello.odex</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-odex文件整体结构"><a href="#2-odex文件整体结构" class="headerlink" title="2.odex文件整体结构"></a>2.odex文件整体结构</h4><p>odex文件在dex文件头部添加了一些数据，然后在dex文件尾部添加了dex文件的依赖库以及一些辅助数据</p>
+<p><img src="/2018/08/17/odex文件格式详解/1.png" alt="1"></p>
+<ul>
+<li>Dalvik虚拟机将dex文件映射到内存中后是DexFile格式</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Structure representing a DEX file.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Code should regard DexFile as opaque, using the API calls provided here</span></span><br><span class="line"><span class="comment"> * to access specific structures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFile</span> &#123;</span></span><br><span class="line">    <span class="comment">/* directly-mapped "opt" header */</span></span><br><span class="line">    <span class="keyword">const</span> DexOptHeader* pOptHeader;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* pointers to directly-mapped structs and arrays in base DEX */</span></span><br><span class="line">    <span class="keyword">const</span> DexHeader*    pHeader;</span><br><span class="line">    <span class="keyword">const</span> DexStringId*  pStringIds;</span><br><span class="line">    <span class="keyword">const</span> DexTypeId*    pTypeIds;</span><br><span class="line">    <span class="keyword">const</span> DexFieldId*   pFieldIds;</span><br><span class="line">    <span class="keyword">const</span> DexMethodId*  pMethodIds;</span><br><span class="line">    <span class="keyword">const</span> DexProtoId*   pProtoIds;</span><br><span class="line">    <span class="keyword">const</span> DexClassDef*  pClassDefs;</span><br><span class="line">    <span class="keyword">const</span> DexLink*      pLinkData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * These are mapped out of the "auxillary" section, and may not be</span></span><br><span class="line"><span class="comment">     * included in the file.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">const</span> DexClassLookup* pClassLookup;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">void</span>*         pRegisterMapPool;       <span class="comment">// RegisterMapClassPool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* points to start of DEX file data */</span></span><br><span class="line">    <span class="keyword">const</span> u1*           baseAddr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* track memory overhead for auxillary structures */</span></span><br><span class="line">    <span class="keyword">int</span>                 overhead;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* additional app-specific data structures associated with the DEX */</span></span><br><span class="line">    <span class="comment">//void*               auxData;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>分析</p>
+<ul>
+<li>DexOptHeader就是odex的头</li>
+<li>DexLink以下的部分被称为“auxillary section”，即辅助数据段，它记录了dex文件被优化后添加的一些信息</li>
+<li>DexFile结构描述的是加载进内存的数据结构，还有一些数据是不会加载进内存的</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ODEXFile</span> &#123;</span></span><br><span class="line">    DexOptHeader            header;     <span class="comment">//odex文件头</span></span><br><span class="line">    DexFile                 DexFile;    <span class="comment">//dex文件</span></span><br><span class="line">    Dependences             deps;       <span class="comment">//依赖库列表</span></span><br><span class="line">    ChunkDexClassLookup     lookup;     <span class="comment">//类查询结构</span></span><br><span class="line">    ChunkRegisterMapPool    mapPool;    <span class="comment">//映射池</span></span><br><span class="line">    ChunkEnd                end;        <span class="comment">//结束标识   </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="3-odex文件结构分析"><a href="#3-odex文件结构分析" class="headerlink" title="3.odex文件结构分析"></a>3.odex文件结构分析</h4><ul>
+<li>ODEXFile的文件头DexOptHeader在DexFile.h文件中定义:</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexOptHeader</span>&#123;</span></span><br><span class="line">    u1 magic[<span class="number">8</span>];            <span class="comment">//odex版本标识 ，目前固定值 64 65 79 0A 30 33 36 00</span></span><br><span class="line">    u4 dexOffset;           <span class="comment">//dex文件头偏移 ，目前0x28 = 40，等于odex文件头大小</span></span><br><span class="line">    u4 dexLength;           <span class="comment">//dex文件总长度</span></span><br><span class="line">    u4 depsOffset;          <span class="comment">//odex依赖库列表偏移</span></span><br><span class="line">    u4 depsLength;          <span class="comment">//依赖库列表总长度</span></span><br><span class="line">    u4 optOffset;           <span class="comment">//辅助数据偏移</span></span><br><span class="line">    u4 optLength;           <span class="comment">//辅助数据总长度</span></span><br><span class="line">    u4 flags;               <span class="comment">//标志，Dalvik虚拟机加载odex时的优化与验证选项</span></span><br><span class="line">    u4 checksum;            <span class="comment">//依赖库与辅助数据的校验和</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Dependences结构不会被加载进内存，而且Android源码中它也没有被明确定义</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">Dependences</span>&#123;</span></span><br><span class="line">    u4	modWhen;			<span class="comment">//时间戳</span></span><br><span class="line">    u4	crc;				<span class="comment">//校验</span></span><br><span class="line">    u4	DALVIK_VM_BUILD;	<span class="comment">//Dalvik虚拟机版本号</span></span><br><span class="line">    u4	numDeps;			<span class="comment">//依赖库个数</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span>	&#123;</span>		</span><br><span class="line">        u4	len;			<span class="comment">//name字符串长度</span></span><br><span class="line">        u1	name[len];		<span class="comment">//依赖库名称,完整路径名</span></span><br><span class="line">        kSHA1DigestLen	Signature;	<span class="comment">//SHA-1哈希值</span></span><br><span class="line">    &#125;table[numDeps];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Dependences结构的具体操作函数为Android系统源码目录中<code>dalvik\vm\analysis\DexPrepare.cpp</code>文件的writeDependencies()函数</p>
+<p><img src="/2018/08/17/odex文件格式详解/2.png" alt="2"></p>
+<p><img src="/2018/08/17/odex文件格式详解/3.png" alt="3"></p>
+<ul>
+<li><p>分析</p>
+<ul>
+<li>0x10处的depsOffset字段值为0x358</li>
+<li>0x14处的depsLength字段值为0x2c6</li>
+<li>Dependences结构所占用的区域为0x358~0x61e</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/4.png" alt="4"></p>
+<p>时间戳modWhen为40f28eea，crc检验值为90e09371，Dalvik虚拟机版本为0x17，依赖库个数numDeps为8，表示接下来有8个连接的table结构。</p>
+</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/5.png" alt="5"></p>
+<ul>
+<li><p>3个Chunk块</p>
+<ul>
+<li>Dependences结构下面为3个Chunk块，它们被Dalvik虚拟机加载到一个称为auxillary的段中。</li>
+<li>3个Chunk块是由DexPrepare.cpp文件中的writeOptData()函数写入的</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/6.png" alt="6"></p>
+<ul>
+<li>数据实际是通过writeChunk()函数写入的，writeChunk()函数中定义了1个header</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span>&#123;	<span class="comment">/*save a syscall by grouping these together*/</span></span><br><span class="line">    <span class="keyword">char</span> raw[<span class="number">8</span>];</span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        u4	type;	<span class="comment">//以kDexChunk开头的枚举量</span></span><br><span class="line">        u4	size;	<span class="comment">//需要填充的数据的字节数</span></span><br><span class="line">    &#125;ts;</span><br><span class="line">&#125;header;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>分析：</p>
+<ul>
+<li><p>writeChunk()函数在写入具体的结构时会先填充header结构</p>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span>&#123;</span><br><span class="line">    kDexChunkClassLookup	= <span class="number">0x434c4b50</span>,	<span class="comment">/*CLKP*/</span></span><br><span class="line">    kDexChunkRegisterMaps	= <span class="number">0x524d4150</span>,	<span class="comment">/*RMAP*/</span></span><br><span class="line">    kDexChunkEnd			= <span class="number">0x41454e44</span>,	<span class="comment">/*AEND*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>写入<code>ChunkDexClassLookup</code>结构时writeOptData()函数向writeChunk()函数传递了1个DexClassLookup结构的指针，它的结构声明:</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassLookup</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> size;						<span class="comment">//本结构的字节数</span></span><br><span class="line">    <span class="keyword">int</span>	numEntries;					<span class="comment">//接下来的table结构的项数，通常值为2</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        u4	classDescriptorHash;	<span class="comment">//类的哈希值</span></span><br><span class="line">        <span class="keyword">int</span>	classDescriptorOffset;	<span class="comment">//类描述</span></span><br><span class="line">        <span class="keyword">int</span>	classDefOffset;			<span class="comment">//指向DexClassDef结构的指针</span></span><br><span class="line">    &#125;table[<span class="number">1</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//总结出ChunkDexClassLookup的结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ChunkDexClassLookup</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">    DexClassLookup	lookup;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>写入<code>ChunkRegisterMapPool</code>结构时writeOptData()函数向writeChunk()函数传递了1个Register MapBuilder结构指针</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">ChunkRegisterMapPool</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">RegisterMapClassPool</span>&#123;</span></span><br><span class="line">            u4	numClasses;</span><br><span class="line">            u4	classDataOffset;</span><br><span class="line">        &#125;classpool;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">RegisterMapMethodPool</span>&#123;</span></span><br><span class="line">            u2	methodCount;</span><br><span class="line">            u4	methodData[<span class="number">1</span>];</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;lookup;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>RegisterMapBuilder</code>结构是通过<code>dvmGenerateRegisterMaps()</code>函数填充的，<code>dvmGenerateRegisterMaps()</code>函数会调用<code>writeMapsAllClasses()</code>函数填充所有的类的映射信息，而<code>writeMapsAllClasses()</code>函数又会调用<code>writeMapsAllMethods()</code>函数填充所有方法的映射信息，<code>writeMapsAllMethods()</code>函数接着调用<code>writeMapForMethod()</code>函数依次填充每个方法的映射信息，并调用<code>computeRegisterMapSize()</code>函数计算填充的每个方法映射信息的长度以便循环遍历所有的方法.</p>
+<ul>
+<li>写入<code>ChunkEnd</code>结构时，writeOptData()函数向writeChunk()函数传递了1个NULL指针<ul>
+<li>传递的kDexChunkEnd类型来判断，odex文件最后的8个字节应该固定为<code>44 4E 45 41 00 00 00 00</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ChunkEnd</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/17/odex文件格式详解/odex.jpg" alt="odex"></p>
+<p>​</p>
+<p>​</p>
+<p>​</p>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/17/odex文件格式详解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-dex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1619,94 +1812,6 @@
 
 
   
-    <article id="post-Relocatable code injection-based binary patching" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/11/Relocatable code injection-based binary patching/">基于二进制修补的重定位代码注入</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/11/Relocatable code injection-based binary patching/" class="archive-article-date">
-  	<time datetime="2018-07-11T01:40:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Relocatable-code-injection-based-binary-patching"><a href="#Relocatable-code-injection-based-binary-patching" class="headerlink" title="Relocatable code injection-based binary patching"></a>Relocatable code injection-based binary patching</h1><p><strong>基于二进制修补的重定位代码注入的学习</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utilize as a way to relink a binary after it&apos;s already been compiled and linked into an executable. That is, you can inject an object file into an executable, update the executable&apos;s symbol table to reflect newly inserted functionality, and perform the necessary relocations on the injected object code so that it becomes a part of the executable.</span><br></pre></td></tr></table></figure>
-<p>在二进制文件编译完成后并链接到一个可执行文件之后，通过重定位代码技术可以重新链接二进制文件。这就意味着，可以将一个目标文件注入到可执行文件中，更改可执行文件的符号表来指向新注入的功能，并对注入的目标代码进行必要的重定位，那么注入的代码就变成了可执行文件的一部分。</p>
-<p>可以使用Eresi（ELF反编译系统接口）：<a href="https://github.com/thorkill/eresi" target="_blank" rel="noopener">https://github.com/thorkill/eresi</a></p>
-<p>有2篇文章可以说明ERESI的创新性：</p>
-<ul>
-<li>Cerberus ELF interface (<a href="http://www.phrack.org/archives/issues/61/8.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/61/8.txt</a>)</li>
-<li>Embedded ELF debugging (<a href="http://www.phrack.org/archives/issues/63/9.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/63/9.txt</a>)</li>
-</ul>
-<p>Ryan O‘Neill也有开发一个Quenya用于ELF反编译的工具。 下载链接：<a href="http://www.bitlackeys.org/projects/quenya_32bit.tgz" target="_blank" rel="noopener">http://www.bitlackeys.org/projects/quenya_32bit.tgz</a>.可以向可执行文件中注入代码：如果向劫持一个给定的函数来修复二进制文件，那么Quenya的代码注入功能可用。</p>
-<p>如果想攻击一个32位的程序，在该程序中调用puts（）函数用来打印HelloWorld。目标是劫持puts函数，调用evil_puts（）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//evil_puts.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _write (<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">int</span> count)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">long</span> ret;</span><br><span class="line"></span><br><span class="line">  __asm__ __volatile__ (<span class="string">"pushl %%ebx\n\t"</span></span><br><span class="line"><span class="string">"movl %%esi,%%ebx\n\t"</span></span><br><span class="line"><span class="string">"int $0x80\n\t"</span><span class="string">"popl %%ebx"</span>:<span class="string">"=a"</span> (ret)</span><br><span class="line">                        :<span class="string">"0"</span> (SYS_write), <span class="string">"S"</span> ((<span class="keyword">long</span>) fd),</span><br><span class="line"><span class="string">"c"</span> ((<span class="keyword">long</span>) buf), <span class="string">"d"</span> ((<span class="keyword">long</span>) count));</span><br><span class="line">  <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) ret;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">evil_puts</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	 _write(<span class="number">1</span>, <span class="string">"HAHA puts() has been hijacked!\n"</span>, <span class="number">31</span>);   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//现在将evil_puts.c编译成evil_puts.o文件，然后注入到./hello_world程序中</span></span><br><span class="line">$ ./hello_world</span><br><span class="line">Hello World</span><br><span class="line"><span class="comment">#//调用了puts("hello world\n");</span></span><br><span class="line">***************************************</span><br><span class="line">[Quenya v0.1@alchemy] reloc evil_puts.o hello_world</span><br><span class="line">0x08048624  addr: 0x8048612</span><br><span class="line">0x080485c4 _write addr: 0x804861e</span><br><span class="line">0x080485c4  addr: 0x804868f</span><br><span class="line">0x080485c4  addr: 0x80486b7</span><br><span class="line">Injection/Relocation succeeded</span><br><span class="line"><span class="comment">#//可执行文件hello_world中已经为之前的evil_puts.o目标文件的write（）函数在0x804861e处分配了一个地址，并进行了重定位。</span></span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//hijack命令重写了全局偏移表的条目，使用evil_puts()的地址替代了puts()：</span></span><br><span class="line">[Quenya v0.1@alchemy] hijack binary hello_world evil_puts puts</span><br><span class="line">Attempting to hijack <span class="keyword">function</span>: puts</span><br><span class="line">Modifying GOT entry <span class="keyword">for</span> puts</span><br><span class="line">Successfully hijacked <span class="keyword">function</span>: puts</span><br><span class="line">Committing changes into executable file</span><br><span class="line">[Quenya v0.1@alchemy] quit</span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//现在输出的内容：</span></span><br><span class="line">ryan@alchemy:~/quenya$ ./hello_world</span><br><span class="line">HAHA puts() has been hijacked!</span><br></pre></td></tr></table></figure>
-<p>已经成功将一个目标文件重定位到可执行文件中，通过改变可执行文件的控制流，来执行注入的代码。使用readelf -s hello_world命令，可以看到evil_puts()的符号。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Quenya中利用了ELF重定位机制的代码</span></span><br><span class="line"><span class="keyword">switch</span>(obj.shdr[i].sh_type)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">case</span> SHT_REL: <span class="comment">/* Section contains ElfN_Rel records */</span></span><br><span class="line">rel = (Elf32_Rel *)(obj.mem + obj.shdr[i].sh_offset);</span><br><span class="line"><span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; obj.shdr[i].sh_size / <span class="keyword">sizeof</span>(Elf32_Rel); j++, rel++)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* symbol table */</span> </span><br><span class="line">symtab = (Elf32_Sym *)obj.section[obj.shdr[i].sh_link]; </span><br><span class="line"></span><br><span class="line"><span class="comment">/* symbol we are applying relocation to */</span></span><br><span class="line">symbol = &amp;symtab[ELF32_R_SYM(rel-&gt;r_info)];</span><br><span class="line"></span><br><span class="line"><span class="comment">/* section to modify */</span></span><br><span class="line">TargetSection = &amp;obj.shdr[obj.shdr[i].sh_info];</span><br><span class="line">TargetIndex = obj.shdr[i].sh_info;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* target location */</span></span><br><span class="line">TargetAddr = TargetSection-&gt;sh_addr + rel-&gt;r_offset;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* pointer to relocation target */</span></span><br><span class="line">RelocPtr = (Elf32_Addr *)(obj.section[TargetIndex] + rel-&gt;r_offset);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* relocation value */</span></span><br><span class="line">RelVal = symbol-&gt;st_value; </span><br><span class="line">RelVal += obj.shdr[symbol-&gt;st_shndx].sh_addr;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"0x%08x %s addr: 0x%x\n"</span>,RelVal, &amp;SymStringTable[symbol-&gt;st_name], TargetAddr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> (ELF32_R_TYPE(rel-&gt;r_info)) </span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* R_386_PC32      2    word32  S + A - P */</span> </span><br><span class="line"><span class="keyword">case</span> R_386_PC32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">*RelocPtr -= TargetAddr;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* R_386_32        1    word32  S + A */</span></span><br><span class="line"><span class="keyword">case</span> R_386_32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//RelocPtr指向的重定位目标是根据重定位类型（eg：R_386_32）所规定的重定位操作来进行修补的。</span></span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/11/Relocatable code injection-based binary patching/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1818,19 +1923,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">others</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">others</a>
               </li>
              
               <li class="article-tag-list-item">
