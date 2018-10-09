@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/10/09/NMAP/</loc>
+    <lastmod>2018-10-09T07:48:13.725Z</lastmod>
+    <data>
+        <display>
+        <title>NMAP</title>
+        <pubTime>2018-10-09T07:45:22.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/09/28/How-to-use-drozer/</loc>
     <lastmod>2018-09-28T03:21:53.257Z</lastmod>
     <data>
