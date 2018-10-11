@@ -150,6 +150,82 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java开发即时聊天软件-5" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/27/Java开发即时聊天软件-5/">Java开发即时聊天软件(5)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/27/Java开发即时聊天软件-5/" class="archive-article-date">
+  	<time datetime="2018-08-27T05:50:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java开发即时聊天软件-5"><a href="#Java开发即时聊天软件-5" class="headerlink" title="Java开发即时聊天软件(5)"></a>Java开发即时聊天软件(5)</h2><p>注册业务及长时间与服务器保持联系~<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//登录交互信息</span><br><span class="line">JSON </span><br><span class="line">//客户端传给服务器的内容</span><br><span class="line">&#123;“username”:”13800012461”,”password”:”123456”&#125;</span><br><span class="line">//服务器回执以下消息:</span><br><span class="line">&#123;“state”:1,”msg”:”密码错误!”&#125;</span><br><span class="line">&#123;“state”:2,”msg”:”找不到账户!”&#125;</span><br><span class="line">&#123;“state”:3,”msg”:”账户锁定!”&#125;</span><br><span class="line">&#123;“state”:4,”msg”:”未知错误!”&#125;</span><br><span class="line">&#123;“state”:0,”msg”:”登录成功!”&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LoginServer.java的run()方法:</span></span><br><span class="line">	<span class="comment">// 线程方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 登录操作</span></span><br><span class="line">		InputStream in = <span class="keyword">null</span>;</span><br><span class="line">		OutputStream out = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			in = socket.getInputStream();</span><br><span class="line">			out = socket.getOutputStream();		</span><br><span class="line">			<span class="comment">//等待客户端信息</span></span><br><span class="line">			<span class="keyword">byte</span>[] bytes=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">			<span class="keyword">int</span> len =in.read(bytes);</span><br><span class="line">			String json_str=<span class="keyword">new</span> String(bytes,<span class="number">0</span>,len);</span><br><span class="line">			<span class="comment">/********************************************/</span></span><br><span class="line">			JSONObject json=JSONObject.fromObject(json_str);<span class="comment">//解析</span></span><br><span class="line">			String username=json.getString(<span class="string">"username"</span>);</span><br><span class="line">			String password=json.getString(<span class="string">"password"</span>);		</span><br><span class="line">			<span class="keyword">boolean</span> type=<span class="keyword">false</span>;</span><br><span class="line">			<span class="comment">//判断是不是手机号码</span></span><br><span class="line">			<span class="keyword">if</span>(username.trim().length()==<span class="number">11</span>)&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					</span><br><span class="line">					<span class="comment">//判断手机号码是不是纯数字</span></span><br><span class="line">					Long.parseLong(username);</span><br><span class="line">					type=<span class="keyword">true</span>;</span><br><span class="line">				&#125; <span class="keyword">catch</span> (NumberFormatException e) &#123;</span><br><span class="line">					out.write(<span class="string">"&#123;\"state\":4,\"msg\":\"未知错误!\"&#125;"</span>.getBytes());</span><br><span class="line">					out.flush();</span><br><span class="line">					<span class="keyword">return</span>;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;<span class="keyword">else</span>&#123;<span class="comment">//非手机号码</span></span><br><span class="line">				type=<span class="keyword">false</span>;</span><br><span class="line">			&#125;		</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				String uid = <span class="keyword">null</span>;</span><br><span class="line">				<span class="keyword">if</span> (type == <span class="keyword">true</span>) &#123;<span class="comment">// 手机号码</span></span><br><span class="line">					uid = <span class="keyword">new</span> UserDAO().loginForPhone(username, password);</span><br><span class="line">					<span class="comment">// 登记登录信息</span></span><br><span class="line">					UserOnLineList.getUserOnLineList().regOnline(uid, socket, <span class="keyword">null</span>, username);</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;<span class="comment">// 其他方式登录</span></span><br><span class="line">					uid = <span class="keyword">new</span> UserDAO().loginForEmail(username, password);</span><br><span class="line">					<span class="comment">// 登记登录信息</span></span><br><span class="line">					UserOnLineList.getUserOnLineList().regOnline(uid, socket, username, <span class="keyword">null</span>);</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">				<span class="comment">// 陆陆续续的接收客户端发送的指令要求</span></span><br><span class="line">				<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">					bytes = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">1024</span>];</span><br><span class="line">					len = in.read(bytes);</span><br><span class="line">					String command = <span class="keyword">new</span> String(bytes, <span class="number">0</span>, len);</span><br><span class="line">					<span class="keyword">if</span> (command.equals(<span class="string">"U0001"</span>)) &#123; <span class="comment">// 更新好友列表				</span></span><br><span class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"U0002"</span>)) &#123;<span class="comment">// 更新好友在线					</span></span><br><span class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"U0003"</span>)) &#123; <span class="comment">// 更新个人资料				</span></span><br><span class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"E0001"</span>)) &#123;<span class="comment">// 修改个人资料				</span></span><br><span class="line">					&#125; <span class="keyword">else</span> <span class="keyword">if</span> (command.equals(<span class="string">"EXIT"</span>)) &#123;<span class="comment">// 退出用户登录</span></span><br><span class="line">						UserOnLineList.getUserOnLineList().logout(uid);</span><br><span class="line">						<span class="keyword">return</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125; <span class="keyword">catch</span> (UsernameNotFoundException e) &#123;</span><br><span class="line">				out.write(<span class="string">"&#123;\"state\":2,\"msg\":\"账户名错误!\"&#125;"</span>.getBytes());</span><br><span class="line">				out.flush();</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125; <span class="keyword">catch</span> (PasswordException e) &#123;</span><br><span class="line">				out.write(<span class="string">"&#123;\"state\":1,\"msg\":\"用户密码错误!\"&#125;"</span>.getBytes());</span><br><span class="line">				out.flush();</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125; <span class="keyword">catch</span> (StateException e) &#123;</span><br><span class="line">				out.write(<span class="string">"&#123;\"state\":3,\"msg\":\"账户锁定!\"&#125;"</span>.getBytes());</span><br><span class="line">				out.flush();</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">				out.write(<span class="string">"&#123;\"state\":4,\"msg\":\"未知错误!\"&#125;"</span>.getBytes());</span><br><span class="line">				out.flush();</span><br><span class="line">				<span class="keyword">return</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			<span class="comment">// 结束后,把连接关闭</span></span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				in.close();</span><br><span class="line">				out.close();</span><br><span class="line">				socket.close();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e2) &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">请求命令</span><br><span class="line">1.更新好友列表(昵称、UID、头像、个人说明)       </span><br><span class="line">   U0001  登录后更新一次  然后点击更新</span><br><span class="line">2.更新好友在线状态   U0002   5秒钟一次请求</span><br><span class="line">3.个人资料更新       U0003</span><br><span class="line">4.个人资料保存       E0001</span><br><span class="line">5.退出账户(下线)      EXIT</span><br><span class="line">请求好友资料更新(事件驱动方式去更新资料)</span><br><span class="line">U0004 更新一个好友资料  如果不是好友话 就自动删除</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/27/Java开发即时聊天软件-5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java开发即时聊天软件-4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1277,160 +1353,6 @@
 
 
   
-    <article id="post-Android中的静态分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/18/Android中的静态分析/">Android中的静态分析</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/18/Android中的静态分析/" class="archive-article-date">
-  	<time datetime="2018-08-18T08:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><ul>
-<li><h4 id="如何静态分析Android程序："><a href="#如何静态分析Android程序：" class="headerlink" title="如何静态分析Android程序："></a>如何静态分析Android程序：</h4><ul>
-<li>阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件</li>
-<li>使用文本编辑器阅读baksmali反编译生成的smali文件</li>
-<li>阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码</li>
-</ul>
-</li>
-<li><h4 id="如何快速定位Android程序的关键代码"><a href="#如何快速定位Android程序的关键代码" class="headerlink" title="如何快速定位Android程序的关键代码"></a>如何快速定位Android程序的关键代码</h4><ul>
-<li>AndroidManifest.xml文件<ul>
-<li>记录着软件的一些基本信息，包括软件的包名、运行的系统版本、用到的组件等。</li>
-</ul>
-</li>
-<li><p>程序的主Activity</p>
-<ul>
-<li><p>每个Android程序有且只有一个主Activity（隐藏程序除外，它没有主Activity），它是程序启动的第一个Activity</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:label</span>=<span class="string">"@string/title_activity_main"</span> </span></span><br><span class="line"><span class="tag">		  <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>android:label指定Activity的标题</p>
-</li>
-<li>android:name指定具体的Activity类<ul>
-<li>“.MainActivity”前面省略了程序的包名，完整类名应该为com.droider.xxx.MainActivity</li>
-</ul>
-</li>
-<li>intent-filter指定了Activity的启动意图<ul>
-<li><code>android.intent.action.MAIN</code>表示这个<strong>Activity是程序的主Activity</strong></li>
-<li><code>android.intent.category.LAUNCHER</code>表示这个Activity可以通过LAUNCHER来启动</li>
-<li>(如果AndroidMenifest.xml中，所有的Activity都没有添加<code>android.intent.category.LAUNCHER</code>，那么该程序安装到Android设备上后，在程序列表中是不可见的,如果没有指定<code>android.intent.action.MAIN</code>，Android系统的LAUNCHER就无法匹配程序的主Activity，因此该程序也不会有图标出现)</li>
-</ul>
-</li>
-<li>找到主Activity后，可以直接去<strong>查看其所在类的OnCreate()方法</strong>的反汇编代码:<strong>大多数程序的代码入口处</strong>。</li>
-</ul>
-</li>
-<li>Application类<ul>
-<li>在程序的组件之间传递全局变量，或在Activity启动之前做初始化工作</li>
-<li>类继承自android.app.Application，重写它的OnCreate()方法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Application类启动的最早，会有授权验证代码转移到该类中。注意OnCreate()方法</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><h4 id="如何定位关键代码"><a href="#如何定位关键代码" class="headerlink" title="如何定位关键代码"></a>如何定位关键代码</h4><ul>
-<li>信息反馈<ul>
-<li><strong>字符串做为突破点</strong>：2种<ul>
-<li>字符串会存储在String.xml文件：<ul>
-<li>以id的形式访问，在反汇编代码中搜索字符串的id值</li>
-</ul>
-</li>
-<li>字符串硬编码到程序代码:<ul>
-<li>反汇编代码中直接搜索字符串</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>特征函数法<ul>
-<li>反馈需调用<strong>Android SDK中提供的相关API函数</strong>来完成<ul>
-<li>eg:弹出注册码错误的提示信息需调用<strong>Toast.MakeText().Show()</strong>方法，在反汇编代码中搜索Toast就可定位</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>顺序查看法<ul>
-<li>软件的启动代码开始，逐行的向下分析，执行流程</li>
-</ul>
-</li>
-<li>代码注入法<ul>
-<li>手动修改apk文件的反汇编代码，加入Log输出，配合LogCat查看程序执行到特定点时的状态数据</li>
-</ul>
-</li>
-<li>栈跟踪法<ul>
-<li>输出运行时的栈跟踪信息，然后查看栈上的函数调用序列来理解方法的执行流程</li>
-</ul>
-</li>
-<li>Method Profiling<ul>
-<li>记录每个函数占用的CPU时间外，还可跟踪所有的函数调用关系，并提供比栈跟踪法更详细的函数调用序列报告</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/18/Android中的静态分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1550,10 +1472,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">others</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
@@ -1562,15 +1480,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">pwn</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Spider</a>
+                <a href="javascript:void(0)" class="js-tag color2">others</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">pwn</a>
+                <a href="javascript:void(0)" class="js-tag color2">Spider</a>
               </li>
             
             <div class="clearfix"></div>
