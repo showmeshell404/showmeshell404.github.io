@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/10/12/%E9%80%9A%E8%BF%87windows%E6%B3%A8%E5%86%8C%E8%A1%A8%E5%AE%9A%E4%BD%8D/</loc>
+    <lastmod>2018-10-12T05:45:08.863Z</lastmod>
+    <data>
+        <display>
+        <title>通过windows注册表定位</title>
+        <pubTime>2018-10-12T05:42:56.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/10/11/Metasploit%E6%94%BB%E5%87%BBSMB%E6%9C%8D%E5%8A%A1%E5%8F%8APOC%E7%BC%96%E5%86%99/</loc>
     <lastmod>2018-10-11T07:27:22.146Z</lastmod>
     <data>

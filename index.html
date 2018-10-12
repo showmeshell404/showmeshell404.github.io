@@ -150,6 +150,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-通过windows注册表定位" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/12/通过windows注册表定位/">通过windows注册表定位</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/12/通过windows注册表定位/" class="archive-article-date">
+  	<time datetime="2018-10-12T05:42:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="通过windows注册表定位"><a href="#通过windows注册表定位" class="headerlink" title="通过windows注册表定位"></a>通过windows注册表定位</h2><h3 id="注册表中分析无线接入点"><a href="#注册表中分析无线接入点" class="headerlink" title="注册表中分析无线接入点"></a>注册表中分析无线接入点</h3><p>Windows 注册表包含了一个存储操作系统配置设置的层次化数据库。随着无线 网的出现，Windows 注册表存储了与无线连接相关的信息。</p>
+<p>从windows vista之后，注册表存储每一个网络信息在<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\Curren tVersion\NetworkList\Signatures\Unmanaged</code>子键值下。从命令提示符下，可以列出每一个网络显示描述GUID，网络描述，网络名称和网关MAC地址。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">C:\Windows\system32&gt;reg query</span><br><span class="line"><span class="string">"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span> /s</span><br><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged\010103000F0000F0080000000F0000F04BCC2360E4B8F7DC8BDAFAB8AE4DAD8</span><br><span class="line">62E3960B979A7AD52FA5F70188E103148</span><br><span class="line">ProfileGuid REG_SZ &#123;3B24CE70-AA79-4C9A B9CC83F90C2C9C0D&#125;</span><br><span class="line">Description REG_SZ Hooters_San_Pedro</span><br><span class="line">Source REG_DWORD 0x8</span><br><span class="line">DnsSuffix REG_SZ &lt;none&gt;</span><br><span class="line">FirstNetwork REG_SZ Public_Library</span><br><span class="line">DefaultGatewayMac REG_BINARY 00115024687F0000</span><br></pre></td></tr></table></figure>
+<h3 id="使用WinReg读取Windows注册表"><a href="#使用WinReg读取Windows注册表" class="headerlink" title="使用WinReg读取Windows注册表"></a>使用WinReg读取Windows注册表</h3><p>注册表存储的网关MAC地址作为REG_BINARY类型。16 进 制<code>\x00\x11\x50\x24\x68\x7F\x00\x00</code>表示的实际地址为 <code>00:11:50:24:68:7F</code>。 写一个快速的函数将 REG_BINARY 的值转换为实际的 MAC 地址。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br></pre></td></tr></table></figure>
+<p>编写一个函数从windows注册表键值中获取每一个列出来的网络的网络名称和MAC地址，利用winreg模块，连接到注册表后，可以使用openkey()函数打开键，并循环获取键下面的网络描述。</p>
+<p>对于每一个描述，包含下面子键：<code>ProfileGuid, Description, Source, DnsSuffix, FirstNetwork, DefaultGatewayMac</code>网络名称和网关MAC地址在注册表键列表中的第四个和第五个。</p>
+<p>把所有的组合在一起，有一个脚本将打印存储在注册表中的先前连接的无线网络的信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># discoverNetworks.py</span></span><br><span class="line"><span class="comment"># coding = UTF-8</span></span><br><span class="line"><span class="keyword">import</span> _winreg</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printNets</span><span class="params">()</span>:</span></span><br><span class="line">    net = <span class="string">"SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span></span><br><span class="line">    key = _winreg.OpenKey(_winreg.HKEY_LOACL_MACHINE, net)</span><br><span class="line">    print(<span class="string">'\n[*]Networks You have Joined.'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            guid = _winreg.EnumKey(key, i)</span><br><span class="line">            netKey = _winreg.OpenKey(key, str(guid))</span><br><span class="line">            (n, addr, t) = _winreg.EnumValue(netKey, <span class="number">5</span>)</span><br><span class="line">            (n, name, t) = _winreg.EnumValue(netKey, <span class="number">4</span>)</span><br><span class="line">            macAddr = val2addr(addr)</span><br><span class="line">            netName = str(name)</span><br><span class="line">            print(<span class="string">'[+]'</span> + netName + <span class="string">' '</span> + macAddr)</span><br><span class="line">            _winreg.CloseKey(netKey)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    printNets()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>在使用管理员权限运行的脚本，可以看到先前连接过的无线网络及其MAC地址。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\investigator\Desktop\python discoverNetworks.py</span><br><span class="line">[*] Networks You have Joined.</span><br><span class="line">[+] Hooters_San_Pedro, 00:11:50:24:68:7F</span><br><span class="line">[+] LAX Airport, 00:30:65:03:e8:c6</span><br><span class="line">[+] Senate_public_wifi, 00:0b:85:23:23:3e</span><br></pre></td></tr></table></figure>
+<h3 id="使用Mechanize将MAC地址提交都Wigle"><a href="#使用Mechanize将MAC地址提交都Wigle" class="headerlink" title="使用Mechanize将MAC地址提交都Wigle"></a>使用Mechanize将MAC地址提交都Wigle</h3><p>WIGLE.net继续允许用户通过无线接入点的搜索物理位置，注册一个账号之后，用户就能通过一个小的python脚本和wigle.net进行交互。</p>
+<p>使用WiGLE.Net，用户很快就会意识到为了得到WiGLE必须与第三方的页面进行交互，首先必须打开WiGLE.net 的初始化页面在 <a href="https://wigle.net/网页；然后用户必须登陆到" target="_blank" rel="noopener">https://wigle.net/网页；然后用户必须登陆到</a> WiGLE 在 <a href="https://wigle.net/页面。" target="_blank" rel="noopener">https://wigle.net/页面。</a> 最后，用户可以查询特定的无线 SSID 的 MAC 地址在 <a href="https://wigle.net/页面。" target="_blank" rel="noopener">https://wigle.net/页面。</a> 捕获 MAC 地址查询请求，在请求无线接入点的 GPS 地址的 HTTP POST 请求中 tnetid(网络标识符)包含了 MAC 地址。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /gps/gps/main/confirmquery/ HTTP/1.1</span><br><span class="line">Accept-Encoding: identity</span><br><span class="line">Content-Length: 33</span><br><span class="line">Host: wigle.net</span><br><span class="line">User-Agent: AppleWebKit/531.21.10</span><br><span class="line">Connection: close</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">netid=0A%3A2C%3AEF%3A3D%3A25%3A1B</span><br><span class="line"><span class="tag">&lt;<span class="name">..SNIPPED..</span>&gt;</span></span><br><span class="line">//看到从页面响应的数据中包含了GPS坐标，字符串maplat=47.25264359&amp;maplon=-87.25624084 包含了接入点的经度和纬度。    </span><br><span class="line"><span class="tag">&lt;<span class="name">tr</span> <span class="attr">class</span>=<span class="string">"search"</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/gps/gps/Map/onlinemap2/?maplat=47.25264359&amp;maplon=-87.25624084&amp;mapzoom=17&amp;ssid=McDonald's FREE</span></span></span><br><span class="line"><span class="tag"><span class="string">Wifi&amp;netid=0A:2C:EF:3D:</span></span></span><br><span class="line"><span class="tag"><span class="string">25:1B"</span>&gt;</span>Get Map<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">td</span>&gt;</span>0A:2C:EF:3D:25:1B<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>McDonald's FREE Wifi<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;</span></span><br></pre></td></tr></table></figure>
+<p>建立一个简单的函数用来返回WiGLE数据库中记录的无线接入点的经度和纬度。使用mechanize模块，mechanize运行通过python进行web状态编程，类似与urllib模块的功能，一旦我们正常的登录到WiGLE服务，就会存储和重用我们的验证cookie</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># discoverNetworks.py</span></span><br><span class="line"><span class="comment"># coding = UTF-8</span></span><br><span class="line"><span class="keyword">import</span> _winreg</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> mechanize</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wiglePrint</span><span class="params">(username, password, netid)</span>:</span></span><br><span class="line">    browser = mechanize.Browser()</span><br><span class="line">    browser.open(<span class="string">'http://wigle.net'</span>)</span><br><span class="line">    reqData = urllib.urlencode(&#123;<span class="string">'credential_0'</span>: username, <span class="string">'credential_1'</span>: password&#125;)</span><br><span class="line">    browser.open(<span class="string">'https://wigle.net/gps/gps/main/login'</span>, reqData)</span><br><span class="line">    params = &#123;&#125;</span><br><span class="line">    params[<span class="string">'netid'</span>] = netid</span><br><span class="line">    reqParams = urllib.urlencode(params)</span><br><span class="line">    respURL = <span class="string">'http://wigle.net/gps/gps/main/confirmquery/'</span></span><br><span class="line">    resp = browser.open(respURL, reqParams).read()</span><br><span class="line">    mapLat = <span class="string">'N/A'</span></span><br><span class="line">    mapLon = <span class="string">'N/A'</span></span><br><span class="line">    rLat = re.findall(<span class="string">r'maplat=.*\&amp;'</span>, resp)</span><br><span class="line">    <span class="keyword">if</span> rLat:</span><br><span class="line">        mapLat = rLat[<span class="number">0</span>].split(<span class="string">'&amp;'</span>)[<span class="number">0</span>].split(<span class="string">'='</span>)[<span class="number">1</span>]</span><br><span class="line">    rLon = re.findall(<span class="string">r'maplon=.*\&amp;'</span>, resp)</span><br><span class="line">    <span class="keyword">if</span> rLon:</span><br><span class="line">        mapLon = rLon[<span class="number">0</span>].split</span><br><span class="line">    print(<span class="string">'[-]Lat:'</span> + mapLat + <span class="string">',Lon:'</span> + mapLon)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printNets</span><span class="params">(username, password)</span>:</span></span><br><span class="line">    net = <span class="string">"SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span></span><br><span class="line">    key = _winreg.OpenKey(_winreg.HKEY_LOACL_MACHINE, net)</span><br><span class="line">    print(<span class="string">'\n[*]Networks You have Joined.'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            guid = _winreg.EnumKey(key, i)</span><br><span class="line">            netKey = _winreg.OpenKey(key, str(guid))</span><br><span class="line">            (n, addr, t) = _winreg.EnumValue(netKey, <span class="number">5</span>)</span><br><span class="line">            (n, name, t) = _winreg.EnumValue(netKey, <span class="number">4</span>)</span><br><span class="line">            macAddr = val2addr(addr)</span><br><span class="line">            netName = str(name)</span><br><span class="line">            print(<span class="string">'[+]'</span> + netName + <span class="string">' '</span> + macAddr)</span><br><span class="line">            wiglePrint(username, password, macAddr)</span><br><span class="line">            _winreg.CloseKey(netKey)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">"usage%prog -u &lt;wigle username&gt;- p &lt; wigle password &gt; "</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'username'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify wigle password'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-p'</span>, dest=<span class="string">'password'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify wigle username'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    username = options.username</span><br><span class="line">    password = options.password</span><br><span class="line">    <span class="keyword">if</span> username == <span class="keyword">None</span> <span class="keyword">or</span> password == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        printNets()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>运行新脚本，可以看到先前连接过的无线网络和物理位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\investigator\Desktop\python discoverNetworks.py</span><br><span class="line">[*] Networks You have Joined.</span><br><span class="line">[+] Hooters_San_Pedro, 00:11:50:24:68:7F</span><br><span class="line">[-] Lat: 29.55995369, Lon: -98.48358154</span><br><span class="line">[+] LAX Airport, 00:30:65:03:e8:c6</span><br><span class="line">[-] Lat: 28.04605293, Lon: -82.60256195</span><br><span class="line">[+] Senate_public_wifi, 00:0b:85:23:23:3e</span><br><span class="line">[-] Lat: 44.95574570, Lon: -93.10277557</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/12/通过windows注册表定位/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Metasploit攻击SMB服务及POC编写" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1410,95 +1501,6 @@
 
 
   
-    <article id="post-Android-NDK使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/27/Android-NDK使用/">Android-NDK使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/27/Android-NDK使用/" class="archive-article-date">
-  	<time datetime="2018-08-27T05:54:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Android-NDK使用"><a href="#Android-NDK使用" class="headerlink" title="Android-NDK使用"></a>Android-NDK使用</h2><h3 id="Android-NDK原生程序交叉编译工具链的使用"><a href="#Android-NDK原生程序交叉编译工具链的使用" class="headerlink" title="Android NDK原生程序交叉编译工具链的使用"></a>Android NDK原生程序交叉编译工具链的使用</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">路径：android-ndk\toolchains\arm-linux-androideabi<span class="number">-4.4</span><span class="number">.3</span>\prebuilt\windows\bin</span><br><span class="line">arm-linux-androideabi-addr2line.exe：将程序地址转换为文件名和行号。</span><br><span class="line">arm-linux-androideabi-ar.exe：建立、修改、提取归档文件。</span><br><span class="line">arm-linux-androideabi-as.exe：gas汇编器。</span><br><span class="line">arm-linux-androideabi-c++.exe：工具链中arm-linux-androideabi-g++.exe的一个拷贝。</span><br><span class="line">arm-linux-androideabi-c++filt.exe：连接器使用它过滤符号，防止重载函数冲突。</span><br><span class="line">arm-linux-androideabi-cpp.exe：C++程序编译工具。</span><br><span class="line">arm-linux-androideabi-g++.exe：C++程序编译工具。</span><br><span class="line">arm-linux-androideabi-gcc<span class="number">-4.4</span><span class="number">.3</span>.exe：工具链中arm-linux-androideabi-gcc.exe的一个拷贝。</span><br><span class="line">arm-linux-androideabi-gcc.exe：C程序编译工具。</span><br><span class="line">arm-linux-androideabi-gcov.exe：程序覆盖度测量工具，记录代码的执行路径。</span><br><span class="line">arm-linux-androideabi-gdb.exe：调试工具。</span><br><span class="line">arm-linux-androideabi-gprof.exe：程序性能测量工具。</span><br><span class="line">arm-linux-androideabi-ld.exe：链接器，用于生成可执行程序。</span><br><span class="line">arm-linux-androideabi-nm.exe：列出目标文件中的符号。</span><br><span class="line">arm-linux-androideabi-objcopy.exe：复制目标文件中的内容到另一种类型的目标文件中。</span><br><span class="line">arm-linux-androideabi-objdump.exe：输出目标文件的信息。</span><br><span class="line">arm-linux-androideabi-ranlib.exe：产生归档文件索引，并将其保存到这个归档文件中。</span><br><span class="line">arm-linux-androideabi-readelf.exe：显示elf格式可执行文件的信息。</span><br><span class="line">arm-linux-androideabi-run.exe：ARM程序模拟器。</span><br><span class="line">arm-linux-androideabi-size.exe：列出目标文件每一段的大小以及总体的大小。</span><br><span class="line">arm-linux-androideabi-strings.exe：输出目标文件的可打印字符串。</span><br><span class="line">arm-linux-androideabi-strip.exe：去除目标文件中的符号信息。</span><br></pre></td></tr></table></figure>
-<h3 id="如何编译原生程序"><a href="#如何编译原生程序" class="headerlink" title="如何编译原生程序"></a>如何编译原生程序</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">●　使用gcc编译器手动编译</span><br><span class="line">●　使用ndk-build工具手动编译</span><br><span class="line">●　使用Eclipse创建工程并自动编译</span><br><span class="line"><span class="comment">//hello.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc,<span class="keyword">int</span>** argv[])</span></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hello ARM!\n"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>####1.使用gcc编译器手动编译</p>
-<ul>
-<li>makefile文件(windows)</li>
-</ul>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#将hello.c文件编译成hello.o目标文件</span></span><br><span class="line"><span class="comment">#将hello.o目标文件与特定的原生程序启动代码及依赖库进行链接最终生成可执行文件</span></span><br><span class="line">NDK_ROOT=C:/Android/android-ndk-r15c</span><br><span class="line">TOOLCHAINS_ROOT=<span class="variable">$(NDK_ROOT)</span>/toolchains/arm-linux-androideabi-4.9/prebuilt/windows</span><br><span class="line">TOOLCHAINS_PREFIX=<span class="variable">$(TOOLCHAINS_ROOT)</span>/bin/arm-linux-androideabi</span><br><span class="line">TOOLCHAINS_INCLUDE=<span class="variable">$(TOOLCHAINS_ROOT)</span>/lib/gcc/arm-linux-androideabi/4.9.x/include-fixed</span><br><span class="line"></span><br><span class="line">PLATFORM_ROOT=<span class="variable">$(NDK_ROOT)</span>/platforms/android-14/arch-arm</span><br><span class="line">PLATFORM_INCLUDE=<span class="variable">$(PLATFORM_ROOT)</span>/usr/<span class="keyword">include</span></span><br><span class="line">PLATFORM_LIB=<span class="variable">$(PLATFORM_ROOT)</span>/usr/lib</span><br><span class="line"></span><br><span class="line">MODULE_NAME=hello</span><br><span class="line">RM=del</span><br><span class="line"><span class="comment">#gcc编译器的命令行参数增加了头文件与库文件的搜索路径及编译选项</span></span><br><span class="line">FLAGS=-I<span class="variable">$(TOOLCHAINS_INCLUDE)</span> \</span><br><span class="line">	-I<span class="variable">$(PLATFORM_INCLUDE)</span> \</span><br><span class="line">	-L<span class="variable">$(PLATFORM_LIB)</span> \</span><br><span class="line">	-nostdlib \</span><br><span class="line">	-lgcc \</span><br><span class="line">	-Bdynamic \</span><br><span class="line">	-lc</span><br><span class="line"><span class="comment">#Android并没有采用glibc作为C库，是采用了Google的Bionic C库。故编译选项中加入-nostdlib</span></span><br><span class="line">OBJS=<span class="variable">$(MODULE_NAME)</span>.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtbegin_dynamic.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtend_android.o</span><br><span class="line"><span class="comment">#all标签指定了编译程序时所需要执行的命令</span></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> -c <span class="variable">$(MODULE_NAME)</span>.c -o <span class="variable">$(MODULE_NAME)</span>.o</span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> <span class="variable">$(OBJS)</span> -o <span class="variable">$(MODULE_NAME)</span></span><br><span class="line"><span class="comment">#clean标签用于清理生成的目标文件</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(RM)</span> *.o</span><br><span class="line"><span class="comment">#install标签将生成的可执行文件安装到模拟器或手机中去	</span></span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	adb push <span class="variable">$(MODULE_NAME)</span> /data/local/</span><br><span class="line">	adb shell chmod 755 /data/local/<span class="variable">$(MODULE_NAME)</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>交叉工具链中提供的make.exe工具位于“<code>android-ndk-r8\prebuilt\windows\bin</code>目录,加入到系统或零时的PATH环境变量中，然后将hello.c与makefile文件放到一个目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">make</span><br><span class="line">make install</span><br><span class="line">adb	shell /data/local/hello</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h4 id="2-使用ndk-build编译"><a href="#2-使用ndk-build编译" class="headerlink" title="2.使用ndk-build编译"></a>2.使用ndk-build编译</h4><p>ndroid NDK开发套件提供了一个ndk-build工具，方便开发者来快速地生成原生程序，在使用ndk-build工具前，需要先有一个Android工程，这个工程可以从Android NDK的samples目录中随便复制一份，也可以使用Android SDK开发包tools目录下的android脚本来生成。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">1.android list  :列出Android SDK中所有已经安装的SDK平台的版本</span><br><span class="line">2.android create project -n hello2 -p hello2 -t android-14 com.droider.hello2 -a MyActivity</span><br><span class="line">	-n指定Android工程的名称,-t指定生成Android工程所需要使用的平台版本号android list列出的版本号之一</span><br><span class="line">	-p指定生成工程的目录名，-k指定Android工程的包名，-a指定默认Activity的名称</span><br><span class="line">	android create project会根据默认Activity文件名自动生成相应的java文件，并生AndroidMenifest.xml</span><br><span class="line">3.工程的根目录下新建一个jni文件夹，并将hello.c文件复制进去</span><br><span class="line">4.ndk-build使用Android.mk与Application.mk作为它的脚本文件</span><br><span class="line">	(其中Application.mk文件是可选的，用来描述原生程序本身使用到的一些特性,如原生程序支持的ARM硬件指令集、工程编译脚本、STL支持等)</span><br><span class="line">5.Android.mk文件是工程的编译脚本，描述了编译原生程序所需的编译选项、头文件、源文件及依赖库等。</span><br><span class="line">#***********Android.mk*********#</span><br><span class="line">LOCAL_PATH := $(call my-dir)	#LOCAL_PATH定义了本地源码的路径，调用my-dir宏，返回本身所在的路径</span><br><span class="line">include $(CLEAR_VARS)			#CLEAR_VARS指定让编译系统清除掉一些已经定义过的宏</span><br><span class="line">LOCAL_ARM_MODE := arm			#指定生成的原生程序所使用的ARM指令模式</span><br><span class="line">LOCAL_MODULE    := hello		#LOCAL_MODULE指定模块的名称，原生程序生成后的文件名</span><br><span class="line">LOCAL_SRC_FILES := hello.c		#LOCAL_SRC_FILES指定C或C++源文件列表</span><br><span class="line">include $(BUILD_EXECUTABLE)		#指定生成的文件类型</span><br><span class="line">#************Android.mk*********#</span><br><span class="line">#BUILD_EXECUTABLE表示生成可执行文件</span><br><span class="line">#BUILD_SHARED_LIBRARY表示生成动态库</span><br><span class="line">#BUILD_STATIC_LIBRARY表示生成静态库</span><br><span class="line">6.Android.mk与c文件放在同一目录，进入hello2工程，输入ndk-build 会在libs目录下生成不同的可执行文件</span><br></pre></td></tr></table></figure>
-<h4 id="3-使用Eclipse创建工程并自动编译"><a href="#3-使用Eclipse创建工程并自动编译" class="headerlink" title="3.使用Eclipse创建工程并自动编译"></a>3.使用Eclipse创建工程并自动编译</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">1.新建一个Android工程,hello3,其它选项保持默认，不停点击下一步完成创建。</span><br><span class="line">2.在工程中新建jni目录，然后将hello.c与Android.mk文件导入</span><br><span class="line">3.hello3工程上右键选择Properties，点击Builders选项</span><br><span class="line">4.再点击Builders选项页右侧的New按钮，然后双击Program项打开Edit Configuration对话框，</span><br><span class="line">5.在对话框的Name一栏设置Builder的名称,JNI_Builder</span><br><span class="line">6.在Location一栏输入ndk-build.cmd路径设置要执行的命令</span><br><span class="line">7.点击Working Drrectory右侧的Browse Workspace按钮选择hello3工程，最后点击Apply按钮应用更改</span><br><span class="line">8.单击Refresh标签，勾选“Refresh resources upon completion”复选框。</span><br><span class="line">9.单击Build Options标签，勾选“During auto builds”复选框，勾选“Specify working set of relevant resources”复选框</span><br><span class="line">10.点击“Specify Resources”按钮，勾选hello3工程的jni目录，点击Finish按钮，点击OK按钮关闭Edit Configuration对话框。</span><br><span class="line">11.点击OK按钮关闭Properties对话框。</span><br><span class="line">12.这时hello3工程就会自动编译，最后在libs目录下生成hello可执行文件</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/27/Android-NDK使用/1.jpg" alt="1"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/27/Android-NDK使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1634,11 +1636,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">others</a>
+                <a href="javascript:void(0)" class="js-tag color2">Spider</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Spider</a>
+                <a href="javascript:void(0)" class="js-tag color2">others</a>
               </li>
             
             <div class="clearfix"></div>

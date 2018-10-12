@@ -1,3 +1,4 @@
+http://showmeshell.top/2018/10/12/通过windows注册表定位/
 http://showmeshell.top/2018/10/11/Metasploit攻击SMB服务及POC编写/
 http://showmeshell.top/2018/10/10/FTP暴力破解及恶意脚本注入/
 http://showmeshell.top/2018/10/09/NMAP/
