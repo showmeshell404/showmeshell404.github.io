@@ -150,6 +150,162 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android程序的生成步骤" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/08/Android程序的生成步骤/">Android程序的生成步骤</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/08/Android程序的生成步骤/" class="archive-article-date">
+  	<time datetime="2018-08-08T09:14:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Android程序的生成步骤"><a href="#Android程序的生成步骤" class="headerlink" title="Android程序的生成步骤"></a>Android程序的生成步骤</h3><p><img src="/2018/08/08/Android程序的生成步骤/Apk打包.png" alt="Apk打包"></p>
+<ul>
+<li><strong>打包资源文件，生成R.java文件</strong><ul>
+<li>打包资源的工具aapt位于android-sdk\platform-tools目录下，该工具的源码在Android系统源码的frameworks\base\tools\aapt目录下<ul>
+<li>生成的过程主要是调用了aapt源码目录下Resource.cpp文件中的buildResources()函数</li>
+<li>该函数首先检查AndroidManifest.xml的合法性</li>
+<li>然后对res目录下的资源子目录进行处理，处理的函数为makeFileResources()，处理的内容包括资源文件名的合法性检查，向资源表table添加条目等</li>
+</ul>
+</li>
+<li>处理完后调用compileResourceFile()函数编译res与asserts目录下的资源并生成resources.arsc文件<ul>
+<li>compileResourceFile()函数位于aapt源码目录的ResourceTable.cpp文件中</li>
+<li>该函数最后会调用parseAndAddEntry()函数生成R.java文件</li>
+</ul>
+</li>
+<li>完成资源编译后，接下来调用compileXmlFile()函数对res目录的子目录下的xml文件分别进行编译</li>
+<li>将所有的资源与编译生成的resources.arsc文件以及“加密”过的AndroidManifest.xml文件打包压缩成resources.ap_文件<ul>
+<li>使用Ant工具命令行编译则会生成与build.xml中“project name”指定的属性同名的ap_文件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>处理aidl文件，生成相应的Java文件</strong><ul>
+<li>对于没有使用到aidl的Android工程，这一步可以跳过。</li>
+<li>使用到的工具为aidl，位于android-sdk\platform-tools目录下</li>
+<li>aidl工具解析接口定义文件并生成相应的Java代码供程序调用，源码frameworks\base\tools\aidl目录下<ul>
+<li>aidl为android interface definition language的首字母缩写，即Android接口描述语言</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>编译工程源代码，生成相应的class文件</strong><ul>
+<li>调用javac编译工程src目录下所有的java源文件，生成的class文件位于工程的bin\classes目录</li>
+</ul>
+</li>
+<li><strong>转换所有的class文件，生成classes.dex文件</strong><ul>
+<li>程序运行所需的classes.dex为Dalvik可执行文件</li>
+<li>使用到的工具为dx，它位于android-sdk\platform-tools目录下</li>
+<li>dx工具主要的工作是将Java字节码转换为Dalvik字节码、压缩常量池、消除冗余信息</li>
+</ul>
+</li>
+<li><strong>打包生成APK文件</strong><ul>
+<li>打包的工具为apkbuilder，它位于android-sdk\tools目录下</li>
+<li>apkbuilder为一个脚本文件，实际调用的是android-sdk\tools\lib\sdklib.jar文件中的com.android.sdklib.build.ApkBuilderMain类。</li>
+<li>实现代码位于Android系统源码的sdk\sdkmanager\libs\sdklib\src\com\android\sdklib\build\ApkBuilderMain.java文件，代码构建了一个ApkBuilder类</li>
+<li>以包含resources.arsc的文件为基础生成apk文件，这个文件一般为ap_结尾的文件</li>
+<li>接着调用addSourceFolder()函数添加工程的资源<ul>
+<li>addSourceFolder()会调用processFileForResource()函数往apk文件中添加资源</li>
+<li>处理的内容包括res目录与assets目录中的文件</li>
+</ul>
+</li>
+<li>添加完资源后调用addResourcesFromJar()函数往apk文件中写入依赖库</li>
+<li>接着调用addNativeLibraries()函数添加工程libs目录下的Native库<ul>
+<li>通过Android NDK编译生成的so或bin文件</li>
+</ul>
+</li>
+<li>最后调用sealApk()关闭apk文件</li>
+</ul>
+</li>
+<li><strong>对APK文件进行签名</strong><ul>
+<li>签名APK有两种情况：<ul>
+<li>一种是在调试程序时进行签名，使用Eclipse开发Android程序时，在编译调试程序时会自己使用一个debug.keystore对apk进行签名</li>
+<li>一种是打包发布时对程序进行签名，这种情况下需要提供了一个符合Android开发文档中要求的签名文件。</li>
+</ul>
+</li>
+<li>签名的方法有两种情况：<ul>
+<li>一种是使用JDK中提供的jarsigner工具签名</li>
+<li>一种是使用Android源码中提供的signapk工具，它的代码位于Android系统源码的build\tools\signapk目录下。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>对签名后的APK文件进行对齐处理</strong><ul>
+<li>使用到的工具为zipalign<ul>
+<li>位于android-sdk\tools目录，源码位于Android系统源码的build\tools\zipalign目录</li>
+<li>主要工作是将apk包进行对齐处理，使apk包中的所有资源文件距离文件起始偏移为4字节整数倍</li>
+<li>通过内存映射访问apk文件时的速度会更快</li>
+</ul>
+</li>
+<li>验证apk文件是否对齐过的工作由ZipAlign.cpp文件的verify()函数完成</li>
+<li>处理对齐的工作则由process()函数完成。</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/08/Android程序的生成步骤/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Dalvik" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1547,144 +1703,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/07/08/栈，堆，PE，ELF/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-ROPGuard" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/07/ROPGuard/">Anti-ROP-ROPGuard</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/07/ROPGuard/" class="archive-article-date">
-  	<time datetime="2018-07-07T10:34:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="ROPGuard"><a href="#ROPGuard" class="headerlink" title="ROPGuard"></a>ROPGuard</h1><h1 id="1-EMET"><a href="#1-EMET" class="headerlink" title="1. EMET"></a>1. EMET</h1><p>EMET 全称为 Enhanced Mitigation Experience Toolkit（增强减灾体验工具），是微软发布的一款免费的漏洞缓解工具。3.0 及之前版本中，其主要特长是“强化现有的安全机制”，从 3.5 版开始则增加了一些新的实验性的探测功能。3.5版本中，有反ROP（Anti-ROP）机制。</p>
-<p>ROP：最简单的理解就是将一些以返回（ret指令）结束的代码片段拼接起来，从而实现真正的逻辑。</p>
-<p>之前了解过，新的操作大多有很多安全机制，ASLR（地址随机化），Exec-Shield（除存放可执行代码的内存空间以外，对其余内存空间尽量禁用执行权限DEP），StackGuard（在编译时插入检测栈数据完整性的代码）等。如何绕开安全机制：Return-into-libc（使用libc中的函数来进行攻击），ROP（利用未随机化的模块内部的汇编代码进行攻击）。</p>
-<h1 id="2-Anti-ROP"><a href="#2-Anti-ROP" class="headerlink" title="2. Anti-ROP"></a>2. Anti-ROP</h1><p>BlueHatPrize中获奖的方案都与ROP有关。</p>
-<p>kBouncer: Efficient and Transparent ROP Mitigation </p>
-<p><a href="http://www.cs.columbia.edu/~vpappas/papers/kbouncer.pdf" target="_blank" rel="noopener">http://www.cs.columbia.edu/~vpappas/papers/kbouncer.pdf</a></p>
-<p>ROPGuard - runtime prevention of return-oriented programming attacks </p>
-<p><a href="http://ifsec.blogspot.jp/2012/08/my-bluehat-prize-entry-ropguard-runtime.html" target="_blank" rel="noopener">http://ifsec.blogspot.jp/2012/08/my-bluehat-prize-entry-ropguard-runtime.html</a> </p>
-<p>BlueHat Prize Submission:/ROP</p>
-<p><a href="https://www.vdalabs.com/tools/DeMott_BlueHat_Submission.pdf" target="_blank" rel="noopener">https://www.vdalabs.com/tools/DeMott_BlueHat_Submission.pdf</a></p>
-<h1 id="3-ROPGuard"><a href="#3-ROPGuard" class="headerlink" title="3. ROPGuard"></a>3. ROPGuard</h1><p>检查：RETN所返回的目标有没有相对应的CALL。（CALL-RETN匹配性）</p>
-<p>CALL？ <strong>用来调用子程序，而在子程序的结尾，大部分情况下都会执行RETN。而子程序结尾的RETN所返回的目标地址应该就是CALL指令的下面一条指令。</strong></p>
-<p>Return-into-libc攻击：RETN会跳转到函数的开头；</p>
-<p>ROP攻击：使用非常多的RETN；</p>
-<p>导致RETN并不是返回CALL的下一条指令的情况。</p>
-<p>所以，ROPGuard - runtime prevention of return-oriented programming attacks <u>本质在于关注CALL和RETN的匹配性（调用栈回溯），以此来检测ROP和Return-into-libc攻击。</u></p>
-<h1 id="4-加载器的逻辑"><a href="#4-加载器的逻辑" class="headerlink" title="4. 加载器的逻辑"></a>4. 加载器的逻辑</h1><p>源码fork在github上：</p>
-<p><a href="https://github.com/showmeshell404/ropguard_cheap" target="_blank" rel="noopener">https://github.com/showmeshell404/ropguard_cheap</a></p>
-<p>这个工具是通过 DLL 注入来保护目标进程的，它包括 ropguard_cheap\Release 中的这两个文件。</p>
-<ul>
-<li>load_rg.exe（ropguard.exe） </li>
-<li>ropguard.dll（ropguarddll.dll）</li>
-</ul>
-<p>load_rg.exe 实质上只是一个加载器，真正关于 Anti-ROP 的逻辑都在 ropguard.dll 中。</p>
-<p>用 VS 打开 ropguard\ropguard.sln 文件。这个工程中包含以下文件（ropguard_cheap）。</p>
-<ul>
-<li>main.cpp（load_rg\main.cpp） </li>
-<li>createprocess.cpp（common\createprocess.cpp） </li>
-<li>patchentrypoint.cpp（common\patchentrypoint.cpp） </li>
-<li>debug.cpp（common\debug.cpp） </li>
-</ul>
-<p>其中 main.cpp 主要包含 main 函数以及相关逻辑，它的功能是从参数中获取进程 ID 或者可执行文件的路径，然后向目标进程注入 DLL（ropguard.dll）。</p>
-<p>根据参数的不同，会分别调用下面两个函数。</p>
-<ul>
-<li>进程 ID ：调用 GuardExistingProcess </li>
-<li>可执行文件路径：调用 CreateNewGuardedProcess </li>
-</ul>
-<p>这些逻辑位于 createprocess.cpp 中，在这个文件中还包含下面的逻辑。</p>
-<ul>
-<li>向目标进程注入 DLL </li>
-<li>劫持 CreateProcessInternalW，让进程暂停运行（添加 CREATE_SUSPENDED 标志） </li>
-</ul>
-<p>CreateProcessInternalW 的钩子用于 DLL 中的逻辑，加载器并不使用它。在patchentrypoint.cpp，这个程序中的 PatchEntryPoint 函数可以将其他函数的入口临时改为死循环（FB FE），目的是等待 DLL 注入完成。</p>
-<h1 id="5-DLL的程序逻辑"><a href="#5-DLL的程序逻辑" class="headerlink" title="5. DLL的程序逻辑"></a>5. DLL的程序逻辑</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dllmain.cpp</span></span><br><span class="line"><span class="function">BOOL APIENTRY <span class="title">DllMain</span><span class="params">(HMODULE hModule, </span></span></span><br><span class="line"><span class="function"><span class="params">					  DWORD ul_reason_for_call, </span></span></span><br><span class="line"><span class="function"><span class="params">					  LPVOID lpReserved)</span></span></span><br><span class="line"><span class="function"></span>&#123;<span class="comment">//进行ROPGuard类的定义以及全局声明。</span></span><br><span class="line">	<span class="keyword">switch</span>(ul_reason_for_call)</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_ATTACH:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> DLL_THREAD_ATTACH:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> DLL_THREAD_DETACH:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> DLL_PROCESS_DETACH:</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> TRUE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// read settings读取配置</span></span><br><span class="line"><span class="keyword">if</span>(!ReadROPSettings())&#123;</span><br><span class="line">	WriteLog(<span class="string">"Error: ReadROPSettings failed."</span>);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">		</span><br><span class="line">WriteLog(<span class="string">"Log: ReadROPSettings ok"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// patch all critical functions给各函数打补丁</span></span><br><span class="line">PatchFunctions();</span><br><span class="line">		</span><br><span class="line">WriteLog(<span class="string">"Log: PatchFunctions ok"</span>);</span><br><span class="line">WriteLog(<span class="string">"Successfully loaded ROPGuard dll into target process"</span>);</span><br></pre></td></tr></table></figure>
-<p>举例，对WinExec函数打补丁，其结果是将WinExec的开头替换成jmp指令。</p>
-<p> kernel32:WinExec（打补丁前） </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">7C8623AD &gt; 8BFF           MOV EDI,EDI</span><br><span class="line">7C8623AF   55             PUSH EBP</span><br><span class="line">7C8623B0   8BEC           MOV EBP,ESP</span><br><span class="line">7C8623B2   83EC 54        SUB ESP,54</span><br><span class="line">7C8623B5   53             PUSH EBX</span><br></pre></td></tr></table></figure>
-<p>将开头的5个字节改为jmp：</p>
-<p>kernel32:WinExec（打补丁后）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">7C8623AD &gt;-E9 4EDC2D84    JMP 00B40000</span><br><span class="line">7C8623B2   83EC 54        SUB ESP,54</span><br><span class="line">7C8623B5   53             PUSH EBX</span><br></pre></td></tr></table></figure>
-<p>由于jmp指令需要占用5个字节，因此函数开头原本的内容会被覆盖。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MOV EDI,EDI</span><br><span class="line">PUSH EBP</span><br><span class="line">MOV EBP,ESP</span><br><span class="line">;替换成JMP 00B40000</span><br></pre></td></tr></table></figure>
-<p>当调用WinExec时，程序会跳到00B40000。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">; 00B40000</span><br><span class="line">00B40000   81EC 04000000  SUB ESP,4</span><br><span class="line">00B40006   60             PUSHAD</span><br><span class="line">00B40007   54             PUSH ESP</span><br><span class="line">00B40008   68 F876D329    PUSH 29D376F8</span><br><span class="line">00B4000D   E8 7E344C0F    CALL ropguard.10003490</span><br><span class="line">00B40012   81C4 24000000  ADD ESP,24</span><br><span class="line">00B40018   8BFF           MOV EDI,EDI</span><br><span class="line">00B4001A   55             PUSH EBP</span><br><span class="line">00B4001B   8BEC           MOV EBP,ESP</span><br><span class="line">00B4001D -E9 9023D27B     JMP kernel32.7C8623B2</span><br></pre></td></tr></table></figure>
-<p>最后的JMP kernel32.7C8623B2会跳转到WinExec开头的jmp指令后面。</p>
-<p>注意：在jmp kernel上面就是原来的6个字节。这样逻辑就恢复到原本的WinExec的逻辑。</p>
-<p>中间的代码逻辑就是：判断是否被ROP运行。call roguard.10003490：调用一个检测子程序。在为各个函数打好补丁之后，当这些函数被调用的时候，就会自动运行检测子程序。</p>
-<h1 id="6-CALL-RETN检查"><a href="#6-CALL-RETN检查" class="headerlink" title="6.CALL-RETN检查"></a>6.CALL-RETN检查</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ropcheck.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"ropsettings.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"debug.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fstream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sstream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//向用户显示一个消息框，通知他可能的攻击</span></span><br><span class="line"><span class="comment">//用户可以终止进程或继续正常执行</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ReportPossibleROP</span><span class="params">(<span class="built_in">string</span> &amp;report)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">string</span> messageboxtext;</span><br><span class="line">	messageboxtext = <span class="string">""</span></span><br><span class="line">		<span class="string">"ROPGuard has detected a possible threat.\n"</span></span><br><span class="line">		<span class="string">"Problem details:\n\n"</span> + report;</span><br><span class="line">	</span><br><span class="line">	WriteLog((<span class="keyword">char</span> *)messageboxtext.c_str());</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span>(MessageBoxA(GetForegroundWindow(), </span><br><span class="line">		messageboxtext.c_str(), <span class="string">"ROPGuard"</span>, MB_OKCANCEL) == IDOK)</span><br><span class="line">	&#123;</span><br><span class="line">		ExitProcess(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">PrecededByCall</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *address)</span></span></span><br><span class="line"><span class="function"></span>&#123;	</span><br><span class="line">    <span class="comment">//判断返回的前5/3个字节是不是call，即E8</span></span><br><span class="line">	<span class="comment">// check for call opcodes ROP检查子程序，在CheckReturnAddress中调用</span></span><br><span class="line">	<span class="keyword">if</span>(*(address<span class="number">-5</span>) == <span class="number">0xE8</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">if</span>(*(address<span class="number">-3</span>) == <span class="number">0xE8</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// indirect call</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">2</span>; i &lt; <span class="number">8</span>; i++)&#123;</span><br><span class="line">		<span class="keyword">if</span>((*(address-i) == <span class="number">0xFF</span>) &amp;&amp; (((*(address-i+<span class="number">1</span>)) &amp; <span class="number">0x38</span>) == <span class="number">0x10</span>))</span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// performs checks on the return address of the critical function</span></span><br><span class="line"><span class="comment">// 关键功能的返回地址检查</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CheckReturnAddress</span><span class="params">(DWORD returnAddress, DWORD functionAddress, DWORD *registers)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// is return address preceded by call?</span></span><br><span class="line">	<span class="keyword">if</span>(!PrecededByCall((<span class="keyword">unsigned</span> <span class="keyword">char</span> *)returnAddress))&#123;</span><br><span class="line">		<span class="built_in">stringstream</span> errorreport;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Return address not preceded by call.\n"</span>;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Return address: "</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; returnAddress;</span><br><span class="line">		ReportPossibleROP(errorreport.str());</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//检查受保护函数的地址是否在当前返回地址上方的堆栈上</span></span><br><span class="line"><span class="comment">//如果是，这可能意味着我们“返回”了开始的关键函数而不是调用它</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CheckFunctionAddressOnStack</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> functionAddress, <span class="keyword">unsigned</span> <span class="keyword">long</span> *<span class="built_in">stack</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> n = (GetROPSettings()-&gt;preserveStack) / <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">long</span>);</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">		<span class="keyword">if</span>((<span class="built_in">stack</span>[i] ^ ADDR_SCRAMBLE_KEY) == functionAddress)&#123;</span><br><span class="line">			<span class="built_in">stringstream</span> errorreport;</span><br><span class="line">			errorreport &lt;&lt; <span class="string">"Address of critical function found on stack.\n"</span>;</span><br><span class="line">			errorreport &lt;&lt; <span class="string">"Stack address: "</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="built_in">stack</span>;</span><br><span class="line">			errorreport &lt;&lt; <span class="string">", Function address: "</span> &lt;&lt; (functionAddress ^ ADDR_SCRAMBLE_KEY);</span><br><span class="line">			ReportPossibleROP(errorreport.str());</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;	</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获得堆栈的顶部和底部地址</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">GetStackInfo</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> *stackBottom, <span class="keyword">unsigned</span> <span class="keyword">long</span> *stackTop)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">char</span> *TIB = (<span class="keyword">char</span> *)__readfsdword(<span class="number">0x18</span>);</span><br><span class="line">	*stackTop = *((<span class="keyword">unsigned</span> <span class="keyword">long</span> *)(TIB+<span class="number">4</span>));</span><br><span class="line">	*stackBottom = *((<span class="keyword">unsigned</span> <span class="keyword">long</span> *)(TIB+<span class="number">8</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对关键功能框架下方的堆栈帧执行检查</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CheckStackFrames</span><span class="params">(DWORD *stackPtr, DWORD *framePtr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	DWORD *originalFramePtr;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> stackBottom, stackTop;</span><br><span class="line">	GetStackInfo(&amp;stackBottom, &amp;stackTop);</span><br><span class="line"></span><br><span class="line">	originalFramePtr = framePtr;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// frame pointer must point to the stack</span></span><br><span class="line">	<span class="keyword">if</span>(((<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr &lt; stackBottom) || (stackTop &lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr))&#123;</span><br><span class="line">		<span class="built_in">stringstream</span> errorreport;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Return address not preceded by call.\n"</span>;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Frame pointer: "</span>;</span><br><span class="line">		errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr;</span><br><span class="line">		ReportPossibleROP(errorreport.str());</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// frame pointer must be "below" the stack pointer</span></span><br><span class="line">	<span class="keyword">if</span>(((<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr) &lt; ((<span class="keyword">unsigned</span> <span class="keyword">long</span>)stackPtr))&#123;</span><br><span class="line">		<span class="built_in">stringstream</span> errorreport;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Frame pointer is above stack pointer on stack\n"</span>;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">"Stack pointer: "</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)stackPtr;</span><br><span class="line">		errorreport &lt;&lt; <span class="string">", Frame pointer: "</span> &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr;</span><br><span class="line">		ReportPossibleROP(errorreport.str());</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 表示应该执行检查</span></span><br><span class="line"><span class="keyword">bool</span> protectionEnabled;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行检查的主要功能，在每个关键功能的序言中调用</span></span><br><span class="line"><span class="comment">// functionAddress：关键函数的原始地址，用于确定我们所处的函数</span></span><br><span class="line"><span class="comment">// registers：一个包含关键函数调用时刻的寄存器值的数组</span></span><br><span class="line"><span class="keyword">void</span> __<span class="function">stdcall <span class="title">ROPCheck</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> functionAddress, <span class="keyword">unsigned</span> <span class="keyword">long</span> *registers)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!protectionEnabled)</span><br><span class="line">		<span class="keyword">return</span>; <span class="comment">// still initializing protection</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> framePointer = registers[<span class="number">2</span>];</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> stackPointer = registers[<span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">	<span class="comment">// identify the function that is being called</span></span><br><span class="line">	<span class="keyword">int</span> i;</span><br><span class="line">	<span class="keyword">int</span> numFunctions = GetNumGuardedFunctions();</span><br><span class="line">	ROPGuardedFunction *guardedFunctions = GetGuardedFunctions();</span><br><span class="line">	ROPGuardedFunction *currentFunction = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="keyword">for</span>(i=<span class="number">0</span>; i &lt; numFunctions; i++)&#123;</span><br><span class="line">		<span class="keyword">if</span>(guardedFunctions[i].originalAddress == functionAddress)&#123;</span><br><span class="line">			currentFunction = &amp;(guardedFunctions[i]);</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span>(!currentFunction)&#123;</span><br><span class="line">		WriteLog(<span class="string">"Inside ROPCheck, but guarded function not identified"</span>);</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//if(strcmp(currentFunction-&gt;functionName, "CreateProcessInternalW") == 0)</span></span><br><span class="line">	<span class="comment">//	return;</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// check critical function on stack </span></span><br><span class="line">	<span class="keyword">if</span>(!CheckFunctionAddressOnStack(functionAddress, (<span class="keyword">unsigned</span> <span class="keyword">long</span> *)stackPointer))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// check return address</span></span><br><span class="line">	DWORD returnAddress = *((DWORD *)(stackPointer + GetROPSettings()-&gt;preserveStack));</span><br><span class="line">	<span class="keyword">if</span>(!CheckReturnAddress(returnAddress, functionAddress, registers))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// check ebp</span></span><br><span class="line">	<span class="keyword">if</span>(!CheckStackFrames((DWORD *)(stackPointer + GetROPSettings()-&gt;preserveStack), (DWORD *)framePointer))</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>防止误判，必须考虑到所有不同长度的call指令以及不同的指令。还可以检查当前所在地址是否就是call的目标地址。比如 call eax时，可以检查eax和eip的值是否一致。</p>
-<p>还需要检查栈的合法性：如可以获取栈的地址范围，并检查esp，ebp寄存器的值是否位于该范围内，也能够识别异常。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以获得栈的上限和下限地址，并检查esp是否位于该范围内。此逻辑也可用于检查ebp。</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">CheckStackPointer</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> stackPtr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> stackBottom, stackTop;</span><br><span class="line">    GetStackInfo(&amp;stackBottom, &amp;stackTop);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((stackPtr &lt; stackBottom) || (stackTop &lt; stackPtr))&#123;</span><br><span class="line">        <span class="built_in">stringstream</span> errorreport;</span><br><span class="line">        errorreport &lt;&lt; <span class="string">"Stack pointer is "</span>;</span><br><span class="line">        errorreport &lt;&lt; <span class="string">"outside of stack. Stack address:\n"</span>;</span><br><span class="line">        errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; stackPtr;</span><br><span class="line">        ReportPossibleROP(errorreport.str());</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>由于栈永远是向下（低位方向）增长的，因此 ebp 必然要大于 esp，也可以对这一点进行检查。函数的返回目标地址是存放在栈中的，因此我们可以通过 ebp 进行回溯，找到上一个和再上一个返回目标地址。</p>
-<p>这种方法被称为栈跟踪（stack trace）。通过栈跟踪，我们可以确认调用中的各个 ebp 是否位于栈的地址范围内。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">unsigned</span> <span class="keyword">int</span> i=<span class="number">0</span>; i&lt;GetROPSettings()-&gt;maxStackFrames; i++)&#123;</span><br><span class="line">        newFramePtr = (DWORD *)(*(framePtr));</span><br><span class="line">        returnAddress = (DWORD *)(*(framePtr+<span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!returnAddress) <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(!PrecededByCall((<span class="keyword">unsigned</span> <span class="keyword">char</span> *)returnAddress)) &#123;</span><br><span class="line">            <span class="built_in">stringstream</span> errorreport;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">"Return address not preceded by call."</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Return address: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)</span><br><span class="line">returnAddress;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Original frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)</span><br><span class="line">originalFramePtr;</span><br><span class="line">            ReportPossibleROP(errorreport.str());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(((<span class="keyword">unsigned</span> <span class="keyword">long</span>)newFramePtr &lt; stackBottom) ||</span><br><span class="line">           ((<span class="keyword">unsigned</span> <span class="keyword">long</span>)newFramePtr &gt; stackTop))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">stringstream</span> errorreport;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">"Frame pointer is outside of stack."</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Original frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)</span><br><span class="line">originalFramePtr;</span><br><span class="line">            ReportPossibleROP(errorreport.str());</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>((<span class="keyword">unsigned</span> <span class="keyword">long</span>)newFramePtr &lt;= (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr)&#123;</span><br><span class="line">            <span class="built_in">stringstream</span> errorreport;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">"Next frame pointer is not "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">"below the previous one on stack."</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)framePtr;</span><br><span class="line">            errorreport &lt;&lt; <span class="string">" Original frame pointer: "</span>;</span><br><span class="line">            errorreport &lt;&lt; <span class="built_in">std</span>::hex &lt;&lt; (<span class="keyword">unsigned</span> <span class="keyword">long</span>)</span><br><span class="line">originalFramePtr;</span><br><span class="line">    ReportPossibleROP(errorreport.str());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    framePtr = newFramePtr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>源文件+论文，链接: <a href="https://pan.baidu.com/s/1INd_yvOU_CWzG6rDt-TlLw" target="_blank" rel="noopener">https://pan.baidu.com/s/1INd_yvOU_CWzG6rDt-TlLw</a> 密码: tp9w</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/07/ROPGuard/">展开全文 >></a>
         </p>
       
 

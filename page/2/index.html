@@ -150,6 +150,139 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android-DIVA分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/31/Android-DIVA分析/">Android-DIVA分析</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/31/Android-DIVA分析/" class="archive-article-date">
+  	<time datetime="2018-08-31T06:41:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Android-DIVA分析"><a href="#Android-DIVA分析" class="headerlink" title="Android-DIVA分析"></a>Android-DIVA分析</h1><h3 id="1-Insecure-Logging"><a href="#1-Insecure-Logging" class="headerlink" title="1. Insecure Logging"></a>1. Insecure Logging</h3><p>主要是由于app代码中将敏感信息输出到app的logcat中，查看app记录的logcat<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell ps| grep -i diva</span><br><span class="line">adb shell logcat | grep 1012</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2018/08/31/Android-DIVA分析/1.1.png" alt="1.1"></p>
+<p>在diva中输入数字1111222233334444 测试：输出纯文本显示应用程序的信息</p>
+<p><img src="/2018/08/31/Android-DIVA分析/1.2.png" alt="1.2"></p>
+<h3 id="2-Hardcoding-Issues"><a href="#2-Hardcoding-Issues" class="headerlink" title="2.Hardcoding Issues"></a>2.Hardcoding Issues</h3><p>使用了硬编码的方式，导致存在一定的安全风险</p>
+<p><img src="/2018/08/31/Android-DIVA分析/2.1.png" alt="2.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/2.3.png" alt="2.2"></p>
+<h3 id="3-Insecure-Data-Storage-Part1"><a href="#3-Insecure-Data-Storage-Part1" class="headerlink" title="3.Insecure Data Storage-Part1"></a>3.Insecure Data Storage-Part1</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">不安全的数据存储也是App常见的安全问题之一，主要有三种方式：</span><br><span class="line">1，将敏感数据保存到配置文件中；</span><br><span class="line">2，将敏感数据保存在本地的sqlite3数据库中；</span><br><span class="line">3，将敏感数据保存在临时文件或者sd卡中。</span><br></pre></td></tr></table></figure>
+<p>源码：InsecureDataStorage1Activity</p>
+<p><img src="/2018/08/31/Android-DIVA分析/3.1.png" alt="3.1"></p>
+<p>去<code>/data/data/jakhar.aseem.diva</code>（包的名称）  <strong>shared_prefs</strong>  文件夹中找到：-检查内容：-打开.xml文件，找到用户先前引入的凭据：SharedPreferences类存储的数据会以.xml的形式存储在<code>/data/data/apppackagename/shared_prefs</code></p>
+<p><img src="/2018/08/31/Android-DIVA分析/3.2.png" alt="3.2"></p>
+<h3 id="4-Insecure-Data-Storage-Part2"><a href="#4-Insecure-Data-Storage-Part2" class="headerlink" title="4.Insecure Data Storage-Part2"></a>4.Insecure Data Storage-Part2</h3><p>用户的敏感信息存储到本地的数据库中，一般app对应的数据库目录:<code>/data/data/apppackagename/databases</code></p>
+<p><img src="/2018/08/31/Android-DIVA分析/4.1.png" alt="4.1"></p>
+<p> 打开文件夹，有许多不同的数据库。</p>
+<p>我们可以尝试其中任何一个，直到找到有趣的信息 但是，为了简单起见，我们直接转到ids2：- Android使用  <strong>sqlite</strong>  数据库管理系统：- ids2数据库中有2个表：- 从表myuser中选择所有内容，我们找到用户引入的凭据</p>
+<h3 id="5-Insecure-Data-Storage-Part3"><a href="#5-Insecure-Data-Storage-Part3" class="headerlink" title="5.Insecure Data Storage-Part3"></a>5.Insecure Data Storage-Part3</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/data/jakhar.aseen.diva/零时数据 uinfotemp</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/31/Android-DIVA分析/5.1.png" alt="5.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/5.2.png" alt="5.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/5.3.png" alt="5.3"></p>
+<h3 id="6-Insecure-Data-Storage-Part4"><a href="#6-Insecure-Data-Storage-Part4" class="headerlink" title="6.Insecure Data Storage-Part4"></a>6.Insecure Data Storage-Part4</h3><p>原目录查看，<code>InsecureDataStorage4Activity</code> 发现函数<code>getExternalStorageDirectory()</code>及uinfo.txt</p>
+<p><img src="/2018/08/31/Android-DIVA分析/6.1.png" alt="6.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/6.2.png" alt="6.2"></p>
+<h3 id="7-Input-Validation-Issues-Part1"><a href="#7-Input-Validation-Issues-Part1" class="headerlink" title="7.Input Validation Issues-Part1"></a>7.Input Validation Issues-Part1</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SQLInjectionActivity</span></span><br><span class="line"><span class="keyword">package</span> jakhar.aseem.diva;</span><br><span class="line"><span class="keyword">import</span> android.database.Cursor;</span><br><span class="line"><span class="keyword">import</span> android.database.sqlite.SQLiteDatabase;</span><br><span class="line"><span class="keyword">import</span> android.support.v7.app.AppCompatActivity;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"><span class="keyword">import</span> android.widget.EditText;</span><br><span class="line"><span class="keyword">import</span> android.widget.Toast;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SQLInjectionActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> SQLiteDatabase mDB;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mDB = openOrCreateDatabase(<span class="string">"sqli"</span>, MODE_PRIVATE, <span class="keyword">null</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"DROP TABLE IF EXISTS sqliuser;"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"CREATE TABLE IF NOT EXISTS sqliuser(user VARCHAR, password VARCHAR, credit_card VARCHAR);"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('admin', 'passwd123', '1234567812345678');"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('diva', 'p@ssword', '1111222233334444');"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('john', 'password123', '5555666677778888');"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            Log.d(<span class="string">"Diva-sqli"</span>, <span class="string">"Error occurred while creating database for SQLI: "</span> + e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">        setContentView(R.layout.activity_sqlinjection);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">search</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">        EditText srchtxt = (EditText) findViewById(R.id.ivi1search);</span><br><span class="line">        Cursor cr = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cr = mDB.rawQuery(<span class="string">"SELECT * FROM sqliuser WHERE user = '"</span> + srchtxt.getText().toString() + <span class="string">"'"</span>, <span class="keyword">null</span>);</span><br><span class="line">            StringBuilder strb = <span class="keyword">new</span> StringBuilder(<span class="string">""</span>);</span><br><span class="line">            <span class="keyword">if</span> ((cr != <span class="keyword">null</span>) &amp;&amp; (cr.getCount() &gt; <span class="number">0</span>)) &#123;</span><br><span class="line">                cr.moveToFirst();</span><br><span class="line">				<span class="keyword">do</span> &#123;</span><br><span class="line">                    strb.append(<span class="string">"User: ("</span> + cr.getString(<span class="number">0</span>) + <span class="string">") pass: ("</span> + cr.getString(<span class="number">1</span>) + <span class="string">") Credit card: ("</span> + cr.getString(<span class="number">2</span>) + <span class="string">")\n"</span>);</span><br><span class="line">                &#125; <span class="keyword">while</span> (cr.moveToNext());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                strb.append(<span class="string">"User: ("</span> + srchtxt.getText().toString() +<span class="string">") not found"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>, strb.toString(), Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            Log.d(<span class="string">"Diva-sqli"</span>, <span class="string">"Error occurred while searching in database: "</span> + e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;         </span><br><span class="line"><span class="comment">//Java源代码通知有关存储用户凭据的SQLite数据库：</span></span><br><span class="line"><span class="comment">/*检查前一句，最后一个字符串由两部分组成。第一部分对应于无效用户，但它使用OR二进制操作链接到第二部分。第二部分始终为“true”（'2'='2'），因此整个字符串也是“true”（0 OR 1 = 1）。剩下的两个连字符 - 意味着连字符后的所有内容都被视为注释。*/</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/31/Android-DIVA分析/7.2.png" alt="7.2"></p>
+<h3 id="8-Input-Validation-Issues-Part2"><a href="#8-Input-Validation-Issues-Part2" class="headerlink" title="8.Input Validation Issues-Part2"></a>8.Input Validation Issues-Part2</h3><p>应用程序要求提供URL，例如<a href="http://showmeshell.top浏览器按预期打开此博客的网站：-" target="_blank" rel="noopener">http://showmeshell.top浏览器按预期打开此博客的网站：-</a> 但是，这种情况可用于使用不同的协议来利用浏览器HTTP，例如File协议，用于读取内部文件系统的内容，甚至是外部存储器中的数据。- 从上一个练习中，我们在此路径中存储了一些凭据：- 使用File protocole，可以实现对uinfo文件的访问：- 将File文件路径作为输入，显示uinfo文件的内容：- 在同样，此输入验证漏洞可用于访问外部存储上的数据。例如，假设SD卡上有一个密钥文件：Key.txt</p>
+<p><img src="/2018/08/31/Android-DIVA分析/8.1.png" alt="8.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/8.2.png" alt="8.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/8.3.png" alt="8.3"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/8.4.png" alt="8.4"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/8.5.png" alt="8.5"></p>
+<h3 id="9-Access-Control-Issues-Part-1"><a href="#9-Access-Control-Issues-Part-1" class="headerlink" title="9.Access Control Issues-Part 1"></a>9.Access Control Issues-Part 1</h3><p>可在AndroidManifest.xml中查看文件中暴露的activity组件</p>
+<p><img src="/2018/08/31/Android-DIVA分析/9.1.png" alt="9.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/9.2.png" alt="9.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/9.3.png" alt="9.3"></p>
+<h3 id="10-Access-Control-Issues-Part-2"><a href="#10-Access-Control-Issues-Part-2" class="headerlink" title="10.Access Control Issues-Part 2"></a>10.Access Control Issues-Part 2</h3><p><img src="/2018/08/31/Android-DIVA分析/10.1.png" alt="10.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.2.png" alt="10.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.3.png" alt="10.3"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.4.png" alt="10.4"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.5.png" alt="10.5"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.6.png" alt="10.6"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/10.7.png" alt="10.7"></p>
+<h3 id="11-Access-Control-Issues-Part-3"><a href="#11-Access-Control-Issues-Part-3" class="headerlink" title="11.Access Control Issues-Part 3"></a>11.Access Control Issues-Part 3</h3><p><img src="/2018/08/31/Android-DIVA分析/11.1.png" alt="11.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/11.2.png" alt="11.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/11.3.png" alt="11.3"></p>
+<h3 id="12-Hardcoding-Issues-2"><a href="#12-Hardcoding-Issues-2" class="headerlink" title="12.Hardcoding Issues 2"></a>12.Hardcoding Issues 2</h3><p><img src="/2018/08/31/Android-DIVA分析/12.1.png" alt="12.1"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/12.2.png" alt="12.2"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/12.3.png" alt="12.3"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/12.6.png" alt="12.6"></p>
+<p> <strong>divajni.c</strong>  保存原始C语言程序，其中供应商密钥存储为常量（<strong>#define VENDORKEY“olsdfgad; lh”</strong>），后来与函数  <strong>strncmp进行比较</strong>：最重要的结论是要记住开发人员经常将密钥硬编码到  <strong>.so</strong>  文件中</p>
+<h3 id="13-Input-Validation-Issues-3"><a href="#13-Input-Validation-Issues-3" class="headerlink" title="13.Input Validation Issues 3"></a>13.Input Validation Issues 3</h3><p>要了解应用程序内部发生的情况，检查logcat命令生成的日志非常方便。找到signal（SIGSEGV=segmentation fault ，or segmentation violation），出现内存保护的现象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell ps | grep -i diva</span><br><span class="line">adb shell logcat | grep (pid)</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/31/Android-DIVA分析/13.1.png" alt="13.1"></p>
+<p>找到Java source =InputValidation3Activity.java</p>
+<p><img src="/2018/08/31/Android-DIVA分析/13.2.png" alt="13.2"></p>
+<p>找到 divajni.c 找到关于CODESIZEMATX的定义， <code>app/src/main/jni</code></p>
+<p><img src="/2018/08/31/Android-DIVA分析/13.3.png" alt="13.3"></p>
+<p><img src="/2018/08/31/Android-DIVA分析/13.4.png" alt="13.4"></p>
+<p>问题函数：strcpy没有检查目标缓冲区的大小足以容纳源参数，输入超过20个数后，灰造成内存损坏或者缓冲区溢出。</p>
+<p>13个已经全部完成～</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/31/Android-DIVA分析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-APK安全" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1111,185 +1244,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/19/IDA与Dex持续更新/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Androguard" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/19/Androguard/">Androguard</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/19/Androguard/" class="archive-article-date">
-  	<time datetime="2018-08-19T12:56:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Androguard的使用方法"><a href="#Androguard的使用方法" class="headerlink" title="Androguard的使用方法"></a>Androguard的使用方法</h2><ul>
-<li><p><strong>androapkinfo.py</strong></p>
-<ul>
-<li><strong>用来查看apk文件的信息</strong></li>
-<li>会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看</li>
-<li><code>./androapkinfo.py -i ./xxx.apk</code></li>
-</ul>
-</li>
-<li><p><strong>androaxml.py</strong></p>
-<ul>
-<li>用来<strong>解密apk包中的AndroidManifest.xml文件</strong></li>
-<li><code>./androaxml.py -i ./xxx.apk</code></li>
-</ul>
-</li>
-<li><p><strong>androcsign.py</strong></p>
-<ul>
-<li>用于<strong>添加apk文件的签名信息到一个数据库文件中</strong></li>
-<li>Androguard工具目录下的signatures/dbandroguard文件为收集的恶意软件信息数据库</li>
-<li>使用androcsign.py前需要为apk文件编写一个sign文件,json格式：eg</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"SAMPLE"</span>:<span class="string">"apks/xxx.apk"</span>     /*SAMPLE指定需要添加信息的apk文件*/</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        "BASE":"AndroidOS",			/*BASE指定文件运行的系统，目前固定为AndroidOS*/</span><br><span class="line">        "NAME":"DroidDream",		/*NAME是该签名的名字*/</span><br><span class="line">        "SIGNATURE":[				/*具体的签名规则*/</span><br><span class="line">            &#123;</span><br><span class="line">                "TYPE":"METHSIM",	/*TYPE用来指定签名的类型，METHSIM表示的是方法的签名，CLASSSIM表示为类签名*/</span><br><span class="line">                "CN":"Lcom/droider/xxx/MainActivity$SNChecker;", /*指定方法所在的类*/</span><br><span class="line">                "MN":"isRegistered"，	/*指定了方法名*/</span><br><span class="line">                "D":"()Z"				/*D指定了方法的签名信息*/</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        "BF":"0"					/*BF用来指定签名的检测规则*/</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
-<p>(json不允许/* //注释，需要则去掉注释部分)</p>
-<ul>
-<li><code>./androcsign.py -i signatures/xxx.apk -o signatures/dbandroguard</code></li>
-</ul>
-</li>
-<li><p><strong>androdd.py</strong></p>
-<ul>
-<li><strong>用来生成apk文件中每个类的方法的调用流程图</strong></li>
-<li><code>./androdd.py -i ./xxx.apk -o ./out -d -f PNG</code><ul>
-<li>-o选项强制指定一个输入目录，-d指定生成dot图形文件，-f用来指定输出的图片格式</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>androdiff.py</strong></p>
-<ul>
-<li><strong>用来比较两个apk文件的差异</strong></li>
-<li><code>./androdiff.py -i ./xxx.apk ./xxx1.apk</code></li>
-</ul>
-</li>
-<li><p><strong>androdump.py</strong></p>
-<ul>
-<li><strong>用来dump一个Linux进程的信息</strong></li>
-<li><code>./androdump.py -i pid</code></li>
-</ul>
-</li>
-<li><p><strong>androgexf.py</strong></p>
-<ul>
-<li><strong>用来生成APK的GEXF格式的图形文件</strong></li>
-<li>可以使用Gephi查看gexf格式的图像</li>
-<li><code>./androgext.py -i ./xxx.apk -o ./xxx.gexf</code></li>
-</ul>
-</li>
-<li><p><strong>andromercury.py</strong></p>
-<ul>
-<li>Mercury工具的框架</li>
-<li><strong>功能是对Mercury的包装</strong></li>
-</ul>
-</li>
-<li><p><strong>androrisk.py</strong></p>
-<ul>
-<li><strong>用于评估apk文件中潜在的风险</strong></li>
-<li><code>./androrisk.py -m -i ./xxx.apk</code></li>
-</ul>
-</li>
-<li><p><strong>androsign.py</strong></p>
-<ul>
-<li><strong>用于检测apk的信息是否存在于特定的数据库中</strong>，作用与androcsign.py相反</li>
-<li><code>./androsign.py -i apks/xxx.apk -b signatures/dbandroguard -c signatures/dbconfig</code></li>
-</ul>
-</li>
-<li><p><strong>androsim.py</strong></p>
-<ul>
-<li><strong>用于计算两个apk文件的相似度</strong></li>
-<li><code>./androsim.py -i ./xxx.apk ./xxx1.apk</code></li>
-<li>Windows移植版=androsim.exe</li>
-</ul>
-</li>
-<li><p><strong>androxgmml.py</strong></p>
-<ul>
-<li><strong>用来生成apk/jar/class/dex文件的控制流程及功能调用图</strong>，输出格式为xgmml<br>   <code>./androxgmml.py -i  ./xxx.apk    -o xxx.xgmml</code></li>
-</ul>
-</li>
-<li><p><strong>apkviewer.py</strong></p>
-<ul>
-<li>用来为<strong>apk文件中每一个类生成一个独立的graphml图形文件</strong></li>
-<li><code>./apkviewer.py -i ./xxx.apk -o output</code></li>
-<li>Gephi打开生成后的graphml文件,图形中的每个节点是指令级别</li>
-</ul>
-</li>
-<li><p><strong>androlyze.py</strong></p>
-<ul>
-<li>强大的静态分析工具，它提供的一个<strong>独立的Shell环境</strong></li>
-<li><code>./androlyze.py-s</code>进入androlyze的shell交互环境</li>
-<li>androlyze.py通过访问<u>对象的字段与方法的方式</u>来提供反馈结果，可用到3个对象：apk文件对象、dex文件对象、分析结果对象<ul>
-<li>apk文件对象 <code>a=APK(&quot;./xxx.apk&quot;)</code>            (a.+tab 可显示该类所有方法与字段)</li>
-<li>dex文件对象<code>d=DalvikVMFormat(a.get_dex())</code></li>
-<li>分析结果对象 <code>dx=VMAnalysis(d)</code></li>
-<li>或一条命令解决 <code>a,d,dx=AnalyzeAPK(&quot;./xxx.apk&quot;, decompiler=&quot;dad&quot;)</code> </li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.get_permissions()：输出apk用到的全部权限</span><br><span class="line">a.get_providers()：输出程序中所有的Content Provider</span><br><span class="line">a.get_receivers()：输出程序中所有的Broadcast Receiver</span><br><span class="line">a.get_services()：输出程序中所有的Service</span><br><span class="line">d.CLASS_Lcom_droider_XXX_MainActivity_2.METHOD_onClick.pretty_show():查看MainActivity$2的OnClick()方法.//source()显示Java源码</span><br><span class="line">dx.tainted_variables.get_string(&lt;要搜索的字符串&gt;)</span><br><span class="line">show_Path(d,dx.tainted_packages.search_packages(&lt;包名&gt;))</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/19/Androguard/">展开全文 >></a>
         </p>
       
 
