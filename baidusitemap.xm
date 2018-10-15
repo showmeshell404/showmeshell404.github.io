@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/10/15/web%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%85%A5%E9%97%A8%E4%B9%8B-%E4%BD%A0%E6%98%AF%E4%BC%9A%E5%91%98%E5%90%97/</loc>
+    <lastmod>2018-10-15T03:05:25.737Z</lastmod>
+    <data>
+        <display>
+        <title>web渗透测试入门之-你是会员吗?</title>
+        <pubTime>2018-10-15T02:41:05.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/10/12/web%E6%B8%97%E9%80%8F%E5%85%A5%E9%97%A8%E4%B9%8B-%E7%9C%9F%E7%9A%84%E5%BE%88%E7%AE%80%E5%8D%95/</loc>
     <lastmod>2018-10-14T03:44:39.331Z</lastmod>
     <data>
