@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/10/15/python%E8%A7%A3%E6%9E%90Exif%E5%85%83%E6%95%B0%E6%8D%AE/</loc>
+    <lastmod>2018-10-15T07:17:29.197Z</lastmod>
+    <data>
+        <display>
+        <title>python解析Exif元数据</title>
+        <pubTime>2018-10-15T07:14:17.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/10/15/web%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%85%A5%E9%97%A8%E4%B9%8B-%E4%BD%A0%E6%98%AF%E4%BC%9A%E5%91%98%E5%90%97/</loc>
     <lastmod>2018-10-15T03:05:25.737Z</lastmod>
     <data>

