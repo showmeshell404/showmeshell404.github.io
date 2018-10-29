@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/10/29/%E7%94%A8python%E8%B0%83%E6%9F%A5%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%BB%93%E6%9E%84/</loc>
+    <lastmod>2018-10-29T06:03:26.211Z</lastmod>
+    <data>
+        <display>
+        <title>用python调查应用程序结构</title>
+        <pubTime>2018-10-29T05:59:04.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/10/15/python%E8%A7%A3%E6%9E%90Exif%E5%85%83%E6%95%B0%E6%8D%AE/</loc>
     <lastmod>2018-10-15T07:17:29.197Z</lastmod>
     <data>

@@ -1,3 +1,4 @@
+http://showmeshell.top/2018/10/29/用python调查应用程序结构/
 http://showmeshell.top/2018/10/15/python解析Exif元数据/
 http://showmeshell.top/2018/10/15/web渗透测试入门之-你是会员吗/
 http://showmeshell.top/2018/10/12/web渗透入门之-真的很简单/
