@@ -5,7 +5,7 @@
     
   <url>
     <loc>http://showmeshell.top/2018/11/19/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2XSS/</loc>
-    <lastmod>2018-11-19T14:00:12.569Z</lastmod>
+    <lastmod>2018-11-19T14:14:34.883Z</lastmod>
     <data>
         <display>
         <title>如何防止XSS?</title>
