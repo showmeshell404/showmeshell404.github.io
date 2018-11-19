@@ -150,6 +150,85 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java开发即时聊天软件-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/23/Java开发即时聊天软件-2/">Java开发即时聊天软件(2)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/23/Java开发即时聊天软件-2/" class="archive-article-date">
+  	<time datetime="2018-08-23T08:09:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>##Java开发即时聊天软件(2)<br><strong>个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//个人资料的界面设计GerenziliaoFrame.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JComboBox;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JPanel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JRadioButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextArea;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.EtchedBorder;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.TitledBorder;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GerenziliaoFrame</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTextArea textArea;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_3;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_2;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_2;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_1;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					GerenziliaoFrame frame = <span class="keyword">new</span> GerenziliaoFrame();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">GerenziliaoFrame</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"个人资料"</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">482</span>, <span class="number">399</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">10</span>, <span class="number">63</span>, <span class="number">63</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">79</span>, <span class="number">10</span>, <span class="number">385</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		textField_1 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_1.setBounds(<span class="number">79</span>, <span class="number">51</span>, <span class="number">385</span>, <span class="number">22</span>);</span><br><span class="line">		getContentPane().add(textField_1);</span><br><span class="line">		<span class="keyword">final</span> JPanel panel = <span class="keyword">new</span> JPanel();</span><br><span class="line">		panel.setLayout(<span class="keyword">null</span>);</span><br><span class="line">		panel.setBorder(<span class="keyword">new</span> TitledBorder(<span class="keyword">null</span>, <span class="string">"个人资料"</span>, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, <span class="keyword">null</span>, <span class="keyword">null</span>));</span><br><span class="line">		panel.setBounds(<span class="number">10</span>, <span class="number">94</span>, <span class="number">454</span>, <span class="number">265</span>);</span><br><span class="line">		getContentPane().add(panel);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_1 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_1.setText(<span class="string">"真实名字:"</span>);</span><br><span class="line">		label_1.setBounds(<span class="number">10</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_2 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_2.setText(<span class="string">"性别:"</span>);</span><br><span class="line">		label_2.setBounds(<span class="number">236</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_2);</span><br><span class="line">		textField_2 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_2.setBounds(<span class="number">75</span>, <span class="number">35</span>, <span class="number">132</span>, <span class="number">22</span>);</span><br><span class="line">		panel.add(textField_2);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton.setText(<span class="string">"男"</span>);</span><br><span class="line">		radioButton.setBounds(<span class="number">279</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton_1 = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton_1.setText(<span class="string">"女"</span>);</span><br><span class="line">		radioButton_1.setBounds(<span class="number">323</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_3 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_3.setText(<span class="string">"出生年月:"</span>);</span><br><span class="line">		label_3.setBounds(<span class="number">10</span>, <span class="number">76</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_3);</span><br><span class="line">		comboBox = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox.setBounds(<span class="number">75</span>, <span class="number">72</span>, <span class="number">66</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox);</span><br><span class="line">		comboBox_2 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_2.setBounds(<span class="number">179</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_2);</span><br><span class="line">		comboBox_3 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_3.setBounds(<span class="number">264</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_3);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_4 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_4.setText(<span class="string">"年"</span>);</span><br><span class="line">		label_4.setBounds(<span class="number">147</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_4);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_5 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_5.setText(<span class="string">"月"</span>);</span><br><span class="line">		label_5.setBounds(<span class="number">236</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_5);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_6 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_6.setText(<span class="string">"日"</span>);</span><br><span class="line">		label_6.setBounds(<span class="number">323</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_6);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_7 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_7.setText(<span class="string">"备　　注:"</span>);</span><br><span class="line">		label_7.setBounds(<span class="number">10</span>, <span class="number">116</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_7);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">75</span>, <span class="number">116</span>, <span class="number">358</span>, <span class="number">133</span>);</span><br><span class="line">		panel.add(scrollPane);</span><br><span class="line">		textArea = <span class="keyword">new</span> JTextArea();</span><br><span class="line">		scrollPane.setViewportView(textArea);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//查询好友的界面设计SearchFriend.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.Vector;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTable;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SearchFriend</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTable table;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		test.Main.main(args);</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					SearchFriend frame = <span class="keyword">new</span> SearchFriend();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;	</span><br><span class="line">	Vector cols=<span class="keyword">new</span> Vector();</span><br><span class="line">	Vector rows=<span class="keyword">new</span> Vector();</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">SearchFriend</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"查找好友"</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">469</span>, <span class="number">422</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setText(<span class="string">"昵称:"</span>);</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">22</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">50</span>, <span class="number">14</span>, <span class="number">326</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		<span class="keyword">final</span> JButton button = <span class="keyword">new</span> JButton();</span><br><span class="line">		button.setText(<span class="string">"查找"</span>);</span><br><span class="line">		button.setBounds(<span class="number">382</span>, <span class="number">17</span>, <span class="number">66</span>, <span class="number">28</span>);</span><br><span class="line">		getContentPane().add(button);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">10</span>, <span class="number">63</span>, <span class="number">438</span>, <span class="number">307</span>);</span><br><span class="line">		getContentPane().add(scrollPane);</span><br><span class="line">		cols.add(<span class="string">"昵称"</span>);</span><br><span class="line">		cols.add(<span class="string">"在线"</span>); 		</span><br><span class="line">		table = <span class="keyword">new</span> JTable(rows,cols);</span><br><span class="line">		scrollPane.setViewportView(table);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/2.png" alt="2"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/3.png" alt="3"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/4.png" alt="4"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/5.png" alt="5"></p>
+<p><img src="/2018/08/23/Java开发即时聊天软件-2/6.png" alt="6"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/23/Java开发即时聊天软件-2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java开发即时聊天软件-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1491,162 +1570,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/18/smali文件格式/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-dex文件验证" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/17/dex文件验证/">dex文件验证</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/17/dex文件验证/" class="archive-article-date">
-  	<time datetime="2018-08-17T03:50:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dex文件的验证"><a href="#dex文件的验证" class="headerlink" title="dex文件的验证"></a>dex文件的验证</h3><ul>
-<li>验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件<ul>
-<li>一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可<ul>
-<li>但会引起部分资源难以从内存中释放，比如加载的native动态库</li>
-<li>让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Android提供了一个专门验证与优化dex文件的工具dexopt<ul>
-<li>在加载一个dex文件时，通过指定的验证与优化选项来调用dexopt进行相应的验证与优化操作。</li>
-</ul>
-</li>
-</ul>
-<p>dexopt的整个验证与优化过程：</p>
-<p><img src="/2018/08/17/dex文件验证/1.png" alt="1"></p>
-<ul>
-<li>dexopt的主程序代码为OptMain.cpp</li>
-<li>处理apk/jar/zip文件中classes.dex的函数为extractAndProcessZip()</li>
-<li>通过dexZipFindEntry()函数检查目标文件中是否拥有classes.dex</li>
-<li>调用<strong>dexZipGetEntryInfo()</strong>函数来读取classes.dex的<strong>时间戳与crc检验值</strong></li>
-<li>调用dexZipExtractEntryTo-File()函数释放classes.dex为缓存文件<ul>
-<li>开始解析传递过来的验证与优化选项，验证选项使用“v=”指出，优化选项使用“o=”指出</li>
-</ul>
-</li>
-<li>调用<strong>dvmPrepForDexOpt()</strong>函数启动一个<strong>虚拟机进程</strong><ul>
-<li>优化选项dexOptMode与验证选项verifyMode被传递到了全局DvmGlobals结构gDvm的dexOptMode与classVerifyMode字段中,初始化工作完成</li>
-</ul>
-</li>
-<li>dexopt调用<strong>dvmContinueOptimization()</strong>函数开始<strong>真正的验证与优化工作</strong><ul>
-<li>函数首先对dex文件做简单的检查，确保传递进来的目标文件属于dex或odex</li>
-<li>接着调用<strong>mmap()</strong>函数将<strong>整个文件映射到内存中</strong></li>
-<li>然后根据gDvm的dexOptMode与classVerifyMode字段来设置doVerify与doOpt两个布尔值</li>
-<li>接着调用<strong>rewriteDex()</strong>函数来<strong>重写dex文件</strong><ul>
-<li>重写内容包括字符序调整、结构重新对齐、类验证信息以及辅助数据</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>rewriteDex()函数调用dexSwapAndVerify()调整字节序</li>
-<li>调用dvmDexFileOpenPartial()创建DexFile结构<ul>
-<li>dvmDexFileOpenPartial()函数的实现在Android系统源码dalvik\vm\DvmDex.cpp文件</li>
-<li>该函数调用<strong>dexFileParse()函数解析dex文件</strong><ul>
-<li>dexFileParse()函数读取dex文件的头部</li>
-<li>根据需要调用验证<strong>dexComputeChecksum()函数</strong>或调用<strong>dexComputeOptChecksum()函数</strong>来</li>
-<li><strong>验证dex或odex文件头的checksum与signature字段</strong></li>
-<li>验证成功后</li>
-</ul>
-</li>
-<li>调用allocateAuxStructures()函数设置DexFile结构辅助数据的相关字段</li>
-<li>执行完后返回到rewriteDex()函数</li>
-</ul>
-</li>
-<li>rewriteDex()调用<strong>loadAllClasses()</strong>加载dex文件中所有的类</li>
-<li>调用<strong>verifyAndOptimizeClasses()函数</strong>优化与验证具体的类<ul>
-<li>调用dvmVerifyClass()函数进行验证<ul>
-<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\DexVerify.cpp文件</li>
-<li>调用<strong>verifyMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>验证</strong><ul>
-<li>先调用verifyInstructions()函数来验证方法中的指令及其数目的正确性</li>
-<li>再调用dvmVerifyCodeFlow()函数来验证代码流的正确性</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>调用dvmOptimizeClass()函数进行优化<ul>
-<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\Optimize.cpp文件</li>
-<li>调用<strong>optimizeMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>优化</strong><ul>
-<li>优化的主要工作是进行“<strong>指令替换</strong>”<ul>
-<li>替换原则的优先级为“volatile”替换-正确性替换-高性能替换</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>rewriteDex()函数返回后</li>
-</ul>
-</li>
-<li>再次调用dvmDexFileOpenPartial()来验证odex文件</li>
-<li>调用dvmGenerateRegisterMaps()函数来填充辅助数据区结构</li>
-<li>调用updateChecksum()函数重写dex文件的checksum值</li>
-</ul>
-<p>完整的流程，学习的一遍，对于dex如何优化，大概流程已经知道啦~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/17/dex文件验证/">展开全文 >></a>
         </p>
       
 
