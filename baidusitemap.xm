@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/20/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2CSRF%E6%94%BB%E5%87%BB/</loc>
+    <lastmod>2018-11-20T07:16:28.283Z</lastmod>
+    <data>
+        <display>
+        <title>如何防止CSRF攻击</title>
+        <pubTime>2018-11-20T07:15:12.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/19/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2XSS/</loc>
     <lastmod>2018-11-19T14:14:34.883Z</lastmod>
     <data>

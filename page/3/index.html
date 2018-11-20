@@ -150,6 +150,83 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java开发即时聊天软件-3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/24/Java开发即时聊天软件-3/">Java开发即时聊天软件(3)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/24/Java开发即时聊天软件-3/" class="archive-article-date">
+  	<time datetime="2018-08-24T09:56:26.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java开发即时聊天软件-3"><a href="#Java开发即时聊天软件-3" class="headerlink" title="Java开发即时聊天软件(3)"></a>Java开发即时聊天软件(3)</h2><p>ChatRoom_server开发~流程及代码</p>
+<p><img src="/2018/08/24/Java开发即时聊天软件-3/1.png" alt="1"></p>
+<p><img src="/2018/08/24/Java开发即时聊天软件-3/2.png" alt="2"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LoginServer.java登录服务器主要负责登录</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="comment">//登录服务器主要负责登录</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginServer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> Socket socket = <span class="keyword">null</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">LoginServer</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">//线程方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">openServer</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 线程池</span></span><br><span class="line">		ExecutorService execute = Executors.newFixedThreadPool(<span class="number">2000</span>);</span><br><span class="line">		<span class="comment">// 开启了TCP4001端口用于登录业务</span></span><br><span class="line">		ServerSocket server = <span class="keyword">new</span> ServerSocket(<span class="number">4001</span>);</span><br><span class="line">		<span class="comment">// 死循环目的是可以无限服务</span></span><br><span class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">			Socket socket = server.accept();</span><br><span class="line">			socket.setSoTimeout(<span class="number">10000</span>);</span><br><span class="line">			execute.execute(<span class="keyword">new</span> LoginServer(socket));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//UserInfo.java 用户个人信息</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserInfo</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String uid;</span><br><span class="line">	<span class="keyword">private</span> String phone;</span><br><span class="line">	<span class="keyword">private</span> String email;</span><br><span class="line">	<span class="keyword">private</span> Socket socket;</span><br><span class="line">	<span class="keyword">private</span> String udpip;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> udpport;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUid</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> uid;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUid</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.uid = uid;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getPhone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> phone;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPhone</span><span class="params">(String phone)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.phone = phone;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> email;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEmail</span><span class="params">(String email)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.email = email;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> Socket <span class="title">getSocket</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSocket</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getUdpip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> udpip;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUdpip</span><span class="params">(String udpip)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.udpip = udpip;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getUdpport</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> udpport;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setUdpport</span><span class="params">(<span class="keyword">int</span> udpport)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.udpport = udpport;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//UserOnLineList.java在线用户列表</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 在线用户列表</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ShowMeShell</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserOnLineList</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">UserOnLineList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> UserOnLineList userOnLineList = <span class="keyword">new</span> UserOnLineList();</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> UserOnLineList <span class="title">getUserOnLineList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> userOnLineList;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 把所有在线账户 全部登记在集合中 键值对</span></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * String是用户编号</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">private</span> HashMap&lt;String, UserInfo&gt; hashMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 注册在线用户</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">regOnline</span><span class="params">(String uid, Socket socket, String email, String phoneNumber)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 判断其他客户端是否登录一样的用户名，一样则强行下线</span></span><br><span class="line">		UserInfo userInfo = hashMap.get(uid);</span><br><span class="line">		<span class="keyword">if</span> (userInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					userInfo.getSocket().getOutputStream().write(<span class="number">4</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">				&#125;</span><br><span class="line">				userInfo.getSocket().close();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		userInfo = <span class="keyword">new</span> UserInfo();</span><br><span class="line">		userInfo.setUid(uid);</span><br><span class="line">		userInfo.setEmail(email);</span><br><span class="line">		userInfo.setPhone(phoneNumber);</span><br><span class="line">		userInfo.setSocket(socket);</span><br><span class="line">		<span class="comment">// 登记在线</span></span><br><span class="line">		hashMap.put(uid, userInfo);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 更新客户端的UDP信息</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 *            用户编号</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> ip</span></span><br><span class="line"><span class="comment">	 *            udp IP地址</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> port</span></span><br><span class="line"><span class="comment">	 *            udp端口</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> NullPointerException</span></span><br><span class="line"><span class="comment">	 *             空指针异常</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">updateOnLineUDP</span><span class="params">(String uid, String ip, <span class="keyword">int</span> port)</span> <span class="keyword">throws</span> NullPointerException </span>&#123;</span><br><span class="line">		UserInfo userInfo = hashMap.get(uid);</span><br><span class="line">		userInfo.setUdpip(ip);</span><br><span class="line">		userInfo.setUdpport(port);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 判断用户是否在线 如果是true在线 false不在线</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isUserOnLine</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.containsKey(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 获得在线用户信息</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> UserInfo <span class="title">getOnLineUserInfo</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.get(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 下线了</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> uid</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logout</span><span class="params">(String uid)</span> </span>&#123;</span><br><span class="line">		hashMap.remove(uid);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 获得所有的在线信息</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Set&lt;String&gt; <span class="title">getUserInfos</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> hashMap.keySet();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/24/Java开发即时聊天软件-3/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java开发即时聊天软件-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1440,136 +1517,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/18/Android程序中的类/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-smali文件格式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/18/smali文件格式/">smali文件格式</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/18/smali文件格式/" class="archive-article-date">
-  	<time datetime="2018-08-18T08:32:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="smali文件格式"><a href="#smali文件格式" class="headerlink" title="smali文件格式"></a>smali文件格式</h3><p>普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放</p>
-<h4 id="1-smali文件头3行"><a href="#1-smali文件头3行" class="headerlink" title="1.smali文件头3行"></a>1.smali文件头3行</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.class&lt;访问权限&gt;[修饰关键字]&lt;类名&gt;</span><br><span class="line">.super&lt;父类名&gt;</span><br><span class="line">.source&lt;源文件名&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//baksmali解析dex文件时，通过这3个字段来获取相应的值</span></span><br><span class="line"><span class="comment">//classIdx，superclassIdx，sourceFileIdx</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><u>经过混淆的dex文件，反编译出来的smali代码可能没有源文件信息，“.source”行的代码可能为空。</u></p>
-<p><strong>前3行代码过后就是类的主体部分了，一个类可以由多个字段或方法组成</strong></p>
-<h4 id="2-smali字段"><a href="#2-smali字段" class="headerlink" title="2.smali字段"></a>2.smali字段</h4><p>smali文件中字段的声明使用“<code>.field</code>”指令</p>
-<p>字段有静态字段与实例字段两种</p>
-<ul>
-<li>静态字段的声明<ul>
-<li><em># static fields</em></li>
-<li><em>.field &lt;访问权限&gt; static [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
-</ul>
-</li>
-<li>实例字段的声明<ul>
-<li><em># instance fields</em></li>
-<li><em>.field &lt;访问权限&gt; [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
-</ul>
-</li>
-</ul>
-<h4 id="3-smali方法"><a href="#3-smali方法" class="headerlink" title="3.smali方法"></a>3.smali方法</h4><p>smali文件中方法的声明使用“<code>.method</code>”指令</p>
-<p>方法有直接方法与虚方法两种</p>
-<ul>
-<li><p>直接方法的声明</p>
-<ul>
-<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># direct methods</span></span><br><span class="line">.method &lt;访问权限&gt; [修饰关键字]&lt;方法原型&gt;<span class="comment">//方法原型描述了方法的名称、参数与返回值</span></span><br><span class="line">    &lt;.locals&gt;	<span class="comment">//使用的局部变量的个数</span></span><br><span class="line">	[.parameter]	<span class="comment">//指定了方法的参数，比如3个参数，就3条指令</span></span><br><span class="line">    [.prologue]		<span class="comment">//代码的开始处，混淆过的代码可能去掉了该指令</span></span><br><span class="line">    [.line]			<span class="comment">//该处指令在源代码中的行号，混淆过的代码可能去除了行号信息</span></span><br><span class="line">	&lt;代码体&gt;</span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>虚方法的声明与直接方法相同，只是起始处的注释为“<code>virtual methods</code>”</p>
-</li>
-</ul>
-<h4 id="4-smali接口"><a href="#4-smali接口" class="headerlink" title="4.smali接口"></a>4.smali接口</h4><p>smali文件中使用“<code>.implements</code>”指令指出一个类实现了接口</p>
-<ul>
-<li><p>格式声明</p>
-<ul>
-<li><em># interfaces</em></li>
-<li><em>.implements &lt;接口名&gt;</em><ul>
-<li>接口名是<code>DexClassDef</code>结构中<code>interfacesOff</code>字段指定的内容</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="5-smali注解"><a href="#5-smali注解" class="headerlink" title="5.smali注解"></a>5.smali注解</h4><p>smali文件中使用“<code>.annotation</code>”指令指出类使用了注解</p>
-<ul>
-<li><p>格式声明</p>
-<ul>
-<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#annotations</span></span><br><span class="line">.annotation[注解属性]&lt;注解类名&gt;</span><br><span class="line">	[注解字段=值]</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>注解的作用范围可以是类、方法或字段</p>
-<ul>
-<li>注解的作用范围是类，“<code>.annotation</code>”指令会直接定义在smali文件中</li>
-<li>注解的作用范围是方法或字段，“<code>.annotation</code>”指令则会包含在方法或字段定义中</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/18/smali文件格式/">展开全文 >></a>
         </p>
       
 
