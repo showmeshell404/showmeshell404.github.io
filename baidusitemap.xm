@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/25/SQL%E6%B3%A8%E5%85%A5%E4%B8%8E%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-25T04:08:14.136Z</lastmod>
+    <data>
+        <display>
+        <title>SQL注入与文件上传漏洞</title>
+        <pubTime>2018-11-25T04:07:35.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/20/%E5%A6%82%E4%BD%95%E9%98%B2%E6%AD%A2CSRF%E6%94%BB%E5%87%BB/</loc>
     <lastmod>2018-11-20T07:16:28.283Z</lastmod>
     <data>
