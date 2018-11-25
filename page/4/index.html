@@ -150,6 +150,149 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-对比Java代码结构与Smali代码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/对比Java代码结构与Smali代码/">对比Java代码结构与Smali代码</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/对比Java代码结构与Smali代码/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:52:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java代码结构与Smali代码语句分析"><a href="#Java代码结构与Smali代码语句分析" class="headerlink" title="Java代码结构与Smali代码语句分析"></a>Java代码结构与Smali代码语句分析</h2><h3 id="1-循环语句"><a href="#1-循环语句" class="headerlink" title="1.循环语句"></a>1.循环语句</h3><p>Android开发过程中，常见的循环结构有迭代器循环、for循环、while循环、do while循环。</p>
+<ul>
+<li><p>迭代器循环代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Iterator&lt;对象&gt;&lt;对象名&gt;=&lt;方法返回一个对象列表&gt;;</span><br><span class="line"><span class="keyword">for</span>(&lt;对象&gt;&lt;对象名&gt;:&lt;对象列表&gt;)&#123;</span><br><span class="line">    [处理单个对象的代码体]</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//或者</span></span><br><span class="line">Iterator&lt;对象&gt;&lt;迭代器&gt;=&lt;方法返回一个迭代器&gt;;</span><br><span class="line"><span class="keyword">while</span>(&lt;迭代器&gt;.hasNext())&#123;</span><br><span class="line">    &lt;对象&gt;&lt;对象&gt;=&lt;迭代器&gt;.next();</span><br><span class="line">    [处理单个对象的代码体]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取正在运行的进程列表，然后使用Toast弹出所有的进程名</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">iterator</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Object localObject = ((ActivityManager)getSystemService(<span class="string">"activity"</span>)).getRunningAppProcesses();</span><br><span class="line">    <span class="comment">//获取正在运行的进程列表使用ActivityManager类的getRunningAppProcesses()方法，后者会返回一个List&lt; RunningAppProcessInfo&gt;对象</span></span><br><span class="line">    StringBuilder localStringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    localObject = ((List)localObject).iterator();</span><br><span class="line">    <span class="keyword">for</span> (;;)&#123;</span><br><span class="line">      <span class="keyword">if</span> (!((Iterator)localObject).hasNext())&#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, localStringBuilder.toString(), <span class="number">0</span>).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      localStringBuilder.append(((ActivityManager.RunningAppProcessInfo)((Iterator)localObject).next()).processName + <span class="string">'\n'</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//部分smali代码</span></span><br><span class="line">invoke-virtual &#123;p0, v4&#125;, Lcom/droider/circulate/MainActivity;</span><br><span class="line">   -&gt;getSystemService(Ljava/lang/String;)Ljava/lang/Object;	#获取ActivityManager</span><br><span class="line">new-instance v3, Ljava/lang/StringBuilder;	#新建一个StringBuilder对象</span><br><span class="line">invoke-direct &#123;v3&#125;, Ljava/lang/StringBuilder;-&gt;&lt;init&gt;()V	#调用StringBuilder构造函数</span><br><span class="line">invoke-interface &#123;v4&#125;, Ljava/util/Iterator;-&gt;hasNext()Z		#开始迭代</span><br><span class="line">invoke-interface &#123;v4&#125;, Ljava/util/Iterator;-&gt;next()Ljava/lang/Object;	#循环获取每一项</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>迭代器循环特点：</p>
+<ul>
+<li>迭代器循环会调用迭代器的hasNext()方法检测循环条件是否满足</li>
+<li>迭代器循环中调用迭代器的next()方法获取单个对象</li>
+<li>循环中使用goto指令来控制代码的流程</li>
+<li>for形式的迭代器循环展开后即为while形式的迭代器循环</li>
+</ul>
+</li>
+<li><p>for循环</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">forCirculate</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List localList = getApplicationContext().getPackageManager().getInstalledApplications(<span class="number">8192</span>);</span><br><span class="line">    <span class="keyword">int</span> j = localList.size();</span><br><span class="line">    StringBuilder localStringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (;;)&#123;</span><br><span class="line">      <span class="keyword">if</span> (i &gt;= j)&#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, localStringBuilder.toString(), <span class="number">0</span>).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      localStringBuilder.append(((ApplicationInfo)localList.get(i)).packageName + <span class="string">'\n'</span>);</span><br><span class="line">      i += <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//对于的核心smali语句</span></span><br><span class="line"><span class="keyword">const</span>/<span class="number">4</span> v1, <span class="number">0x0</span></span><br><span class="line">.local v1, i:I			#初始化v1=0</span><br><span class="line">:goto_0					#循环开始</span><br><span class="line">if-lt v1, v5, :cond_0   #如果v1小于v5，则跳转到cond_0 标号处</span><br><span class="line">.......</span><br><span class="line">:cond_0</span><br><span class="line">invoke-interface &#123;v0, v1&#125;, Ljava/util/List;-&gt;get(I)Ljava/lang/Object; #单个ApplicationInfo</span><br><span class="line">......</span><br><span class="line">add-int/lit8 v1, v1, 0x1	#下一个索引</span><br><span class="line">goto :goto_0    			#跳转到循环起始处</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>for循环的特点</p>
+<ul>
+<li>在进入循环前，需要先初始化循环计数器变量，且它的值需要在循环体中更改</li>
+<li>循环条件判断可以是条件跳转指令组成的合法语句</li>
+<li>循环中使用goto指令来控制代码的流程</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-switch语句"><a href="#2-switch语句" class="headerlink" title="2.switch语句"></a>2.switch语句</h3><h5 id="1-有规律的case分支"><a href="#1-有规律的case分支" class="headerlink" title="1.有规律的case分支"></a>1.有规律的case分支</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">packedSwitch</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">  String str = <span class="keyword">null</span>;  </span><br><span class="line">  <span class="keyword">switch</span> (i)&#123;</span><br><span class="line">  <span class="keyword">default</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a person"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">0</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a baby"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">1</span>: </span><br><span class="line">    <span class="keyword">return</span> <span class="string">"she is a girl"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">2</span>: </span><br><span class="line">  	<span class="keyword">return</span> <span class="string">"she is a woman"</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">  	<span class="keyword">return</span> <span class="string">"she is an obasan"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//对于部分smali代码</span></span><br><span class="line">.<span class="function">method <span class="keyword">private</span> <span class="title">packedSwitch</span><span class="params">(I)</span>Ljava/lang/String</span>;</span><br><span class="line">    .locals <span class="number">1</span></span><br><span class="line">    .param p1, "i"    # I</span><br><span class="line">    .prologue</span><br><span class="line">    .line <span class="number">21</span></span><br><span class="line">    <span class="keyword">const</span>/<span class="number">4</span> v0, <span class="number">0x0</span></span><br><span class="line">    .line <span class="number">22</span></span><br><span class="line">    .local v0, <span class="string">"str"</span>:Ljava/lang/String;</span><br><span class="line">    packed-switch p1, :pswitch_data_0	#packed-switch分支，pswitch_data_0指定case区域</span><br><span class="line">    .line <span class="number">36</span></span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is a person"</span></span><br><span class="line">    .line <span class="number">39</span></span><br><span class="line">    :goto_0</span><br><span class="line">    <span class="keyword">return</span>-object v0</span><br><span class="line">    .line <span class="number">24</span></span><br><span class="line">    :pswitch_0</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is a baby"</span></span><br><span class="line">    ................</span><br><span class="line">        .line <span class="number">33</span></span><br><span class="line">    :pswitch_3</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"she is an obasan"</span></span><br><span class="line">    .line <span class="number">34</span></span><br><span class="line">    goto :goto_0</span><br><span class="line">    .line <span class="number">22</span></span><br><span class="line">    nop</span><br><span class="line">    :pswitch_data_0				#case区域，从0开始，依次递增</span><br><span class="line">    .packed-<span class="keyword">switch</span> <span class="number">0x0</span>	</span><br><span class="line">        :pswitch_0</span><br><span class="line">        :pswitch_1</span><br><span class="line">        :pswitch_2</span><br><span class="line">        :pswitch_3</span><br><span class="line">    .end packed-<span class="keyword">switch</span></span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+<p>代码中的switch分支使用的是packed-switch指令。packed-switch指令在Dalvik中的格式如下：<code>packed-switch vAA, +BBBBBBBB</code></p>
+<p>指令后面的“+BBBBBBBB”被指明为一个packed-switch-payload格式的偏移:格式如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">packed</span>-<span class="title">switch</span>-<span class="title">payload</span>&#123;</span></span><br><span class="line">    ushort	ident;		<span class="comment">//值固定为0x0100</span></span><br><span class="line">    ushort	size;		<span class="comment">//case数目</span></span><br><span class="line">    <span class="keyword">int</span>		first_key;	<span class="comment">//初始case的值</span></span><br><span class="line">    <span class="keyword">int</span>[]	targets;	<span class="comment">//每个case相对switch指令处的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/1.png" alt="1"></p>
+<p>IDA Pro找到“<code>packed-switch p1, :pswitch_data_0</code>”指令位于<code>0x2cb1a</code>处，相应的机器码为“<code>2B 02 13 00 00 00</code>”:2B为packed-switch的OpCode,02为寄存器p1,00000013为偏移量0x13。Dalvik中计算偏移是以<strong>两个字节</strong>为单位，因为实际该指令指向的<code>packed-switch-payload</code>结构体的偏移量为<code>0x2cb1a + 2 * 0x13 = 0x2cb40</code></p>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/2.png" alt="2"></p>
+<ul>
+<li>第1个ident字段为0x100，标识packed-switch有效的case区域。</li>
+<li>第2个字段size为4，表明有4个case。</li>
+<li>第3个字段first_key为0，表明初始case值为0。</li>
+<li>第4个字段为偏移量，分别为0x6、0x9、0xc、0xf，加上packed-switch指令的偏移值0x2cb1a<ul>
+<li>case 0位置 = <code>0x2cb1a + 2 * 0x6 = 0x2cb26</code></li>
+<li>case 1位置 = <code>0x2cb1a + 2 * 0x9 = 0x2cb2c</code></li>
+<li>case 2位置 = <code>0x2cb1a + 2 * 0xc = 0x2cb32</code></li>
+<li>case 3位置 =<code>0x2cb1a + 2 * 0xf = 0x2cb38</code></li>
+</ul>
+</li>
+</ul>
+<h5 id="2-无规律的case分支"><a href="#2-无规律的case分支" class="headerlink" title="2.无规律的case分支"></a>2.无规律的case分支</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">sparseSwitch</span><span class="params">(<span class="keyword">int</span> paramInt)</span></span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (paramInt)&#123;</span><br><span class="line">    <span class="keyword">default</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a person"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a baby"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">15</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a student"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">35</span>: </span><br><span class="line">      <span class="keyword">return</span> <span class="string">"he is a father"</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">65</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"he is a grandpa"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//部分smali代码</span></span><br><span class="line">.<span class="function">method <span class="keyword">private</span> <span class="title">sparseSwitch</span><span class="params">(I)</span>Ljava/lang/String</span>;</span><br><span class="line">.................</span><br><span class="line">    sparse-switch p1, :sswitch_data_0	#sparse-switch分支，sswitch_data_0指定case区域</span><br><span class="line">    const-string v0, "he is a person"	#case default</span><br><span class="line">    :goto_0								#case出口</span><br><span class="line">    return-object v0					#返回字符串</span><br><span class="line">    .line <span class="number">46</span></span><br><span class="line">    :sswitch_0</span><br><span class="line">    <span class="keyword">const</span>-string v0, <span class="string">"he is a baby"</span></span><br><span class="line">    .line <span class="number">47</span></span><br><span class="line">    goto :goto_0</span><br><span class="line">    nop</span><br><span class="line">    :sswitch_data_0</span><br><span class="line">    .sparse-switch						#case区域</span><br><span class="line">        0x5 -&gt; :sswitch_0				#case	5</span><br><span class="line">        0xf -&gt; :sswitch_1				#case	15</span><br><span class="line">        0x23 -&gt; :sswitch_2				#case 	35</span><br><span class="line">        0x41 -&gt; :sswitch_3				#case	65</span><br><span class="line">    .end sparse-<span class="keyword">switch</span></span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+<p>sparse-switch指令在Dalvik中的格式如下：<code>sparse-switch vAA, +BBBBBBBB</code></p>
+<p>指令后面的“<code>+BBBBBBBB</code>”被指明为一个<code>sparse-switch-payload</code>格式的偏移。它的格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct sparse-switch-payload&#123;</span><br><span class="line">    ushort	ident;		//值固定为0x0100</span><br><span class="line">    ushort	size;		//case数目</span><br><span class="line">    int[]	keys;		//每个case的值，顺序从低到高</span><br><span class="line">    int[]	targets;	//每个case相对switch指令处的偏移</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/3.png" alt="3"></p>
+<p>IDA Pro找到“<code>sparse-switch p1, :sswitch_data_0</code>”指令位于0x2cb6a处，相应的机器码为“<code>2C 02 13 00 00 00</code>”，2C为<code>sparse -switch</code>的OpCode,<code>02</code>为寄存器p1,<code>00000013</code>为偏移量0x13。因为实际该指令指向的sparse-switch-payload结构体的偏移量为<code>0x2cb6a + 2 * 0x13 = 0x2cb90</code></p>
+<p><img src="/2018/08/19/对比Java代码结构与Smali代码/4.png" alt="4"></p>
+<ul>
+<li>第1个ident字段为0x200,标识sparse-switch有效的case区域</li>
+<li>第2个字段size为4，表明有4个case。</li>
+<li>第3个字段keys为4个case的值，分别为0x5、0xf、0x23、0x41。</li>
+<li>第4个字段为偏移量，分别为0x6、0x9、0xc、0xf，加上sparse -switch偏移值0x2cb6a<ul>
+<li>case 0位置 =<code>0x2cb6a + 2 * 0x6 = 0x2cb76</code></li>
+<li>case 1位置 = <code>0x2cb6a + 2 * 0x9 = 0x2cb7c</code></li>
+<li>case 2位置 = <code>0x2cb6a + 2 * 0xc = 0x2cb82</code></li>
+<li>case 3位置 = <code>0x2cb6a + 2 * 0xf = 0x2cb88</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="3-try-catch语句"><a href="#3-try-catch语句" class="headerlink" title="3.try/catch语句"></a>3.try/catch语句</h3><p>try语句块使用<strong>try_start_开头的标号注明，以try_end_开头的标号结束</strong>。第一个try语句的开头标号为try_start_0，结束标号为try_end_0</p>
+<p>try_end_0标号下面使用“.catch”指令指定处理到的异常类型与catch的标号，格式如下</p>
+<p><em>.catch &lt;异常类型&gt; {\&lt;try起始标号&gt; .. \&lt;try结束标号&gt;} \&lt;catch标号&gt;</em></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexCode</span>&#123;</span></span><br><span class="line">    u2	registersSize;	<span class="comment">//使用的寄存器个数</span></span><br><span class="line">    u2	insSize;		<span class="comment">//参数个数</span></span><br><span class="line">    u2	outsSize;		<span class="comment">//调用其他方法时使用的寄存器个数</span></span><br><span class="line">    u2	triesSize;		<span class="comment">//Try/Catch个数</span></span><br><span class="line">    u4	debugInfoOff;	<span class="comment">//指向调试信息的偏移</span></span><br><span class="line">    u4	insnsSize;		<span class="comment">//指令集个数，以2字节为单位</span></span><br><span class="line">    u2	insns[<span class="number">1</span>];		<span class="comment">//指令集</span></span><br><span class="line">    <span class="comment">//2字节空间用于结构对齐</span></span><br><span class="line">    <span class="comment">//try_item[triesSize]	DexTry结构</span></span><br><span class="line">    <span class="comment">//Try/Catch中handler的个数</span></span><br><span class="line">    <span class="comment">//catch_handler_item[handlersSize],DexCatchHandler结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//该结构下面的try_item就保存了try语句的信息</span></span><br><span class="line"><span class="comment">//它的结构DexTry声明如下</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTry</span>&#123;</span></span><br><span class="line">    u4	startAddr;		<span class="comment">//起始地址</span></span><br><span class="line">    u2	insnCount;		<span class="comment">//指令数量</span></span><br><span class="line">    u2	handlerOff;		<span class="comment">//handler的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//dexdump classes.dex &gt; xx.txt</span></span><br><span class="line"><span class="comment">//dexdump 位置 Android\build-tools\28.0.1里</span></span><br><span class="line">#<span class="number">1</span>              : (in Lcom/droider/trycatch/MainActivity;)</span><br><span class="line">      name          : 'tryCatch'</span><br><span class="line">      type          : '(ILjava/lang/String;)V'</span><br><span class="line">      access        : <span class="number">0x0002</span> (PRIVATE)					<span class="comment">//私有方法</span></span><br><span class="line">      code          -</span><br><span class="line">      registers     : <span class="number">13</span>								<span class="comment">//13个寄存器</span></span><br><span class="line">      ins           : <span class="number">3</span>									<span class="comment">//3个try语句块</span></span><br><span class="line">      outs          : <span class="number">3</span>	</span><br><span class="line">      insns size    : <span class="number">80</span> <span class="number">16</span>-bit code units				<span class="comment">//80条指令</span></span><br><span class="line">      catches       : <span class="number">3</span></span><br><span class="line">        <span class="number">0x0001</span> - <span class="number">0x0004</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br><span class="line">        <span class="number">0x0005</span> - <span class="number">0x0038</span>									<span class="comment">//2个异常处理handler</span></span><br><span class="line">          Ljava/lang/ArithmeticException; -&gt; <span class="number">0x0039</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br><span class="line">        <span class="number">0x003a</span> - <span class="number">0x0044</span></span><br><span class="line">          Ljava/lang/NumberFormatException; -&gt; <span class="number">0x0045</span></span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/对比Java代码结构与Smali代码/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android中的静态分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1800,92 +1943,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/08/Dalvik/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Debian修复" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/02/Debian修复/">Debian修复</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/02/Debian修复/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:39:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="记一次Debian系统崩溃及修复"><a href="#记一次Debian系统崩溃及修复" class="headerlink" title="记一次Debian系统崩溃及修复"></a>记一次Debian系统崩溃及修复</h2><ul>
-<li>7月底，在一次瞎比操作下（貌似是强制关机），电脑（单系统debian-parrot）重启后，系统能启动，但是进入后无图形化界面，只有鼠标在屏幕中间闪亮。多次重启仍无效。</li>
-<li>排除显卡兼容等，电脑硬件原因后，确实是图像化载入失败，和系统更新有关。</li>
-<li>在尝试通过conf写WiFi连接的时候，总是提醒失败。等待多天，找到一网线，直连。<ul>
-<li>在系统启动后，ctrl+alt+f1或f2或f3，进入tty。</li>
-<li>login</li>
-<li><code>sudo apt-get dist-upgrade</code>后出现<code>apt-get update --fix-missing</code></li>
-<li>遂<code>apt-get update --fix-missing</code></li>
-<li>很久之后，我大概更新了2G多，修复好了。</li>
-<li>reboot，重启之后就OK了。</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/02/Debian修复/">展开全文 >></a>
         </p>
       
 

@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/25/TurboMail%E5%AD%98%E5%82%A8%E5%9E%8BXSS%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-25T07:36:37.417Z</lastmod>
+    <data>
+        <display>
+        <title>TurboMail存储型XSS漏洞</title>
+        <pubTime>2018-11-25T07:35:35.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/25/Discuz%E5%85%A8%E7%89%88%E6%9C%AC%E5%AD%98%E5%82%A8%E5%9E%8BDOM-XSS/</loc>
     <lastmod>2018-11-25T06:32:12.794Z</lastmod>
     <data>
