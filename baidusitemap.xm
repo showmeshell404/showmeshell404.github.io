@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/26/%E5%8E%9F%E5%88%99/</loc>
+    <lastmod>2018-11-26T03:53:37.510Z</lastmod>
+    <data>
+        <display>
+        <title>原则</title>
+        <pubTime>2018-11-26T03:51:02.000Z</pubTime>
+        
+        <tag>others</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/25/TurboMail%E5%AD%98%E5%82%A8%E5%9E%8BXSS%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-25T07:36:37.417Z</lastmod>
     <data>

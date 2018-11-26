@@ -150,6 +150,112 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Detours" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/07/Detours/">Detours</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/07/Detours/" class="archive-article-date">
+  	<time datetime="2018-07-07T03:34:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-07</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1-Detours"><a href="#1-Detours" class="headerlink" title="1.Detours"></a>1.Detours</h1><p>因为有一篇Detours最简单的API钩子的文章，微软研究院的，全英文，英语差的我，就捉摸着翻译看一看。</p>
+<p><a href="https://github.com/microsoft/detours" target="_blank" rel="noopener">https://github.com/microsoft/detours</a></p>
+<p><a href="http://research.microsoft.com/pubs/68568/huntusenixnt99.pdf" target="_blank" rel="noopener">http://research.microsoft.com/pubs/68568/huntusenixnt99.pdf</a></p>
+<p>文章蛮老了，好多年前了，但是很经典。 翻译文章大部分采取google的～反正我就将就着看看。</p>
+<p>正文：</p>
+<p>Detours：Win32函数的二进制截取<br>Galen Hunt和Doug Brubacher<br>微软研究院</p>
+<h2 id="概要："><a href="#概要：" class="headerlink" title="概要："></a>概要：</h2><p>​    创新系统研究取决于能否轻松检测和扩展现有操作系统和应用程序功能。通过访问适当的源代码，通过重建OS或应用程序来插入新的工具或扩展通常是微不足道的。然而，在当今的商业软件世界中，研究人员很少能够访问所有相关的源代码。<br>    我们提供了Detours，一个用于在x86机器上检测任意Win32函数的库。 Detours通过重写目标函数图像来拦截Win32函数。 Detours包还包含将任意DLL和数据段（称为有效负载）附加到任何Win32二进制文件的实用程序。<br>    虽然先前的研究人员已经使用二进制重写来插入调试和分析仪器，但据我们所知，Detours是任何平台上的第一个逻辑上保存未检测的目标函数（可通过Trampoline调用）作为仪器使用的子程序的软件包。我们独特的Trampoline设计对于扩展现有的二进制软件至关重要。<br>    我们描述了使用Detours创建自动分布式分区系统，检测和分析DCOM协议栈以及为基于COM的OS API创建thunking层的经验。微基准测试证明了Detours库的效率。</p>
+<h2 id="1-简介"><a href="#1-简介" class="headerlink" title="1.简介"></a>1.简介</h2><p>​    创新的系统研究取决于能否轻松地检测和扩展现有的操作系统和应用程序功能，无论是在应用程序，库还是操作系统DLL中。拦截函数的典型原因是添加功能，修改返回的结果或插入用于调试或分析的工具。通过访问适当的源代码，通过重建OS或应用程序来插入新的工具或扩展通常是微不足道的。然而，在当今的商业开发和仅二进制版本的世界中，研究人员很少能够访问所有相关的源代码。<br>    Detours是一个用于在x86机器上拦截任意Win32二进制函数的库。拦截代码在运行时动态应用。 Detours使用无条件跳转到用户提供的绕行功能替换目标函数的前几条指令。来自目标函数的指令保存在Trampoline函数中。 trampoline函数包括从目标函数中删除的指令和到目标函数其余部分的无条件分支。绕行函数可以通过调用目标函数作为通过Trampoline的子程序来替换目标函数或扩展其语义。<br>    在执行时插入Detours。 目标函数的代码在内存中而不是在磁盘上进行修改，从而便于以非常精细的粒度拦截二进制函数。 例如，DLL中的过程可以在同时运行的一个执行中绕行。 与DLL重新链接或静态重定向不同，Detours库中使用的拦截技术无论应用程序或系统代码使用何种方法来定位目标函数，都可以保证工作。<br>    虽然其他人使用二进制重写进行调试和内联仪器，但Detours是一个通用的软件包。 据我们所知，Detours是任何平台上的第一个包，可以将未装备的目标函数逻辑保存为可通过Trampoline（trampoline）调用的子程序。 先前的系统在逻辑上将仪器预先添加到目标，但是没有使原始目标的功能可用作一般子程序。 我们独特的Trampoline设计对于扩展现有的二进制软件至关重要。<br>    除了基本的绕行功能外，Detours还包括编辑任何二进制文件的DLL导入表，将任意数据段附加到现有二进制文件以及将DLL注入新进程或现有进程的函数。 一旦注入到进程中，检测DLL就可以绕过任何Win32函数，无论是在应用程序还是系统库中。<br>    以下部分描述了Detours的工作原理。 第0节概述了Detours库的用法。 第4节描述了替代功能拦截技术，并提出了Detours的微基准评估。 第5节详细介绍了Detours用于从本地应用程序生成分布式应用程序，量化DCOM开销，为新的基于COM的Win32 API创建thunking层以及实现第一次机会异常处理的用法。 我们将Detours与第6节中的相关工作进行了比较，并总结了我们在第7节中的贡献。</p>
+<h2 id="2-实施"><a href="#2-实施" class="headerlink" title="2.实施"></a>2.实施</h2><p>​    Detours提供三组重要的功能：能够拦截x86机器上的任意Win32二进制函数，编辑二进制文件的导入表的能力，以及将任意数据段附加到二进制文件的能力。 我们将描述每个功能的实现。</p>
+<h3 id="2-1-拦截二进制函数"><a href="#2-1-拦截二进制函数" class="headerlink" title="2.1.拦截二进制函数"></a>2.1.拦截二进制函数</h3><p>​    Detours库有助于拦截函数调用。拦截代码在运行时动态应用。 Detours使用无条件跳转到用户提供的绕行功能替换目标函数的前几条指令。来自目标函数的指令保存在trampoline函数中。trampoline包括从目标函数中删除的指令和到目标函数其余部分的无条件分支。<br>    当执行到达目标函数时，控制直接跳转到用户提供的绕行函数。绕行功能执行适当的拦截预处理。绕行函数可以将控制权返回给源函数，也可以调用trampoline函数，该函数调用目标函数而不进行拦截。当目标函数完成时，它将控制返回到绕行函数。绕行功能执行适当的后处理并将控制返回到源功能。图1显示了有和没有拦截的函数调用的逻辑控制流程。</p>
+<p><img src="/2018/07/07/Detours/1.png" alt="1"></p>
+<p>​    Detours库通过重写其进程内二进制图像来拦截目标函数。 对于每个目标函数，Detours实际重写两个函数：目标函数和匹配的trampoline函数。 trampoline功能可以动态或静态分配。 静态分配的trampoline总是在没有绕行的情况下调用目标函数。 在插入绕行之前，静态trampoline包含到目标的单个跳跃。 插入后，trampoline包含来自目标函数的初始指令并跳转到目标函数的其余部分。</p>
+<p>​    静态分配的trampoline对于仪器程序员非常有用。 例如，在Coign [7]中，调用Coign_Co- CreateInstance trampoline相当于在没有检测的情况下调用原始CoCreateInstance函数。 Coign内部函数可以随时调用Count_CoCreate- Instance来创建新的组件实例，而无需考虑原始函数是否已通过绕行重新路由。</p>
+<p><img src="/2018/07/07/Detours/2.png" alt="2"></p>
+<p>​    图2显示了绕道的插入。为了绕过目标函数，Detours首先为动态trampoline函数分配内存（如果没有提供静态trampoline），然后启用对目标和trampoline的写访问。从第一条指令开始，Detours将指令从目标复制到trampoline，直到至少复制了5个字节（足以进行无条件跳转指令）。如果目标函数少于5个字节，Detours将中止并返回错误代码。要复制说明，Detours使用简单的表驱动反汇编程序。 Detours在trampoline末尾添加一条跳转指令到目标函数的第一个非复制指令。 Detours将无条件跳转指令写入detour函数作为目标函数的第一条指令。要完成，Detours将恢复目标和trampoline函数的原始页面权限，并通过调用Flush-InstructionCache刷新CPU指令缓存。</p>
+<h3 id="2-2-有效载荷和DLL导入编辑"><a href="#2-2-有效载荷和DLL导入编辑" class="headerlink" title="2.2.有效载荷和DLL导入编辑"></a>2.2.有效载荷和DLL导入编辑</h3><p>​    虽然存在许多用于编辑二进制文件的工具，但大多数系统研究并不需要对二进制文件进行如此严厉的访问。相反，将额外的DLL或数据段添加到应用程序或系统二进制文件通常就足够了。除了绕行函数之外，Detours库还包含完全可逆的支持，用于将任意数据段（称为有效负载）附加到Win32二进制文件以及编辑DLL导入表。<br>        图3显示了Win32可移植可执行（PE）二进制文件的基本结构。 Win32二进制文件的PE格式是COFF（公共对象文件格式）的扩展。 Win32二进制文件包括DOS兼容标头，PE标头，包含程序代码的文本部分，包含初始化数据的数据部分，列出任何导入的DLLS和函数的导入表，列出代码导出的函数的导出表以及调试符号。除了两个标头之外，文件的每个其他部分都是可选的，并且可能不存在于给定的二进制文件中。</p>
+<p><img src="/2018/07/07/Detours/3.png" alt="3"></p>
+<p>​    要修改Win32二进制文件，Detours会在导出表和调试符号之间创建一个新的.detours部分。请注意，调试符号必须始终位于Win32二进制文件的最后。新部分包含detours标头记录和原始PE标头的副本。如果修改导入表，Detours会创建新的导入表，将其附加到复制的PE头，然后修改原始PE头以指向新的导入表。最后，Detours在.detours部分的末尾写入任何用户有效负载，并附加调试符号以完成文件。 Detours可以通过从.detours部分恢复原始PE头并删除.detours部分来反转对Win32二进制文件的修改。图4显示了Detours修改的Win32二进制文件的格式。<br>    创建新的导入表有两个目的。首先，它保留原始导入表，以防程序员需要反转对Win32文件的所有修改。其次，新的导入表可以包含重命名的导入DLL和函数，也可以包含全新的DLL和函数。例如，Coign [7]使用Detours将coignrte.dll的初始条目插入到每个已检测的应用程序中。作为应用程序导入表中的第一个条目，coignrte.dll始终是在应用程序的地址空间中运行的第一个DLL。</p>
+<p><img src="/2018/07/07/Detours/4.png" alt="4"></p>
+<p>​    Detours提供了编辑导入表，添加有效负载，枚举有效负载，删除有效负载以及重新绑定二进制文件的功能。 Detours还提供了枚举映射到地址空间的二进制文件以及在这些映射的二进制文件中定位有效负载的例程。 每个有效负载由128位全局唯一标识符（GUID）标识。 Coign使用Detours将每个应用程序配置数据附加到应用程序二进制文件。<br>    如果需要在不修改二进制文件的情况下将检测插入应用程序，Detours提供了将DLL注入新进程或现有进程的功能。 为了注入DLL，Detours使用Virtual-AllocEx和WriteProcessMemory API将LoadLibrary调用写入目标进程，然后使用CreateRemote-Thread API调用该调用。（ps：CreateRemote-Thread 可在其他进程中创建线程）</p>
+<h2 id="3-使用Detours"><a href="#3-使用Detours" class="headerlink" title="3.使用Detours"></a>3.使用Detours</h2><p>​    图5中的代码片段说明了Detours库的用法。 用户代码必须包含detours.h头文件并与detours.lib库链接。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;detours.h&gt;</span></span></span><br><span class="line">VOID (*DynamicTrampoline)(VOID) = <span class="literal">NULL</span>;</span><br><span class="line">DETOUR_TRAMPOLINE(</span><br><span class="line"> VOID WINAPI SleepTrampoline(DWORD),</span><br><span class="line"> Sleep</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="function">VOID WINAPI <span class="title">SleepDetour</span><span class="params">(DWORD dw)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="keyword">return</span> SleepTrampoline(dw);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function">VOID <span class="title">DynamicDetour</span><span class="params">(VOID)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> <span class="keyword">return</span> DynamicTrampoline();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> VOID (*DynamicTarget)(VOID) = SomeFunction;</span><br><span class="line"> DynamicTrampoline</span><br><span class="line"> =(FUNCPTR)DetourFunction(</span><br><span class="line"> (PBYTE)DynamicTarget,</span><br><span class="line"> (PBYTE)DynamicDetour);</span><br><span class="line"></span><br><span class="line"> DetourFunctionWithTrampoline(</span><br><span class="line"> (PBYTE)SleepTrampoline,</span><br><span class="line"> (PBYTE)SleepDetour);</span><br><span class="line"></span><br><span class="line"> <span class="comment">// Execute the remainder of program.</span></span><br><span class="line"> DetourRemoveTrampoline(SleepTrampoline);</span><br><span class="line"> DetourRemoveTrampoline(DynamicTrampoline);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//Figure 5. Sample Instrumentation Program.</span></span><br></pre></td></tr></table></figure>
+<p>​    可以静态地或动态地创建trampoline。要使用静态trampoline拦截目标函数，应用程序必须使用DETOUR_TRAMPOLINE宏创建trampoline。 DETOUR_TRAMPOLINE有两个参数：静态trampoline的原型和目标函数的名称。<br>    请注意，为了正确拦截，原型，目标，trampoline和绕行函数必须具有完全相同的调用签名，包括参数数量和调用约定。绕行函数在通过trampoline调用目标函数时复制参数是责任。这很直观，因为目标函数只是一个可由绕行函数调用的子程序。<br>    使用相同的调用约定可确保正确保留寄存器，并且堆栈将在绕行和目标函数之间正确对齐。<br>    通过使用两个参数调用DetourFunctionWith- Trampoline函数来启用目标函数的拦截：trampoline和指向detour函数的指针。目标函数不作为参数给出，因为它已经在trampoline中编码。<br>    通过使用两个参数调用DetourFunction来创建动态trampoline：指向目标函数的指针和指向detour函数的指针。 DetourFunction分配一个新的trampoline并在目标函数中插入适当的拦截代码。<br>    当目标函数作为链接符号可用时，静态trampoline非常容易使用。当目标函数不可用于链接时，可以使用动态trampoline。通常，可以从第二功能获取到目标功能的功能指针。对于那些时候，当指向目标函数的指针不容易获得时，DetourFindFunction可以在从已知DLL导出函数时找到指向函数的指针，或者如果调试符号可用于目标函数的二进制函数。<br>    DetourFindFunction接受两个参数，二进制文件的名称和函数的名称。 DetourFindFunction返回指向函数的有效指针，如果找不到函数的符号，则返回NULL。 DetourFindFunction首先尝试使用Win32 LoadLibrary和GetProcAddress API来定位函数。如果在DLL的导出表中找不到该函数，则Detour- FindFunction使用ImageHlp库来搜索可用的调试符号。 DetourFind- Function返回的函数指针可以给DetourFunction创建动态trampoline。<br>    可以通过调用DetourRemove-Trampoline函数来删除目标函数的拦截。<br>    注意，因为Detours中的功能库修改应用程序地址空间中的代码，程序员有责任确保在插入或删除绕行时没有其他线程在地址空间中执行。确保单线程执行的简单方法是从DllMain例程调用Detours库中的函数。</p>
+<h2 id="4-评估"><a href="#4-评估" class="headerlink" title="4.评估"></a>4.评估</h2><p>存在几种用于拦截函数调用的替代技术。</p>
+<p>替代拦截技术包括：<br>​    <strong>在应用程序源代码中调用替换</strong>。通过修改应用程序源代码，调用目标函数将替换为对detour函数的调用。这种技术的主要缺点是它需要访问源代码。<br>​    <strong>应用二进制代码中的呼叫替换</strong>。通过修改应用程序二进制文件，调用目标函数将替换为对detour函数的调用。虽然此技术不需要源代码，但应用程序二进制文件中的替换确实需要能够识别所有适用的呼叫站点。这需要大量的符号信息，这些信息通常不适用于二进制软件。<br>​    <strong>DLL重定向</strong>。如果目标函数驻留在DLL中，则可以修改二进制文件中的DLL导入条目以指向绕行DLL。重定向到绕行DLL可以通过在加载时替换导入表中的原始DLL的名称或者在加载[2]之后替换间接导入跳转表中的函数地址来实现。不幸的是，通过导入表重定向到绕行DLL无法在应用程序执行的早期拦截DLL内部调用和对LoadLibrary和GetProcAddress API获取的指针的调用。<br>​    <strong>断点陷阱</strong>。可以通过将调试断点插入目标函数来拦截目标函数，而不是替换DLL。然后，调试异常处理程序可以调用绕行函数。断点捕获的主要缺点是调试异常会挂起所有应用程序线程。此外，必须在第二个操作系统进程中捕获调试异常。通过断点捕获进行的拦截具有很高的性能损失。</p>
+<p>​    表1列出了拦截空函数或CoCreateInstance API的时间。 时间在200 MHz Pentium Pro上。 行列出了在没有拦截的情况下调用函数的时间，通过调用替换进行拦截，通过DLL重定向进行拦截，使用Detours库进行拦截，或通过断点捕获进行拦截。 可以看出，使用Detours库进行的函数拦截只有很小的开销（在任何一种情况下都小于400 ns）。</p>
+<p><img src="/2018/07/07/Detours/5.png" alt="5"></p>
+<h2 id="5-经验"><a href="#5-经验" class="headerlink" title="5.经验"></a>5.经验</h2><p>​    在过去两年中，Detours软件包已在Microsoft Research中广泛使用，用于检测和扩展Win32应用程序和Windows NT操作系统。<br>​    Detours最初是为Coign自动分布式分区系统[7]开发的。 Coign将从COM组件构建的本地桌面应用程序转换为分布式客户端 - 服在分析期间，Coign使用Detours拦截对COM实例化函数（如CoCreateInstance）的调用。绕行函数通过trampolines调用原始库函数，然后将输出接口指针包装在另外的检测层中（有关详细信息，请参阅[8]）。检测层测量组件间通信，以确定应如何跨网络分区应用程序组件。在分布式执行期间，新的Coign绕行函数拦截对COM实例化函数的调用，并将这些调用重新路由到分布式计算机。实质上，Coign扩展了COM库以支持智能远程用。 DCOM支持远程调用几个COM实例化函数，而Coign通过绕行扩展支持大约50个COM函数的远程调用。 Coign使用Detours的DLL重定向函数来附加运行时加载器和有效负载函数，以将分析数据附加到应用程序二进制文件。 </p>
+<p>​    我们的同事使用Detours来检测DCOM协议栈的用户模式部分，包括编组代理，DCOM运行时，RPC运行时，WinSock运行时和编组存根[11]。然后使用得到的详细分析来驱动用于快速用户模式网络的DCOM的重新架构。虽然他们可以使用源代码修改来生成DCOM的特殊分析版本，但基于源的检测将依赖于版本并由分析机器上的所有DCOM应用程序共享。使用基于Detours的二进制检测，可以将分析工具附加到DCOM的任何Windows NT 4版本，并仅影响正在分析的进程。</p>
+<p>​    在另一个扩展练习中，Detours用于为COP（基于组件的操作系统代理）创建一个thunking层[14]。 COP是基于COM的Win32 API版本。 COP感知应用程序通过COM接口访问操作系统功能，例如IWin32FileHandle。由于COP接口可与DCOM一起分发，因此COP应用程序可以从网络中的任何机器使用OS资源，包括文件系统，键盘，鼠标，显示器，注册表等。为了支持遗留应用程序，COP使用绕行函数拦截对Win32 API的所有应用程序调用。本机应用程序API调用将转换为COP接口上的调用。在底部，COP实现通过trampoline功能与底层操作系统通信。 COP不需要修改应用程序二进制文件。在加载时，COP DLL通过Detours的注入功能注入应用程序的地址空间。通过简单的拦截，Detours促进了Win32 API的大规模扩展。 </p>
+<p>​    最后，为了支持软件分布式共享内存（SDSM）系统，我们为Win32结构化异常处理实现了第一次机会异常过器。 Win32 API包含一个API，SetUnhandledException-Filter，如果没有其他过滤器处理应用程序异常，应用程序可以通过该API指定要执行的异常过滤器。对于诸如SDSM系统的应用程序，程序员希望插入第一次机会异常过滤器以消除由SDSM操纵VM页面权限引起的页面误。 Windows NT不提供这种第一次机会异常过滤机制。简单的绕行程序拦截从内核模式到用户模式的异常入口点（KiUser- ExceptionDispatcher）。只有几行代码，detour函数调用用户提供的第一次机会异常过滤器，然后通过trampoline将异常（如果未处理）转发到默认异常机制。</p>
+<h2 id="6-相关工作"><a href="#6-相关工作" class="headerlink" title="6.相关工作"></a>6.相关工作</h2><p>​    Detours是代码修补的一般技术的扩展。为了拦截执行，在目标函数中将无条件分支或跳转插入到期望的拦截点。由无条件分支覆盖的代码被移动到代码补丁。代码补丁包括检测代码或对检测代码的调用，后跟移动以插入无条件分支的指令以及在无条件分支之后跳转到目标函数中的第一条指令。从逻辑上讲，代码补丁可以预先添加到a的开头函数，插入函数中的某个任意点，或附加到函数的末尾。<br>​    然后代码补丁调用检测然后继续目标函数，我们的技术将控制完全转移到绕行功能，该功能可以通过trampoline休闲地调用原始目标功能。trampoline使仪器完全自由地随时调用原始函数的语义作为可调用子程序。<br>​    自数字计算出现以来，代码修补技术已经存在。代码修补已应用于插入调试或分析代码。在遥远的过去，代码修补通常被认为是比重新编译整个应用程序更实用的更新方法。除了调试和分析之外，Detours还被用于资源扩展现有系统的功能。<br>​    虽然最近的系统已经将代码修补扩展到并行应用程序[1]和系统内核[16]，但据我们所知，Detours是唯一的代码修补系统，它将目标函数的语义保留为可调用的子例程。绕行功能取代了目标功能，但可以通过trampoline随时调用其功能。我们独特的trampoline设计使得扩展现有二进制功能的功能变得微不足道。<br>​    最近的研究产生了一类详细的二进制重写工具，包括Atom [13]，Etch [12]，EEL [10]和Morph [17]。通常，这些工具将应用程序二进制文件和检测脚本作为输入。检测脚本在指令，基本块或函数之间传递二进制插入代码。脚本的输出是一个新的，检测的二进制文件。对于早期系统而言，DyninstAPI [6]可以动态修改应用程序。<br>​    Detours比详细的二进制重写器的主要优势在于它的大小。 Detours为一个仪器包增加了不到18KB，而详细的二进制重写器至少增加了几百KB。 Detours小尺寸的成本是无法在指令或基本块之间插入代码。详细的二进制重写器可以通过诸如自由寄存器发现之类的复杂功能在任何指令周围插入检测。 Detours依赖于遵守调用约定以保留寄存器值。虽然详细的二进制重写器支持在任何基本指令单元之前或之后插入代码，但它们不会将未经检测的目标函数的语义保留为可调用的子例程。</p>
+<h2 id="7-结论"><a href="#7-结论" class="headerlink" title="7.结论"></a>7.结论</h2><p>​    Detours库为系统研究人员提供了一套导入工具。绕行功能快速，灵活，友好。绕过CoCreateInstance函数的开销小于3％，这比断点捕获的惩罚小一个数量级。 Detours图书馆非常小。运行时由少于40KB的编译代码组成，尽管通常少于18KB的代码被添加到用户检测中。<br>​    我们目前正在开发用于Windows 98和Alpha处理器的Detours版本。由于Alpha RISC架构中指令的统一大小，Alpha端口应该是微不足道的。<br>​    与DLL重定向不同，Detours库拦截静态和动态绑定的调用。最后，Detours库比DLL重定向或应用程序代码修改更灵活。可以在执行时单独为每个进程选择性地启用或禁用任何功能的拦截。<br>​    我们独特的trampoline保留了原始的未经仪器化的目标函数的语义，可用作绕行函数的子程序。使用绕行函数和trampoline，在不访问系统源代码且不重新编译底层二进制文件的情况下生成引人注目的系统扩展是微不足道的。 Detours使得在Windows NT平台上进行全新一代创新系统研究成为可能。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/07/Detours/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-API钩子" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1228,11 +1334,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
