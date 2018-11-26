@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/26/PHPCMS2008-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-26T06:38:42.187Z</lastmod>
+    <data>
+        <display>
+        <title>PHPCMS2008 SQL注入漏洞</title>
+        <pubTime>2018-11-26T06:35:55.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/26/DedeCMS-5-7-%E5%8F%8D%E5%B0%84%E5%9E%8BXSS%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-26T05:34:53.415Z</lastmod>
     <data>
