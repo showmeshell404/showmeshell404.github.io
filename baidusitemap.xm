@@ -4,8 +4,25 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/26/DedeCMS-5-7-%E5%8F%8D%E5%B0%84%E5%9E%8BXSS%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-26T05:34:53.415Z</lastmod>
+    <data>
+        <display>
+        <title>DedeCMS 5.7 反射型XSS漏洞</title>
+        <pubTime>2018-11-26T05:33:38.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/26/%E5%8E%9F%E5%88%99/</loc>
-    <lastmod>2018-11-26T03:57:27.014Z</lastmod>
+    <lastmod>2018-11-26T03:59:41.164Z</lastmod>
     <data>
         <display>
         <title>原则</title>

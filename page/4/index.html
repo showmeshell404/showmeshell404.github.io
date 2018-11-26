@@ -150,6 +150,185 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Androguard" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/Androguard/">Androguard</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/Androguard/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:56:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Androguard的使用方法"><a href="#Androguard的使用方法" class="headerlink" title="Androguard的使用方法"></a>Androguard的使用方法</h2><ul>
+<li><p><strong>androapkinfo.py</strong></p>
+<ul>
+<li><strong>用来查看apk文件的信息</strong></li>
+<li>会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看</li>
+<li><code>./androapkinfo.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androaxml.py</strong></p>
+<ul>
+<li>用来<strong>解密apk包中的AndroidManifest.xml文件</strong></li>
+<li><code>./androaxml.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androcsign.py</strong></p>
+<ul>
+<li>用于<strong>添加apk文件的签名信息到一个数据库文件中</strong></li>
+<li>Androguard工具目录下的signatures/dbandroguard文件为收集的恶意软件信息数据库</li>
+<li>使用androcsign.py前需要为apk文件编写一个sign文件,json格式：eg</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"SAMPLE"</span>:<span class="string">"apks/xxx.apk"</span>     /*SAMPLE指定需要添加信息的apk文件*/</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        "BASE":"AndroidOS",			/*BASE指定文件运行的系统，目前固定为AndroidOS*/</span><br><span class="line">        "NAME":"DroidDream",		/*NAME是该签名的名字*/</span><br><span class="line">        "SIGNATURE":[				/*具体的签名规则*/</span><br><span class="line">            &#123;</span><br><span class="line">                "TYPE":"METHSIM",	/*TYPE用来指定签名的类型，METHSIM表示的是方法的签名，CLASSSIM表示为类签名*/</span><br><span class="line">                "CN":"Lcom/droider/xxx/MainActivity$SNChecker;", /*指定方法所在的类*/</span><br><span class="line">                "MN":"isRegistered"，	/*指定了方法名*/</span><br><span class="line">                "D":"()Z"				/*D指定了方法的签名信息*/</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        "BF":"0"					/*BF用来指定签名的检测规则*/</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>(json不允许/* //注释，需要则去掉注释部分)</p>
+<ul>
+<li><code>./androcsign.py -i signatures/xxx.apk -o signatures/dbandroguard</code></li>
+</ul>
+</li>
+<li><p><strong>androdd.py</strong></p>
+<ul>
+<li><strong>用来生成apk文件中每个类的方法的调用流程图</strong></li>
+<li><code>./androdd.py -i ./xxx.apk -o ./out -d -f PNG</code><ul>
+<li>-o选项强制指定一个输入目录，-d指定生成dot图形文件，-f用来指定输出的图片格式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>androdiff.py</strong></p>
+<ul>
+<li><strong>用来比较两个apk文件的差异</strong></li>
+<li><code>./androdiff.py -i ./xxx.apk ./xxx1.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androdump.py</strong></p>
+<ul>
+<li><strong>用来dump一个Linux进程的信息</strong></li>
+<li><code>./androdump.py -i pid</code></li>
+</ul>
+</li>
+<li><p><strong>androgexf.py</strong></p>
+<ul>
+<li><strong>用来生成APK的GEXF格式的图形文件</strong></li>
+<li>可以使用Gephi查看gexf格式的图像</li>
+<li><code>./androgext.py -i ./xxx.apk -o ./xxx.gexf</code></li>
+</ul>
+</li>
+<li><p><strong>andromercury.py</strong></p>
+<ul>
+<li>Mercury工具的框架</li>
+<li><strong>功能是对Mercury的包装</strong></li>
+</ul>
+</li>
+<li><p><strong>androrisk.py</strong></p>
+<ul>
+<li><strong>用于评估apk文件中潜在的风险</strong></li>
+<li><code>./androrisk.py -m -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androsign.py</strong></p>
+<ul>
+<li><strong>用于检测apk的信息是否存在于特定的数据库中</strong>，作用与androcsign.py相反</li>
+<li><code>./androsign.py -i apks/xxx.apk -b signatures/dbandroguard -c signatures/dbconfig</code></li>
+</ul>
+</li>
+<li><p><strong>androsim.py</strong></p>
+<ul>
+<li><strong>用于计算两个apk文件的相似度</strong></li>
+<li><code>./androsim.py -i ./xxx.apk ./xxx1.apk</code></li>
+<li>Windows移植版=androsim.exe</li>
+</ul>
+</li>
+<li><p><strong>androxgmml.py</strong></p>
+<ul>
+<li><strong>用来生成apk/jar/class/dex文件的控制流程及功能调用图</strong>，输出格式为xgmml<br>   <code>./androxgmml.py -i  ./xxx.apk    -o xxx.xgmml</code></li>
+</ul>
+</li>
+<li><p><strong>apkviewer.py</strong></p>
+<ul>
+<li>用来为<strong>apk文件中每一个类生成一个独立的graphml图形文件</strong></li>
+<li><code>./apkviewer.py -i ./xxx.apk -o output</code></li>
+<li>Gephi打开生成后的graphml文件,图形中的每个节点是指令级别</li>
+</ul>
+</li>
+<li><p><strong>androlyze.py</strong></p>
+<ul>
+<li>强大的静态分析工具，它提供的一个<strong>独立的Shell环境</strong></li>
+<li><code>./androlyze.py-s</code>进入androlyze的shell交互环境</li>
+<li>androlyze.py通过访问<u>对象的字段与方法的方式</u>来提供反馈结果，可用到3个对象：apk文件对象、dex文件对象、分析结果对象<ul>
+<li>apk文件对象 <code>a=APK(&quot;./xxx.apk&quot;)</code>            (a.+tab 可显示该类所有方法与字段)</li>
+<li>dex文件对象<code>d=DalvikVMFormat(a.get_dex())</code></li>
+<li>分析结果对象 <code>dx=VMAnalysis(d)</code></li>
+<li>或一条命令解决 <code>a,d,dx=AnalyzeAPK(&quot;./xxx.apk&quot;, decompiler=&quot;dad&quot;)</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.get_permissions()：输出apk用到的全部权限</span><br><span class="line">a.get_providers()：输出程序中所有的Content Provider</span><br><span class="line">a.get_receivers()：输出程序中所有的Broadcast Receiver</span><br><span class="line">a.get_services()：输出程序中所有的Service</span><br><span class="line">d.CLASS_Lcom_droider_XXX_MainActivity_2.METHOD_onClick.pretty_show():查看MainActivity$2的OnClick()方法.//source()显示Java源码</span><br><span class="line">dx.tainted_variables.get_string(&lt;要搜索的字符串&gt;)</span><br><span class="line">show_Path(d,dx.tainted_packages.search_packages(&lt;包名&gt;))</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/Androguard/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-dex2jar用法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1762,162 +1941,6 @@
 
 
   
-    <article id="post-Android程序的生成步骤" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/08/Android程序的生成步骤/">Android程序的生成步骤</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/08/Android程序的生成步骤/" class="archive-article-date">
-  	<time datetime="2018-08-08T09:14:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Android程序的生成步骤"><a href="#Android程序的生成步骤" class="headerlink" title="Android程序的生成步骤"></a>Android程序的生成步骤</h3><p><img src="/2018/08/08/Android程序的生成步骤/Apk打包.png" alt="Apk打包"></p>
-<ul>
-<li><strong>打包资源文件，生成R.java文件</strong><ul>
-<li>打包资源的工具aapt位于android-sdk\platform-tools目录下，该工具的源码在Android系统源码的frameworks\base\tools\aapt目录下<ul>
-<li>生成的过程主要是调用了aapt源码目录下Resource.cpp文件中的buildResources()函数</li>
-<li>该函数首先检查AndroidManifest.xml的合法性</li>
-<li>然后对res目录下的资源子目录进行处理，处理的函数为makeFileResources()，处理的内容包括资源文件名的合法性检查，向资源表table添加条目等</li>
-</ul>
-</li>
-<li>处理完后调用compileResourceFile()函数编译res与asserts目录下的资源并生成resources.arsc文件<ul>
-<li>compileResourceFile()函数位于aapt源码目录的ResourceTable.cpp文件中</li>
-<li>该函数最后会调用parseAndAddEntry()函数生成R.java文件</li>
-</ul>
-</li>
-<li>完成资源编译后，接下来调用compileXmlFile()函数对res目录的子目录下的xml文件分别进行编译</li>
-<li>将所有的资源与编译生成的resources.arsc文件以及“加密”过的AndroidManifest.xml文件打包压缩成resources.ap_文件<ul>
-<li>使用Ant工具命令行编译则会生成与build.xml中“project name”指定的属性同名的ap_文件</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>处理aidl文件，生成相应的Java文件</strong><ul>
-<li>对于没有使用到aidl的Android工程，这一步可以跳过。</li>
-<li>使用到的工具为aidl，位于android-sdk\platform-tools目录下</li>
-<li>aidl工具解析接口定义文件并生成相应的Java代码供程序调用，源码frameworks\base\tools\aidl目录下<ul>
-<li>aidl为android interface definition language的首字母缩写，即Android接口描述语言</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>编译工程源代码，生成相应的class文件</strong><ul>
-<li>调用javac编译工程src目录下所有的java源文件，生成的class文件位于工程的bin\classes目录</li>
-</ul>
-</li>
-<li><strong>转换所有的class文件，生成classes.dex文件</strong><ul>
-<li>程序运行所需的classes.dex为Dalvik可执行文件</li>
-<li>使用到的工具为dx，它位于android-sdk\platform-tools目录下</li>
-<li>dx工具主要的工作是将Java字节码转换为Dalvik字节码、压缩常量池、消除冗余信息</li>
-</ul>
-</li>
-<li><strong>打包生成APK文件</strong><ul>
-<li>打包的工具为apkbuilder，它位于android-sdk\tools目录下</li>
-<li>apkbuilder为一个脚本文件，实际调用的是android-sdk\tools\lib\sdklib.jar文件中的com.android.sdklib.build.ApkBuilderMain类。</li>
-<li>实现代码位于Android系统源码的sdk\sdkmanager\libs\sdklib\src\com\android\sdklib\build\ApkBuilderMain.java文件，代码构建了一个ApkBuilder类</li>
-<li>以包含resources.arsc的文件为基础生成apk文件，这个文件一般为ap_结尾的文件</li>
-<li>接着调用addSourceFolder()函数添加工程的资源<ul>
-<li>addSourceFolder()会调用processFileForResource()函数往apk文件中添加资源</li>
-<li>处理的内容包括res目录与assets目录中的文件</li>
-</ul>
-</li>
-<li>添加完资源后调用addResourcesFromJar()函数往apk文件中写入依赖库</li>
-<li>接着调用addNativeLibraries()函数添加工程libs目录下的Native库<ul>
-<li>通过Android NDK编译生成的so或bin文件</li>
-</ul>
-</li>
-<li>最后调用sealApk()关闭apk文件</li>
-</ul>
-</li>
-<li><strong>对APK文件进行签名</strong><ul>
-<li>签名APK有两种情况：<ul>
-<li>一种是在调试程序时进行签名，使用Eclipse开发Android程序时，在编译调试程序时会自己使用一个debug.keystore对apk进行签名</li>
-<li>一种是打包发布时对程序进行签名，这种情况下需要提供了一个符合Android开发文档中要求的签名文件。</li>
-</ul>
-</li>
-<li>签名的方法有两种情况：<ul>
-<li>一种是使用JDK中提供的jarsigner工具签名</li>
-<li>一种是使用Android源码中提供的signapk工具，它的代码位于Android系统源码的build\tools\signapk目录下。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>对签名后的APK文件进行对齐处理</strong><ul>
-<li>使用到的工具为zipalign<ul>
-<li>位于android-sdk\tools目录，源码位于Android系统源码的build\tools\zipalign目录</li>
-<li>主要工作是将apk包进行对齐处理，使apk包中的所有资源文件距离文件起始偏移为4字节整数倍</li>
-<li>通过内存映射访问apk文件时的速度会更快</li>
-</ul>
-</li>
-<li>验证apk文件是否对齐过的工作由ZipAlign.cpp文件的verify()函数完成</li>
-<li>处理对齐的工作则由process()函数完成。</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/08/Android程序的生成步骤/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2029,11 +2052,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
