@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/27/BlueCMS-1-6-SQL-%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-27T05:47:02.650Z</lastmod>
+    <data>
+        <display>
+        <title>BlueCMS 1.6 SQL 注入漏洞</title>
+        <pubTime>2018-11-27T05:46:14.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/26/PHPCMS2008-SQL%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-26T06:38:42.187Z</lastmod>
     <data>

