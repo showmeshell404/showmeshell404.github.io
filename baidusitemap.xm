@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/27/D-link-%E8%B7%AF%E7%94%B1%E5%99%A8-CSRF%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-27T06:36:17.468Z</lastmod>
+    <data>
+        <display>
+        <title>D-link 路由器 CSRF漏洞</title>
+        <pubTime>2018-11-27T06:35:27.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/27/BlueCMS-1-6-SQL-%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-27T05:47:02.650Z</lastmod>
     <data>
