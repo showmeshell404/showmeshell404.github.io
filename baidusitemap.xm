@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/29/Bash-4-3-%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-29T06:06:49.863Z</lastmod>
+    <data>
+        <display>
+        <title>Bash 4.3 远程命令执行漏洞</title>
+        <pubTime>2018-11-29T06:05:22.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/27/D-link-%E8%B7%AF%E7%94%B1%E5%99%A8-CSRF%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-27T06:36:17.468Z</lastmod>
     <data>
