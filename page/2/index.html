@@ -150,6 +150,381 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-如何防止CSRF攻击" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/20/如何防止CSRF攻击/">如何防止CSRF攻击</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/20/如何防止CSRF攻击/" class="archive-article-date">
+  	<time datetime="2018-11-20T07:15:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="CSRF攻击"><a href="#CSRF攻击" class="headerlink" title="CSRF攻击"></a>CSRF攻击</h2><p>【转】<a href="https://segmentfault.com/a/1190000016659945" target="_blank" rel="noopener">美团技术团队</a></p>
+<h3 id="CSRF漏洞的发生"><a href="#CSRF漏洞的发生" class="headerlink" title="CSRF漏洞的发生"></a>CSRF漏洞的发生</h3><p>相比XSS，CSRF的名气似乎并不是那么大，很多人都认为CSRF“不那么有破坏性”。真的是这样吗？</p>
+<p>接下来有请小明出场~~</p>
+<h4 id="小明的悲惨遭遇"><a href="#小明的悲惨遭遇" class="headerlink" title="小明的悲惨遭遇"></a>小明的悲惨遭遇</h4><p>这一天，小明同学百无聊赖地刷着Gmail邮件。大部分都是没营养的通知、验证码、聊天记录之类。但有一封邮件引起了小明的注意：</p>
+<blockquote>
+<p>甩卖比特币，一个只要998！！</p>
+</blockquote>
+<p>聪明的小明当然知道这种肯定是骗子，但还是抱着好奇的态度点了进去（请勿模仿）。果然，这只是一个什么都没有的空白页面，小明失望的关闭了页面。一切似乎什么都没有发生……</p>
+<p>在这平静的外表之下，黑客的攻击已然得手。小明的Gmail中，被偷偷设置了一个过滤规则，这个规则使得所有的邮件都会被自动转发到<a href="mailto:haker@hackermail.com" target="_blank" rel="noopener">haker@hackermail.com</a>。小明还在继续刷着邮件，殊不知他的邮件正在一封封地，如脱缰的野马一般地，持续不断地向着黑客的邮箱转发而去。</p>
+<p>不久之后的一天，小明发现自己的域名已经被转让了。懵懂的小明以为是域名到期自己忘了续费，直到有一天，对方开出了 $650 的赎回价码，小明才开始觉得不太对劲。</p>
+<p>小明仔细查了下域名的转让，对方是拥有自己的验证码的，而域名的验证码只存在于自己的邮箱里面。小明回想起那天奇怪的链接，打开后重新查看了“空白页”的源码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">action</span>=<span class="string">"https://mail.google.com/mail/h/ewt1jmuj4ddv/?v=prf"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"cf2_emc"</span> <span class="attr">value</span>=<span class="string">"true"</span>/&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"cf2_email"</span> <span class="attr">value</span>=<span class="string">"hacker@hakermail.com"</span>/&gt;</span> </span><br><span class="line">    .....</span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"irf"</span> <span class="attr">value</span>=<span class="string">"on"</span>/&gt;</span> </span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"nvp_bu_cftb"</span> <span class="attr">value</span>=<span class="string">"Create Filter"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"> </span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.forms[<span class="number">0</span>].submit();</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这个页面只要打开，就会向Gmail发送一个post请求。请求中，执行了“Create Filter”命令，将所有的邮件，转发到“<a href="mailto:hacker@hakermail.com" target="_blank" rel="noopener">hacker@hakermail.com</a>”。<br>小明由于刚刚就登陆了Gmail，所以这个请求发送时，携带着小明的登录凭证（Cookie），Gmail的后台接收到请求，验证了确实有小明的登录凭证，于是成功给小明配置了过滤器。</p>
+<p>黑客可以查看小明的所有邮件，包括邮件里的域名验证码等隐私信息。拿到验证码之后，黑客就可以要求域名服务商把域名重置给自己。</p>
+</blockquote>
+<p>小明很快打开Gmail，找到了那条过滤器，将其删除。然而，已经泄露的邮件，已经被转让的域名，再也无法挽回了……</p>
+<p>以上就是小明的悲惨遭遇。而“点开一个黑客的链接，所有邮件都被窃取”这种事情并不是杜撰的，此事件原型是2007年Gmail的CSRF漏洞：</p>
+<p><a href="https://www.davidairey.com/google-gmail-security-hijack/" target="_blank" rel="noopener">https://www.davidairey.com/google-Gmail-security-hijack/</a></p>
+<p>当然，目前此漏洞已被Gmail修复，请使用Gmail的同学不要慌张。</p>
+<h4 id="什么是CSRF"><a href="#什么是CSRF" class="headerlink" title="什么是CSRF"></a>什么是CSRF</h4><p>CSRF（Cross-site request forgery）跨站请求伪造：<u>攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。</u></p>
+<p>一个典型的CSRF攻击有着如下的流程：</p>
+<ul>
+<li>受害者登录a.com，并保留了登录凭证（Cookie）。</li>
+<li>攻击者引诱受害者访问了b.com。</li>
+<li>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带a.com的Cookie。</li>
+<li>a.com接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</li>
+<li>a.com以受害者的名义执行了act=xx。</li>
+<li>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让a.com执行了自己定义的操作。</li>
+</ul>
+<h4 id="几种常见的攻击类型"><a href="#几种常见的攻击类型" class="headerlink" title="几种常见的攻击类型"></a>几种常见的攻击类型</h4><ul>
+<li>GET类型的CSRF</li>
+</ul>
+<p>GET类型的CSRF利用非常简单，只需要一个HTTP请求，一般会这样利用：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://bank.example/withdraw?amount=10000&amp;for=hacker"</span> &gt;</span></span><br></pre></td></tr></table></figure>
+<p>在受害者访问含有这个img的页面后，浏览器会自动向<code>http://bank.example/withdraw?account=xiaoming&amp;amount=10000&amp;for=hacker</code>发出一次HTTP请求。bank.example就会收到包含受害者登录信息的一次跨域请求。</p>
+<ul>
+<li>POST类型的CSRF</li>
+</ul>
+<p>这种类型的CSRF利用起来通常使用的是一个自动提交的表单，如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://bank.example/withdraw"</span> <span class="attr">method</span>=<span class="string">POST</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"account"</span> <span class="attr">value</span>=<span class="string">"xiaoming"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"amount"</span> <span class="attr">value</span>=<span class="string">"10000"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"for"</span> <span class="attr">value</span>=<span class="string">"hacker"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"> <span class="built_in">document</span>.forms[<span class="number">0</span>].submit(); </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>访问该页面后，表单会自动提交，相当于模拟用户完成了一次POST操作。</p>
+<p>POST类型的攻击通常比GET要求更加严格一点，但仍并不复杂。任何个人网站、博客，被黑客上传页面的网站都有可能是发起攻击的来源，后端接口不能将安全寄托在仅允许POST上面。</p>
+<ul>
+<li>链接类型的CSRF</li>
+</ul>
+<p>链接类型的CSRF并不常见，比起其他两种用户打开页面就中招的情况，这种需要用户点击链接才会触发。这种类型通常是在论坛中发布的图片中嵌入恶意链接，或者以广告的形式诱导用户中招，攻击者通常会以比较夸张的词语诱骗用户点击，例如：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"http://test.com/csrf/withdraw.php?amount=1000&amp;for=hacker"</span> <span class="attr">taget</span>=<span class="string">"_blank"</span>&gt;</span></span><br><span class="line">重磅消息！！</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>由于之前用户登录了信任的网站A，并且保存登录状态，只要用户主动访问上面的这个PHP页面，则表示攻击成功。</p>
+<h4 id="CSRF的特点"><a href="#CSRF的特点" class="headerlink" title="CSRF的特点"></a>CSRF的特点</h4><ul>
+<li>攻击一般发起在第三方网站，而不是被攻击的网站。被攻击的网站无法防止攻击发生。</li>
+<li>攻击利用受害者在被攻击网站的登录凭证，冒充受害者提交操作；而不是直接窃取数据。</li>
+<li>整个过程攻击者并不能获取到受害者的登录凭证，仅仅是“冒用”。</li>
+<li>跨站请求可以用各种方式：图片URL、超链接、CORS、Form提交等等。部分请求方式可以直接嵌入在第三方论坛、文章中，难以进行追踪。</li>
+</ul>
+<p>CSRF通常是跨域的，因为外域通常更容易被攻击者掌控。但是如果本域下有容易被利用的功能，比如可以发图和链接的论坛和评论区，攻击可以直接在本域下进行，而且这种攻击更加危险。</p>
+<h3 id="防护策略"><a href="#防护策略" class="headerlink" title="防护策略"></a>防护策略</h3><p>CSRF通常从第三方网站发起，被攻击的网站无法防止攻击发生，只能通过增强自己网站针对CSRF的防护能力来提升安全性。</p>
+<p>上文中讲了CSRF的两个特点：</p>
+<ul>
+<li><strong>CSRF（通常）发生在第三方域名</strong>。</li>
+<li><strong>CSRF攻击者不能获取到Cookie等信息，只是使用</strong>。</li>
+</ul>
+<p>针对这两点，我们可以专门制定防护策略，如下：</p>
+<ul>
+<li><strong>阻止不明外域的访问</strong><ul>
+<li>同源检测</li>
+<li>Samesite Cookie</li>
+</ul>
+</li>
+<li><strong>提交时要求附加本域才能获取的信息</strong><ul>
+<li>CSRF Token</li>
+<li>双重Cookie验证</li>
+</ul>
+</li>
+</ul>
+<p>以下我们对各种防护方法做详细说明：</p>
+<h4 id="同源检测"><a href="#同源检测" class="headerlink" title="同源检测"></a>同源检测</h4><p>既然CSRF大多来自第三方网站，那么我们就直接禁止外域（或者不受信任的域名）对我们发起请求。</p>
+<p>那么问题来了，我们如何判断请求是否来自外域呢？</p>
+<p>在HTTP协议中，每一个异步请求都会携带两个Header，用于标记来源域名：</p>
+<ul>
+<li>Origin Header</li>
+<li>Referer Header</li>
+</ul>
+<p>这两个Header在浏览器发起请求时，大多数情况会自动带上，并且不能由前端自定义内容。<br>服务器可以通过解析这两个Header中的域名，确定请求的来源域。</p>
+<p>这两个Header在浏览器发起请求时，大多数情况会自动带上，并且不能由前端自定义内容。<br>服务器可以通过解析这两个Header中的域名，确定请求的来源域。</p>
+<h5 id="使用Origin-Header确定来源域名"><a href="#使用Origin-Header确定来源域名" class="headerlink" title="使用Origin Header确定来源域名"></a>使用Origin Header确定来源域名</h5><p>在部分与CSRF有关的请求中，请求的Header中会携带Origin字段。字段内包含请求的域名（不包含path及query）。</p>
+<p>如果Origin存在，那么直接使用Origin中的字段确认来源域名就可以。</p>
+<p>但是Origin在以下两种情况下并不存在：</p>
+<ul>
+<li><strong>IE11同源策略：</strong> IE 11 不会在跨站CORS请求上添加Origin标头，Referer头将仍然是唯一的标识。最根本原因是因为IE 11对同源的定义和其他浏览器有不同，有两个主要的区别，可以参考<a href="https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy#IE_Exceptions" target="_blank" rel="noopener">MDN Same-origin_policy#IE_Exceptions</a></li>
+<li><strong>302重定向：</strong> 在302重定向之后Origin不包含在重定向的请求中，因为Origin可能会被认为是其他来源的敏感信息。对于302重定向的情况来说都是定向到新的服务器上的URL，因此浏览器不想将Origin泄漏到新的服务器上。</li>
+</ul>
+<h5 id="使用Referer-Header确定来源域名"><a href="#使用Referer-Header确定来源域名" class="headerlink" title="使用Referer Header确定来源域名"></a>使用Referer Header确定来源域名</h5><p>根据HTTP协议，在HTTP头中有一个字段叫Referer，记录了该HTTP请求的来源地址。<br><u>对于Ajax请求，图片和script等资源请求，Referer为发起请求的页面地址。对于页面跳转，Referer为打开页面历史记录的前一个页面地址。因此我们使用Referer中链接的Origin部分可以得知请求的来源域名。</u></p>
+<p>这种方法并非万无一失，Referer的值是由浏览器提供的，虽然HTTP协议上有明确的要求，但是每个浏览器对于Referer的具体实现可能有差别，并不能保证浏览器自身没有安全漏洞。使用验证 Referer 值的方法，就是把安全性都依赖于第三方（即浏览器）来保障，从理论上来讲，这样并不是很安全。在部分情况下，攻击者可以隐藏，甚至修改自己请求的Referer。</p>
+<p> 2014年，W3C的Web应用安全工作组发布了Referrer Policy草案，对浏览器该如何发送Referer做了详细的规定。截止现在新版浏览器大部分已经支持了这份草案，我们终于可以灵活地控制自己网站的Referer策略了。新版的Referrer Policy规定了五种Referer策略：No Referrer、No Referrer When Downgrade、Origin Only、Origin When Cross-origin、和 Unsafe URL。之前就存在的三种策略：never、default和always，在新标准里换了个名称。他们的对应关系如下：</p>
+<table>
+<thead>
+<tr>
+<th>策略名称</th>
+<th>属性值（新）</th>
+<th>属性值（旧）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No Referrer</td>
+<td>no-Referrer</td>
+<td>never</td>
+</tr>
+<tr>
+<td>No Referrer When Downgrade</td>
+<td>no-Referrer-when-downgrade</td>
+<td>default</td>
+</tr>
+<tr>
+<td>Origin Only</td>
+<td>(same or strict) origin</td>
+<td>origin</td>
+</tr>
+<tr>
+<td>Origin When Cross Origin</td>
+<td>(strict) origin-when-crossorigin</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Unsafe URL</td>
+<td>unsafe-url</td>
+<td>always</td>
+</tr>
+</tbody>
+</table>
+<p>根据上面的表格因此需要把Referrer Policy的策略设置成same-origin，对于同源的链接和引用，会发送Referer，referer值为Host不带Path；跨域访问则不携带Referer。例如：<code>aaa.com</code>引用<code>bbb.com</code>的资源，不会发送Referer。</p>
+<p>设置Referrer Policy的方法有三种：</p>
+<ol>
+<li>在CSP设置</li>
+<li>页面头部增加meta标签</li>
+<li>a标签增加referrerpolicy属性</li>
+</ol>
+<p>上面说的这些比较多，但我们可以知道一个问题：攻击者可以在自己的请求中隐藏Referer。如果攻击者将自己的请求这样填写：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://bank.example/withdraw?amount=10000&amp;for=hacker"</span><span class="attr">referrerpolicy</span>=<span class="string">"no-referrer"</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>那么这个请求发起的攻击将不携带Referer。</p>
+<p>另外在以下情况下Referer没有或者不可信：</p>
+<p>1.IE6、7下使用window.location.href=url进行界面的跳转，会丢失Referer。</p>
+<p>2.IE6、7下使用window.open，也会缺失Referer。</p>
+<p>3.HTTPS页面跳转到HTTP页面，所有浏览器Referer都丢失。</p>
+<p>4.点击Flash上到达另外一个网站的时候，Referer的情况就比较杂乱，不太可信。</p>
+<h5 id="无法确认来源域名情况"><a href="#无法确认来源域名情况" class="headerlink" title="无法确认来源域名情况"></a>无法确认来源域名情况</h5><p>当Origin和Referer头文件不存在时该怎么办？如果Origin和Referer都不存在，建议直接进行阻止，特别是如果您没有使用随机CSRF Token（参考下方）作为第二次检查。</p>
+<h5 id="如何阻止外域请求"><a href="#如何阻止外域请求" class="headerlink" title="如何阻止外域请求"></a>如何阻止外域请求</h5><p>通过Header的验证，我们可以知道发起请求的来源域名，这些来源域名可能是网站本域，或者子域名，或者有授权的第三方域名，又或者来自不可信的未知域名。</p>
+<p>我们已经知道了请求域名是否是来自不可信的域名，我们直接阻止掉这些的请求，就能防御CSRF攻击了吗？</p>
+<p>且慢！当一个请求是页面请求（比如网站的主页），而来源是搜索引擎的链接（例如百度的搜索结果），也会被当成疑似CSRF攻击。所以在判断的时候需要过滤掉页面请求情况，通常Header符合以下情况：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Accept: text/html</span><br><span class="line">Method: GET</span><br></pre></td></tr></table></figure>
+<p>但相应的，页面请求就暴露在了CSRF的攻击范围之中。如果你的网站中，在页面的GET请求中对当前用户做了什么操作的话，防范就失效了。</p>
+<p>例如，下面的页面请求：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET https://example.com/addComment?comment=XXX&amp;dest=orderId</span><br></pre></td></tr></table></figure>
+<p>注：这种严格来说并不一定存在CSRF攻击的风险，但仍然有很多网站经常把主文档GET请求挂上参数来实现产品功能，但是这样做对于自身来说是存在安全风险的。</p>
+<p>另外，前面说过，CSRF大多数情况下来自第三方域名，但并不能排除本域发起。如果攻击者有权限在本域发布评论（含链接、图片等，统称UGC），那么它可以直接在本域发起攻击，这种情况下同源策略无法达到防护的作用。</p>
+<p>综上所述：同源验证是一个相对简单的防范方法，能够防范绝大多数的CSRF攻击。但这并不是万无一失的，对于安全性要求较高，或者有较多用户输入内容的网站，我们就要对关键的接口做额外的防护措施。</p>
+<h4 id="CSRF-Token"><a href="#CSRF-Token" class="headerlink" title="CSRF Token"></a>CSRF Token</h4><p>前面讲到CSRF的另一个特征是，攻击者无法直接窃取到用户的信息（Cookie，Header，网站内容等），仅仅是冒用Cookie中的信息。</p>
+<p>而CSRF攻击之所以能够成功，是因为服务器误把攻击者发送的请求当成了用户自己的请求。那么我们可以要求所有的用户请求都携带一个CSRF攻击者无法获取到的Token。服务器通过校验请求是否携带正确的Token，来把正常的请求和攻击的请求区分开，也可以防范CSRF的攻击。</p>
+<h6 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h6><p>CSRF Token的防护策略分为三个步骤：</p>
+<p>1.将CSRF Token输出到页面中</p>
+<p>首先，用户打开页面的时候，服务器需要给这个用户生成一个Token，该Token通过加密算法对数据进行加密，一般Token都包括随机字符串和时间戳的组合，显然在提交时Token不能再放在Cookie中了，否则又会被攻击者冒用。因此，为了安全起见Token最好还是存在服务器的Session中，之后在每次页面加载时，使用JS遍历整个DOM树，对于DOM中所有的a和form标签后加入Token。这样可以解决大部分的请求，但是对于在页面加载之后动态生成的HTML代码，这种方法就没有作用，还需要程序员在编码时手动添加Token。</p>
+<p>2.页面提交的请求携带这个Token</p>
+<p>对于GET请求，Token将附在请求地址之后，这样URL 就变成 <code>[http://url?csrftoken=tokenvalue</code>](<a href="http://url/?csrftoken=tokenvalue)。" target="_blank" rel="noopener">http://url/?csrftoken=tokenvalue)。</a> 而对于 POST 请求来说，要在 form 的最后加上：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">”hidden”</span> <span class="attr">name</span>=<span class="string">”csrftoken”</span> <span class="attr">value</span>=<span class="string">”tokenvalue”/</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这样，就把Token以参数的形式加入请求了。</p>
+<p>3.服务器验证Token是否正确</p>
+<p>当用户从客户端得到了Token，再次提交给服务器的时候，服务器需要判断Token的有效性，验证过程是先解密Token，对比加密字符串以及时间戳，如果加密字符串一致且时间未过期，那么这个Token就是有效的。</p>
+<p>这种方法要比之前检查Referer或者Origin要安全一些，Token可以在产生并放于Session之中，然后在每次请求时把Token从Session中拿出，与请求中的Token进行比对，但这种方法的比较麻烦的在于如何把Token以参数的形式加入请求。<br>下面将以Java为例，介绍一些CSRF Token的服务端校验逻辑，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">HttpServletRequest req = (HttpServletRequest)request; </span><br><span class="line">HttpSession s = req.getSession(); </span><br><span class="line"> </span><br><span class="line">// 从 session 中得到 csrftoken 属性</span><br><span class="line">String sToken = (String)s.getAttribute(“csrftoken”); </span><br><span class="line">if(sToken == null)&#123; </span><br><span class="line">   // 产生新的 token 放入 session 中</span><br><span class="line">   sToken = generateToken(); </span><br><span class="line">   s.setAttribute(“csrftoken”,sToken); </span><br><span class="line">   chain.doFilter(request, response); </span><br><span class="line">&#125; else&#123; </span><br><span class="line">   // 从 HTTP 头中取得 csrftoken </span><br><span class="line">   String xhrToken = req.getHeader(“csrftoken”); </span><br><span class="line">   // 从请求参数中取得 csrftoken </span><br><span class="line">   String pToken = req.getParameter(“csrftoken”); </span><br><span class="line">   if(sToken != null &amp;&amp; xhrToken != null &amp;&amp; sToken.equals(xhrToken))&#123; </span><br><span class="line">       chain.doFilter(request, response); </span><br><span class="line">   &#125;else if(sToken != null &amp;&amp; pToken != null &amp;&amp; sToken.equals(pToken))&#123; </span><br><span class="line">       chain.doFilter(request, response); </span><br><span class="line">   &#125;else&#123; </span><br><span class="line">       request.getRequestDispatcher(“error.jsp”).forward(request,response); </span><br><span class="line">   &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码源自<a href="https://www.ibm.com/developerworks/cn/web/1102_niugang_csrf/" target="_blank" rel="noopener">IBM developerworks CSRF</a></p>
+<p>这个Token的值必须是随机生成的，这样它就不会被攻击者猜到，考虑利用Java应用程序的<code>java.security.SecureRandom</code>类来生成足够长的随机标记，替代生成算法包括使用256位BASE64编码哈希，选择这种生成算法的开发人员必须确保在散列数据中使用随机性和唯一性来生成随机标识。通常，开发人员只需为当前会话生成一次Token。在初始生成此Token之后，该值将存储在会话中，并用于每个后续请求，直到会话过期。当最终用户发出请求时，服务器端必须验证请求中Token的存在性和有效性，与会话中找到的Token相比较。如果在请求中找不到Token，或者提供的值与会话中的值不匹配，则应中止请求，应重置Token并将事件记录为正在进行的潜在CSRF攻击。</p>
+<h4 id="分布式校验"><a href="#分布式校验" class="headerlink" title="分布式校验"></a>分布式校验</h4><p>在大型网站中，使用Session存储CSRF Token会带来很大的压力。访问单台服务器session是同一个。但是现在的大型网站中，我们的服务器通常不止一台，可能是几十台甚至几百台之多，甚至多个机房都可能在不同的省份，用户发起的HTTP请求通常要经过像Ngnix之类的负载均衡器之后，再路由到具体的服务器上，由于Session默认存储在单机服务器内存中，因此在分布式环境下同一个用户发送的多次HTTP请求可能会先后落到不同的服务器上，导致后面发起的HTTP请求无法拿到之前的HTTP请求存储在服务器中的Session数据，从而使得Session机制在分布式环境下失效，因此在分布式集群中CSRF Token需要存储在Redis之类的公共存储空间。</p>
+<p>由于使用Session存储，读取和验证CSRF Token会引起比较大的复杂度和性能问题，目前很多网站采用<code>Encrypted Token Pattern</code>方式。这种方法的Token是一个计算出来的结果，而非随机生成的字符串。这样在校验时无需再去读取存储的Token，只用再次计算一次即可。</p>
+<p>这种Token的值通常是<u>使用UserID、时间戳和随机数，通过加密的方法生成。这样既可以保证分布式服务的Token一致，又能保证Token不容易被破解。</u></p>
+<p>在token解密成功之后，服务器可以访问解析值，Token中包含的UserID和时间戳将会被拿来被验证有效性，将UserID与当前登录的UserID进行比较，并将时间戳与当前时间进行比较。</p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>Token是一个比较有效的CSRF防护方法，只要页面没有XSS漏洞泄露Token，那么接口的CSRF攻击就无法成功。</p>
+<p>但是此方法的实现比较复杂，需要给每一个页面都写入Token（前端无法使用纯静态页面），每一个Form及Ajax请求都携带这个Token，后端对每一个接口都进行校验，并保证页面Token及请求Token一致。这就使得这个防护策略不能在通用的拦截上统一拦截处理，而需要每一个页面和接口都添加对应的输出和校验。这种方法工作量巨大，且有可能遗漏。</p>
+<blockquote>
+<p>验证码和密码其实也可以起到CSRF Token的作用哦，而且更安全。为什么很多银行等网站会要求已经登录的用户在转账时再次输入密码，现在是不是有一定道理了？</p>
+</blockquote>
+<h4 id="双重Cookie验证"><a href="#双重Cookie验证" class="headerlink" title="双重Cookie验证"></a>双重Cookie验证</h4><p>在会话中存储CSRF Token比较繁琐，而且不能在通用的拦截上统一处理所有的接口。</p>
+<p> 那么另一种防御措施是使用双重提交Cookie。利用CSRF攻击不能获取到用户Cookie的特点，我们可以要求Ajax和表单请求携带一个Cookie中的值。</p>
+<p>双重Cookie采用以下流程：</p>
+<ul>
+<li>在用户访问网站页面时，向请求域名注入一个Cookie，内容为随机字符串（例如<code>csrfcookie=v8g9e4ksfhw</code>）。</li>
+<li>在前端向后端发起请求时，取出Cookie，并添加到URL的参数中（接上例<code>POST https://www.a.com/comment?csrfcookie=v8g9e4ksfhw</code>）。</li>
+<li>后端接口验证Cookie中的字段与URL参数中的字段是否一致，不一致则拒绝。</li>
+</ul>
+<p>此方法相对于CSRF Token就简单了许多。可以直接通过前后端拦截的的方法自动化实现。后端校验也更加方便，只需进行请求中字段的对比，而不需要再进行查询和存储Token。</p>
+<p>当然，此方法并没有大规模应用，其在大型网站上的安全性还是没有CSRF Token高，原因我们举例进行说明。</p>
+<p>由于任何跨域都会导致前端无法获取Cookie中的字段（包括子域名之间），于是发生了如下情况：</p>
+<ul>
+<li>如果用户访问的网站为<code>www.a.com</code>，而后端的api域名为<code>api.a.com</code>。那么在<code>www.a.com</code>下，前端拿不到<code>api.a.com</code>的Cookie，也就无法完成双重Cookie认证。</li>
+<li>于是这个认证Cookie必须被种在<code>a.com</code>下，这样每个子域都可以访问。</li>
+<li>任何一个子域都可以修改<code>a.com</code>下的Cookie。</li>
+<li>某个子域名存在漏洞被XSS攻击（例如<code>upload.a.com</code>）。虽然这个子域下并没有什么值得窃取的信息。但攻击者修改了<code>a.com</code>下的Cookie。</li>
+<li>攻击者可以直接使用自己配置的Cookie，对XSS中招的用户再向<code>www.a.com</code>下，发起CSRF攻击。</li>
+</ul>
+<h5 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h5><p>用双重Cookie防御CSRF的优点：</p>
+<ul>
+<li>无需使用Session，适用面更广，易于实施。</li>
+<li>Token储存于客户端中，不会给服务器带来压力。</li>
+<li>相对于Token，实施成本更低，可以在前后端统一拦截校验，而不需要一个个接口和页面添加。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>Cookie中增加了额外的字段。</li>
+<li>如果有其他漏洞（例如XSS），攻击者可以注入Cookie，那么该防御方式失效。</li>
+<li>难以做到子域名的隔离。</li>
+<li>为了确保Cookie传输安全，采用这种防御方式的最好确保用整站HTTPS的方式，如果还没切HTTPS的使用这种方式也会有风险。</li>
+</ul>
+<h4 id="Samesite-Cookie属性"><a href="#Samesite-Cookie属性" class="headerlink" title="Samesite Cookie属性"></a>Samesite Cookie属性</h4><p>防止CSRF攻击的办法已经有上面的预防措施。为了从源头上解决这个问题，Google起草了一份草案来改进HTTP协议，那就是为Set-Cookie响应头新增Samesite属性，它用来标明这个 Cookie是个“同站 Cookie”，同站Cookie只能作为第一方Cookie，不能作为第三方Cookie，Samesite 有两个属性值，分别是 Strict 和 Lax，下面分别讲解：</p>
+<p> Samesite=Strict</p>
+<p>这种称为严格模式，表明这个 Cookie 在任何情况下都不可能作为第三方 Cookie，绝无例外。比如说 b.com 设置了如下 Cookie：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: foo=1; Samesite=Strict</span><br><span class="line">Set-Cookie: bar=2; Samesite=Lax</span><br><span class="line">Set-Cookie: baz=3</span><br></pre></td></tr></table></figure>
+<p>我们在 a.com 下发起对 b.com 的任意请求，foo 这个 Cookie 都不会被包含在 Cookie 请求头中，但 bar 会。举个实际的例子就是，假如淘宝网站用来识别用户登录与否的 Cookie 被设置成了 Samesite=Strict，那么用户从百度搜索页面甚至天猫页面的链接点击进入淘宝后，淘宝都不会是登录状态，因为淘宝的服务器不会接受到那个 Cookie，其它网站发起的对淘宝的任意请求都不会带上那个 Cookie。</p>
+<h5 id="Samesite-Lax"><a href="#Samesite-Lax" class="headerlink" title="Samesite=Lax"></a>Samesite=Lax</h5><p>这种称为宽松模式，比 Strict 放宽了点限制：假如这个请求是这种请求（改变了当前页面或者打开了新页面）且同时是个GET请求，则这个Cookie可以作为第三方Cookie。比如说 b.com设置了如下Cookie：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: foo=1; Samesite=Strict</span><br><span class="line">Set-Cookie: bar=2; Samesite=Lax</span><br><span class="line">Set-Cookie: baz=3</span><br></pre></td></tr></table></figure>
+<p>当用户从 a.com 点击链接进入 b.com 时，foo 这个 Cookie 不会被包含在 Cookie 请求头中，但 bar 和 baz 会，也就是说用户在不同网站之间通过链接跳转是不受影响了。但假如这个请求是从 a.com 发起的对 b.com 的异步请求，或者页面跳转是通过表单的 post 提交触发的，则bar也不会发送。</p>
+<p>生成Token放到Cookie中并且设置Cookie的Samesite，Java代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void addTokenCookieAndHeader(HttpServletRequest httpRequest, HttpServletResponse httpResponse) &#123;</span><br><span class="line">        //生成token</span><br><span class="line">        String sToken = this.generateToken();</span><br><span class="line">        //手动添加Cookie实现支持“Samesite=strict”</span><br><span class="line">        //Cookie添加双重验证</span><br><span class="line">        String CookieSpec = String.format(&quot;%s=%s; Path=%s; HttpOnly; Samesite=Strict&quot;, this.determineCookieName(httpRequest), sToken, httpRequest.getRequestURI());</span><br><span class="line">        httpResponse.addHeader(&quot;Set-Cookie&quot;, CookieSpec);</span><br><span class="line">        httpResponse.setHeader(CSRF_TOKEN_NAME, token);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>代码源自<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Implementation_example" target="_blank" rel="noopener">OWASP Cross-Site_Request_Forgery #Implementation example</a></p>
+<h5 id="我们应该如何使用SamesiteCookie"><a href="#我们应该如何使用SamesiteCookie" class="headerlink" title="我们应该如何使用SamesiteCookie"></a>我们应该如何使用SamesiteCookie</h5><p>如果SamesiteCookie被设置为Strict，浏览器在任何跨域请求中都不会携带Cookie，新标签重新打开也不携带，所以说CSRF攻击基本没有机会。</p>
+<p>但是跳转子域名或者是新标签重新打开刚登陆的网站，之前的Cookie都不会存在。尤其是有登录的网站，那么我们新打开一个标签进入，或者跳转到子域名的网站，都需要重新登录。对于用户来讲，可能体验不会很好。</p>
+<p>如果SamesiteCookie被设置为Lax，那么其他网站通过页面跳转过来的时候可以使用Cookie，可以保障外域连接打开页面时用户的登录状态。但相应的，其安全性也比较低。</p>
+<p>另外一个问题是Samesite的兼容性不是很好，现阶段除了从新版Chrome和Firefox支持以外，Safari以及iOS Safari都还不支持，现阶段看来暂时还不能普及。</p>
+<p>而且，SamesiteCookie目前有一个致命的缺陷：不支持子域。例如，种在topic.a.com下的Cookie，并不能使用a.com下种植的SamesiteCookie。这就导致了当我们网站有多个子域名时，不能使用SamesiteCookie在主域名存储用户登录信息。每个子域名都需要用户重新登录一次。</p>
+<p>总之，SamesiteCookie是一个可能替代同源验证的方案，但目前还并不成熟，其应用场景有待观望。</p>
+<h3 id="防止网站被利用"><a href="#防止网站被利用" class="headerlink" title="防止网站被利用"></a>防止网站被利用</h3><p> 前面所说的，都是被攻击的网站如何做好防护。而非防止攻击的发生，CSRF的攻击可以来自：</p>
+<ul>
+<li>攻击者自己的网站。</li>
+<li>有文件上传漏洞的网站。</li>
+<li>第三方论坛等用户内容。</li>
+<li>被攻击网站自己的评论功能等。</li>
+</ul>
+<p>对于来自黑客自己的网站，我们无法防护。但对其他情况，那么如何防止自己的网站被利用成为攻击的源头呢？</p>
+<ul>
+<li>严格管理所有的上传接口，防止任何预期之外的上传内容（例如HTML）。</li>
+<li>添加Header <code>X-Content-Type-Options: nosniff</code> 防止黑客上传HTML内容的资源（例如图片）被解析为网页。</li>
+<li>对于用户上传的图片，进行转存或者校验。不要直接使用用户填写的图片链接。</li>
+<li>当前用户打开其他用户填写的链接时，需告知风险（这也是很多论坛不允许直接在内容中发布外域链接的原因之一，不仅仅是为了用户留存，也有安全考虑）。</li>
+</ul>
+<h3 id="CSRF其他防范措施"><a href="#CSRF其他防范措施" class="headerlink" title="CSRF其他防范措施"></a>CSRF其他防范措施</h3><p>对于一线的程序员同学，我们可以通过各种防护策略来防御CSRF，对于QA、SRE、安全负责人等同学，我们可以做哪些事情来提升安全性呢？</p>
+<h4 id="CSRF测试"><a href="#CSRF测试" class="headerlink" title="CSRF测试"></a>CSRF测试</h4><p>CSRFTester是一款CSRF漏洞的测试工具，CSRFTester工具的测试原理大概是这样的，使用代理抓取我们在浏览器中访问过的所有的连接以及所有的表单等信息，通过在CSRFTester中修改相应的表单等信息，重新提交，相当于一次伪造客户端请求，如果修改后的测试请求成功被网站服务器接受，则说明存在CSRF漏洞，当然此款工具也可以被用来进行CSRF攻击。<br>CSRFTester使用方法大致分下面几个步骤：</p>
+<ul>
+<li>步骤1：设置浏览器代理</li>
+</ul>
+<p>CSRFTester默认使用Localhost上的端口8008作为其代理，如果代理配置成功，CSRFTester将为您的浏览器生成的所有后续HTTP请求生成调试消息。</p>
+<ul>
+<li>步骤2：使用合法账户访问网站开始测试</li>
+</ul>
+<p>我们需要找到一个我们想要为CSRF测试的特定业务Web页面。找到此页面后，选择CSRFTester中的“开始录制”按钮并执行业务功能；完成后，点击CSRFTester中的“停止录制”按钮；正常情况下，该软件会全部遍历一遍当前页面的所有请求。</p>
+<ul>
+<li>步骤3：通过CSRF修改并伪造请求</li>
+</ul>
+<p>之后，我们会发现软件上有一系列跑出来的记录请求，这些都是我们的浏览器在执行业务功能时生成的所有GET或者POST请求。通过选择列表中的某一行，我们现在可以修改用于执行业务功能的参数，可以通过点击对应的请求修改query和form的参数。当修改完所有我们希望诱导用户form最终的提交值，可以选择开始生成HTML报告。</p>
+<ul>
+<li>步骤4：拿到结果如有漏洞进行修复</li>
+</ul>
+<p>首先必须选择“报告类型”。报告类型决定了我们希望受害者浏览器如何提交先前记录的请求。目前有5种可能的报告：表单、iFrame、IMG、XHR和链接。一旦选择了报告类型，我们可以选择在浏览器中启动新生成的报告，最后根据报告的情况进行对应的排查和修复。</p>
+<h4 id="CSRF监控"><a href="#CSRF监控" class="headerlink" title="CSRF监控"></a>CSRF监控</h4><p>对于一个比较复杂的网站系统，某些项目、页面、接口漏掉了CSRF防护措施是很可能的。</p>
+<p>一旦发生了CSRF攻击，我们如何及时的发现这些攻击呢？</p>
+<p>CSRF攻击有着比较明显的特征：</p>
+<ul>
+<li>跨域请求。</li>
+<li>GET类型请求Header的MIME类型大概率为图片，而实际返回Header的MIME类型为Text、JSON、HTML。</li>
+</ul>
+<p>我们可以在网站的代理层监控所有的接口请求，如果请求符合上面的特征，就可以认为请求有CSRF攻击嫌疑。我们可以提醒对应的页面和项目负责人，检查或者 Review其CSRF防护策略。</p>
+<h3 id="个人用户CSRF安全的建议"><a href="#个人用户CSRF安全的建议" class="headerlink" title="个人用户CSRF安全的建议"></a>个人用户CSRF安全的建议</h3><p>经常上网的个人用户，可以采用以下方法来保护自己：</p>
+<ul>
+<li>使用网页版邮件的浏览邮件或者新闻也会带来额外的风险，因为查看邮件或者新闻消息有可能导致恶意代码的攻击。</li>
+<li>尽量不要打开可疑的链接，一定要打开时，使用不常用的浏览器。</li>
+</ul>
+<h3 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h3><p>简单总结一下上文的防护策略：</p>
+<ul>
+<li>CSRF自动防御策略：同源检测（Origin 和 Referer 验证）。</li>
+<li>CSRF主动防御措施：Token验证或者双重Cookie验证以及配合Samesite Cookie。</li>
+<li>保证页面的幂等性，后端接口不要在GET页面中做用户操作。</li>
+</ul>
+<p>为了更好的防御CSRF，最佳实践应该是结合上面总结的防御措施方式中的优缺点来综合考虑，结合当前Web应用程序自身的情况做合适的选择，才能更好的预防CSRF的发生。</p>
+<h3 id="历史案例"><a href="#历史案例" class="headerlink" title="历史案例"></a>历史案例</h3><h4 id="WordPress的CSRF漏洞"><a href="#WordPress的CSRF漏洞" class="headerlink" title="WordPress的CSRF漏洞"></a>WordPress的CSRF漏洞</h4><p>2012年3月份，WordPress发现了一个CSRF漏洞，影响了WordPress 3.3.1版本，WordPress是众所周知的博客平台，该漏洞可以允许攻击者修改某个Post的标题，添加管理权限用户以及操作用户账户，包括但不限于删除评论、修改头像等等。具体的列表如下:</p>
+<ul>
+<li>Add Admin/User</li>
+<li>Delete Admin/User</li>
+<li>Approve comment</li>
+<li>Unapprove comment</li>
+<li>Delete comment</li>
+<li>Change background image</li>
+<li>Insert custom header image</li>
+<li>Change site title</li>
+<li>Change administrator’s email</li>
+<li>Change Wordpress Address</li>
+<li>Change Site Address</li>
+</ul>
+<p>那么这个漏洞实际上就是攻击者引导用户先进入目标的WordPress，然后点击其钓鱼站点上的某个按钮，该按钮实际上是表单提交按钮，其会触发表单的提交工作，添加某个具有管理员权限的用户，实现的码如下：</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">body</span> <span class="attr">onload</span>=<span class="string">"javascript:document.forms[0].submit()"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">H2</span>&gt;</span>CSRF Exploit to add Administrator<span class="tag">&lt;/<span class="name">H2</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">name</span>=<span class="string">"form0"</span> <span class="attr">action</span>=<span class="string">"http://&lt;wordpress_ip&gt;:80/wp-admin/user-new.php"</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"action"</span> <span class="attr">value</span>=<span class="string">"createuser"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"_wpnonce_create-user"</span> <span class="attr">value</span>=<span class="string">"&lt;sniffed_value&gt;"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"_wp_http_referer"</span> <span class="attr">value</span>=<span class="string">"%2Fwordpress%2Fwp-admin%2Fuser-new.php"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"user_login"</span> <span class="attr">value</span>=<span class="string">"admin2"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"email"</span> <span class="attr">value</span>=<span class="string">"admin2@admin.com"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"first_name"</span> <span class="attr">value</span>=<span class="string">"admin2@admin.com"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"last_name"</span> <span class="attr">value</span>=<span class="string">""</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"url"</span> <span class="attr">value</span>=<span class="string">""</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"pass1"</span> <span class="attr">value</span>=<span class="string">"password"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"pass2"</span> <span class="attr">value</span>=<span class="string">"password"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"role"</span> <span class="attr">value</span>=<span class="string">"administrator"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"createuser"</span> <span class="attr">value</span>=<span class="string">"Add+New+User+"</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="YouTube的CSRF漏洞"><a href="#YouTube的CSRF漏洞" class="headerlink" title="YouTube的CSRF漏洞"></a>YouTube的CSRF漏洞</h4><p>2008年，有安全研究人员发现，YouTube上几乎所有用户可以操作的动作都存在CSRF漏洞。如果攻击者已经将视频添加到用户的“Favorites”，那么他就能将他自己添加到用户的“Friend”或者“Family”列表，以用户的身份发送任意的消息，将视频标记为不宜的，自动通过用户的联系人来共享一个视频。例如，要把视频添加到用户的“Favorites”，攻击者只需在任何站点上嵌入如下所示的IMG标签：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://youtube.com/watch_ajax?action_add_favorite_playlist=1&amp;video_</span></span></span><br><span class="line"><span class="tag"><span class="string">id=[VIDEO ID]&amp;playlist_id=&amp;add_to_favorite=1&amp;show=1&amp;button=AddvideoasFavorite"</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>攻击者也许已经利用了该漏洞来提高视频的流行度。例如，将一个视频添加到足够多用户的“Favorites”，YouTube就会把该视频作为“Top Favorites”来显示。除提高一个视频的流行度之外，攻击者还可以导致用户在毫不知情的情况下将一个视频标记为“不宜的”，从而导致YouTube删除该视频。</p>
+<p>这些攻击还可能已被用于侵犯用户隐私。YouTube允许用户只让朋友或亲属观看某些视频。这些攻击会导致攻击者将其添加为一个用户的“Friend”或“Family”列表，这样他们就能够访问所有原本只限于好友和亲属表中的用户观看的私人的视频。</p>
+<p>攻击者还可以通过用户的所有联系人名单（“Friends”、“Family”等等）来共享一个视频，“共享”就意味着发送一个视频的链接给他们，当然还可以选择附加消息。这条消息中的链接已经并不是真正意义上的视频链接，而是一个具有攻击性的网站链接，用户很有可能会点击这个链接，这便使得该种攻击能够进行病毒式的传播。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/20/如何防止CSRF攻击/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-如何防止XSS" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1073,140 +1448,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/10/10/FTP暴力破解及恶意脚本注入/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-NMAP" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/09/NMAP/">NMAP</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/09/NMAP/" class="archive-article-date">
-  	<time datetime="2018-10-09T07:45:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="nmap"><a href="#nmap" class="headerlink" title="nmap"></a>nmap</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line">用法：nmap [扫描类型] [选项] &#123;目标规范&#125; </span><br><span class="line">目标规范：</span><br><span class="line">  可以传递主机名，IP地址，网络等。</span><br><span class="line">  例如：scanme.nmap.org，microsoft.com / 24,192.168.0.1; 10.0-255.0-255.1-254 </span><br><span class="line">  -iL &lt;inputfilename&gt;：从主机/网络列表输入</span><br><span class="line">  -iR &lt;num hosts&gt;：选择随机目标</span><br><span class="line">  --exclude &lt;host1 [，host2] [，host3]，...&gt;：排除hosts / networks </span><br><span class="line">  --excludefile &lt;exclude_file&gt;：从文件中排除列表</span><br><span class="line">  </span><br><span class="line">HOST DISCOVERY：</span><br><span class="line">  -sL：列表扫描 - 只列出要扫描的目标</span><br><span class="line">  -sP：Ping扫描 - 只需确定主机是否在线</span><br><span class="line">  -P0：将所有主机视为在线 - 跳过主机发现</span><br><span class="line">  -PS / PA / PU [端口列表]：TCP SYN / ACK或UDP发现探测到给定端口</span><br><span class="line">  -PE / PP / PM：ICMP回送，时间戳和网络掩码请求发现探测</span><br><span class="line">  -n / -R：从不进行DNS解析/始终解析[默认：有时解析] </span><br><span class="line">  </span><br><span class="line">SCAN TECHNIQUES：</span><br><span class="line">  -sS / sT / sA / sW / sM： TCP SYN / Connect（）/ ACK / Window / Maimon扫描</span><br><span class="line">  -sN / sF / sX：TCP Null，FIN和Xmas扫描</span><br><span class="line">  --scanflags &lt;flags&gt;：自定义TCP扫描标志</span><br><span class="line">  -sI &lt;zombie host [：probeport]&gt;： Idlescan </span><br><span class="line">  -sO：IP协议扫描</span><br><span class="line">  -b &lt;ftp relay host&gt;：FTP跳出扫描</span><br><span class="line">  </span><br><span class="line">端口规范和扫描     顺序：-p </span><br><span class="line">  &lt;端口范围&gt;：仅扫描指定端口</span><br><span class="line">Ex：-p22; -p1-65535; -p U：53,111,137，T：21-25,80,139,8080 </span><br><span class="line">  -F：快速 - 仅扫描nmap-services文件中列出的端口）</span><br><span class="line">  -r：连续扫描端口 - 不随机化</span><br><span class="line">  </span><br><span class="line">SERVICE / VERSION DETECTION：</span><br><span class="line">  -sV：探测开放端口以确定服务/版本信息</span><br><span class="line">  --version-light：限制为最可能的探测器以便更快识别</span><br><span class="line">  --version-all：尝试每一个用于版本检测的单一探针</span><br><span class="line">  --version-trace：显示详细的版本扫描活动（用于调试）</span><br><span class="line">  </span><br><span class="line">OS检测：</span><br><span class="line">  -O：启用OS检测</span><br><span class="line">  --osscan-limit：将OS检测限制为有希望的目标</span><br><span class="line">  --osscan-guess：猜测OS更多积极的</span><br><span class="line">  </span><br><span class="line">时间和性能：</span><br><span class="line">  -T [0-6]：设置时序模板（更高更快）-- </span><br><span class="line">  min-hostgroup / max-hostgroup &lt;msec&gt;：并行主机扫描组大小</span><br><span class="line">  --min-parallelism / max-parallelism &lt;msec&gt;：探测并行化</span><br><span class="line">  --min-rtt-timeout / max-rtt-timeout / initial-rtt-timeout &lt;msec&gt;：指定</span><br><span class="line">      探测往返时间。</span><br><span class="line">  --host-timeout &lt;msec&gt;：在此长时间后放弃目标</span><br><span class="line">  --scan-delay / - max-scan-delay &lt;msec&gt;：调整探测器之间的延迟</span><br><span class="line">  </span><br><span class="line">防火墙/ IDS逃逸和施法：</span><br><span class="line">  -f; --mtu &lt;val&gt;：片段包（可选择w /给定MTU）</span><br><span class="line">  -D &lt;decoy1，decoy2 [，ME]，...&gt;：用decoys </span><br><span class="line">  -S &lt;IP_Address&gt; 披露扫描：欺骗源地址</span><br><span class="line">  -e &lt;iface &gt;：使用指定的接口</span><br><span class="line">  -g / - source-port &lt; </span><br><span class="line">  portnum &gt;：使用给定的端口号--data-length &lt;num&gt;：将随机数据附加到已发送的数据包</span><br><span class="line">  --ttl &lt;val&gt;：</span><br><span class="line">  --spoof-mac &lt;mac地址，前缀或供应商名称&gt;：欺骗你的MAC地址</span><br><span class="line">  </span><br><span class="line">OUTPUT：</span><br><span class="line">  -oN / -oX / -oS / -oG &lt;file&gt;：输出扫描结果正常，XML，s | &lt;rIpt kIddi3 ，</span><br><span class="line">     和的grepable格式，分别给定文件名。</span><br><span class="line">  -oA &lt;basename&gt;：一次输出三种主要格式</span><br><span class="line">  -v：增加详细级别（使用两次以获得更多效果）</span><br><span class="line">  -d [level]：设置或增加调试级别（最多9个是有意义的） - </span><br><span class="line">  packet-trace ：显示发送和接收的所有数据包</span><br><span class="line">  --iflist：打印主机接口和路由（用于调试）-- </span><br><span class="line">  append-output：附加到而不是clobber指定的输出文件</span><br><span class="line">  --resume &lt;filename&gt;：恢复中止扫描</span><br><span class="line">  --stylesheet &lt;path / URL&gt;：用于将XML输出转换为HTML的XSL样式表</span><br><span class="line">  --no-stylesheet：防止Nmap关联带有XML输出的XSL样式表</span><br><span class="line">  </span><br><span class="line">MISC：</span><br><span class="line">  -6：启用IPv6扫描</span><br><span class="line">  -A：启用OS检测和版本检测</span><br><span class="line">  --datadir &lt;dirname&gt;：指定自定义Nmap数据文件位置</span><br><span class="line">  --send-eth / - send-ip：使用原始以太网帧或IP数据包发送数据包</span><br><span class="line">  --privileged：假设用户具有完全特权</span><br><span class="line">  -V：打印版本number </span><br><span class="line">  -h：打印此帮助摘要页面。</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p><a href="https://nmap.org/nsedoc/" target="_blank" rel="noopener">NSE</a></p>
-<ul>
-<li>nmap脚本引擎，后缀名.nse，Lua语言编写，存放在nmap安装目录下的scripts目录下</li>
-</ul>
-</li>
-<li><p>调用内置库</p>
-<ul>
-<li>NSE脚本可以调用内置库，比如http库，shortport库，nmap库等。</li>
-<li>导入方式：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">local http = require &quot;http&quot;</span><br><span class="line">local nmap = require &quot;nmap&quot;</span><br><span class="line">local shortport = require &quot;shortport&quot;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>NSE script usage</p>
-<ul>
-<li><p>当在script下面编写nse脚本后，加载使用</p>
-</li>
-<li><p>方法一：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap --script-updatedb 更新脚本库</span><br><span class="line">nmap --script=xx	   使用该脚本</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>方法二：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap --script=d:/..../xx.nse   绝对路径</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>其它参数：</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-sC: 等价于–script=default，使用默认类别的脚本进行扫描 可更换其他类别</span><br><span class="line">–script=&lt;Lua scripts&gt;: &lt;Lua scripts&gt;使用某个或某类脚本进行扫描，支持通配符描述</span><br><span class="line">–script-args=&lt;n1=v1,[n2=v2,...]&gt;: 为脚本提供默认参数</span><br><span class="line">–script-args-file=filename: 使用文件来为脚本提供参数</span><br><span class="line">–script-trace: 显示脚本执行过程中发送与接收的数据</span><br><span class="line">–script-updatedb: 更新脚本数据库</span><br><span class="line">–script-help=&lt;scripts&gt;: 显示脚本的帮助信息，其中&lt;scripts&gt;部分可以逗号分隔的文件或脚本类别</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>nse example</p>
-<ul>
-<li><p>对目标机器进行扫描，同时对smb的用户进行枚举</p>
-<p><code>nmap --script=smb-enum-users target_ip</code></p>
-</li>
-<li><p>对目标机器所开启的smb共享进行枚举</p>
-<p><code>nmap --script=smb-enum-shares target_ip</code></p>
-</li>
-<li><p>对目标机器的用户名和密码进行暴力猜测</p>
-<p><code>nmap --script=smb-brute target_ip</code></p>
-</li>
-<li><p>对目标机器测试心脏滴血漏洞</p>
-<p><code>nmap -sV --script=ssl-heartbleed target_ip</code></p>
-</li>
-<li><p>硬件设备的例子</p>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">modbus-discover.nse （该脚本可以调用Modbus <span class="number">43</span>（<span class="number">2</span>B功能码）功能码读取设备信息）</span><br><span class="line">modbus-enum.nse （Modbus TCP设备枚举脚本）</span><br><span class="line">s7-enumerate.nse （西门子S7 PLC设备发现脚本，可以枚举PLC的一些基本信息）</span><br><span class="line">enip-enumerate.nse （可以读取EtherNet/IP设备的基本信息）</span><br><span class="line">BACnet-discover-enumerate.nse （可以读取BACnet设备的基本信息）</span><br><span class="line">iec-identify.nse （IEC104协议asdu address枚举脚本）</span><br><span class="line">mms-identify.nse （IEC<span class="number">-61850</span><span class="number">-8</span><span class="number">-1</span>协议信息枚举脚本）</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>nmap parameter</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">nmap [Scan Type(s)] [Options] &#123;target specification&#125;</span><br><span class="line"></span><br><span class="line">scan type(s) 用于指定扫描类型</span><br><span class="line">options 用于指定选项</span><br><span class="line">target specification 用于指定扫描目标</span><br><span class="line"></span><br><span class="line">-s 指定扫描类型</span><br><span class="line">如下：</span><br><span class="line">-sP (ping扫描) *存活主机探测</span><br><span class="line">-sS (TCP SYN扫描 隐身扫描)  *默认扫描方式</span><br><span class="line">-sT (tcp 扫描) * syn 不能用时就tcp扫描</span><br><span class="line">-sU （UDP 扫描）</span><br><span class="line">-sA  （ACK扫描） *三次握手 用于探测出防火墙过滤端口 实际渗透中没多大用</span><br><span class="line"></span><br><span class="line">-sV   （版本探测）</span><br><span class="line">-A    操作系统探测</span><br><span class="line">-O （启用操作系统检测）</span><br><span class="line">-v    详细</span><br><span class="line">选项说明</span><br><span class="line">-P0  [指定端口] (无ping扫描)</span><br><span class="line">-PU  [指定端口] (udp ping扫描)</span><br><span class="line">-PS [指定端口] (TCP SYN ping 扫描)</span><br><span class="line">-PA  [指定端口] (tcp ack ping扫描) </span><br><span class="line">-PI   使用真正的pingICMP echo请求来扫描目标主机是否正在运行</span><br><span class="line"></span><br><span class="line">-iL 指定扫描主机列表</span><br><span class="line">-iR 随机选择目标</span><br><span class="line"></span><br><span class="line">--exclude 排除扫描目标</span><br><span class="line">--excludefile 排除文件中目标列表</span><br><span class="line"></span><br><span class="line">-n (不用域名解析)</span><br><span class="line">-R (为所有目标解析域名)</span><br><span class="line"></span><br><span class="line">-T  时间优化（每隔多久发一次包 ） -T5 最快 -T0 最慢</span><br><span class="line">-F  快速扫描</span><br><span class="line">-e  指定网络接口</span><br><span class="line">-M 设置tcp扫描线程</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>nmap output</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-oS  保存扫描结果输出</span><br><span class="line">-oN  把扫描结果重定向到一个可读的文件logfilename中</span><br><span class="line">-oM  每个结果一行输出</span><br><span class="line">-oA  同上</span><br><span class="line">--append-output 附在原来的结果前面</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>nmap status</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">open（开放的）</span><br><span class="line">closed（关闭的）</span><br><span class="line">filtered（被过滤的）不确定开放还是关闭</span><br><span class="line">unfiltered （未被过滤的）</span><br><span class="line">openfiltered （开放或者被过滤的）</span><br><span class="line">closedfiltered （关闭或者未被过滤的)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>nmap 常用命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//轻量级扫描：</span><br><span class="line">nmap -sP 192.168.0.0/24   判断哪些主机存活</span><br><span class="line">nmap -sT 192.168.0.3   开放了哪些端口</span><br><span class="line">nmap -sS 192.168.0.127 开放了哪些端口（隐蔽扫描）</span><br><span class="line">nmap -sU 192.168.0.127 开放了哪些端口（UDP）</span><br><span class="line">nmap -sS -O  192.168.0.127 操作系统识别</span><br><span class="line">nmap -sT -p 80 -oG – 192.168.1.* | grep open    列出开放了指定端口的主机列表</span><br><span class="line">nmap -sV -p 80 thief.one  列出服务器类型(列出操作系统，开发端口，服务器类型,网站脚本类型等)</span><br><span class="line">//批量扫描：</span><br><span class="line">nmap -sT -sV -O -P0 --open -n -oN result.txt -p80-89,8080-8099,8000-8009,7001-7009,9000-9099,21,443,873,2601,2604,3128,4440,6082,6379,8888,3389,9200,11211,27017,28017,389,8443,4848,8649,995,9440,9871,2222,2082,3311,18100,9956,1433,3306,1900,49705,50030,7778,5432,7080,5900,50070,5000,5560,10000 -iL ip.txt</span><br><span class="line">//批量扫描：</span><br><span class="line">nmap -sT -sV -p80-89,8080-8099,8000-8009,7001-7009,9000-9099,21,443,873,2601,2604,3128,4440,6082,6379,8888,3389,9200,11211,27017,28017,389,8443,4848,8649,995,9440,9871,2222,2082,3311,18100,9956,1433,3306,1900,49705,50030,7778,5432,7080,5900,50070,5000,5560,10000 --open --max-hostgroup 10 --max-parallelism 10 --max-rtt-timeout 1000ms --host-timeout 800s --max-scan-delay 2000ms -iL ~/Desktop/ip.txt -oN ~/Desktop/result/result.txt</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/09/NMAP/">展开全文 >></a>
         </p>
       
 

@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/29/PHPYun-XML-%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-29T07:03:02.088Z</lastmod>
+    <data>
+        <display>
+        <title>PHPYun XML 注入漏洞</title>
+        <pubTime>2018-11-29T07:02:13.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/29/Bash-4-3-%E8%BF%9C%E7%A8%8B%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-29T06:06:49.863Z</lastmod>
     <data>
