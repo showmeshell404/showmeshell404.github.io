@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/30/WeBid-1-1-1-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-30T08:08:38.506Z</lastmod>
+    <data>
+        <display>
+        <title>WeBid 1.1.1 文件上传漏洞</title>
+        <pubTime>2018-11-30T08:07:39.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/29/PHPYun-XML-%E6%B3%A8%E5%85%A5%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-29T07:03:02.088Z</lastmod>
     <data>
