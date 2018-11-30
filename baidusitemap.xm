@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/11/30/KPPW-2-2-%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-11-30T08:56:12.753Z</lastmod>
+    <data>
+        <display>
+        <title>KPPW 2.2 任意文件下载漏洞</title>
+        <pubTime>2018-11-30T08:55:31.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/11/30/WeBid-1-1-1-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-11-30T08:08:38.506Z</lastmod>
     <data>
