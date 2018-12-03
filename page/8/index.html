@@ -6,20 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>IDA与Dex持续更新 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
-<meta name="keywords" content="Android">
-<meta property="og:type" content="article">
-<meta property="og:title" content="IDA与Dex持续更新">
-<meta property="og:url" content="http://showmeshell.top/2018/08/19/IDA与Dex持续更新/index.html">
+  <meta name="description" content="The Road Of Reverse And Web~">
+<meta name="keywords" content="Security">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
+<meta property="og:url" content="http://showmeshell.top/page/8/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
+<meta property="og:description" content="The Road Of Reverse And Web~">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-19T12:58:27.593Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IDA与Dex持续更新">
-<meta name="twitter:description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
+<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
+<meta name="twitter:description" content="The Road Of Reverse And Web~">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -149,81 +148,52 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-IDA与Dex持续更新" class="article article-type-post " itemscope itemprop="blogPost">
+            
+  
+    <article id="post-成都" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 class="article-title" itemprop="name">
-      IDA与Dex持续更新
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/29/成都/">成都</a>
     </h1>
   
 
         
-        <a href="/2018/08/19/IDA与Dex持续更新/" class="archive-article-date">
-  	<time datetime="2018-08-19T12:57:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+        <a href="/2018/05/29/成都/" class="archive-article-date">
+  	<time datetime="2018-05-29T09:27:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="IDA与DEX"><a href="#IDA与DEX" class="headerlink" title="IDA与DEX"></a>IDA与DEX</h2><ul>
-<li>dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。</li>
-<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示</li>
-<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择段跳转</li>
-<li>dex文件中所有方法可以点击Exports选项卡查看<ul>
-<li>方法的命名规则为<em>类名. 方法名@ 方法声明</em></li>
-</ul>
-</li>
-<li>IDA Pro的反汇编代码使用ref关键字来表示非Java标准类型的引用<ul>
-<li><code>CODE:0002CFC4   invoke-super    {this, c}, &lt;ref ResourceCursorAdapter.swapCursor(ref) imp. @ _def_ResourceCursorAdapter_swapCursor@LL&gt;</code><ul>
-<li>前面的ref是swapCursor()方法的返回类型，后面括号中的ref是参数类型</li>
-<li>IDA Pro能智能识别Android SDK的API函数并使用imp关键字标识出来<ul>
-<li>imp表明该方法为Android SDK中的API，@后面的部分为API的声明，类名与方法名之间使用下划线分隔</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>两种程序退出方法：<strong>Context的finish()方法与android.os.Process的killProcess()方法</strong></li>
-</ul>
+        <h1 id="成都"><a href="#成都" class="headerlink" title="成都"></a>成都</h1><p>乘着闲，牵着她手，飞去了梦寐以求的成都。一座有着巨大包容力的城市。<img src="/2018/05/29/成都/1.jpg" alt="1"></p>
+<p>第一次，一起飞。</p>
+<p><img src="/2018/05/29/成都/2.jpg" alt="2"></p>
+<p><strong>去过有着歌与酒热腾生活气的成都</strong>，</p>
+<p>吃遍宽窄巷子，锦里，杜甫草堂。</p>
+<p>还在成都的街头骑上了单车。</p>
+<p><img src="/2018/05/29/成都/3.jpg" alt="3"></p>
+<p><strong>锦里</strong>，一起尝过秋刀鱼，兔腿，菠萝饭，山楂，千丝饼。</p>
+<p><img src="/2018/05/29/成都/4.jpg" alt="4"></p>
+<p><strong>东南亚名宿</strong>，一起喝过红酒。<strong>杜甫草堂</strong>，拍过花，逗过鱼。</p>
+<p><img src="/2018/05/29/成都/5.jpg" alt="5"></p>
+<p><strong>成都的火锅</strong>，小龙坎，大龙燚，炉鱼，扇贝巴拉巴拉～</p>
+<p><img src="/2018/05/29/成都/6.jpg" alt="6"></p>
+<p><strong>小熊猫与大熊猫</strong>？真的不一样！！圆滚滚的屁股～</p>
+<p><img src="/2018/05/29/成都/7.jpg" alt="7"></p>
+<p>没有吃成的<strong>苍蝇馆子</strong>，用221路与锅魁弥补！</p>
+<p><img src="/2018/05/29/成都/8.jpg" alt="8"></p>
+<p><strong>好利来半熟芝士，</strong>最爱玫瑰味！<strong>钵钵鸡，猪蹄面，群光烤猪蹄</strong>。</p>
+<p>走到<strong>玉林路</strong>的尽头，坐在<strong>小酒馆</strong>的门口，在成都的街头走一走。</p>
+<p><img src="/2018/05/29/成都/9.jpg" alt="9"></p>
+<p>ps：两个正经讲故事的程序猿：）</p>
 
       
 
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
-                      <span class="reward-type">支付宝</span>
-                    </div>
-                    
-                    
-                    <div class="reward-box-item">
-                      <img class="reward-img" src="/assets/img/weixin.jpeg">
-                      <span class="reward-type">微信</span>
-                    </div>
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -234,7 +204,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">travel</a>
         		</li>
       		
 		</ul>
@@ -243,84 +213,16 @@
       
 
       
-
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/05/29/成都/">展开全文 >></a>
+        </p>
       
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
-        </div>
-      </div>
-    </span>
-  </div>
-</div>
 
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/19/IDA与Dex持续更新/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/08/22/Hello-ARM/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Hello ARM
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2018/08/19/Androguard/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Androguard</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -340,14 +242,12 @@
 
 
 
-  
-  
-  
 
   
-
   
-
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span>
+    </nav>
   
 
 
@@ -384,8 +284,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: false,
-		isPost: true,
+		isHome: true,
+		isPost: false,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

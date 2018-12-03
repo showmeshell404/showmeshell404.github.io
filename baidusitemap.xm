@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/12/03/DedeCMS-5-7-%E8%BF%9C%E7%A8%8B%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-12-03T11:51:24.339Z</lastmod>
+    <data>
+        <display>
+        <title>DedeCMS 5.7 远程文件包含漏洞</title>
+        <pubTime>2018-12-03T11:49:25.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/12/03/AspCms-2-2-9-%E7%99%BB%E5%BD%95%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E/</loc>
     <lastmod>2018-12-03T06:20:39.917Z</lastmod>
     <data>

