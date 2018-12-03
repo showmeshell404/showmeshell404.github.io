@@ -150,6 +150,104 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-PHPCMS2008-SQL注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">PHPCMS2008 SQL注入漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/PHPCMS2008-SQL注入漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-26T06:35:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h3><p><code>app:phpcms</code></p>
+<h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>PHPCMS2008由于广告模块取referer不严，导致一处sql注入漏洞.可以得到管理员用户名与密码，攻击者登录后台后可能会获取webshell，对服务器进行进一步的渗透。</p>
+<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，获取获取后台管理员账号密码，进一步可能得到Webshell，并对服务器安全造成极大的威胁。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞产生的位置位于<code>/ads/include/ads_place.class.php</code>的show方法中，漏洞代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">($placeid)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">($adses0)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">foreach</span>(adses <span class="keyword">as</span> ads)</span><br><span class="line">&#123;</span><br><span class="line">contents[] = ads_content(ads, <span class="number">1</span>);</span><br><span class="line">this-&gt;db-&gt;query(“INSERT INTOthis-&gt;stat_table(adsid,username,ip,referer,clicktime,type)VALUES (‘ads[adsid]<span class="string">','</span>_username<span class="string">','</span>ip<span class="string">',‘this-&gt;referrer'</span>,‘$time<span class="string">',,'</span><span class="number">0</span><span class="string">')”);</span></span><br><span class="line"><span class="string">template = ads['</span>template<span class="string">'] ? $ads['</span>template<span class="string">'] : '</span>ads<span class="string">';</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，这里的$this-&gt;referrer通过this方法直接将HTTP请求头中的referer字段插入到数据库中，没有做任何过滤措施。</p>
+<p>找到了漏洞的出处，接下来寻找包含漏洞的用户可控的页面。如果漏洞是用户不可控的，比如只能管理员利用，那就相对比较鸡肋了。</p>
+<p>通过回溯法找到，在页面<code>/ads/include/commom.inc.php</code>中调用了<code>ads_place.class.php</code> 。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">...</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads_place.class.php'</span>;</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads.class.php'</span>;</span><br><span class="line">...</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>继续回溯，发现在<code>/ads/ad.php</code> 中调用了<code>/ads/include/commom.inc.php</code>，ad.php文件为用户可控文件，但ad.php大多数情况下不能访问，因此继续向上查找。</p>
+<p>发现了<code>/data/js.php</code> ，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">chdir(&apos;../ads/&apos;);</span><br><span class="line">require &apos;./ad.php&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>在用户访问首页时，会调用js.php，通过该文件可以提交有害字段，然后通过逐层调用，因此我们可以传入字段referer到危险方法show中，引入SQL注入攻击</p>
+<p><img src="/2018/11/26/PHPCMS2008-SQL注入漏洞/phpcms1.png" alt="phpcms1"></p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>Tamper Data：它是火狐浏览器的一款插件，主要功能如下：</p>
+<p>可以用来查看和修改 HTTP/HTTPS 的头部和 POST 参数；<br>可以用来跟踪 HTTP 请求和响应<br>可以对 WEB 站点进行某些安全测试，用来调试 WEB 配置十分方便</p>
+<p>网址：<code>xxx/data/js.php?id=1</code></p>
+<p><u>点击Tamper之前，将下面选项中的对勾要取消掉，这样它就不会抓取下面的包了，否则它会不停的弹出抓包提醒。</u></p>
+<p>并没有找到referer 包，因此可以添加一个，并在内容里写入如下Payload：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">referer=1', (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> (<span class="keyword">select</span> <span class="keyword">count</span>(), <span class="keyword">concat</span>(<span class="keyword">floor</span>(<span class="keyword">rand</span>(<span class="number">0</span>)<span class="number">2</span>),<span class="built_in">char</span>(<span class="number">45</span>,<span class="number">45</span>,<span class="number">45</span>),(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">from</span> phpcms_member <span class="keyword">limit</span> <span class="number">1</span>))a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a)b), ‘<span class="number">0</span><span class="string">')#</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ul>
+<li>对相关字段进行过滤处理</li>
+<li>使用传参数方式进行数据库查询操作</li>
+<li>使用在线防护软件，如安全狗等</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-DedeCMS-5-7-反射型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1354,177 +1452,6 @@
 
 
   
-    <article id="post-web渗透测试入门之-你是会员吗" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/web渗透测试入门之-你是会员吗/">web渗透测试入门之-你是会员吗?</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/web渗透测试入门之-你是会员吗/" class="archive-article-date">
-  	<time datetime="2018-10-15T02:41:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>本题的目标是一个<strong>基于 XDCMS（目前官网貌似被黑）的订餐管理系统</strong>，XDCMS 是各大漏洞平台的常客，维护效率极低，基本过时淘汰，常用于渗透测试的练习靶机。</p>
-<p>以下的问题均源自于两个典型的漏洞利用。第 1 题由 SQL 注入漏洞可得到管理员的密码散列值，进而破解得到密码明文；第 2 题先将一句话木马插入图片中，再将图片马上传到服务器，最后利用文件包含漏洞，顺利地将<a href="http://www.zhongguocaidao.com/" target="_blank" rel="noopener">中国菜刀</a>与服务器连接，即可看到网站根目录下的 flag 文件。</p>
-<ul>
-<li>题目链接：<a href="https://www.ichunqiu.com/battalion?t=2&amp;r=54399" target="_blank" rel="noopener">https://www.ichunqiu.com/battalion?t=2&amp;r=54399</a></li>
-<li>解题链接：<a href="https://www.ichunqiu.com/vm/50679/1" target="_blank" rel="noopener">https://www.ichunqiu.com/vm/50679/1</a></li>
-</ul>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/1.png" alt="1"></p>
-<h1 id="0x01-获取目标网站管理员的密码"><a href="#0x01-获取目标网站管理员的密码" class="headerlink" title="0x01 获取目标网站管理员的密码"></a>0x01 获取目标网站管理员的密码</h1><p>从题目的暗示来看，应该与网站的会员注册有关。搜索一番后，发现了两个 SQL 注入漏洞均可获得管理员的账号密码，且都能在实验靶机上成功复现。</p>
-<h2 id="注册会员处的-SQL-注入"><a href="#注册会员处的-SQL-注入" class="headerlink" title="注册会员处的 SQL 注入"></a>注册会员处的 SQL 注入</h2><p>第一个漏洞是由于 <code>/system/modules/member/index.php</code> 中的注册函数 <code>register_save()</code> 过滤不严，可绕过限制造成 SQL 注入。漏洞原理在此没有深究，只是对该漏洞进行利用，详情可参考：</p>
-<blockquote>
-<p><a href="http://www.hack80.com/forum.php?mod=viewthread&amp;tid=22401" target="_blank" rel="noopener">xdcms注册用户处SQL注入漏洞</a></p>
-</blockquote>
-<p>接下来打开 Chrome 浏览器，进入默认首页，点击 <strong>免费注册</strong>，根据提示填写好对应信息：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/2.png" alt="2"></p>
-<p>下面要利用 <a href="https://portswigger.net/burp" target="_blank" rel="noopener">Burp Suite</a> 工具，准备对注册信息进行抓包改包。依次打开工具箱中的【抓包改包】-&gt;【Burp Suite】文件夹，双击【BurpLoader.jar】，弹出的所有提示框点击 <strong>确定</strong> 即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/3.png" alt="3"></p>
-<p>回到浏览器，设置局域网本地代理，依次点击 <strong>设置 -&gt; 更改代理服务器设置 -&gt; 连接 -&gt; 局域网设置</strong>，在 <strong>为 LAN 使用代理服务器</strong> 前打钩，在<strong>地址</strong>上填 <code>127.0.0.1</code>，在<strong>端口</strong>上填 <code>8080</code>，最后点击 <strong>确定</strong> 返回即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/4.png" alt="4"></p>
-<p>设置完毕后，回到注册页面，点击 <strong>注册</strong> 后，在 Burp Suite 上点击 <strong>Proxy -&gt; Intercept -&gt; Raw</strong> 选项卡，看到了成功抓取的注册数据包：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/5.png" alt="5"></p>
-<p>再依次点击 <strong>Action -&gt; Send to Repeater</strong>，便可在 <strong>Repeater</strong> 选项卡中看到刚才抓取的数据包，用于进行重放攻击：</p>
-<p>根据漏洞报告中的利用方法以及 payload：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/6.png" alt="6"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos; UNION SELECT 1,2,3,4,5,6,7,8,9,10,11,12,13,14 FROM (SELECT count(1),concat(round(rand(0)),(SELECT concat(username,0x23,password) FROM c_admin LIMIT 0,1))a FROM information_schema.tables GROUP by a)b#</span><br></pre></td></tr></table></figure>
-<p>将该 payload 插入请求数据的 <code>username</code> 参数中，点击 <strong>Go</strong>，在响应数据中即可看到报错信息中泄露的管理员账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/7.png" alt="7"></p>
-<p>当然也可直接在 <strong>Proxy</strong> 选项卡中插入 payload，点击 <strong>Forward</strong>，将抓取的数据包转发给服务器：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/8.png" alt="8"></p>
-<p>在浏览器的注册响应信息中同样能看到账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/9.png" alt="9"></p>
-<h2 id="会员资料修改处的-SQL-注入"><a href="#会员资料修改处的-SQL-注入" class="headerlink" title="会员资料修改处的 SQL 注入"></a>会员资料修改处的 SQL 注入</h2><p>第二个漏洞也是由于 <code>/system/modules/member/index.php</code> 中的编辑函数 <code>edit_save()</code> 过滤不严，可绕过限制造成 SQL 注入。同样地，此处不研究漏洞原理，只对该漏洞进行利用，详情可参考：</p>
-<blockquote>
-<p><a href="http://wooyun.jozxing.cc/static/bugs/wooyun-2013-043334.html" target="_blank" rel="noopener">xdcms通用型全版本注入漏洞</a></p>
-</blockquote>
-<p>利用刚刚注册好的 <strong>sql_injection</strong> 账户登录，准备对 <strong>资料管理 -&gt; 基本资料</strong> 中的 <strong>姓名</strong> 进行修改：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/10.png" alt="10"></p>
-<p>打开 Burp Suite 后，点击 <strong>更新</strong>，成功截取到更改请求数据包：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/11.png" alt="11"></p>
-<p>根据漏洞报告中的利用方法以及 payload：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%60%3D%28select%20group_concat%28username%2C0x3a%2Cpassword%29%20from%20c_admin%20where%20id%3D1%29%23</span><br></pre></td></tr></table></figure>
-<p>该 payload 经过 URL 解码后为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`=(select group_concat(username,0x3a,password) from c_admin where id=1)#</span><br></pre></td></tr></table></figure>
-<p>将该 payload 插入请求数据的 <code>field%5Btruename%5D</code>中，<strong>注意是要将经过 URL 编码后 payload 插入到 truename 与 %5D 之间</strong>，否则漏洞利用失败。接着点击 <strong>Forward</strong>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/12.png" alt="12"></p>
-<p>资料更新成功后，在 <strong>基本资料</strong> 中可看到在 <strong>姓名</strong> 处成功泄露了管理员的账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/13.png" alt="13"></p>
-<p>最终得到管理员账号为 <code>xdcms121</code>，密码为 <code>1be20cb2907edca1e4f55f375a5663f1</code>，从摘要长度猜测此为 MD5 哈希算法，用 <a href="http://www.dmd5.com/md5-decrypter.jsp" target="_blank" rel="noopener">MD5解密工具</a> 得到结果 <code>e890790166bfb88ee91047c64cda7aad</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/14.png" alt="14"></p>
-<p>看来思路没错，再对其进行一次解密，终于得到密码明文 <code>xdcms212</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/15.png" alt="15"></p>
-<p>接下来成功渗透后，即可看到 <code>/system/modules/member/index.php</code> 中 <code>register_save()</code> 函数处理密码明文的哈希算法源码，确实是对密码明文进行了连续两次的 MD5 哈希计算：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/16.png" alt="16"></p>
-<h1 id="0x02-获取目标网站目录中的-flag-文件信息"><a href="#0x02-获取目标网站目录中的-flag-文件信息" class="headerlink" title="0x02 获取目标网站目录中的 flag 文件信息"></a>0x02 获取目标网站目录中的 flag 文件信息</h1><p>打开工具箱【目录扫描】文件夹下的【御剑后台扫描工具】，对目标 URL 进行扫描：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/17.png" alt="17"></p>
-<p>可轻松得到并成功验证后台登录页面 <code>/admin/index.php</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/18.png" alt="18"></p>
-<p>用账号 <code>xdcms121</code> 与密码 <code>xdcms212</code> 登录后台后，根据实验手册提示，要用菜刀与服务器连接，并在网站目录中获取 flag 文件信息。我们接着搜索可利用的漏洞，发现 <code>/system/function/global.inc.php</code> 存在文件包含漏洞。根据漏洞说明，我们可将一句话木马插入图片中，再将图片马上传到服务器，利用 URL 查询字符串的 <code>m</code> 参数指向图片马的路径，最终触发文件包含漏洞，等待菜刀连接。该漏洞详情可参考：</p>
-<blockquote>
-<p><a href="http://www.fr1sh.com/wooyun_1/bug_detail.php?wybug_id=wooyun-2013-043382" target="_blank" rel="noopener">XDcms控制器绕过漏洞（可本地包含）</a></p>
-</blockquote>
-<p>因此，首先来制作图片马。任意找到一张图片 <code>logo.jpg</code>（此处以 XDCMS 的 logo 为例），新建含有一句话木马的文本文档 <code>trojan.txt</code>，在命令行模式下用 <a href="https://baike.baidu.com/item/copy/10465712" target="_blank" rel="noopener"><code>copy</code></a> 命令合并两个文件：</p>
-<blockquote>
-<p>在 Windows 命令行下输入 <code>help copy</code>，即可看到 <code>copy</code> 命令的使用说明</p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/19.png" alt="19"></p>
-<p>用 【Notepad++】查看图片马 <code>result.jpg</code>，发现图片末尾确实已插入了一句话木马：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/20.png" alt="20"></p>
-<p>所以即使不用 <code>copy</code> 命令，直接将木马粘贴在图片末尾也是可以的，此处就不演示了。</p>
-<p>回到后台管理界面，依次点击 <strong>模块管理 -&gt; 幻灯片管理 -&gt; 添加幻灯</strong>，发现此处能够上传图片，在 <strong>名称</strong> 处填上任意字符（此处以 <code>upload trojan</code> 为例），在 <strong>链接地址</strong> 处填上 <code>http://www.test.ichunqiu</code>（不知能否填任意地址，保险起见此处填入相关地址），接着点击 <strong>上传</strong>，选择图片马 <code>result.jpg</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/21.png" alt="21"></p>
-<p>再次点击 <strong>上传</strong> 后，发现 <strong>图片</strong> 一栏仍为空，需要<strong>手动填写图片马的绝对地址</strong>（这里真心想吐槽这个不合理的设计=_=!!!），填写完点击 <strong>保存</strong> 即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/22.png" alt="22"></p>
-<p>在 <strong>幻灯片管理</strong> 页面没显示图片马在服务器上的地址？点击 <strong>编辑</strong> 亦是如此：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/23.png" alt="23"></p>
-<p>这个点也是本题的一大坑，大家也许注意到了，既然 <strong>图片</strong> 一栏要手动填写地址，那前面还需要点击 <strong>上传</strong> 来选择图片马吗？其实这是为了用 Burp Suite 抓取数据包，获得图片马在服务器上的地址。</p>
-<p>如果刚刚忘记打开 Burp Suite，现在请打开，并设置好浏览器的局域网本地代理，严格按照上述的上传步骤重新将图片马上传。成功上传后，可在 <strong>Proxy -&gt; History</strong> 中点击相应记录，并在 <strong>Response -&gt; Raw</strong> 中看到图片马的地址为 <code>/uploadfile/image/20180309/201803090113470.jpg</code>：</p>
-<blockquote>
-<p>小贴士：在上传图片马的步骤中，在 <strong>Proxy -&gt; Intercept</strong> 中点击关闭截取功能，操作起来更加顺畅。当显示 <code>Intercept is off</code> 表示已关闭截取功能。</p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/24.png" alt="24"></p>
-<p>由于 <code>/uploadfile/</code> 在网站根目录下，而根据漏洞说明中的源码，可知参数 <code>m</code>是在 <code>/system/function/global.inc.php</code> 文件中被引用，文件包含的关键语句如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include MOD_PATH.$m.&quot;/&quot;.$c.&quot;.php&quot;; //调用类</span><br></pre></td></tr></table></figure>
-<p>因此使用菜刀 <strong>添加SHELL</strong> 时，赋值给 <code>m</code> 的图片马路径需要先从 <code>MOD_PATH</code> 返回根目录，拟在前面添加 <code>../../</code>，猜测向上返回两级目录后可到达根目录，若猜测正确即能指向图片马的路径：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/25.png" alt="25"></p>
-<p>接下来尝试连接服务器，结果得到报错信息：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/26.png" alt="26"></p>
-<p>原因是参数 <code>m</code> 被引用到源码后，后面还连了一段字符串，该字符串默认情况下是 <code>/index.php</code>，在漏洞说明的源码中可得到验证。所以可在参数 <code>m</code> 末尾加入空字符 <code>%00</code>，对源码中的 <code>include</code> 语句进行截断。详情可参考：</p>
-<blockquote>
-<p><a href="http://www.jinglingshu.org/?p=1339" target="_blank" rel="noopener">文件上传之\00截断与文件包含之%00截断 文件包含漏洞详解</a></p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/27.png" alt="27"></p>
-<p>如无意外，成功地连接上服务器，并在根目录下看到 flag 文件 <code>flag9szsed-fdzvc4-1l3iza.txt</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/28.png" alt="28"></p>
-<p>打开 flag 文件即可获得 <code>key{7h7hii9a}</code>，大功告成，因此第 2 题答案就是 <code>7h7hii9a</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/29.png" alt="29"></p>
-<h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>获得 webshell 后，除了查看 flag 文件，还能查看所有后台文件的源码，包括上述的 MD5 哈希算法，以及在 <code>/system/common.inc.php</code> 与 <code>/system/function/global.inc.php</code> 中进一步验证了参数 <code>m</code> 的值是跟在 <code>/system/modules/</code> 后面的，所以，需要向上返回两级目录的猜测是正确的：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/30.png" alt="30"></p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/31.png" alt="31"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/web渗透测试入门之-你是会员吗/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1636,15 +1563,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">

