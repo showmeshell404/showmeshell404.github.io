@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
 <meta property="og:description" content="OrientDB远程代码执行漏洞通过Metasploit-Framework对OrientDB 2.2.2 &amp;lt; 2.2.22进行渗透并远程执行命令 0x0:扫描目标端口是否开放由于Orientdb默认服务端口为2480，所以输入nmap -sS -Pn 172.16.12.2 -p 2480，扫描得到该地址的此端口开放情况。 0x1:导入metasploit模块。在用metasploit找不">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png">
-<meta property="og:updated_time" content="2018-12-07T05:06:37.764Z">
+<meta property="og:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/1.png">
+<meta property="og:updated_time" content="2018-12-07T05:08:59.285Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OrientDB远程代码执行漏洞">
 <meta name="twitter:description" content="OrientDB远程代码执行漏洞通过Metasploit-Framework对OrientDB 2.2.2 &amp;lt; 2.2.22进行渗透并远程执行命令 0x0:扫描目标端口是否开放由于Orientdb默认服务端口为2480，所以输入nmap -sS -Pn 172.16.12.2 -p 2480，扫描得到该地址的此端口开放情况。 0x1:导入metasploit模块。在用metasploit找不">
-<meta name="twitter:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png">
+<meta name="twitter:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -196,7 +196,7 @@
 <p>我们控制的电脑可以访问数据库服务器以及Web服务器。</p>
 <p>而数据库服务器能与Web服务器互相通信。</p>
 <p>如下图所示：</p>
-<p><img src="/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png" alt="1"></p>
+<p><img src="/2018/12/07/OrientDB远程代码执行漏洞/1.png" alt="1"></p>
 <p>所以可以使用<code>Dirbuster</code>对该网站进行扫描操作。</p>
 <p>（使用<code>whereis</code>定位软件的目录，找到自带的字典进行爆破目录。扫描可以得到几个重要的页面，分别是<code>reg.php</code>、<code>login.php</code>、<code>upload.php</code>、<code>index.php</code>。）</p>
 <p>访问<code>upload.php</code>提示需要登陆。</p>
