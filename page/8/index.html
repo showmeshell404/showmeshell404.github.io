@@ -150,6 +150,126 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-如何防止软件被别人逆向" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/06/如何防止软件被别人逆向/">如何防止软件被别人逆向</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/06/如何防止软件被别人逆向/" class="archive-article-date">
+  	<time datetime="2018-06-06T14:35:18.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在开发的时候调试技术为我们能带来便利，但是软件发布之后不想被拿去分析，比如一些涉及到金钱利益相关的软件和游戏（外挂），看了些书，了解了一些防逆向的技术，稍做总结。</p>
+<h2 id="1-反调试技术"><a href="#1-反调试技术" class="headerlink" title="1.反调试技术"></a>1.反调试技术</h2><h3 id="1-IsDebuggerPresent"><a href="#1-IsDebuggerPresent" class="headerlink" title="1.IsDebuggerPresent"></a>1.IsDebuggerPresent</h3><p><strong>IsDebuggerPresent</strong> ：</p>
+<p>Determines whether the calling process is being debugged by a user-mode debugger.</p>
+<p>一种能够检测是否挂载了调试器的 API 函数，通过返回值是否为 0 可以判断调试器的挂载状态。</p>
+<p><a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms680345%28v=vs.85%29.aspx" target="_blank" rel="noopener">具体见MASN文档</a></p>
+<p>可以通过简单的小程序说明一下。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(IsDebuggerPresent())&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"on debugger\n"</span>);<span class="comment">//在调试器上运行！</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"not on debugger\n"</span>);<span class="comment">// 在调试器上不运行</span></span><br><span class="line">    &#125;</span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>如何用</strong>：开发时用 ifdef 或者注释来暂时禁用 IsDebuggerPresent 的调用，在发布版上再启用，在检测到调试器时改变程序的逻辑。</p>
+<p>类似的还有一些API函数，比如</p>
+<h3 id="2-CheckRemoteDebuggerPresent"><a href="#2-CheckRemoteDebuggerPresent" class="headerlink" title="2.CheckRemoteDebuggerPresent"></a>2.CheckRemoteDebuggerPresent</h3><p><strong>CheckRemoteDebuggerPresent</strong>：</p>
+<p>Determines whether the specified process is being debugged.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">BOOL WINAPI <span class="title">CheckRemoteDebuggerPresent</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">  _In_    HANDLE hProcess,</span></span></span><br><span class="line"><span class="function"><span class="params">  _Inout_ PBOOL  pbDebuggerPresent</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="3-popf和SINGLE-STEP异常"><a href="#3-popf和SINGLE-STEP异常" class="headerlink" title="3.popf和SINGLE_STEP异常"></a>3.popf和SINGLE_STEP异常</h3><p>利用 popf 和 SINGLE_STEP 异常来检测调试器的方法。当返回值为 0 时为正常，为 1 则表示挂载了调试器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">__declspec(naked) int __stdcall antidebugger1(void)</span><br><span class="line">&#123;</span><br><span class="line">    __asm&#123;</span><br><span class="line">        pushad</span><br><span class="line">        push ok</span><br><span class="line">        push dword ptr fs:[0]</span><br><span class="line">        mov dword ptr fs:[0], esp</span><br><span class="line">        mov buff, esp</span><br><span class="line">        push 100h      ;用push将100h入栈</span><br><span class="line">        popf           ;用pop将100h取出至标志</span><br><span class="line">        jmp error</span><br><span class="line">ok:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        ret</span><br><span class="line">error:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        inc eax</span><br><span class="line">        ret</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-int-2dh"><a href="#4-int-2dh" class="headerlink" title="4.int 2dh"></a>4.int 2dh</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">__declspec(naked) int __stdcall antidebugger2(void)</span><br><span class="line">&#123;</span><br><span class="line">    __asm&#123;</span><br><span class="line">        pushad</span><br><span class="line">        push ok</span><br><span class="line">        push dword ptr fs:[0]</span><br><span class="line">        mov dword ptr fs:[0], esp</span><br><span class="line">        mov buff, esp</span><br><span class="line">        xor eax, eax</span><br><span class="line">        int 2dh         ;执行int 2dh</span><br><span class="line">        jmp error</span><br><span class="line">ok:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        ret</span><br><span class="line">error:</span><br><span class="line">        mov esp, buff</span><br><span class="line">        pop dword ptr fs:[0]</span><br><span class="line">        add esp, 4</span><br><span class="line">        popad</span><br><span class="line">        xor eax, eax</span><br><span class="line">        inc eax</span><br><span class="line">        ret</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回 0 为正常，返回 1 表示挂载了调试器。</p>
+<p>以后慢慢添加一些反调试技术。popf和int2d的原理，google：“anti- debug popf”和“anti-debug int2d”</p>
+<h2 id="2-通过代码混淆防止分析"><a href="#2-通过代码混淆防止分析" class="headerlink" title="2.通过代码混淆防止分析"></a>2.通过代码混淆防止分析</h2><p>反调试技术使用方便，但如果用IDA这种静态分析，找到检测调试器的逻辑，最直接明了的就是查看调用这些API函数的地方，从而破解。</p>
+<p>举个栗子:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">00401000 main proc near</span><br><span class="line">00401000   call  ds:__imp__IsDebuggerPresent@0 改写</span><br><span class="line">00401006   test  eax, eax</span><br><span class="line">00401008   jz    short loc_401021</span><br><span class="line">0040100A   push  offset aOnDebugger ; &quot;on debugger\n&quot;</span><br><span class="line">0040100F   call  ds:__imp__printf</span><br><span class="line">00401015   add   esp, 4</span><br><span class="line">00401018   call  ds:__imp__getchar</span><br><span class="line">0040101E   xor   eax, eax</span><br><span class="line">00401020   retn</span><br><span class="line">00401021 loc_401021:</span><br><span class="line">00401021   push  offset aNotOnDebugger ; &quot;not on debugger\n&quot;</span><br><span class="line">00401026   call  ds:__imp__printf</span><br><span class="line">0040102C   add   esp, 4</span><br><span class="line">0040102F   call  ds:__imp__getchar</span><br><span class="line">00401035   xor   eax, eax</span><br><span class="line">00401037   retn</span><br></pre></td></tr></table></figure>
+<p>轻易找到API函数位置，容易分析，从而破解掉。</p>
+<h3 id="1-代码混淆"><a href="#1-代码混淆" class="headerlink" title="1.代码混淆"></a>1.代码混淆</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">00401000                   main proc near</span><br><span class="line">00401000 FF 15 00 20 40 00   call  ds:__imp__IsDebuggerPresent@0</span><br><span class="line">00401006 85 C0               test  eax, eax</span><br><span class="line">00401008 74 17               jz    short loc_401021</span><br></pre></td></tr></table></figure>
+<p><strong>IsDebuggerPresent</strong>:调用的地方，机器码：<code>FF 15 00 20 40 00 85 C0 74 17</code></p>
+<p>现在增加EB——&gt;<code>EB FF 15 00 20 40 00 85 C0 74 17</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00401000                main:</span><br><span class="line">00401000 EB FF            jmp   short near ptr main+1</span><br><span class="line">00401002 15 00 20 40 00   adc   eax, offset __imp__</span><br><span class="line">IsDebuggerPresent@0</span><br><span class="line">00401007 85 C0            test  eax, eax</span><br><span class="line">00401009 74 17            jz    short loc_401022</span><br></pre></td></tr></table></figure>
+<p>在IDA中看到的就是上面的代码：call指令消失变成jmp adc test jz。然而机器语言的实际功能没有变化，因为<code>EB FF</code> 相当于向前跳转了一个字节，即<code>00401001</code></p>
+<p><strong>关键</strong>：在于 <code>00401001</code>处的 FF，它可以当作前面 jmp 指令的一部分，也可以当作后面 call 指令的一部分。而 IDA 会从前往后按顺序进行反汇编，因此显示出的代码可能会和实际执行的代码不同。这就是所谓混淆。书里有个链接还不错，可以瞅瞅。</p>
+<p><a href="http://www.cs.arizona.edu/solar/papers/CCS2003.pdf" target="_blank" rel="noopener">混淆可执行代码以提高对静态反汇编的抵抗力</a>:</p>
+<h2 id="3-可执行文件压缩"><a href="#3-可执行文件压缩" class="headerlink" title="3.可执行文件压缩"></a>3.可执行文件压缩</h2><p>打包器（我们俗称壳）：packer，市场有很多，比如UPX，ASPack，VM等</p>
+<p>UPX开源支持ELF，DLL，COFF等多种可执行文件格式。</p>
+<p><a href="http://upx.sourceforge.net" target="_blank" rel="noopener">UPX</a>:<br><a href="http://www.aspack.com" target="_blank" rel="noopener">ASPack:</a></p>
+<h3 id="1-压缩"><a href="#1-压缩" class="headerlink" title="1.压缩"></a>1.压缩</h3><p><strong>压缩壳</strong>：将原本可执行文件中的代码和数据进行压缩，然后将解压缩用的代码附加在前面，运行的时候先将原本的可执行数据解压缩出来，然后再运行解压缩后的数据。</p>
+<p><strong>尝试分析：</strong></p>
+<p>调用 IsDebuggerPresent 检测调试器是否存在。然后，如果向程序传递的参数为 xxxxxxxxx 这个字符串，则显示 correct!，否则显示 auth error。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Windows.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(argc &lt; <span class="number">2</span>)&#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"$packed.exe &lt;password&gt;\n"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(IsDebuggerPresent())&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">"on debugger\n"</span>);<span class="comment">// 在调试器上运行</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;<span class="comment">// 在调试器上不运行  </span></span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">strcmp</span>(argv[<span class="number">1</span>], <span class="string">"xxxxxxxxx"</span>) == <span class="number">0</span>)&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"correct!\n"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">"auth error\n"</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    getchar();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>IDA编译:得到packed.exe</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">00401000 main   proc near</span><br><span class="line">00401000 arg_0  = dword ptr  8</span><br><span class="line">00401000 arg_4  = dword ptr  0Ch</span><br><span class="line">00401000        push    ebp</span><br><span class="line">00401001        mov     ebp, esp</span><br><span class="line">00401003        cmp     [ebp+arg_0], 2</span><br><span class="line">00401007        jge     short loc_401028</span><br><span class="line">00401009        push    offset &quot;$packed.exe &lt;password&gt;\n&quot;</span><br><span class="line">0040100E        call    ds:__imp____iob_func</span><br><span class="line">00401014        add     eax, 40h</span><br><span class="line">00401017        push    eax    ; FILE *</span><br><span class="line">00401018        call    ds:__imp__fprintf</span><br><span class="line">0040101E        add     esp, 8</span><br><span class="line">00401021        mov     eax, 1</span><br><span class="line">00401026        pop     ebp</span><br><span class="line">00401027        retn</span><br><span class="line">00401028 loc_401028:</span><br><span class="line">00401028        call    ds:__imp__IsDebuggerPresent@0</span><br><span class="line">0040102E        test    eax, eax</span><br><span class="line">00401030        jz      short loc_401045</span><br><span class="line">00401032        push    offset aOnDebugger ; &quot;on debugger\n&quot;</span><br><span class="line">00401037        call    ds:__imp__printf</span><br><span class="line">0040103D        add     esp, 4</span><br><span class="line">00401040        or      eax, 0FFFFFFFFh</span><br><span class="line">00401043        pop     ebp</span><br><span class="line">00401044        retn</span><br><span class="line">00401045 loc_401045:</span><br><span class="line">00401045        mov     eax, [ebp+arg_4]</span><br><span class="line">00401048        mov     eax, [eax+4]</span><br><span class="line">0040104B        mov     ecx, offset aXxxxxxxx ; &quot;xxxxxxxx&quot;</span><br><span class="line">00401050 loc_401050:</span><br><span class="line">00401050        mov     dl, [eax]</span><br><span class="line">00401052        cmp     dl, [ecx]</span><br><span class="line">00401054        jnz     short loc_401070</span><br><span class="line">00401056        test    dl, dl</span><br><span class="line">00401058        jz      short loc_40106C</span><br><span class="line">0040105A        mov     dl, [eax+1]</span><br><span class="line">0040105D        cmp     dl, [ecx+1]</span><br><span class="line">00401060        jnz     short loc_401070</span><br><span class="line">00401062        add     eax, 2</span><br><span class="line">00401065        add     ecx, 2</span><br><span class="line">00401068        test    dl, dl</span><br><span class="line">0040106A        jnz     short loc_401050</span><br><span class="line">0040106C loc_40106C:</span><br><span class="line">0040106C        xor     eax, eax</span><br><span class="line">0040106E        jmp     short loc_401075</span><br><span class="line">00401070 loc_401070:</span><br><span class="line">00401070        sbb     eax, eax</span><br><span class="line">00401072        sbb     eax, 0FFFFFFFFh</span><br><span class="line">00401075 loc_401075:</span><br><span class="line">00401075        test    eax, eax</span><br><span class="line">00401077        jnz     short loc_401091</span><br><span class="line">00401079        push    offset aCorrect ; &quot;correct!\n&quot;</span><br><span class="line">0040107E        call    ds:__imp__printf</span><br><span class="line">00401084        add     esp, 4</span><br><span class="line">00401087        call    ds:__imp__getchar</span><br><span class="line">0040108D        xor     eax, eax</span><br><span class="line">0040108F        pop     ebp</span><br><span class="line">00401090        retn</span><br><span class="line">00401091 loc_401091:</span><br><span class="line">00401091        push    offset aAuthError ; &quot;auth error\n&quot;</span><br><span class="line">00401096        call    ds:__imp__printf</span><br><span class="line">0040109C        add     esp, 4</span><br><span class="line">0040109F        or      eax, 0FFFFFFFFh</span><br><span class="line">004010A2        pop     ebp</span><br><span class="line">004010A3        retn</span><br></pre></td></tr></table></figure>
+<p>程序逻辑和流程，还是用于对比参数的字符串，以及输出的内容,相比源程序还是很好分析的。</p>
+<h3 id="2-UPX加壳"><a href="#2-UPX加壳" class="headerlink" title="2.UPX加壳"></a>2.UPX加壳</h3><p><code>upx.exe packed.exe</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">        File size         Ratio      Format      Name</span><br><span class="line">   --------------------   ------   -----------   -----------</span><br><span class="line">      7168 -&gt;      5120   71.43%    win32/pe     packed.exe</span><br><span class="line">Packed 1 file.</span><br></pre></td></tr></table></figure>
+<p>IDA打开后流程变得复杂，二进制编辑器打开可执行文件，也找不到correct，auth，error等字符串。</p>
+<p><img src="/2018/06/06/如何防止软件被别人逆向/IDA-1.png" alt="IDA-1"></p>
+<h3 id="3-UPX脱壳"><a href="#3-UPX脱壳" class="headerlink" title="3.UPX脱壳"></a>3.UPX脱壳</h3><p>upx壳直接-d就可以解包，也可以手工脱。</p>
+<p><code>upx.exe -d packed.exe</code></p>
+<p>手工脱壳就不说了，教程蛮多。</p>
+<p>溜了溜了，先从最基础的来，以后再慢慢添加，弄点深层次的~</p>
+<p>两个正经写博客的程序猿：)  </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">reverse</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/06/如何防止软件被别人逆向/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Acid-Turn" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -493,15 +613,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">

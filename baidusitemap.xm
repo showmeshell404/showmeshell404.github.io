@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/12/07/OrientDB%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/</loc>
+    <lastmod>2018-12-07T05:06:37.764Z</lastmod>
+    <data>
+        <display>
+        <title>OrientDB远程代码执行漏洞</title>
+        <pubTime>2018-12-07T05:05:58.000Z</pubTime>
+        
+        <tag>Web</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/12/05/SQlmap/</loc>
     <lastmod>2018-12-05T05:04:26.363Z</lastmod>
     <data>

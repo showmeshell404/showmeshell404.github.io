@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://showmeshell.top">
-  <title>IDA与Dex持续更新 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
+  <title>OrientDB远程代码执行漏洞 | Esther-Cheung And ShowMeShell&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
-<meta name="keywords" content="Android">
+  <meta name="description" content="OrientDB远程代码执行漏洞通过Metasploit-Framework对OrientDB 2.2.2 &amp;lt; 2.2.22进行渗透并远程执行命令 0x0:扫描目标端口是否开放由于Orientdb默认服务端口为2480，所以输入nmap -sS -Pn 172.16.12.2 -p 2480，扫描得到该地址的此端口开放情况。 0x1:导入metasploit模块。在用metasploit找不">
+<meta name="keywords" content="Web">
 <meta property="og:type" content="article">
-<meta property="og:title" content="IDA与Dex持续更新">
-<meta property="og:url" content="http://showmeshell.top/2018/08/19/IDA与Dex持续更新/index.html">
+<meta property="og:title" content="OrientDB远程代码执行漏洞">
+<meta property="og:url" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/index.html">
 <meta property="og:site_name" content="Esther-Cheung And ShowMeShell&#39;s Blog">
-<meta property="og:description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
+<meta property="og:description" content="OrientDB远程代码执行漏洞通过Metasploit-Framework对OrientDB 2.2.2 &amp;lt; 2.2.22进行渗透并远程执行命令 0x0:扫描目标端口是否开放由于Orientdb默认服务端口为2480，所以输入nmap -sS -Pn 172.16.12.2 -p 2480，扫描得到该地址的此端口开放情况。 0x1:导入metasploit模块。在用metasploit找不">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-19T12:58:27.593Z">
+<meta property="og:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png">
+<meta property="og:updated_time" content="2018-12-07T05:06:37.764Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="IDA与Dex持续更新">
-<meta name="twitter:description" content="IDA与DEX dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示 “Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择">
+<meta name="twitter:title" content="OrientDB远程代码执行漏洞">
+<meta name="twitter:description" content="OrientDB远程代码执行漏洞通过Metasploit-Framework对OrientDB 2.2.2 &amp;lt; 2.2.22进行渗透并远程执行命令 0x0:扫描目标端口是否开放由于Orientdb默认服务端口为2480，所以输入nmap -sS -Pn 172.16.12.2 -p 2480，扫描得到该地址的此端口开放情况。 0x1:导入metasploit模块。在用metasploit找不">
+<meta name="twitter:image" content="http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Esther-Cheung And ShowMeShell&#39;s Blog" type="application/atom+xml">
   
@@ -149,47 +151,90 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-IDA与Dex持续更新" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-OrientDB远程代码执行漏洞" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      IDA与Dex持续更新
+      OrientDB远程代码执行漏洞
     </h1>
   
 
         
-        <a href="/2018/08/19/IDA与Dex持续更新/" class="archive-article-date">
-  	<time datetime="2018-08-19T12:57:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+        <a href="/2018/12/07/OrientDB远程代码执行漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-07T05:05:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-07</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="IDA与DEX"><a href="#IDA与DEX" class="headerlink" title="IDA与DEX"></a>IDA与DEX</h2><ul>
-<li>dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。</li>
-<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示</li>
-<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择段跳转</li>
-<li>dex文件中所有方法可以点击Exports选项卡查看<ul>
-<li>方法的命名规则为<em>类名. 方法名@ 方法声明</em></li>
-</ul>
-</li>
-<li>IDA Pro的反汇编代码使用ref关键字来表示非Java标准类型的引用<ul>
-<li><code>CODE:0002CFC4   invoke-super    {this, c}, &lt;ref ResourceCursorAdapter.swapCursor(ref) imp. @ _def_ResourceCursorAdapter_swapCursor@LL&gt;</code><ul>
-<li>前面的ref是swapCursor()方法的返回类型，后面括号中的ref是参数类型</li>
-<li>IDA Pro能智能识别Android SDK的API函数并使用imp关键字标识出来<ul>
-<li>imp表明该方法为Android SDK中的API，@后面的部分为API的声明，类名与方法名之间使用下划线分隔</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>两种程序退出方法：<strong>Context的finish()方法与android.os.Process的killProcess()方法</strong></li>
-</ul>
+        <h3 id="OrientDB远程代码执行漏洞"><a href="#OrientDB远程代码执行漏洞" class="headerlink" title="OrientDB远程代码执行漏洞"></a>OrientDB远程代码执行漏洞</h3><p><strong>通过Metasploit-Framework对OrientDB 2.2.2 &lt; 2.2.22进行渗透并远程执行命令</strong></p>
+<h4 id="0x0-扫描目标端口是否开放"><a href="#0x0-扫描目标端口是否开放" class="headerlink" title="0x0:扫描目标端口是否开放"></a>0x0:扫描目标端口是否开放</h4><p>由于Orientdb默认服务端口为2480，所以输入<code>nmap -sS -Pn 172.16.12.2 -p 2480</code>，扫描得到该地址的此端口开放情况。</p>
+<h4 id="0x1-导入metasploit模块。"><a href="#0x1-导入metasploit模块。" class="headerlink" title="0x1:导入metasploit模块。"></a>0x1:导入metasploit模块。</h4><p>在用metasploit找不到可用漏洞的模块情况下，可以在<code>https://www.exploit-db.com/</code>上搜索并保存。 </p>
+<p>然后在<code>/root/.msf4/modules/exploits/</code>目录下新建一个自定义目录，并在该目录下存放你的msf模块。</p>
+<p>新建<code>/root/.msf4/modules/exploits/orientdb</code>,并在该目录下存放orientdb_exec.rb模块。</p>
+<h4 id="0x2-使用Metasploit-Framework进行渗透测试"><a href="#0x2-使用Metasploit-Framework进行渗透测试" class="headerlink" title="0x2:使用Metasploit-Framework进行渗透测试"></a>0x2:使用Metasploit-Framework进行渗透测试</h4><p>命令<code>msfconsole</code>打开Metasploit-Framework。</p>
+<p>接下来使用以下命令选择orientdb_exec插件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use exploits/orientdb/orientdb_exec</span><br></pre></td></tr></table></figure>
+<p>设置Options</p>
+<p>然后设置Payload为<code>Linux/x86/meterpreter/reverse_tcp</code>,而且设置LHOST为本机IP地址。</p>
+<p>插件以及<code>Payload</code>配置完成之后，就可以使用<code>run</code>或者<code>exploit</code>对目标机进行渗透测试。</p>
+<p>渗透测试成功之后，将会反弹一个meterpreter的Metasploit-Framework专属shell回来。</p>
+<p>如果第一次执行之后返回的shell没有用，那么再执行一次即可。</p>
+<p>至此，已经成功完成了对OrientDB的渗透测试，获取到了OrientDB目标服务器的权限并能远程执行命令。</p>
+<h4 id="0x03-通过Orient-DB的权限进行横向渗透"><a href="#0x03-通过Orient-DB的权限进行横向渗透" class="headerlink" title="0x03:通过Orient DB的权限进行横向渗透"></a>0x03:通过Orient DB的权限进行横向渗透</h4><p><strong>首先进行必要的前期信息收集。</strong></p>
+<p>使用<code>pwd</code>命令查看当前目录。使用<code>ps -aux</code>命令查看运行的进程，分析进程可以得到该服务器正在运行的其他隐藏服务。使用<code>netstat -an</code>查看端口使用情况。</p>
+<p>分析端口使用情况可以发现与本服务器正在通信的其他服务器以及通信端口代表的应用。例如445端口一般就是Windows共享。</p>
+<p>在这里，<strong>发现OrientDB监听的2424端被远程地址<code>172.16.12.3</code>连接着的。</strong></p>
+<p>使用Nmap扫描<code>172.16.12.3</code>，发现<code>172.16.12.3</code>开放80端口。</p>
+<p>访问<code>http://172.16.12.3/index.php</code>之后，得到一个Web界面。</p>
+<p>确定<code>172.16.12.3</code>是一个Web应用端。</p>
+<p>这时候，已经能够简约的画出网络拓扑图。</p>
+<p>我们控制的电脑可以访问数据库服务器以及Web服务器。</p>
+<p>而数据库服务器能与Web服务器互相通信。</p>
+<p>如下图所示：</p>
+<p><img src="/2018/12/07/OrientDB远程代码执行漏洞/home/showmeshell/Desktop/1.png" alt="1"></p>
+<p>所以可以使用<code>Dirbuster</code>对该网站进行扫描操作。</p>
+<p>（使用<code>whereis</code>定位软件的目录，找到自带的字典进行爆破目录。扫描可以得到几个重要的页面，分别是<code>reg.php</code>、<code>login.php</code>、<code>upload.php</code>、<code>index.php</code>。）</p>
+<p>访问<code>upload.php</code>提示需要登陆。</p>
+<p>先大体使用一下可用的功能，看一下网站逻辑。</p>
+<p>通过分析，我们可以理出思路，先通过访问<code>reg.php</code>注册一个新用户，登陆后通过上传界面上传WebShell。</p>
+<p>所以我们注册一个用户并且登陆，但是登陆之后访问上传界面提示普通用户权限过低，看来我们必须以管理员登陆才能访问上传界面。</p>
+<p>但是该界面不存在SQL注入、XSS、CSRF等漏洞。</p>
+<p><strong>这种情况该怎么拿到管理员权限呢？</strong></p>
+<p>由于Web服务器<code>172.16.12.3</code>连接了OrientDB，所以它应该是通过OrientDB进行认证的。</p>
+<p>那么我们有了一个思路，就是直接去OrientDB查看管理员账号密码，便可以直接登陆。</p>
+<p>找到OrientDB的配置文件，配置文件是OrientDB根目录下<code>config/orientdb-server-config.xml</code>。</p>
+<p>通过查看你根目录下的配置文件，可以得到数据库账号与密码。</p>
+<p>便可以通过2480端口访问并登陆管理数据库了。</p>
+<p>访问<code>http://172.16.12.2:2480/</code>，便可以看到数据库管理平台，登陆后，在SCHEMA里能看到有admin与user类。</p>
+<p>我们需要管理员权限，所以查看admin类里面的对象，发现密码是加密后存储的。</p>
+<p>没办法拿到明文。</p>
+<p>但是由于可以注册新用户，<code>http://172.16.12.3/reg.php</code>,那么我们通过 <strong>注册的新用户的密码</strong> 去替换 <strong>管理员的密码</strong> 。</p>
+<p>那么管理员的密码也变成了 <strong>自己注册用户的密码</strong> 了。</p>
+<p>我们就可以以管理员的账户登陆了。</p>
+<p>或者使用第二种方法，我们可以直接在数据库新建管理员对象，直接把之前 <strong>注册的账户的密码</strong> 复制后输入在密码字段。</p>
+<p>也就可以使用自己创建的新的管理员成功登陆。</p>
+<p>成功以管理员权限登陆Web后，发现新增了一个上传文件的权限。</p>
+<p>那么我们上传一个WebShell试试。</p>
+<p>测试发现该PHP对文件类型做了限制。</p>
+<p>我们可以通过Burp抓包修改PHP文件类型为JPEG类型（image/jpeg）。</p>
+<p>便可以绕过上传，成功拿到Webshell。</p>
+<p>访问界面的时候就可以被<code>burpsuite</code>拦截了，我们可以通过Proxy的Intercept功能修改数据包，也可以使用快捷键<code>Crtl R</code>将数据包发送到Repeter，然后在Repeter修改并发送。</p>
+<p>通过修改上传文件的类型进行绕过后端的认证。</p>
+<p>成功得到可用的Webshell。</p>
+<p>到此横向渗透成功。</p>
+<h4 id="0x04-总结"><a href="#0x04-总结" class="headerlink" title="0x04.总结"></a>0x04.总结</h4><p>使用oRole来读取权限来允许用户显示用户的权限以及与oRole权限相关联的其他查询本身并没有错，只是在此时，查询语句中包含where、fetchplan和ORDER BY语句，则不需要此权限的要求和信息。</p>
+<p>同时，使用数据库自建的Write用户不需要管理员口令，而且执行<code>groovy</code>函数的包装类没有沙箱，导致可以任意调用系统函数。</p>
+<p>从而成为远程命令执行漏洞，根据渗透测试原理，有以下几种方案可以修复该漏洞：</p>
+<p><strong>禁用groovy函数</strong></p>
+<p>只要数据库禁用掉<code>groovy</code>函数。</p>
+<p>便无法绕出沙箱，那么将会没办法调用系统函数，也就无法造成远程命令执行。</p>
+<p><strong>及时更新数据库</strong></p>
+<p>由于漏洞影响版本是<code>2.2.2--2.2.23</code>，所以及时更新数据库版本也可以避免此漏洞</p>
 
       
 
@@ -234,7 +279,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
         		</li>
       		
 		</ul>
@@ -290,7 +335,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/08/19/IDA与Dex持续更新/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://showmeshell.top/2018/12/07/OrientDB远程代码执行漏洞/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -304,18 +349,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/08/22/Hello-ARM/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Hello ARM
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/08/19/Androguard/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Androguard</div>
+    <a href="/2018/12/05/SQlmap/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">SQlmap</div>
       <i class="icon-circle-right"></i>
     </a>
   
