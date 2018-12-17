@@ -4,6 +4,57 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/12/17/webC%E6%AE%B5%E6%89%AB%E6%8F%8F/</loc>
+    <lastmod>2018-12-17T08:02:16.334Z</lastmod>
+    <data>
+        <display>
+        <title>webC段扫描</title>
+        <pubTime>2018-12-17T08:00:04.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/12/17/web%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F/</loc>
+    <lastmod>2018-12-17T07:59:30.121Z</lastmod>
+    <data>
+        <display>
+        <title>web目录扫描</title>
+        <pubTime>2018-12-17T07:55:54.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>http://showmeshell.top/2018/12/17/%E5%88%9B%E9%80%A0%E9%AB%98%E5%BA%A6%E5%8F%AF%E5%AE%9A%E5%88%B6%E5%AD%97%E5%85%B8/</loc>
+    <lastmod>2018-12-17T07:54:59.549Z</lastmod>
+    <data>
+        <display>
+        <title>创造高度可定制字典</title>
+        <pubTime>2018-12-17T07:50:57.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/12/17/Zoomeye%E4%BF%A1%E6%81%AF%E9%87%87%E9%9B%86/</loc>
     <lastmod>2018-12-17T07:48:39.350Z</lastmod>
     <data>

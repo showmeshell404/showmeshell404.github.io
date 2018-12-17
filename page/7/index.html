@@ -150,6 +150,485 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-smali文件格式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/18/smali文件格式/">smali文件格式</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/18/smali文件格式/" class="archive-article-date">
+  	<time datetime="2018-08-18T08:32:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="smali文件格式"><a href="#smali文件格式" class="headerlink" title="smali文件格式"></a>smali文件格式</h3><p>普通类、抽象类、接口类或者内部类，在反编译出的代码中，都以单独的smali文件来存放</p>
+<h4 id="1-smali文件头3行"><a href="#1-smali文件头3行" class="headerlink" title="1.smali文件头3行"></a>1.smali文件头3行</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.class&lt;访问权限&gt;[修饰关键字]&lt;类名&gt;</span><br><span class="line">.super&lt;父类名&gt;</span><br><span class="line">.source&lt;源文件名&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">//baksmali解析dex文件时，通过这3个字段来获取相应的值</span></span><br><span class="line"><span class="comment">//classIdx，superclassIdx，sourceFileIdx</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassDef</span>&#123;</span></span><br><span class="line">    u4	classIdx;		<span class="comment">//类的类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	accessFlags;	<span class="comment">//访问标志</span></span><br><span class="line">    u4	superclassIdx;	<span class="comment">//父类类型，指向DexTypeId列表的索引</span></span><br><span class="line">    u4	interfacesOff;	<span class="comment">//接口，指向DexTypeList的偏移</span></span><br><span class="line">    u4	sourceFileIdx;	<span class="comment">//源文件名，指向DexStringId列表的索引</span></span><br><span class="line">    u4	annotationsOff;	<span class="comment">//注解，指向DexAnnotationsDirectoryItem结构</span></span><br><span class="line">    u4	classDataOff;	<span class="comment">//指向DexClassData结构的偏移</span></span><br><span class="line">    u4	staticValuesOff;<span class="comment">//指向DexEncodeArray结构的偏移</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><u>经过混淆的dex文件，反编译出来的smali代码可能没有源文件信息，“.source”行的代码可能为空。</u></p>
+<p><strong>前3行代码过后就是类的主体部分了，一个类可以由多个字段或方法组成</strong></p>
+<h4 id="2-smali字段"><a href="#2-smali字段" class="headerlink" title="2.smali字段"></a>2.smali字段</h4><p>smali文件中字段的声明使用“<code>.field</code>”指令</p>
+<p>字段有静态字段与实例字段两种</p>
+<ul>
+<li>静态字段的声明<ul>
+<li><em># static fields</em></li>
+<li><em>.field &lt;访问权限&gt; static [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
+</ul>
+</li>
+<li>实例字段的声明<ul>
+<li><em># instance fields</em></li>
+<li><em>.field &lt;访问权限&gt; [修饰关键字] &lt;字段名&gt;:&lt;字段类型&gt;</em></li>
+</ul>
+</li>
+</ul>
+<h4 id="3-smali方法"><a href="#3-smali方法" class="headerlink" title="3.smali方法"></a>3.smali方法</h4><p>smali文件中方法的声明使用“<code>.method</code>”指令</p>
+<p>方法有直接方法与虚方法两种</p>
+<ul>
+<li><p>直接方法的声明</p>
+<ul>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># direct methods</span></span><br><span class="line">.method &lt;访问权限&gt; [修饰关键字]&lt;方法原型&gt;<span class="comment">//方法原型描述了方法的名称、参数与返回值</span></span><br><span class="line">    &lt;.locals&gt;	<span class="comment">//使用的局部变量的个数</span></span><br><span class="line">	[.parameter]	<span class="comment">//指定了方法的参数，比如3个参数，就3条指令</span></span><br><span class="line">    [.prologue]		<span class="comment">//代码的开始处，混淆过的代码可能去掉了该指令</span></span><br><span class="line">    [.line]			<span class="comment">//该处指令在源代码中的行号，混淆过的代码可能去除了行号信息</span></span><br><span class="line">	&lt;代码体&gt;</span><br><span class="line">.end method</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>虚方法的声明与直接方法相同，只是起始处的注释为“<code>virtual methods</code>”</p>
+</li>
+</ul>
+<h4 id="4-smali接口"><a href="#4-smali接口" class="headerlink" title="4.smali接口"></a>4.smali接口</h4><p>smali文件中使用“<code>.implements</code>”指令指出一个类实现了接口</p>
+<ul>
+<li><p>格式声明</p>
+<ul>
+<li><em># interfaces</em></li>
+<li><em>.implements &lt;接口名&gt;</em><ul>
+<li>接口名是<code>DexClassDef</code>结构中<code>interfacesOff</code>字段指定的内容</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-smali注解"><a href="#5-smali注解" class="headerlink" title="5.smali注解"></a>5.smali注解</h4><p>smali文件中使用“<code>.annotation</code>”指令指出类使用了注解</p>
+<ul>
+<li><p>格式声明</p>
+<ul>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#annotations</span></span><br><span class="line">.annotation[注解属性]&lt;注解类名&gt;</span><br><span class="line">	[注解字段=值]</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注解的作用范围可以是类、方法或字段</p>
+<ul>
+<li>注解的作用范围是类，“<code>.annotation</code>”指令会直接定义在smali文件中</li>
+<li>注解的作用范围是方法或字段，“<code>.annotation</code>”指令则会包含在方法或字段定义中</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/18/smali文件格式/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-dex文件验证" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/17/dex文件验证/">dex文件验证</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/17/dex文件验证/" class="archive-article-date">
+  	<time datetime="2018-08-17T03:50:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="dex文件的验证"><a href="#dex文件的验证" class="headerlink" title="dex文件的验证"></a>dex文件的验证</h3><ul>
+<li>验证与优化dex文件最简单且最安全的方法是直接在虚拟机中加载dex文件<ul>
+<li>一旦程序加载失败，就说明dex文件未优化或验证失败，此时中止程序运行即可<ul>
+<li>但会引起部分资源难以从内存中释放，比如加载的native动态库</li>
+<li>让验证优化工作与需要执行的代码在同一虚拟机中运行不是很好</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Android提供了一个专门验证与优化dex文件的工具dexopt<ul>
+<li>在加载一个dex文件时，通过指定的验证与优化选项来调用dexopt进行相应的验证与优化操作。</li>
+</ul>
+</li>
+</ul>
+<p>dexopt的整个验证与优化过程：</p>
+<p><img src="/2018/08/17/dex文件验证/1.png" alt="1"></p>
+<ul>
+<li>dexopt的主程序代码为OptMain.cpp</li>
+<li>处理apk/jar/zip文件中classes.dex的函数为extractAndProcessZip()</li>
+<li>通过dexZipFindEntry()函数检查目标文件中是否拥有classes.dex</li>
+<li>调用<strong>dexZipGetEntryInfo()</strong>函数来读取classes.dex的<strong>时间戳与crc检验值</strong></li>
+<li>调用dexZipExtractEntryTo-File()函数释放classes.dex为缓存文件<ul>
+<li>开始解析传递过来的验证与优化选项，验证选项使用“v=”指出，优化选项使用“o=”指出</li>
+</ul>
+</li>
+<li>调用<strong>dvmPrepForDexOpt()</strong>函数启动一个<strong>虚拟机进程</strong><ul>
+<li>优化选项dexOptMode与验证选项verifyMode被传递到了全局DvmGlobals结构gDvm的dexOptMode与classVerifyMode字段中,初始化工作完成</li>
+</ul>
+</li>
+<li>dexopt调用<strong>dvmContinueOptimization()</strong>函数开始<strong>真正的验证与优化工作</strong><ul>
+<li>函数首先对dex文件做简单的检查，确保传递进来的目标文件属于dex或odex</li>
+<li>接着调用<strong>mmap()</strong>函数将<strong>整个文件映射到内存中</strong></li>
+<li>然后根据gDvm的dexOptMode与classVerifyMode字段来设置doVerify与doOpt两个布尔值</li>
+<li>接着调用<strong>rewriteDex()</strong>函数来<strong>重写dex文件</strong><ul>
+<li>重写内容包括字符序调整、结构重新对齐、类验证信息以及辅助数据</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数调用dexSwapAndVerify()调整字节序</li>
+<li>调用dvmDexFileOpenPartial()创建DexFile结构<ul>
+<li>dvmDexFileOpenPartial()函数的实现在Android系统源码dalvik\vm\DvmDex.cpp文件</li>
+<li>该函数调用<strong>dexFileParse()函数解析dex文件</strong><ul>
+<li>dexFileParse()函数读取dex文件的头部</li>
+<li>根据需要调用验证<strong>dexComputeChecksum()函数</strong>或调用<strong>dexComputeOptChecksum()函数</strong>来</li>
+<li><strong>验证dex或odex文件头的checksum与signature字段</strong></li>
+<li>验证成功后</li>
+</ul>
+</li>
+<li>调用allocateAuxStructures()函数设置DexFile结构辅助数据的相关字段</li>
+<li>执行完后返回到rewriteDex()函数</li>
+</ul>
+</li>
+<li>rewriteDex()调用<strong>loadAllClasses()</strong>加载dex文件中所有的类</li>
+<li>调用<strong>verifyAndOptimizeClasses()函数</strong>优化与验证具体的类<ul>
+<li>调用dvmVerifyClass()函数进行验证<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\DexVerify.cpp文件</li>
+<li>调用<strong>verifyMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>验证</strong><ul>
+<li>先调用verifyInstructions()函数来验证方法中的指令及其数目的正确性</li>
+<li>再调用dvmVerifyCodeFlow()函数来验证代码流的正确性</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>调用dvmOptimizeClass()函数进行优化<ul>
+<li>函数的实现代码位于Android系统源码dalvik\vm\analysis\Optimize.cpp文件</li>
+<li>调用<strong>optimizeMethod()函数</strong>对<strong>类的所有直接方法与虚方法</strong>进行<strong>优化</strong><ul>
+<li>优化的主要工作是进行“<strong>指令替换</strong>”<ul>
+<li>替换原则的优先级为“volatile”替换-正确性替换-高性能替换</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>rewriteDex()函数返回后</li>
+</ul>
+</li>
+<li>再次调用dvmDexFileOpenPartial()来验证odex文件</li>
+<li>调用dvmGenerateRegisterMaps()函数来填充辅助数据区结构</li>
+<li>调用updateChecksum()函数重写dex文件的checksum值</li>
+</ul>
+<p>完整的流程，学习的一遍，对于dex如何优化，大概流程已经知道啦~</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/17/dex文件验证/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-odex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/17/odex文件格式详解/">odex文件格式详解</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/17/odex文件格式详解/" class="archive-article-date">
+  	<time datetime="2018-08-17T03:47:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="odex文件格式"><a href="#odex文件格式" class="headerlink" title="odex文件格式"></a>odex文件格式</h3><p><strong>odex是OptimizedDEX的缩写，表示经过优化的dex文件。</strong></p>
+<h4 id="1-生成odex文件"><a href="#1-生成odex文件" class="headerlink" title="1.生成odex文件"></a>1.生成odex文件</h4><ul>
+<li><p>odex存在方式</p>
+<ul>
+<li>一种是从apk程序中提取出来，与apk文件存放在同一目录且文件后缀为odex的文件，这类odex文件多是Android ROM的系统程序</li>
+<li>一种是dalvik-cache缓存文件，这类odex文件仍然以dex作为后缀，存放在cache/dalvik-cache目录下<ul>
+<li>保存的形式为“apk路径@apk名@classes.dex”，eg：“system@<a href="mailto:app@Calculator.apk" target="_blank" rel="noopener">app@Calculator.apk</a>@classes.dex”表示安装在/system/app目录下Calculator.apk程序的odex文件。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>odex文件的优势</p>
+<ul>
+<li>由于Android程序的apk文件为<strong>zip压缩包格式</strong>，Dalvik虚拟机每次加载它们时需要从apk中读取<strong>classes.dex文件</strong>，这样会耗费很多cpu时间。</li>
+<li>采用odex方式优化的dex文件，已经<strong>包含了加载dex必须的依赖库文件列表</strong>，Dalvik虚拟机只需检测并加载所需的依赖库即可执行相应的dex文件，这大大缩短了读取dex文件所需的时间。</li>
+<li>对于部分Android系统的ROM，由于<strong>将系统app全部转换成外置的odex文件与apk放在同一目录</strong>，这样系统在启动加载这些程序时会节省更多的时间，启动速度自然也会更快。</li>
+</ul>
+</li>
+<li><p><a href="https://pan.baidu.com/s/1JcjNPNWZek1C-_zznPDlAQ" target="_blank" rel="noopener">dexopt-wrapper</a></p>
+<ul>
+<li><p>生成odex文件的工具dexopt-wrapper</p>
+</li>
+<li><p>dexopt-wrapper主程序源码DexOptWrapper.cpp文件，实现调用的是/system/bin/dexopt程序</p>
+</li>
+<li><p><strong>dexopt-wrapper生成odex文件的方法</strong>：</p>
+<ul>
+<li><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb	push dexopt-wrapper /data/<span class="built_in">local</span>/</span><br><span class="line">adb	shell chmod 777 /data/<span class="built_in">local</span>/dexopt-wrapper</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Hello.dex改名为classes.dex 并打包zip文件</span></span><br><span class="line">adb	push Hello.zip /data/local/</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//调用dexopt-wrapper来生成odex文件</span></span><br><span class="line">./dexopt-wrapper Hello.zip Hello.odex</span><br></pre></td></tr></table></figure>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//最后将odex文件pull出来</span></span><br><span class="line">adb	pull /data/local/Hello.odex</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-odex文件整体结构"><a href="#2-odex文件整体结构" class="headerlink" title="2.odex文件整体结构"></a>2.odex文件整体结构</h4><p>odex文件在dex文件头部添加了一些数据，然后在dex文件尾部添加了dex文件的依赖库以及一些辅助数据</p>
+<p><img src="/2018/08/17/odex文件格式详解/1.png" alt="1"></p>
+<ul>
+<li>Dalvik虚拟机将dex文件映射到内存中后是DexFile格式</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Structure representing a DEX file.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Code should regard DexFile as opaque, using the API calls provided here</span></span><br><span class="line"><span class="comment"> * to access specific structures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexFile</span> &#123;</span></span><br><span class="line">    <span class="comment">/* directly-mapped "opt" header */</span></span><br><span class="line">    <span class="keyword">const</span> DexOptHeader* pOptHeader;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* pointers to directly-mapped structs and arrays in base DEX */</span></span><br><span class="line">    <span class="keyword">const</span> DexHeader*    pHeader;</span><br><span class="line">    <span class="keyword">const</span> DexStringId*  pStringIds;</span><br><span class="line">    <span class="keyword">const</span> DexTypeId*    pTypeIds;</span><br><span class="line">    <span class="keyword">const</span> DexFieldId*   pFieldIds;</span><br><span class="line">    <span class="keyword">const</span> DexMethodId*  pMethodIds;</span><br><span class="line">    <span class="keyword">const</span> DexProtoId*   pProtoIds;</span><br><span class="line">    <span class="keyword">const</span> DexClassDef*  pClassDefs;</span><br><span class="line">    <span class="keyword">const</span> DexLink*      pLinkData;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * These are mapped out of the "auxillary" section, and may not be</span></span><br><span class="line"><span class="comment">     * included in the file.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">const</span> DexClassLookup* pClassLookup;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">void</span>*         pRegisterMapPool;       <span class="comment">// RegisterMapClassPool</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* points to start of DEX file data */</span></span><br><span class="line">    <span class="keyword">const</span> u1*           baseAddr;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* track memory overhead for auxillary structures */</span></span><br><span class="line">    <span class="keyword">int</span>                 overhead;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* additional app-specific data structures associated with the DEX */</span></span><br><span class="line">    <span class="comment">//void*               auxData;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>分析</p>
+<ul>
+<li>DexOptHeader就是odex的头</li>
+<li>DexLink以下的部分被称为“auxillary section”，即辅助数据段，它记录了dex文件被优化后添加的一些信息</li>
+<li>DexFile结构描述的是加载进内存的数据结构，还有一些数据是不会加载进内存的</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ODEXFile</span> &#123;</span></span><br><span class="line">    DexOptHeader            header;     <span class="comment">//odex文件头</span></span><br><span class="line">    DexFile                 DexFile;    <span class="comment">//dex文件</span></span><br><span class="line">    Dependences             deps;       <span class="comment">//依赖库列表</span></span><br><span class="line">    ChunkDexClassLookup     lookup;     <span class="comment">//类查询结构</span></span><br><span class="line">    ChunkRegisterMapPool    mapPool;    <span class="comment">//映射池</span></span><br><span class="line">    ChunkEnd                end;        <span class="comment">//结束标识   </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="3-odex文件结构分析"><a href="#3-odex文件结构分析" class="headerlink" title="3.odex文件结构分析"></a>3.odex文件结构分析</h4><ul>
+<li>ODEXFile的文件头DexOptHeader在DexFile.h文件中定义:</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexOptHeader</span>&#123;</span></span><br><span class="line">    u1 magic[<span class="number">8</span>];            <span class="comment">//odex版本标识 ，目前固定值 64 65 79 0A 30 33 36 00</span></span><br><span class="line">    u4 dexOffset;           <span class="comment">//dex文件头偏移 ，目前0x28 = 40，等于odex文件头大小</span></span><br><span class="line">    u4 dexLength;           <span class="comment">//dex文件总长度</span></span><br><span class="line">    u4 depsOffset;          <span class="comment">//odex依赖库列表偏移</span></span><br><span class="line">    u4 depsLength;          <span class="comment">//依赖库列表总长度</span></span><br><span class="line">    u4 optOffset;           <span class="comment">//辅助数据偏移</span></span><br><span class="line">    u4 optLength;           <span class="comment">//辅助数据总长度</span></span><br><span class="line">    u4 flags;               <span class="comment">//标志，Dalvik虚拟机加载odex时的优化与验证选项</span></span><br><span class="line">    u4 checksum;            <span class="comment">//依赖库与辅助数据的校验和</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Dependences结构不会被加载进内存，而且Android源码中它也没有被明确定义</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">Dependences</span>&#123;</span></span><br><span class="line">    u4	modWhen;			<span class="comment">//时间戳</span></span><br><span class="line">    u4	crc;				<span class="comment">//校验</span></span><br><span class="line">    u4	DALVIK_VM_BUILD;	<span class="comment">//Dalvik虚拟机版本号</span></span><br><span class="line">    u4	numDeps;			<span class="comment">//依赖库个数</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span>	&#123;</span>		</span><br><span class="line">        u4	len;			<span class="comment">//name字符串长度</span></span><br><span class="line">        u1	name[len];		<span class="comment">//依赖库名称,完整路径名</span></span><br><span class="line">        kSHA1DigestLen	Signature;	<span class="comment">//SHA-1哈希值</span></span><br><span class="line">    &#125;table[numDeps];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>Dependences结构的具体操作函数为Android系统源码目录中<code>dalvik\vm\analysis\DexPrepare.cpp</code>文件的writeDependencies()函数</p>
+<p><img src="/2018/08/17/odex文件格式详解/2.png" alt="2"></p>
+<p><img src="/2018/08/17/odex文件格式详解/3.png" alt="3"></p>
+<ul>
+<li><p>分析</p>
+<ul>
+<li>0x10处的depsOffset字段值为0x358</li>
+<li>0x14处的depsLength字段值为0x2c6</li>
+<li>Dependences结构所占用的区域为0x358~0x61e</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/4.png" alt="4"></p>
+<p>时间戳modWhen为40f28eea，crc检验值为90e09371，Dalvik虚拟机版本为0x17，依赖库个数numDeps为8，表示接下来有8个连接的table结构。</p>
+</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/5.png" alt="5"></p>
+<ul>
+<li><p>3个Chunk块</p>
+<ul>
+<li>Dependences结构下面为3个Chunk块，它们被Dalvik虚拟机加载到一个称为auxillary的段中。</li>
+<li>3个Chunk块是由DexPrepare.cpp文件中的writeOptData()函数写入的</li>
+</ul>
+<p><img src="/2018/08/17/odex文件格式详解/6.png" alt="6"></p>
+<ul>
+<li>数据实际是通过writeChunk()函数写入的，writeChunk()函数中定义了1个header</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span>&#123;	<span class="comment">/*save a syscall by grouping these together*/</span></span><br><span class="line">    <span class="keyword">char</span> raw[<span class="number">8</span>];</span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        u4	type;	<span class="comment">//以kDexChunk开头的枚举量</span></span><br><span class="line">        u4	size;	<span class="comment">//需要填充的数据的字节数</span></span><br><span class="line">    &#125;ts;</span><br><span class="line">&#125;header;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>分析：</p>
+<ul>
+<li><p>writeChunk()函数在写入具体的结构时会先填充header结构</p>
+</li>
+<li><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span>&#123;</span><br><span class="line">    kDexChunkClassLookup	= <span class="number">0x434c4b50</span>,	<span class="comment">/*CLKP*/</span></span><br><span class="line">    kDexChunkRegisterMaps	= <span class="number">0x524d4150</span>,	<span class="comment">/*RMAP*/</span></span><br><span class="line">    kDexChunkEnd			= <span class="number">0x41454e44</span>,	<span class="comment">/*AEND*/</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>写入<code>ChunkDexClassLookup</code>结构时writeOptData()函数向writeChunk()函数传递了1个DexClassLookup结构的指针，它的结构声明:</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DexClassLookup</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> size;						<span class="comment">//本结构的字节数</span></span><br><span class="line">    <span class="keyword">int</span>	numEntries;					<span class="comment">//接下来的table结构的项数，通常值为2</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        u4	classDescriptorHash;	<span class="comment">//类的哈希值</span></span><br><span class="line">        <span class="keyword">int</span>	classDescriptorOffset;	<span class="comment">//类描述</span></span><br><span class="line">        <span class="keyword">int</span>	classDefOffset;			<span class="comment">//指向DexClassDef结构的指针</span></span><br><span class="line">    &#125;table[<span class="number">1</span>];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">//总结出ChunkDexClassLookup的结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ChunkDexClassLookup</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">    DexClassLookup	lookup;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>写入<code>ChunkRegisterMapPool</code>结构时writeOptData()函数向writeChunk()函数传递了1个Register MapBuilder结构指针</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span>	<span class="title">ChunkRegisterMapPool</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">RegisterMapClassPool</span>&#123;</span></span><br><span class="line">            u4	numClasses;</span><br><span class="line">            u4	classDataOffset;</span><br><span class="line">        &#125;classpool;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">RegisterMapMethodPool</span>&#123;</span></span><br><span class="line">            u2	methodCount;</span><br><span class="line">            u4	methodData[<span class="number">1</span>];</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;lookup;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>RegisterMapBuilder</code>结构是通过<code>dvmGenerateRegisterMaps()</code>函数填充的，<code>dvmGenerateRegisterMaps()</code>函数会调用<code>writeMapsAllClasses()</code>函数填充所有的类的映射信息，而<code>writeMapsAllClasses()</code>函数又会调用<code>writeMapsAllMethods()</code>函数填充所有方法的映射信息，<code>writeMapsAllMethods()</code>函数接着调用<code>writeMapForMethod()</code>函数依次填充每个方法的映射信息，并调用<code>computeRegisterMapSize()</code>函数计算填充的每个方法映射信息的长度以便循环遍历所有的方法.</p>
+<ul>
+<li>写入<code>ChunkEnd</code>结构时，writeOptData()函数向writeChunk()函数传递了1个NULL指针<ul>
+<li>传递的kDexChunkEnd类型来判断，odex文件最后的8个字节应该固定为<code>44 4E 45 41 00 00 00 00</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ChunkEnd</span>&#123;</span></span><br><span class="line">    Header			header;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/17/odex文件格式详解/odex.jpg" alt="odex"></p>
+<p>​</p>
+<p>​</p>
+<p>​</p>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/17/odex文件格式详解/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-dex文件格式详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1262,451 +1741,6 @@
 
 
   
-    <article id="post-爬虫一" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/22/爬虫一/">爬虫一</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/22/爬虫一/" class="archive-article-date">
-  	<time datetime="2018-07-22T02:07:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="爬虫基础-豆瓣-糗事百科"><a href="#爬虫基础-豆瓣-糗事百科" class="headerlink" title="爬虫基础-豆瓣/糗事百科"></a>爬虫基础-豆瓣/糗事百科</h2><h3 id="1-HTTP协议"><a href="#1-HTTP协议" class="headerlink" title="1.HTTP协议"></a>1.HTTP协议</h3><ul>
-<li>get请求与post请求的区别<ul>
-<li>get请求没有请求体，post有，get请求把数据放到URL地址中</li>
-<li>post请求常用于登录注册</li>
-<li>post请求携带的数据量比get请求大，多，常用于传输大文本的时候</li>
-</ul>
-</li>
-<li>HTTP协议请求<ul>
-<li>1.请求行</li>
-<li>2.请求头<ul>
-<li>user-agent：用户代理，对方服务器能够通过user_agent知道当前请求对方资源的是什么浏览器<ul>
-<li>如果我们需要模拟手机版的浏览器发送请求，对应的，就需要把user_agent改成手机版</li>
-</ul>
-</li>
-<li>cookie：用来存储用户信息的，每次请求会被携带上发送给对方的浏览器<ul>
-<li>要获取登录后才能访问的页面</li>
-<li>对方的服务器会通过Cookie来判断是否为一个爬虫</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>3.请求体<ul>
-<li>携带数据，get请求没有请求体，post请求有请求体。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>HTTP协议响应<ul>
-<li>1.响应头<ul>
-<li>set-cookie：对方服务器通过该字段设置cookie到本地</li>
-</ul>
-</li>
-<li>2.响应体<ul>
-<li>URL地址对应的响应</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-requests模块"><a href="#2-requests模块" class="headerlink" title="2.requests模块"></a>2.requests模块</h3><h4 id="1-发送get，post请求，获取响应"><a href="#1-发送get，post请求，获取响应" class="headerlink" title="1. 发送get，post请求，获取响应"></a>1. 发送get，post请求，获取响应</h4><ul>
-<li><code>response = requests.get(url)</code>  发送get请求，请求url地址对应的响应</li>
-<li><code>response = requests.post(url,data={请求体的字典})</code> 发送post请求</li>
-</ul>
-<h4 id="2-response的方法"><a href="#2-response的方法" class="headerlink" title="2.response的方法"></a>2.response的方法</h4><ul>
-<li><p><code>response.text</code> 获取网页html源码</p>
-<ul>
-<li>该方式往往出现乱码，出现乱码使用response.encoding=”utf-8”</li>
-</ul>
-</li>
-<li><p><code>response.content.decode()</code></p>
-<ul>
-<li>把响应的二进制字节流转化为str类型。默认为uft-8，可以为<code>response.content.decode(&quot;gbk&quot;)</code></li>
-</ul>
-</li>
-<li><p><code>response.request.url</code>发送请求的URL地址</p>
-</li>
-<li><p><code>response.url request</code>响应的url地址</p>
-</li>
-<li><p><code>response.request.headers</code>请求头</p>
-</li>
-<li><p><code>response.headers</code> 响应请求</p>
-</li>
-</ul>
-<h4 id="3-发送带header的请求"><a href="#3-发送带header的请求" class="headerlink" title="3.发送带header的请求"></a>3.发送带header的请求</h4><ul>
-<li>为了模拟浏览器，获取和浏览器一模一样的内容</li>
-</ul>
-<p><code>response = requests.get(url,headers=headers)</code></p>
-<h4 id="4-使用超时参数"><a href="#4-使用超时参数" class="headerlink" title="4.使用超时参数"></a>4.使用超时参数</h4><p><code>request.get(url,headers=headers,timeout=3)</code>  3秒内必须返回响应，否则会报错</p>
-<h4 id="5-retrying模块"><a href="#5-retrying模块" class="headerlink" title="5.retrying模块"></a>5.retrying模块</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> retrying <span class="keyword">import</span> retry</span><br><span class="line"></span><br><span class="line"><span class="meta">@retry(stop_max_attempt_number=3)#三次报错才出错。</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun1</span><span class="params">()</span>:</span></span><br><span class="line">    print(<span class="string">"this is func1"</span>)</span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">"this is test error"</span>)</span><br></pre></td></tr></table></figure>
-<h4 id="6-处理cookie相关的请求"><a href="#6-处理cookie相关的请求" class="headerlink" title="6.处理cookie相关的请求"></a>6.处理cookie相关的请求</h4><ul>
-<li><p>直接携带cookie请求url地址</p>
-<ul>
-<li><p>cookie放在headers中</p>
-<p><code>headers={&quot;User-Agent&quot;:&quot;.....&quot;,&quot;Cookie&quot;:&quot;cookie字符串&quot;}</code></p>
-</li>
-<li><p>cookie字典传给cookies参数</p>
-<p><code>request.get(url,cookies=cookie_dict)</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#cookie字典的迅速获取方法</span></span><br><span class="line">cookie_dict = &#123;i.split(<span class="string">"="</span>)[<span class="number">0</span>]: i.split(<span class="string">"="</span>)[<span class="number">-1</span>] <span class="keyword">for</span> i <span class="keyword">in</span> cookie.split(<span class="string">"; "</span>)&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>先发送post请求，获取cookie，带上cookie请求登录后的页面</p>
-<ul>
-<li>1.<code>session =request.session()</code> // session具有的方法和requests一样</li>
-<li>2.<code>session.post(url,data,headers)</code> //服务器设置在本地的cookie会保存在session中</li>
-<li>3.<code>session.get(url)</code> //会带上之前保存在session中的cookie。</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实例化session</span></span><br><span class="line">session = requests.session()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用session发送post请求，获取对方保证在本地的cookie</span></span><br><span class="line">post_url = <span class="string">"http://www.renren.com/PLogin.do"</span></span><br><span class="line">head = &#123;</span><br><span class="line">    <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"</span>&#125;</span><br><span class="line">post_data = &#123;<span class="string">"email"</span>: <span class="string">"***********"</span>, <span class="string">"password"</span>: <span class="string">"******"</span>&#125;</span><br><span class="line">session.post(post_url, headers=head, data=post_data)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在使用session请求登录后的页面</span></span><br><span class="line">url = <span class="string">"http://www.renren.com/**********"</span></span><br><span class="line">response = session.get(url, headers=head)</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> open(<span class="string">"renren.html"</span>, <span class="string">"w"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(response.content.decode())</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<p>###3.数据提取方法</p>
-<h4 id="1-json"><a href="#1-json" class="headerlink" title="1.json"></a>1.json</h4><ul>
-<li>数据交换格式，看起来像python类型（列表，字典）的字符串</li>
-<li>使用json之前,import json</li>
-<li>哪里可以返回json的数据<ul>
-<li>浏览器切换到手机版</li>
-<li>抓包APP</li>
-</ul>
-</li>
-<li>json.loads<ul>
-<li>把json字符串转化为python类型</li>
-<li><code>json.loads(json字符串)</code></li>
-</ul>
-</li>
-<li><p>json.dumps</p>
-<ul>
-<li>把python类型转化为json字符串</li>
-<li><code>json.dumps({})</code></li>
-<li><code>json.dumps(ret1, ensure_ascii=False,indent=2</code><ul>
-<li><code>ret=json.loads(json_str)</code></li>
-<li><code>ensure_ascii</code>:让中文显示成中文</li>
-<li><code>indent</code>:能够让下一行在上一行的基础上空格</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">from</span> parse <span class="keyword">import</span> parse_url</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DoubanSpider</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.temp_url = <span class="string">"https://m.douban.com/rexxar/api/v2/subject_collection/filter_tv_american_hot/items?os=ios&amp;for_mobile=1&amp;start=&#123;&#125;&amp;count=18&amp;loc_id=108288&amp;_=0"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_content_list</span><span class="params">(self, html_str)</span>:</span></span><br><span class="line">        dict_data = json.loads(html_str)</span><br><span class="line">        content_list = dict_data[<span class="string">"subject_collection_items"</span>]</span><br><span class="line">        total = dict_data[<span class="string">"total"</span>]</span><br><span class="line">        <span class="keyword">return</span> content_list, total</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save_content_list</span><span class="params">(self, content_list)</span>:</span></span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">"douban.json"</span>, <span class="string">"a"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:</span><br><span class="line">            <span class="keyword">for</span> content <span class="keyword">in</span> content_list:</span><br><span class="line">                f.write(json.dumps(content, ensure_ascii=<span class="keyword">False</span>))</span><br><span class="line">                f.write(<span class="string">"\n"</span>)</span><br><span class="line"></span><br><span class="line">        print(<span class="string">"保存成功"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span><span class="comment">#主要逻辑</span></span><br><span class="line">        num = <span class="number">0</span></span><br><span class="line">        total = <span class="number">100</span></span><br><span class="line">        <span class="keyword">while</span> num &lt; total + <span class="number">18</span>:</span><br><span class="line">            <span class="comment"># 1.start_url</span></span><br><span class="line">            url = self.temp_url.format(num)</span><br><span class="line">            <span class="comment"># 2.发送请求,获取响应</span></span><br><span class="line">            html_str = parse_url(url)</span><br><span class="line">            <span class="comment"># 3.提取数据</span></span><br><span class="line">            content_list, total = self.get_content_list(html_str)</span><br><span class="line">            <span class="comment"># 4.保存</span></span><br><span class="line">            self.save_content_list(content_list)</span><br><span class="line">            <span class="comment"># 5.构造下一页</span></span><br><span class="line">            num += <span class="number">18</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    douban = DoubanSpider()</span><br><span class="line">    douban.run()</span><br></pre></td></tr></table></figure>
-<h4 id="2-xpath"><a href="#2-xpath" class="headerlink" title="2.xpath"></a>2.xpath</h4></li>
-</ul>
-<ul>
-<li>xpath<ul>
-<li>一门从html中提取数据的语言</li>
-</ul>
-</li>
-<li><p>xpath语法</p>
-<ul>
-<li><p>xpath helper插件:帮助从<code>elements</code>中定位数据</p>
-</li>
-<li><p>1.选择节点(标签)</p>
-<ul>
-<li><code>/html/head/meta</code>:能够选中html下head下的所有meta标签</li>
-</ul>
-</li>
-<li><p>2.<code>//</code>:能够从任意节点开始选择</p>
-<ul>
-<li><code>//li</code>当前页面上所有的li标签</li>
-<li><code>/html/head//link</code>:head下的所有link标签</li>
-</ul>
-</li>
-<li><p>3.<code>@</code>元素</p>
-<ul>
-<li><p><code>//div[@****]/**/**</code>:@选择具体某个定位元素</p>
-</li>
-<li><p><code>a/@href</code>:选择a中href的值</p>
-</li>
-</ul>
-</li>
-<li><p>4.获取文本</p>
-<ul>
-<li><code>/a/text()</code>:获取a下的文本</li>
-<li><code>/a//text()</code>:获取a下的所有的文本</li>
-</ul>
-</li>
-<li><p>5.点前</p>
-<ul>
-<li><code>./a</code>:当前节点下的a标签</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h4 id="3-lxml"><a href="#3-lxml" class="headerlink" title="3.lxml"></a>3.lxml</h4><ul>
-<li><p>使用</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pip install lxml</span><br><span class="line">form lxml <span class="keyword">import</span> etree</span><br><span class="line">element = etree.HTML(<span class="string">"html字符串"</span>)</span><br><span class="line">element.xpath(<span class="string">""</span>)</span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">"https://movie.douban.com/chart"</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"</span>&#125;</span><br><span class="line"></span><br><span class="line">response = requests.get(url, headers=headers)</span><br><span class="line">html_str = response.content.decode()</span><br><span class="line"></span><br><span class="line"><span class="comment"># print(html_str)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># etree处理</span></span><br><span class="line">html = etree.HTML(html_str)</span><br><span class="line">print(html)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.获取所有的电影的url地址</span></span><br><span class="line">url_list = html.xpath(<span class="string">"//div[@class='indent']/div/table//div[@class='pl2']/a/@href"</span>)</span><br><span class="line"><span class="comment"># print(url_list)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.获取所有图片的地址</span></span><br><span class="line">img_list = html.xpath(<span class="string">"//div[@class='indent']/div/table//a[@class='nbg']/img/@src"</span>)</span><br><span class="line"><span class="comment"># print(img_list)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.需要把每部电影组成一个字典,字典中是电影的各种数据,比如标题,url,图片地址,评论数,评分</span></span><br><span class="line"><span class="comment"># 思路:</span></span><br><span class="line"><span class="comment"># 1.分组</span></span><br><span class="line"><span class="comment"># 2.每一组数据</span></span><br><span class="line"></span><br><span class="line">ret1 = html.xpath(<span class="string">"//div[@class='indent']/div/table"</span>)</span><br><span class="line"><span class="keyword">for</span> table <span class="keyword">in</span> ret1:</span><br><span class="line">    item = &#123;&#125;</span><br><span class="line">    item[<span class="string">"title"</span>] = table.xpath(<span class="string">".//div[@class='pl2']/a/text()"</span>)[<span class="number">0</span>].replace(<span class="string">"/"</span>, <span class="string">""</span>).strip()</span><br><span class="line">    item[<span class="string">"href"</span>] = table.xpath(<span class="string">".//div[@class='pl2']/a/@href"</span>)[<span class="number">0</span>]</span><br><span class="line">    item[<span class="string">"img"</span>] = table.xpath(<span class="string">".//a[@class='nbg']/img/@src"</span>)[<span class="number">0</span>]</span><br><span class="line">    item[<span class="string">"comment_num"</span>] = table.xpath(<span class="string">".//span[@class='pl']/text()"</span>)[<span class="number">0</span>]</span><br><span class="line">    item[<span class="string">"rating_num"</span>] = table.xpath(<span class="string">".//span[@class='rating_nums']/text()"</span>)[<span class="number">0</span>]</span><br><span class="line">    print(item)</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="4-基础知识"><a href="#4-基础知识" class="headerlink" title="4.基础知识"></a>4.基础知识</h3><ul>
-<li><p>1.列表推导式:快速生成包含一堆数据的列表</p>
-<ul>
-<li><code>[i+10 for i in range(10)]</code>—–&gt;[10,11,12,…19]</li>
-<li><code>[&quot;10月{}日&quot;.format(i) for i in range(1,30)]</code></li>
-</ul>
-</li>
-<li><p>2.字典推导式:快速生成包含一堆数据的字典</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"a&#123;&#125;"</span>.format(i):<span class="number">10</span> <span class="keyword">for</span> i <span class="keyword">in</span> rang(<span class="number">3</span>)&#125;</span><br><span class="line"><span class="comment">#&#123;"a0:10,"a1":10,"a2":10&#125;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>3.三元运算符</p>
-<p><code>a =10 if 4&gt;3 else 20       #a=10</code></p>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#糗事百科爬虫</span></span><br><span class="line"><span class="keyword">from</span> lxml <span class="keyword">import</span> etree</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">QiubaiSpider</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.url_temp = <span class="string">"https://www.qiushibaike.com/8hr/page/&#123;&#125;/"</span></span><br><span class="line">        self.headers = &#123;</span><br><span class="line">            <span class="string">"User-Agent"</span>: <span class="string">"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.108 Safari/537.36"</span>&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_url_list</span><span class="params">(self)</span>:</span></span><br><span class="line">        url_list = [self.url_temp.format(i) <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">14</span>)]</span><br><span class="line">        <span class="keyword">return</span> url_list</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse_url</span><span class="params">(self, url)</span>:</span></span><br><span class="line">        print(<span class="string">"Now parsing:"</span>, url)</span><br><span class="line">        response = requests.get(url, headers=self.headers)</span><br><span class="line">        <span class="keyword">return</span> response.content.decode()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_content_list</span><span class="params">(self, html_str)</span>:</span></span><br><span class="line">        html = etree.HTML(html_str)</span><br><span class="line">        div_list = html.xpath(<span class="string">"//div[@id='content-left']/div"</span>)</span><br><span class="line">        content_list = []</span><br><span class="line">        <span class="keyword">for</span> div <span class="keyword">in</span> div_list:</span><br><span class="line">            item = &#123;&#125;</span><br><span class="line">            item[<span class="string">"author_name"</span>] = div.xpath(<span class="string">".//h2/text()"</span>)[<span class="number">0</span>].strip() <span class="keyword">if</span> len(div.xpath(<span class="string">".//h2/text()"</span>)) &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="keyword">None</span></span><br><span class="line">            item[<span class="string">"content"</span>] = div.xpath(<span class="string">".//div[@class='content']/span/text()"</span>)</span><br><span class="line">            item[<span class="string">"content"</span>] = [i.strip() <span class="keyword">for</span> i <span class="keyword">in</span> item[<span class="string">"content"</span>]]</span><br><span class="line">            item[<span class="string">"stats_vote"</span>] = div.xpath(<span class="string">".//span[@class='stats-vote']/i/text()"</span>)</span><br><span class="line">            item[<span class="string">"stats_vote"</span>] = item[<span class="string">"stats_vote"</span>][<span class="number">0</span>] <span class="keyword">if</span> len(item[<span class="string">"stats_vote"</span>]) &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="keyword">None</span></span><br><span class="line">            item[<span class="string">"stats_comments"</span>] = div.xpath(<span class="string">".//span[@class='stats-comments']//i/text()"</span>)</span><br><span class="line">            item[<span class="string">"stats_comments"</span>] = item[<span class="string">"stats_comments"</span>][<span class="number">0</span>] <span class="keyword">if</span> len(item[<span class="string">"stats_comments"</span>]) &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="keyword">None</span></span><br><span class="line">            item[<span class="string">"img"</span>] = div.xpath(<span class="string">".//div[@class='thumb']//img/@src"</span>)</span><br><span class="line">            item[<span class="string">"img"</span>] = <span class="string">"https:"</span> + item[<span class="string">"img"</span>][<span class="number">0</span>] <span class="keyword">if</span> len(item[<span class="string">"img"</span>]) &gt; <span class="number">0</span> <span class="keyword">else</span> <span class="keyword">None</span></span><br><span class="line">            content_list.append(item)</span><br><span class="line">        <span class="keyword">return</span> content_list</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">save_content_list</span><span class="params">(self, content_list)</span>:</span></span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">"qiubai.txt"</span>, <span class="string">"a"</span>, encoding=<span class="string">"utf-8"</span>) <span class="keyword">as</span> f:</span><br><span class="line">            <span class="keyword">for</span> content <span class="keyword">in</span> content_list:</span><br><span class="line">                f.write(json.dumps(content, ensure_ascii=<span class="keyword">False</span>))</span><br><span class="line">                f.write(<span class="string">"\n"</span>)</span><br><span class="line">        print(<span class="string">"Save!"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        url_list = self.get_url_list()</span><br><span class="line">        <span class="keyword">for</span> url <span class="keyword">in</span> url_list:</span><br><span class="line">            html_str = self.parse_url(url)</span><br><span class="line">            content_list = self.get_content_list(html_str)</span><br><span class="line">            self.save_content_list(content_list)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    qiubai = QiubaiSpider()</span><br><span class="line">    qiubai.run()</span><br></pre></td></tr></table></figure>
-<h3 id="5-写爬虫的总结"><a href="#5-写爬虫的总结" class="headerlink" title="5.写爬虫的总结"></a>5.写爬虫的总结</h3><ul>
-<li>1.url<ul>
-<li>知道url地址的规律和总的页码数:构造url地址列表</li>
-<li>start_url</li>
-</ul>
-</li>
-<li>2.发送请求,获取响应<ul>
-<li>requests</li>
-</ul>
-</li>
-<li>3.提取数据<ul>
-<li>返回json字符串:json模块</li>
-<li>返回的是html字符串:lxml模块配个xpath提取数据</li>
-</ul>
-</li>
-<li>4.保存</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/22/爬虫一/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Start-learning-Android" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/18/Start-learning-Android/">Start learning Android</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/18/Start-learning-Android/" class="archive-article-date">
-  	<time datetime="2018-07-18T03:34:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一直都琢磨者去弄弄移动安全，就拖着在，最近下定决心开始学着。</p>
-<p>首先推荐一个公开课：</p>
-<p><a href="http://open.163.com/special/opencourse/developingandroidapplications.html" target="_blank" rel="noopener">http://open.163.com/special/opencourse/developingandroidapplications.html</a></p>
-<p>密西西比河谷州立大学的 Android应用程序开发 就6讲，适合入门，而且讲的还不错，毕竟国外的教学模式还是可以的～</p>
-<p>先慢慢悠悠的在linux上装好了环境，解决了一大堆bug，调试了很久，装各种SDK，ADT，CDT等花了不少时间，总算用上了Eclipse（最新版本的photon，好想汉化！）</p>
-<p>花了几天看看教程，敲了2个Android小应用，扔gayhub了。</p>
-<p><a href="https://github.com/showmeshell404/MultiFunctionClock" target="_blank" rel="noopener">https://github.com/showmeshell404/MultiFunctionClock</a></p>
-<p>多功能的小闹钟，界面巨丑。</p>
-<p><a href="https://github.com/showmeshell404/2048Game" target="_blank" rel="noopener">https://github.com/showmeshell404/2048Game</a></p>
-<p>2048的小游戏。</p>
-<p>还有一个elf-parser 由elf文件格式，打印程序头和节头。</p>
-<p><a href="https://github.com/showmeshell404/elf-parser" target="_blank" rel="noopener">https://github.com/showmeshell404/elf-parser</a></p>
-<p>差不多熟悉熟悉Android流程就开始慢慢尝试Android安全了～</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/18/Start-learning-Android/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Relocatable code injection-based binary patching" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/11/Relocatable code injection-based binary patching/">基于二进制修补的重定位代码注入</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/11/Relocatable code injection-based binary patching/" class="archive-article-date">
-  	<time datetime="2018-07-11T01:40:06.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Relocatable-code-injection-based-binary-patching"><a href="#Relocatable-code-injection-based-binary-patching" class="headerlink" title="Relocatable code injection-based binary patching"></a>Relocatable code injection-based binary patching</h1><p><strong>基于二进制修补的重定位代码注入的学习</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Relocatable code injection is a technique that hackers, virus writers, or anyone who wants to modify the code in a binary may utilize as a way to relink a binary after it&apos;s already been compiled and linked into an executable. That is, you can inject an object file into an executable, update the executable&apos;s symbol table to reflect newly inserted functionality, and perform the necessary relocations on the injected object code so that it becomes a part of the executable.</span><br></pre></td></tr></table></figure>
-<p>在二进制文件编译完成后并链接到一个可执行文件之后，通过重定位代码技术可以重新链接二进制文件。这就意味着，可以将一个目标文件注入到可执行文件中，更改可执行文件的符号表来指向新注入的功能，并对注入的目标代码进行必要的重定位，那么注入的代码就变成了可执行文件的一部分。</p>
-<p>可以使用Eresi（ELF反编译系统接口）：<a href="https://github.com/thorkill/eresi" target="_blank" rel="noopener">https://github.com/thorkill/eresi</a></p>
-<p>有2篇文章可以说明ERESI的创新性：</p>
-<ul>
-<li>Cerberus ELF interface (<a href="http://www.phrack.org/archives/issues/61/8.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/61/8.txt</a>)</li>
-<li>Embedded ELF debugging (<a href="http://www.phrack.org/archives/issues/63/9.txt" target="_blank" rel="noopener">http://www.phrack.org/archives/issues/63/9.txt</a>)</li>
-</ul>
-<p>Ryan O‘Neill也有开发一个Quenya用于ELF反编译的工具。 下载链接：<a href="http://www.bitlackeys.org/projects/quenya_32bit.tgz" target="_blank" rel="noopener">http://www.bitlackeys.org/projects/quenya_32bit.tgz</a>.可以向可执行文件中注入代码：如果向劫持一个给定的函数来修复二进制文件，那么Quenya的代码注入功能可用。</p>
-<p>如果想攻击一个32位的程序，在该程序中调用puts（）函数用来打印HelloWorld。目标是劫持puts函数，调用evil_puts（）</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//evil_puts.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/syscall.h&gt;</span></span></span><br><span class="line"><span class="keyword">int</span> _write (<span class="keyword">int</span> fd, <span class="keyword">void</span> *buf, <span class="keyword">int</span> count)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">long</span> ret;</span><br><span class="line"></span><br><span class="line">  __asm__ __volatile__ (<span class="string">"pushl %%ebx\n\t"</span></span><br><span class="line"><span class="string">"movl %%esi,%%ebx\n\t"</span></span><br><span class="line"><span class="string">"int $0x80\n\t"</span><span class="string">"popl %%ebx"</span>:<span class="string">"=a"</span> (ret)</span><br><span class="line">                        :<span class="string">"0"</span> (SYS_write), <span class="string">"S"</span> ((<span class="keyword">long</span>) fd),</span><br><span class="line"><span class="string">"c"</span> ((<span class="keyword">long</span>) buf), <span class="string">"d"</span> ((<span class="keyword">long</span>) count));</span><br><span class="line">  <span class="keyword">if</span> (ret &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) ret;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">evil_puts</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	 _write(<span class="number">1</span>, <span class="string">"HAHA puts() has been hijacked!\n"</span>, <span class="number">31</span>);   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#//现在将evil_puts.c编译成evil_puts.o文件，然后注入到./hello_world程序中</span></span><br><span class="line">$ ./hello_world</span><br><span class="line">Hello World</span><br><span class="line"><span class="comment">#//调用了puts("hello world\n");</span></span><br><span class="line">***************************************</span><br><span class="line">[Quenya v0.1@alchemy] reloc evil_puts.o hello_world</span><br><span class="line">0x08048624  addr: 0x8048612</span><br><span class="line">0x080485c4 _write addr: 0x804861e</span><br><span class="line">0x080485c4  addr: 0x804868f</span><br><span class="line">0x080485c4  addr: 0x80486b7</span><br><span class="line">Injection/Relocation succeeded</span><br><span class="line"><span class="comment">#//可执行文件hello_world中已经为之前的evil_puts.o目标文件的write（）函数在0x804861e处分配了一个地址，并进行了重定位。</span></span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//hijack命令重写了全局偏移表的条目，使用evil_puts()的地址替代了puts()：</span></span><br><span class="line">[Quenya v0.1@alchemy] hijack binary hello_world evil_puts puts</span><br><span class="line">Attempting to hijack <span class="keyword">function</span>: puts</span><br><span class="line">Modifying GOT entry <span class="keyword">for</span> puts</span><br><span class="line">Successfully hijacked <span class="keyword">function</span>: puts</span><br><span class="line">Committing changes into executable file</span><br><span class="line">[Quenya v0.1@alchemy] quit</span><br><span class="line">***************************************</span><br><span class="line"><span class="comment">#//现在输出的内容：</span></span><br><span class="line">ryan@alchemy:~/quenya$ ./hello_world</span><br><span class="line">HAHA puts() has been hijacked!</span><br></pre></td></tr></table></figure>
-<p>已经成功将一个目标文件重定位到可执行文件中，通过改变可执行文件的控制流，来执行注入的代码。使用readelf -s hello_world命令，可以看到evil_puts()的符号。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Quenya中利用了ELF重定位机制的代码</span></span><br><span class="line"><span class="keyword">switch</span>(obj.shdr[i].sh_type)</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">case</span> SHT_REL: <span class="comment">/* Section contains ElfN_Rel records */</span></span><br><span class="line">rel = (Elf32_Rel *)(obj.mem + obj.shdr[i].sh_offset);</span><br><span class="line"><span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; obj.shdr[i].sh_size / <span class="keyword">sizeof</span>(Elf32_Rel); j++, rel++)</span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* symbol table */</span> </span><br><span class="line">symtab = (Elf32_Sym *)obj.section[obj.shdr[i].sh_link]; </span><br><span class="line"></span><br><span class="line"><span class="comment">/* symbol we are applying relocation to */</span></span><br><span class="line">symbol = &amp;symtab[ELF32_R_SYM(rel-&gt;r_info)];</span><br><span class="line"></span><br><span class="line"><span class="comment">/* section to modify */</span></span><br><span class="line">TargetSection = &amp;obj.shdr[obj.shdr[i].sh_info];</span><br><span class="line">TargetIndex = obj.shdr[i].sh_info;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* target location */</span></span><br><span class="line">TargetAddr = TargetSection-&gt;sh_addr + rel-&gt;r_offset;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* pointer to relocation target */</span></span><br><span class="line">RelocPtr = (Elf32_Addr *)(obj.section[TargetIndex] + rel-&gt;r_offset);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* relocation value */</span></span><br><span class="line">RelVal = symbol-&gt;st_value; </span><br><span class="line">RelVal += obj.shdr[symbol-&gt;st_shndx].sh_addr;</span><br><span class="line"></span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"0x%08x %s addr: 0x%x\n"</span>,RelVal, &amp;SymStringTable[symbol-&gt;st_name], TargetAddr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">switch</span> (ELF32_R_TYPE(rel-&gt;r_info)) </span><br><span class="line">&#123;</span><br><span class="line"><span class="comment">/* R_386_PC32      2    word32  S + A - P */</span> </span><br><span class="line"><span class="keyword">case</span> R_386_PC32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">*RelocPtr -= TargetAddr;</span><br><span class="line"><span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* R_386_32        1    word32  S + A */</span></span><br><span class="line"><span class="keyword">case</span> R_386_32:</span><br><span class="line">*RelocPtr += RelVal;</span><br><span class="line">     <span class="keyword">break</span>;</span><br><span class="line"> &#125; </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//RelocPtr指向的重定位目标是根据重定位类型（eg：R_386_32）所规定的重定位操作来进行修补的。</span></span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">pwn</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/11/Relocatable code injection-based binary patching/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
@@ -1818,15 +1852,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
