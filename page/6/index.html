@@ -150,6 +150,160 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android中的静态分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/18/Android中的静态分析/">Android中的静态分析</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/18/Android中的静态分析/" class="archive-article-date">
+  	<time datetime="2018-08-18T08:38:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="静态分析"><a href="#静态分析" class="headerlink" title="静态分析"></a>静态分析</h3><ul>
+<li><h4 id="如何静态分析Android程序："><a href="#如何静态分析Android程序：" class="headerlink" title="如何静态分析Android程序："></a>如何静态分析Android程序：</h4><ul>
+<li>阅读反汇编生成的Dalvik字节码，可以使用IDA Pro分析dex文件</li>
+<li>使用文本编辑器阅读baksmali反编译生成的smali文件</li>
+<li>阅读反汇编生成的Java源码，可以使用dex2jar生成jar文件，然后再使用jd-gui阅读jar文件的代码</li>
+</ul>
+</li>
+<li><h4 id="如何快速定位Android程序的关键代码"><a href="#如何快速定位Android程序的关键代码" class="headerlink" title="如何快速定位Android程序的关键代码"></a>如何快速定位Android程序的关键代码</h4><ul>
+<li>AndroidManifest.xml文件<ul>
+<li>记录着软件的一些基本信息，包括软件的包名、运行的系统版本、用到的组件等。</li>
+</ul>
+</li>
+<li><p>程序的主Activity</p>
+<ul>
+<li><p>每个Android程序有且只有一个主Activity（隐藏程序除外，它没有主Activity），它是程序启动的第一个Activity</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:label</span>=<span class="string">"@string/title_activity_main"</span> </span></span><br><span class="line"><span class="tag">		  <span class="attr">android:name</span>=<span class="string">".MainActivity"</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.intent.action.MAIN"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">"android.intent.category.LAUNCHER"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>android:label指定Activity的标题</p>
+</li>
+<li>android:name指定具体的Activity类<ul>
+<li>“.MainActivity”前面省略了程序的包名，完整类名应该为com.droider.xxx.MainActivity</li>
+</ul>
+</li>
+<li>intent-filter指定了Activity的启动意图<ul>
+<li><code>android.intent.action.MAIN</code>表示这个<strong>Activity是程序的主Activity</strong></li>
+<li><code>android.intent.category.LAUNCHER</code>表示这个Activity可以通过LAUNCHER来启动</li>
+<li>(如果AndroidMenifest.xml中，所有的Activity都没有添加<code>android.intent.category.LAUNCHER</code>，那么该程序安装到Android设备上后，在程序列表中是不可见的,如果没有指定<code>android.intent.action.MAIN</code>，Android系统的LAUNCHER就无法匹配程序的主Activity，因此该程序也不会有图标出现)</li>
+</ul>
+</li>
+<li>找到主Activity后，可以直接去<strong>查看其所在类的OnCreate()方法</strong>的反汇编代码:<strong>大多数程序的代码入口处</strong>。</li>
+</ul>
+</li>
+<li>Application类<ul>
+<li>在程序的组件之间传递全局变量，或在Activity启动之前做初始化工作</li>
+<li>类继承自android.app.Application，重写它的OnCreate()方法<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Application类启动的最早，会有授权验证代码转移到该类中。注意OnCreate()方法</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h4 id="如何定位关键代码"><a href="#如何定位关键代码" class="headerlink" title="如何定位关键代码"></a>如何定位关键代码</h4><ul>
+<li>信息反馈<ul>
+<li><strong>字符串做为突破点</strong>：2种<ul>
+<li>字符串会存储在String.xml文件：<ul>
+<li>以id的形式访问，在反汇编代码中搜索字符串的id值</li>
+</ul>
+</li>
+<li>字符串硬编码到程序代码:<ul>
+<li>反汇编代码中直接搜索字符串</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>特征函数法<ul>
+<li>反馈需调用<strong>Android SDK中提供的相关API函数</strong>来完成<ul>
+<li>eg:弹出注册码错误的提示信息需调用<strong>Toast.MakeText().Show()</strong>方法，在反汇编代码中搜索Toast就可定位</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>顺序查看法<ul>
+<li>软件的启动代码开始，逐行的向下分析，执行流程</li>
+</ul>
+</li>
+<li>代码注入法<ul>
+<li>手动修改apk文件的反汇编代码，加入Log输出，配合LogCat查看程序执行到特定点时的状态数据</li>
+</ul>
+</li>
+<li>栈跟踪法<ul>
+<li>输出运行时的栈跟踪信息，然后查看栈上的函数调用序列来理解方法的执行流程</li>
+</ul>
+</li>
+<li>Method Profiling<ul>
+<li>记录每个函数占用的CPU时间外，还可跟踪所有的函数调用关系，并提供比栈跟踪法更详细的函数调用序列报告</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/18/Android中的静态分析/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android程序中的类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1761,100 +1915,6 @@
 
 
   
-    <article id="post-Android锁屏密码分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/02/Android锁屏密码分析/">Android锁屏密码分析</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/02/Android锁屏密码分析/" class="archive-article-date">
-  	<time datetime="2018-08-02T12:36:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="1-输入密码算法"><a href="#1-输入密码算法" class="headerlink" title="1.输入密码算法"></a>1.输入密码算法</h3><ul>
-<li>在设置锁屏的界面用Android SDK目录中Android-sdk-linux/tools/uiautomatorviewer.bat，分析获取锁屏View类为LockPatternView，锁屏工具类为LockPatternUtils.java。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//passwordToHash方法   </span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">byte</span>[] passwordToHash(String password, <span class="keyword">int</span> userId) &#123;</span><br><span class="line">     <span class="keyword">if</span> (password == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        String algo = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">byte</span>[] hashed = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//核心加密算法：password+salt值</span></span><br><span class="line">            <span class="keyword">byte</span>[] saltedPassword = (password + getSalt(userId)).getBytes();</span><br><span class="line">            <span class="keyword">byte</span>[] sha1 = MessageDigest.getInstance(algo = <span class="string">"SHA-1"</span>).digest(saltedPassword);</span><br><span class="line">            <span class="keyword">byte</span>[] md5 = MessageDigest.getInstance(algo = <span class="string">"MD5"</span>).digest(saltedPassword);</span><br><span class="line">            hashed = (toHex(sha1) + toHex(md5)).getBytes();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Failed to encode string because of missing algorithm: "</span> + algo);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> hashed;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//将加盐后的password经过SHA-1和MD5加密，转化为hex值再+</span></span><br><span class="line"><span class="comment">//hashed为最终保存在本地的加密密码内容</span></span><br><span class="line"><span class="comment">/*******************寻找getSalt方法，在passwordToHash方法上***********************/</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> String LOCK_PASSWORD_SALT_KEY = <span class="string">"lockscreen.password_salt"</span>;</span><br><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">getSalt</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> salt = getLong(LOCK_PASSWORD_SALT_KEY, <span class="number">0</span>, userId);</span><br><span class="line">        <span class="keyword">if</span> (salt == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                salt = SecureRandom.getInstance(<span class="string">"SHA1PRNG"</span>).nextLong();</span><br><span class="line">                setLong(LOCK_PASSWORD_SALT_KEY, salt, userId);</span><br><span class="line">                Log.v(TAG, <span class="string">"Initialized lock password salt for user: "</span> + userId);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line"> <span class="comment">// Throw an exception rather than storing a password we'll never be able to recover</span></span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Couldn't get SecureRandom number"</span>, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Long.toHexString(salt);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//lockscreen.password_salt从一个地方获取salt值，为0，随机生产一个，存lockscreen.password_salt中，最后Long.toHexString(salt)即可。</span></span><br><span class="line"><span class="comment">/*****************************下一步就是去找getLong******************************/</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getLong</span><span class="params">(String secureSettingKey, <span class="keyword">long</span> defaultValue)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> getLockSettings().getLong(secureSettingKey, defaultValue,</span><br><span class="line">                    getCurrentOrCallingUserId());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException re) &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">/*******************************跟踪getLockSettings（）**************************/</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ILockSettings <span class="title">getLockSettings</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mLockSettingsService == <span class="keyword">null</span>) &#123;</span><br><span class="line">            ILockSettings service = ILockSettings.Stub.asInterface(</span><br><span class="line">                    ServiceManager.getService(<span class="string">"lock_settings"</span>));</span><br><span class="line">            mLockSettingsService = service;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mLockSettingsService;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//通过在ServiceManager中获取一个服务来进行操作，在Android中，类似这种服务于***Service类实现。</span></span><br><span class="line"><span class="comment">//在包中寻找LockSettingsService.java类，查看getLong方法</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getLong</span><span class="params">(String key, <span class="keyword">long</span> defaultValue, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        checkReadPermission(key, userId);</span><br><span class="line">        String value = getStringUnchecked(key, <span class="keyword">null</span>, userId);</span><br><span class="line">        <span class="keyword">return</span> TextUtils.isEmpty(value) ? defaultValue : Long.parseLong(value);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//找到LockSettingsService方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LockSettingsService</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> Injector(context));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@VisibleForTesting</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">LockSettingsService</span><span class="params">(Injector injector)</span> </span>&#123;</span><br><span class="line">        mInjector = injector;</span><br><span class="line">        mContext = injector.getContext();</span><br><span class="line">        *******</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//与文件中的injector有关</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">injector</span></span>&#123;</span><br><span class="line">    *****</span><br><span class="line"><span class="function"><span class="keyword">public</span> LockSettingsStorage <span class="title">getStorage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> LockSettingsStorage storage = <span class="keyword">new</span> LockSettingsStorage(mContext);</span><br><span class="line">            storage.setDatabaseOnCreateCallback(<span class="keyword">new</span> LockSettingsStorage.Callback() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initialize</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">                    <span class="comment">// Get the lockscreen default from a system property, if available</span></span><br><span class="line">                    <span class="keyword">boolean</span> lockScreenDisable = SystemProperties.getBoolean(</span><br><span class="line">                            <span class="string">"ro.lockscreen.disable.default"</span>, <span class="keyword">false</span>);</span><br><span class="line">                    <span class="keyword">if</span> (lockScreenDisable) &#123;</span><br><span class="line">                        storage.writeKeyValue(db, LockPatternUtils.DISABLE_LOCKSCREEN_KEY, <span class="string">"1"</span>, <span class="number">0</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">            <span class="keyword">return</span> storage;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//发现SQLiteDatabase，故在数据库中存储</span></span><br><span class="line"><span class="comment">/*************************下一步找到LockSettingsStorage.java类*********************/</span></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">DatabaseHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"LockSettingsDB"</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DATABASE_NAME = <span class="string">"locksettings.db"</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DATABASE_VERSION = <span class="number">2</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> IDLE_CONNECTION_TIMEOUT_MS = <span class="number">30000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span> Callback mCallback;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">DatabaseHelper</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">super</span>(context, DATABASE_NAME, <span class="keyword">null</span>, DATABASE_VERSION);</span><br><span class="line">            setWriteAheadLoggingEnabled(<span class="keyword">true</span>);</span><br><span class="line">            <span class="comment">// Memory optimization - close idle connections after 30s of inactivity</span></span><br><span class="line">            setIdleConnectionTimeout(IDLE_CONNECTION_TIMEOUT_MS);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCallback</span><span class="params">(Callback callback)</span> </span>&#123;</span><br><span class="line">            mCallback = callback;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createTable</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">            db.execSQL(<span class="string">"CREATE TABLE "</span> + TABLE + <span class="string">" ("</span> +</span><br><span class="line">                    <span class="string">"_id INTEGER PRIMARY KEY AUTOINCREMENT,"</span> +</span><br><span class="line">                    COLUMN_KEY + <span class="string">" TEXT,"</span> +</span><br><span class="line">                    COLUMN_USERID + <span class="string">" INTEGER,"</span> +</span><br><span class="line">                    COLUMN_VALUE + <span class="string">" TEXT"</span> +</span><br><span class="line">                    <span class="string">");"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">            createTable(db);</span><br><span class="line">            <span class="keyword">if</span> (mCallback != <span class="keyword">null</span>) &#123;</span><br><span class="line">                mCallback.initialize(db);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> currentVersion)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> upgradeVersion = oldVersion;</span><br><span class="line">            <span class="keyword">if</span> (upgradeVersion == <span class="number">1</span>) &#123;</span><br><span class="line">                <span class="comment">// Previously migrated lock screen widget settings. Now defunct.</span></span><br><span class="line">                upgradeVersion = <span class="number">2</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (upgradeVersion != DATABASE_VERSION) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"Failed to upgrade database!"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="comment">//确定了数据库名称locksettings.db</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String SYSTEM_DIRECTORY = <span class="string">"/system/"</span>；</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LEGACY_LOCK_PASSWORD_FILE = <span class="string">"password.key"</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String LEGACY_LOCK_PATTERN_FILE = <span class="string">"gesture.key"</span>;</span><br></pre></td></tr></table></figure>
-<p>find / -name locksettings.db，在/data/system下可以找到db文件。可以用SQlite工具查看即可。</p>
-<p>链接: <a href="https://pan.baidu.com/s/1UWLB7-bzX8vJ5lHOWwjLvQ" target="_blank" rel="noopener">https://pan.baidu.com/s/1UWLB7-bzX8vJ5lHOWwjLvQ</a> 密码: bgyd</p>
-<p>在SQLite工具中可以看到salt值，数据库中的是long类型，hex化之后，运用LockPatternUtils.java中加密算法。</p>
-<p><code>MD5（输入明文密码+设备的salt值）.Hex+SHA1（输入明文密码+设备的salt值）.Hex</code>就是最终的加密内容。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//如何通过反射机制获取设备的salt值，新建一个Android项目：</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	Class&lt;?&gt; clazz1= Class.forName(<span class="string">"com.android.internal.widget.LockPatternUtils"</span>);</span><br><span class="line">	Object lockUtils=clazz1.getConstructor(Context.class).newInstance(<span class="keyword">this</span>);</span><br><span class="line">	Class&lt;?&gt; lockUtilsClazz=lockUtils.getClass();</span><br><span class="line">	Method getSaltM=lockUtilsClazz.getDeclaredMethod(<span class="string">"getSalt"</span>, <span class="keyword">int</span>.class);</span><br><span class="line">	getSaltM.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">	Object saltObj=getSaltM.invoke(lockUtils, <span class="number">0</span>);</span><br><span class="line">	Log.i(<span class="string">"gs"</span>，<span class="string">"salt:"</span>+saltObj);<span class="comment">//gs=getSalt</span></span><br><span class="line">&#125;<span class="keyword">catch</span>(Exception e) &#123;</span><br><span class="line">	Log.i(<span class="string">"gs"</span>,<span class="string">"err:"</span>+Log.getStackTraceString(e));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后就可以直接利用adb打印日志：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">**:\&gt;adb logcat -s gs</span><br></pre></td></tr></table></figure>
-<h3 id="2-手势密码算法"><a href="#2-手势密码算法" class="headerlink" title="2.手势密码算法"></a>2.手势密码算法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] patternToHash(List&lt;LockPatternView.Cell&gt; pattern) &#123;</span><br><span class="line">    <span class="keyword">if</span> (pattern == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> patternSize = pattern.size();</span><br><span class="line">    <span class="keyword">byte</span>[] res = <span class="keyword">new</span> <span class="keyword">byte</span>[patternSize];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; patternSize; i++) &#123;</span><br><span class="line">        LockPatternView.Cell cell = pattern.get(i);</span><br><span class="line">        res[i] = (<span class="keyword">byte</span>) (cell.getRow() * <span class="number">3</span> + cell.getColumn());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        MessageDigest md = MessageDigest.getInstance(<span class="string">"SHA-1"</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] hash = md.digest(res);</span><br><span class="line">        <span class="keyword">return</span> hash;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException nsa) &#123;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>手势密码比较简单，就只是需要将九宫格图案转化为字节数组，然后SHA-1加密。</p>
-<p>比如L就为<code>00 03 06 07 08</code>字节码。</p>
-<p>源码加上手势点数据：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">List&lt;LockPatternView.Cell&gt; pattern = <span class="keyword">new</span> ArraryList&lt;LockPatternView.Cell&gt;();</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">0</span>);</span><br><span class="line">pattern.add(cell1);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">3</span>);</span><br><span class="line">pattern.add(cell2);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">6</span>);</span><br><span class="line">pattern.add(cell3);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">7</span>);</span><br><span class="line">pattern.add(cell4);</span><br><span class="line">LockPatternView.Cell cell = <span class="keyword">new</span> LockPatternView.Cell(<span class="number">0</span>,<span class="number">8</span>);</span><br><span class="line">pattern.add(cell5);</span><br><span class="line">System.out.println(<span class="string">"pattern:"</span>+toHex(patternToHash(pattern)));</span><br></pre></td></tr></table></figure>
-<p>可以比对2个结果。</p>
-<h3 id="3-SUM"><a href="#3-SUM" class="headerlink" title="3.SUM"></a>3.SUM</h3><ul>
-<li>输入密码算法：对输入的明文密码+设备的salt值进行MD5和SHA1值操作后，之后转化为Hex值进行拼接就可以。 加密信息保存在/data/system/password.key。</li>
-<li>手势密码算法：将九宫格手势密码中的点数据转化成对立的字节数组，然后直接进行SHA-1加密即可。加密信息保存在/data/system/gesture.key。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/02/Android锁屏密码分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -1990,11 +2050,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">travel</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Spider</a>
+                <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
             
             <div class="clearfix"></div>
