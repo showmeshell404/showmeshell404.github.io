@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2018/12/17/%E7%88%AC%E8%99%AB%E4%B8%89/</loc>
+    <lastmod>2018-12-17T07:41:14.216Z</lastmod>
+    <data>
+        <display>
+        <title>爬虫三</title>
+        <pubTime>2018-12-17T07:39:53.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/12/17/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/</loc>
     <lastmod>2018-12-17T07:37:52.594Z</lastmod>
     <data>

