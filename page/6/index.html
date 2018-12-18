@@ -150,6 +150,86 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Java开发即时聊天软件-4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/27/Java开发即时聊天软件-4/">Java开发即时聊天软件(4)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/27/Java开发即时聊天软件-4/" class="archive-article-date">
+  	<time datetime="2018-08-27T05:47:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Java开发即时聊天软件-4"><a href="#Java开发即时聊天软件-4" class="headerlink" title="Java开发即时聊天软件(4)"></a>Java开发即时聊天软件(4)</h2><p>数据库见表及登陆验证~<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">//数据库建表操作</span><br><span class="line">数据结构建模(数据库设计)</span><br><span class="line">用户表(users)</span><br><span class="line">   1.用户编号    uid              varchar(100)   主键</span><br><span class="line">   2.手机号码    phonenumber      varchar(100)    唯一索引</span><br><span class="line">   3.email       email            varchar(100)    唯一索引</span><br><span class="line">   4.密码        password         varchar(100)</span><br><span class="line">   5.昵称        netname          varchar(100)</span><br><span class="line">   6.个人说明    info              varchar(200)</span><br><span class="line">   7.年          yy               int</span><br><span class="line">   8.月          mm               int</span><br><span class="line">   9.日          dd               int</span><br><span class="line">   10.备注       back             varchar(500)</span><br><span class="line">   11.性别       sex              varchar(100)</span><br><span class="line">   12.真实名称   name             varchar(100)</span><br><span class="line">   13.状态       state             int</span><br><span class="line">   14.注册时间   createtime        datetime</span><br><span class="line">好友关系表friends</span><br><span class="line">   1.好友编号           logid        varchar(100)  主键</span><br><span class="line">   2.用户编号           uid         varchar(100)       索引</span><br><span class="line">   3.好友的用户编号     hyuid	       varchar(100)</span><br><span class="line">   4.添加时间           createtime   datetime</span><br><span class="line">//使用到的三个jar 链接: https://pan.baidu.com/s/1lGcifAjKy_a0vBkm_dUVGw 密码: e5q2</span><br><span class="line">c3p0数据库连接池实现插件</span><br><span class="line">mysql-connetor连接驱动</span><br><span class="line">json-lib-2.2.3-jdk15的解析数据结构</span><br></pre></td></tr></table></figure></p>
+<p><img src="/2018/08/27/Java开发即时聊天软件-4/1.png" alt="1"></p>
+<p><img src="/2018/08/27/Java开发即时聊天软件-4/2.png" alt="2"></p>
+<p><img src="/2018/08/27/Java开发即时聊天软件-4/3.png" alt="3"></p>
+<p><img src="/2018/08/27/Java开发即时聊天软件-4/4.png" alt="4"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//LoginServer.java 写run方法</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.server;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.OutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.ServerSocket;</span><br><span class="line"><span class="keyword">import</span> java.net.Socket;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.ExecutorService;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"><span class="comment">//登录服务器主要负责登录</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginServer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> Socket socket = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">LoginServer</span><span class="params">(Socket socket)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.socket = socket;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 线程方法</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// 登录操作</span></span><br><span class="line">		InputStream in = <span class="keyword">null</span>;</span><br><span class="line">		OutputStream out = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			in = socket.getInputStream();</span><br><span class="line">			out = socket.getOutputStream();			</span><br><span class="line">			</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">openServer</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		<span class="comment">// 线程池</span></span><br><span class="line">		ExecutorService execute = Executors.newFixedThreadPool(<span class="number">2000</span>);</span><br><span class="line">		<span class="comment">// 开启了TCP4001端口用于登录业务</span></span><br><span class="line">		ServerSocket server = <span class="keyword">new</span> ServerSocket(<span class="number">4001</span>);</span><br><span class="line">		<span class="comment">// 死循环目的是可以无限服务</span></span><br><span class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">			Socket socket = server.accept();</span><br><span class="line">			socket.setSoTimeout(<span class="number">10000</span>);</span><br><span class="line">			execute.execute(<span class="keyword">new</span> LoginServer(socket));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//DBManagerjava 写数据库连接池操作</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.db;</span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.sql.DataSource;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.mchange.v2.c3p0.ComboPooledDataSource;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 用于数据库连接配置</span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DBManager</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String DRIVER_NAME = <span class="string">"com.mysql.jdbc.Driver"</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String USERNAME = <span class="string">"root"</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String PASSWORD = <span class="string">""</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String URL = <span class="string">"jdbc:mysql://127.0.0.1/chatroom"</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> DataSource dataSource = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 准备加载数据源 C3P0</span></span><br><span class="line">	<span class="keyword">static</span> &#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			ComboPooledDataSource pool = <span class="keyword">new</span> ComboPooledDataSource();</span><br><span class="line">			pool.setDriverClass(DRIVER_NAME);</span><br><span class="line">			pool.setUser(USERNAME);</span><br><span class="line">			pool.setPassword(PASSWORD);</span><br><span class="line">			pool.setJdbcUrl(URL);</span><br><span class="line">			pool.setMaxPoolSize(<span class="number">30</span>);</span><br><span class="line">			pool.setMinPoolSize(<span class="number">5</span>);</span><br><span class="line">			dataSource = pool;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">			System.out.println(<span class="string">"数据连接池加载失败!"</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//  获得Connection连接对象</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Connection <span class="title">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> SQLException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> dataSource.getConnection();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//userDAO.java登陆验证操作，将异常add to class</span></span><br><span class="line"><span class="keyword">package</span> com.ChatRoom.db;</span><br><span class="line"><span class="keyword">import</span> java.sql.Connection;</span><br><span class="line"><span class="keyword">import</span> java.sql.PreparedStatement;</span><br><span class="line"><span class="keyword">import</span> java.sql.ResultSet;</span><br><span class="line"><span class="keyword">import</span> java.sql.SQLException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDAO</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 使用email账户进行登录</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> email</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> passowrd</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> UsernameNotFoundException</span></span><br><span class="line"><span class="comment">	 *             用户不存在</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> PasswordException</span></span><br><span class="line"><span class="comment">	 *             密码错误</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> StateException</span></span><br><span class="line"><span class="comment">	 *             账户被锁定</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> SQLException</span></span><br><span class="line"><span class="comment">	 *             数据库连接失败</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">loginForEmail</span><span class="params">(String email, String password)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> UsernameNotFoundException, PasswordException, StateException, SQLException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> login(email, password, <span class="string">"SELECT * FROM users where email=?"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">private</span> String <span class="title">login</span><span class="params">(String key, String password, String sql)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> UsernameNotFoundException, PasswordException, StateException, SQLException </span>&#123;</span><br><span class="line"></span><br><span class="line">		Connection conn = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			conn = DBManager.getConnection();</span><br><span class="line">			PreparedStatement pst = conn.prepareStatement(sql);</span><br><span class="line">			pst.setString(<span class="number">1</span>, key);</span><br><span class="line">			ResultSet rs = pst.executeQuery();</span><br><span class="line">			<span class="keyword">if</span> (rs.next()) &#123;</span><br><span class="line">				<span class="keyword">if</span> (rs.getInt(<span class="string">"state"</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">					<span class="keyword">if</span> (rs.getString(<span class="string">"password"</span>).equals(password)) &#123;<span class="comment">// 询问密码是否相同</span></span><br><span class="line">						<span class="keyword">return</span> rs.getString(<span class="number">1</span>);</span><br><span class="line">					&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">						<span class="keyword">throw</span> <span class="keyword">new</span> PasswordException();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					<span class="keyword">throw</span> <span class="keyword">new</span> StateException();</span><br><span class="line">				&#125;</span><br><span class="line"></span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">throw</span> <span class="keyword">new</span> UsernameNotFoundException();</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">			<span class="keyword">throw</span> e;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			conn.close();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * 使用手机号码来登录</span></span><br><span class="line"><span class="comment">	 * </span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> phone</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> password</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> UsernameNotFoundException</span></span><br><span class="line"><span class="comment">	 *             用户不存在</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> PasswordException</span></span><br><span class="line"><span class="comment">	 *             密码错误</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> StateException</span></span><br><span class="line"><span class="comment">	 *             账户被锁定</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">loginForPhone</span><span class="params">(String phone, String password)</span></span></span><br><span class="line"><span class="function">			<span class="keyword">throws</span> UsernameNotFoundException, PasswordException, StateException, SQLException </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> login(phone, password, <span class="string">"SELECT * FROM users where phonenumber=?"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">new</span> UserDAO().loginForPhone(<span class="string">"123456789"</span>, <span class="string">"123456"</span>);<span class="comment">//测试用数据</span></span><br><span class="line">			System.out.println(<span class="string">"成功"</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (UsernameNotFoundException e) &#123;</span><br><span class="line">			<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (PasswordException e) &#123;</span><br><span class="line">			<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (StateException e) &#123;</span><br><span class="line">			<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">			<span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/08/27/Java开发即时聊天软件-4/5.png" alt="5"><br>测试成功~</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/27/Java开发即时聊天软件-4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java开发即时聊天软件-3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1322,201 +1402,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/18/Android中的静态分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Android程序中的类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/18/Android程序中的类/">Android程序中的类</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/18/Android程序中的类/" class="archive-article-date">
-  	<time datetime="2018-08-18T08:34:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Android程序中的类"><a href="#Android程序中的类" class="headerlink" title="Android程序中的类"></a>Android程序中的类</h3><p>分析Android程序中的类，便于分析反编译后文件的层次结构与文件名对于的含义。</p>
-<h4 id="1-内部类（Inner-Class）"><a href="#1-内部类（Inner-Class）" class="headerlink" title="1.内部类（Inner Class）"></a>1.内部类（Inner Class）</h4><p>类中定义的类为内部类（Inner Class），可分为成员内部类、静态嵌套类、方法内部类、匿名内部类</p>
-<p>内部类作为一个独立的类，拥有自己独立的smali文件</p>
-<ul>
-<li>内部类的文件名形式为<em>[外部类]$[内部类].smali</em></li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Outer</span></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Inner</span></span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="/2018/08/18/Android程序中的类/1.png" alt="1"></p>
-<ul>
-<li><p>观察实例字段：sn是字符串类型，this$0是MainActivity类型，synthetic关键字表明它是“合成”的</p>
-<ul>
-<li>this$0是<strong>内部类自动保留的一个指向所在外部类的引用</strong></li>
-<li>this表示为父类的引用，数值0表示引用的层数</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Outer</span></span>&#123;						<span class="comment">//this$0</span></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FirstInner</span></span>&#123;			<span class="comment">//this$1</span></span><br><span class="line">        <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecondInner</span></span>&#123;		<span class="comment">//this$2</span></span><br><span class="line">            <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThirdInner</span></span>&#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>构造函数，初始化过程：</p>
-</li>
-</ul>
-<p><img src="/2018/08/18/Android程序中的类/2.png" alt="2"></p>
-<p>使用“.parameter”指令指定了两个参数，而实际上却使用了p0～p2共3个寄存器：</p>
-<p><strong>对于一个非静态的方法而言，会隐含的使用p0寄存器当作类的this引用</strong>，p0表示<code>MainActivity$SNChecker</code>自身的引用，p1表示<code>MainActivity</code>的引用，p2表示<code>sn</code>字符串</p>
-<ul>
-<li>内部类的初始化步骤：<ul>
-<li><u>保存外部类的引用到本类的一个synthetic字段</u>中，以便内部类的其它方法使用</li>
-<li>然后是<u>调用内部类的父类的构造函数来初始化父类</u></li>
-<li>最后是对<u>内部类自身进行初始化</u></li>
-</ul>
-</li>
-</ul>
-<h4 id="2-监听器"><a href="#2-监听器" class="headerlink" title="2.监听器"></a>2.监听器</h4><p>Android开发中使用了大量监听器，比如Button的点击事件响应OnClickListener、Button的长按事件响应OnLongClickListener、ListView列表项的点击事件响应OnItemSelectedListener等。</p>
-<p><strong>实际编写代码的过程中，多采用匿名内部类的形式来实现</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">btn.setOnClickListener(<span class="keyword">new</span> android.view.view.OnClickListener()&#123;</span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span></span>&#123;</span><br><span class="line">        .......</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">//监听器的实质就是接口</span></span><br><span class="line"><span class="comment">//OnClickListener监听器代码如下</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnClickListener</span></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    *Called when a view has been clicked.</span></span><br><span class="line"><span class="comment">    *</span></span><br><span class="line"><span class="comment">    *<span class="doctag">@param</span> v The view that was clicked</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//设置按钮点击事件的监听器只需要实现View.OnClickListener的onClick()方法即可</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//某smali文件OnCreate（）方法中设置按钮点击事件监听器</span></span><br><span class="line"><span class="meta"># virtual methods</span></span><br><span class="line">.<span class="function">method <span class="keyword">public</span> <span class="title">onCreate</span><span class="params">(Landroid/os/Bundle;)</span>V</span></span><br><span class="line">    .locals 2</span><br><span class="line">    .parameter <span class="string">"savedInstanceState"</span></span><br><span class="line">    ......</span><br><span class="line">    .line <span class="number">32</span></span><br><span class="line">    iget-object v0, p0, Lcom/droider/crackme0502/MainActivity;-&gt;btnAnno:Landroid/widget/Button;</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">new</span>-instance v1, Lcom/droider/crackme0502/MainActivity$<span class="number">1</span>;</span><br><span class="line">	#新建一个MainActivity$<span class="number">1</span>实例</span><br><span class="line">    invoke-direct &#123;v1, p0&#125;, Lcom/droider/crackme0502/MainActivity$<span class="number">1</span>;-&gt;&lt;init&gt;(Lcom/droider/crackme0502/MainActivity;)V</span><br><span class="line">	#初始化MainActivity$<span class="number">1</span>实例</span><br><span class="line">    invoke-<span class="keyword">virtual</span> &#123;v0, v1&#125;, Landroid/widget/Button;-&gt;setOnClickListener(Landroid/view/View$OnClickListener;)V</span><br><span class="line">    #设置按钮点击事件监听器</span><br></pre></td></tr></table></figure>
-<p>按钮传入了一个<code>MainActivity$1</code>对象的引用,在<code>MainActivity$1.smali</code>文件的开头使用了“<code>.implements</code>”指令指定该类实现了按钮点击事件的监听器接口。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># interfaces</span><br><span class="line">.implements Landroid/view/View$OnClickListener;</span><br></pre></td></tr></table></figure>
-<p>因此：这个类实现了它的OnClick()方法。</p>
-<h4 id="3-注解类"><a href="#3-注解类" class="headerlink" title="3.注解类"></a>3.注解类</h4><ul>
-<li>Android系统中涉及到注解的包共有两个<ul>
-<li>一个是<code>dalvik.annotation</code><ul>
-<li>该程序包下的注解不对外开放，仅供核心库与代码测试使用</li>
-<li>注解声明位于Android系统源码的<code>libcore\dalvik\src\main\java\dalvik\annotation</code>目录下</li>
-</ul>
-</li>
-<li>一个是<code>android.annotation</code><ul>
-<li>注解声明位于Android系统源码的<code>frameworks\base\core\java\android\annotation</code>目录下</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>注解类大概有以下几种</li>
-<li>MemberClasses</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/MemberClasses;</span><br><span class="line">    value = &#123;</span><br><span class="line">        Lcom/droider/crackme0502/MainActivity$SNChecker;</span><br><span class="line">    &#125;</span><br><span class="line">.end annotation</span><br><span class="line"><span class="comment">//MemberClasses注解是编译时自动加上的</span></span><br><span class="line"><span class="comment">//MemberClasses注解源码</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* A "system annotation" used to provide the MemberClasses list.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Target</span>(ElementType.ANNOTATION_TYPE)    </span><br><span class="line"><span class="meta">@interface</span> MemberClasses&#123;&#125;</span><br></pre></td></tr></table></figure>
-<p>MemberClasses注解是一个“系统注解”，<strong>作用是为父类提供一个MemberClasses列表</strong>。即<strong>子类成员集合，一个内部类列表</strong></p>
-<ul>
-<li>EnclosingMethod</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/EnclosingMethod;</span><br><span class="line">    value = Lcom/droider/crackme0502/MainActivity;-&gt;onCreate(Landroid/os/Bundle;)V</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
-<p>EnclosingMethod注解用来说明<strong>整个类的作用范围,</strong>Method表明它作用于<strong>一个方法</strong>,value表明它位于MainActivity的onCreate()方法中</p>
-<ul>
-<li>EnclosingClass</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># annotations</span><br><span class="line">.annotation system Ldalvik/annotation/EnclosingClass;</span><br><span class="line">    value = Lcom/droider/crackme0502/MainActivity;</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
-<p>EnclosingClass注解<strong>表明其作用于一个类，</strong>value表明这个类是MainActivity</p>
-<ul>
-<li>InnerClass</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.annotation system Ldalvik/annotation/InnerClass;</span><br><span class="line">    accessFlags = <span class="number">0x1</span>		<span class="comment">//访问标志</span></span><br><span class="line">    name = <span class="string">"SNChecker"</span>		<span class="comment">//内部类的名称</span></span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
-<p>InnerClass表明自身是一个<strong>内部类</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//accessFlags为一枚举值</span></span><br><span class="line"><span class="keyword">enum</span>&#123;</span><br><span class="line">    kDexVisibilityBuild		= <span class="number">0x00</span>,		<span class="comment">//annotation visibility</span></span><br><span class="line">    kDexVisibilityRuntime	= <span class="number">0x01</span>,</span><br><span class="line">    kDexVisibilitySystem	= <span class="number">0x02</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>AnnotationDefault</li>
-</ul>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># annotations</span></span><br><span class="line">.annotation system Ldalvik/annotation/AnnotationDefault;</span><br><span class="line">    value = .subannotation Lcom/droider/anno/MyAnnoClass;</span><br><span class="line">        value = <span class="string">"MyAnnoClass"</span>	<span class="comment">//MyAnnoClass类有一个默认值为“MyAnnoClass”</span></span><br><span class="line">    .end subannotation</span><br><span class="line">.end annotation</span><br></pre></td></tr></table></figure>
-<p>注解类在声明时提供了<strong>默认值</strong>，那么程序中会使用到AnnotationDefault注解。</p>
-<ul>
-<li>Signature</li>
-</ul>
-<p><strong>Signature注解用于验证方法的签名</strong>,在smali中方法的原型与Signature注解的value值是一致的。</p>
-<ul>
-<li>Throws</li>
-</ul>
-<p>如果方法的声明中使用throws关键字抛出异常，则会生成相应的Throws注解。</p>
-<p>以上的注解都是自动生成的，用户不可以在代码中添加使用</p>
-<ul>
-<li>SuppressLint</li>
-</ul>
-<p>作用是辅助开发人员去除代码检查器（Lint API check）添加的警告信息</p>
-<ul>
-<li>TargetApi</li>
-</ul>
-<p>程序代码中使用到的API等级比<code>AndroidManifest.xml</code>文件中定义的<code>minSdkVersio</code>n要高，则在方法或方法所在类的前面添加“<code>@TargetApi(9)</code>”</p>
-<h4 id="4-自动生成的类"><a href="#4-自动生成的类" class="headerlink" title="4.自动生成的类"></a>4.自动生成的类</h4><ul>
-<li><p>R类</p>
-<ul>
-<li>工程res目录下的每个资源都会有一个id值，这些资源的类型可以是字符串、图片、样式、颜色</li>
-<li>这些资源类都是R类的内部类，因此它们都会独立生成一个类文件</li>
-<li><code>R.smali、R$attr.smali、R$dimen.smali、R$drawable.smali、R$id.smali</code>等</li>
-</ul>
-</li>
-<li><p>BuildConfig类</p>
-<ul>
-<li>类中只有一个boolean类型的名为DEBUG的字段</li>
-<li>用来标识程序发布的版本类型</li>
-<li>值默认是true，即程序以调试版本发布</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//# BuildConfig.smali</span><br><span class="line"># static fields</span><br><span class="line">.field public static final DEBUG:Z = true</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>注解类</p>
-<ul>
-<li>代码中使用了SuppressLint或TargetApi注解</li>
-<li><code>smali\android\annotation</code>目录下生成相应的smali文件</li>
-</ul>
-</li>
-<li><p>support</p>
-<ul>
-<li>提供了高版本才有的如Fragment、ViewPager等控件供低版本的程序调用情况</li>
-<li><code>smali\android\support</code>目录下生成相应的smali文件</li>
-</ul>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/18/Android程序中的类/">展开全文 >></a>
         </p>
       
 
