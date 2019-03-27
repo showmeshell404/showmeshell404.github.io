@@ -150,6 +150,112 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-KPPW-2-2-任意文件下载漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/30/KPPW-2-2-任意文件下载漏洞/">KPPW 2.2 任意文件下载漏洞</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/30/KPPW-2-2-任意文件下载漏洞/" class="archive-article-date">
+  	<time datetime="2018-11-30T08:55:31.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>KPPW</strong></p>
+<p>KPPW是一款基于PHP+MYSQL技术构架的威客系统 ，基于多年实践和对威客模式商业化运作的大量调查分析而精心策划研发。</p>
+<p><strong>漏洞介绍</strong></p>
+<p>KPPW 2.2版本存在任意文件下载漏洞，攻击者可以通过漏洞下载网站任意文件，危害较大。</p>
+<p><strong>影响范围</strong></p>
+<p>KPPW 2.2版本</p>
+<p><strong>漏洞危害</strong></p>
+<p>攻击者可以通过任意文件下载漏洞网站文件，窃取网站敏感数据，从而对被攻击者造成巨大的损失。</p>
+<p><strong>任意文件下载漏洞</strong></p>
+<p>Web应用程序中提供的文件下载接口对用户提交的数据过滤不严格，导致黑客可以通过构造相对路径，文件后缀等方式，将其他文件传入文件下载接口中，并利用该方式非法获取服务器数据。</p>
+<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞根源位于<code>/control/ajax/ajax_file.php</code>，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> defined ( <span class="string">'IN_KEKE'</span> ) <span class="keyword">or</span> <span class="keyword">exit</span>(<span class="string">'Access Denied'</span>);</span><br><span class="line"> <span class="keyword">switch</span> ($ajax)&#123;</span><br><span class="line">  <span class="keyword">case</span> <span class="string">"load"</span>:</span><br><span class="line">   <span class="keyword">if</span>($work_id)&#123;</span><br><span class="line">    $file_ids = db_factory::get_count(sprintf(<span class="string">" select work_file from %switkey_task_work where work_id='%d'"</span>,TABLEPRE,$work_id));</span><br><span class="line">    $file_list = keke_task_class::get_work_file($file_ids);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="string">"download"</span>:</span><br><span class="line">   keke_file_class::file_down($file_name, $file_path);</span><br><span class="line">   <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="string">"delete"</span>:</span><br><span class="line">   $res = keke_file_class::del_att_file($file_id, $filepath);</span><br><span class="line">   $res <span class="keyword">and</span> kekezu::echojson ( <span class="string">''</span>, <span class="string">'1'</span> ) <span class="keyword">or</span> kekezu::echojson ( <span class="string">''</span>, <span class="string">'0'</span> );</span><br><span class="line">   <span class="keyword">die</span> ();</span><br><span class="line">   <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> <span class="string">"del"</span>:</span><br><span class="line">   <span class="keyword">if</span>(strtolower($_SERVER[<span class="string">'REQUEST_METHOD'</span>])!=<span class="string">'post'</span> || !<span class="keyword">isset</span>($fid) || !<span class="keyword">isset</span>($filepath))&#123; </span><br><span class="line">    kekezu::echojson ( <span class="string">''</span>, <span class="string">'0'</span> );<span class="keyword">die</span>();</span><br><span class="line">   &#125;</span><br><span class="line">   $fid = intval($fid);</span><br><span class="line">   $size = kekezu::escape($size);</span><br><span class="line">   $res = keke_file_class::del_att_file($fid,$filepath,$size);</span><br><span class="line">   $res <span class="keyword">and</span> kekezu::echojson ( <span class="string">''</span>, <span class="number">1</span> ) <span class="keyword">or</span> kekezu::echojson ( <span class="string">''</span>, <span class="string">'0'</span> );</span><br><span class="line">   <span class="keyword">die</span> ();</span><br></pre></td></tr></table></figure>
+<p>switch有四个选项，分别为：<code>load</code>、<code>download</code> 、<code>delete</code> 、<code>del</code> 。变量<code>$ajax</code> 传过来哪个值，就会执行哪部分的代码，比如传过来的值为download，则就会执行下载模块下的代码。</p>
+<p>在download选项中，可以看到，有文件名和文件路径的参数：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> <span class="string">"download"</span>:</span><br><span class="line"> keke_file_class::file_down($file_name, $file_path);</span><br></pre></td></tr></table></figure>
+<p>我们继续跟进<code>file_down</code> 这个函数，它位于<code>lib/helper/keke_file_class.php</code> ，代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">file_down</span><span class="params">($file_name, $file_path)</span> </span>&#123;</span><br><span class="line"> keke_lang_class::load_lang_class ( <span class="string">'keke_file_class'</span> );</span><br><span class="line"> <span class="keyword">global</span> $_lang;</span><br><span class="line"> <span class="keyword">if</span>($file_name&amp;&amp;$file_path)&#123;</span><br><span class="line">  <span class="keyword">if</span>(strpos($file_path, <span class="string">'data/uploads/'</span>) !== <span class="keyword">false</span> )&#123;</span><br><span class="line">   $filename = S_ROOT . $file_path;</span><br><span class="line">   <span class="keyword">if</span> (! file_exists ( $filename ) || strrpos ( $filename, <span class="string">".php"</span> ) !== <span class="keyword">false</span>) &#123;</span><br><span class="line">   kekezu::show_msg ( $_lang [<span class="string">'file_not_exist'</span>], $_SERVER [<span class="string">'HTTP_REFERER'</span>], <span class="string">"3"</span> );</span><br><span class="line">   &#125;</span><br><span class="line">   $downfilename = str_replace ( <span class="string">' '</span>, <span class="string">' '</span>, $file_name );</span><br><span class="line">   Header ( <span class="string">"Content-type: application/octet-stream"</span> );</span><br><span class="line">    Header ( <span class="string">"Accept-Ranges: bytes"</span> );</span><br><span class="line">   Header ( <span class="string">"Accept-Length: "</span> . filesize ( $filename ) );</span><br><span class="line">   Header ( <span class="string">"Content-Disposition: attachment; filename="</span> . $downfilename );</span><br><span class="line">   $file = fopen ( $filename, <span class="string">"r"</span> );</span><br><span class="line">   <span class="keyword">echo</span> fread ( $file, filesize ( $filename ) );</span><br><span class="line">   fclose ( $file );</span><br><span class="line">   <span class="keyword">die</span> ();</span><br></pre></td></tr></table></figure>
+<p>可以看到，系统首先将文件名称和文件路径传入，下面判断，如果在传入的路径中，没有<code>data/uploads</code> ，则跳出循环。</p>
+<p>它这里就限制了只能下载uploads下的文件。</p>
+<p>接下来拼接字符串，形成一个新路径。接下来继续判断，如果文件名不存在，或者文件后缀名为<code>.php</code> ，就会终止下载。 如果满足以上所有条件，就执行下载操作。</p>
+<p>通过以上分析，<strong>得知它首先限制了路径，并限制了包含php 文件的下载。</strong></p>
+<p>但是代码中忽略了一点，我们下载文件不一定是通过绝对路径下载，还可以通过<strong>相对路径下载文件。</strong></p>
+<p>我们可以在data/uploads后使用相对路径。就可以跳到前面的文件夹中，这样既包含了data/uploads字符串，符合代码规范，又可以跳到任意的文件夹。</p>
+<p>因此我们可以利用相对路径构造payload，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.16.12.2/index.php?do=ajax&amp;view=file&amp;ajax=download&amp;file_name=1.txt&amp;file_path=data/uploads/../../config/config.inc.phP</span><br></pre></td></tr></table></figure>
+<p>这样就可以下载到数据库配置文件了。</p>
+<p>###　漏洞修复</p>
+<p><strong>修复建议</strong></p>
+<ul>
+<li>过滤点(.)使用户在url中不能回溯上级目录</li>
+<li>正则严格判断用户输入参数的格式</li>
+<li>php.ini 配置open_basedir限定文件访问范围</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/30/KPPW-2-2-任意文件下载漏洞/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-WeBid-1-1-1-文件上传漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1118,124 +1224,6 @@
 
 
   
-    <article id="post-Discuz全版本存储型DOM-XSS" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/25/Discuz全版本存储型DOM-XSS/">Discuz全版本存储型DOM XSS</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/25/Discuz全版本存储型DOM-XSS/" class="archive-article-date">
-  	<time datetime="2018-11-25T06:29:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-25</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="ZoomEye-Dork"><a href="#ZoomEye-Dork" class="headerlink" title="ZoomEye Dork"></a>ZoomEye Dork</h2><p><code>app:Discuz!country:China</code> </p>
-<h2 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h2><p>JS原生取ELEMENT中HTML内容的方法，会将服务端转义过的单双引号实体编码进行反转。<br>Discuz!使用的BBcode语言。</p>
-<h2 id="payload"><a href="#payload" class="headerlink" title="payload"></a>payload</h2><p>payload1：<br><code>[align=&quot;onmouseover=&quot;alert(1)]</code><br>payload2:<br><code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code></p>
-<h2 id="利用过程"><a href="#利用过程" class="headerlink" title="利用过程"></a>利用过程</h2><p>发表帖子，编辑器内输入payload<br>支持的bbcode类型可在bbcode.js中查看</p>
-<h2 id="漏洞防护"><a href="#漏洞防护" class="headerlink" title="漏洞防护"></a>漏洞防护</h2><p>过滤转义<br>白名单机制<br>使用一些在线防护产品</p>
-<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><ul>
-<li><p>利用Payload追踪分析漏洞成因。首先在评论处提交Payload：</p>
-<p><code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code></p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/1.png" alt="1"></p>
-<p>服务器对引号等敏感符号有过滤，因此提交后，查看源代码，就会发现引号已经被实体编码。</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/2.png" alt="2"></p>
-<p>普通用户提交的评论，管理员有权限对其进行修改编辑，当管理对用户的评论点击管理时，前端JS代码就开始处理，弹出一个编辑框供管理或版主操作。在JS代码处理的过程中，首先获取用户评论的内容，代码位于当前页面中：</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/3.png" alt="3"></p>
-<p>而<code>$()</code> 函数原型位于<code>/static/js/common.js</code>中：</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/4.png" alt="4"></p>
-<p>使用了原生的 <code>document.getElementById()</code>函数来获取页面中的对应对象，此处获取的是标有<code>id=”e_textarea”</code>的对象，其对应的值为用户评论的内容。</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/5.png" alt="5"></p>
-<p>而由于JS原生函数的原因，被服务器后端转义的引号会被重新是渲染回引号：</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/6.png" alt="6"></p>
-<p>获取到<code>id=”e_textarea”</code>对象后，代码对浏览器进行了判断，并将结果赋值给变量 <code>var wysiwyg</code>。</p>
-<p>在页面上另一处JS代码判断了变量<code>wysiwyg</code>的值，然后开始渲染编辑框：</p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/7.png" alt="7"></p>
-<p>在前面<code>wysiwyg</code>变量的值为1，所以会执行如下代码：</p>
-<p><code>newEditor(1, bbcode2html(textobj.value))</code></p>
-<p>其中<code>textobj.value</code>的值为：<code>[email=2&quot;onmouseover=&quot;alert(2)]2[/email]</code>（经过<code>document.getElementById()</code>获取的对象解析了实体编码）</p>
-<p>在进行newEditor()时，会对传入的内容使用函数bbcode2html()进行编码过滤，其函数原型位于<code>/static/js/bbcode.js</code>，下面是Discuz对程序所支持的shortcode进行处理的部分代码。 </p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/8.png" alt="8"></p>
-<p>程序匹配其支持的shortcode然后正则替换为相应的前端格式代码，因此次测试的payload为<code>[email=2”onmouseover=”alert(2)]2[/email]</code>，因此图中红色标注的代码会得到执行。</p>
-<p><code>str = str.replace(/\[email=(.[^\[]*)\](.*?)\[\/email\]/ig, &#39;[$2](mailto:$1)&#39;);</code></p>
-<p>经过正则匹配替换后，str的值会变为：<code>[2](mailto:2)</code></p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/9.png" alt="9"></p>
-<p>最终bbcode2html()函数会返回经过转换后的textobj.value，值为：<code>[2](mailto:2)</code></p>
-<p>然后调用newEditor()函数进编辑框的渲染，其函数原型位于<code>/static/js/editor.js</code></p>
-<p><img src="/2018/11/25/Discuz全版本存储型DOM-XSS/10.png" alt="10"></p>
-<p>从函数原型可以看到，代码再次判断浏览器类型然后开始渲染，由于<code>wysiwyq</code>变量的值为1，最终会执行</p>
-<p><code>writeEditorContents(isUndefined(initialtext) ? textobj.value: initialtext);</code></p>
-<p>而调用newEditor()函数时，传递了initialtext参数，其值就为经过bbcode2html()函数处理后的textobj.value的值。</p>
-<p>前端JS最终使用writeEditorContents()函数对页面进行渲染，其过程中会将initialtext变量的值直接写入到页面中，最终形成XSS。</p>
-</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>1：利用HttpOnly HttpOnly最初是由微软提出的，目前已经被多款流行浏览器厂商所采用。HttpOnly的作用不是过滤XSS跨站脚本攻击，而是浏览器将禁止页面的Javascript访问带有HttpOnly属性的Cookie，解决XSS跨站脚本攻击后的Cookie会话劫持行为。</li>
-<li>2：完善的输入和输出检查 由于三种XSS跨站脚本攻击类型的漏洞成因可不相同，针对输入输出的检查一部分适用于反射型XSS与存储型XSS。输入检查在大多数的时候都是对可信字符的检查或输入数据格式的检查，如用户输入的注册账号信息中只允许包括字母、数字、下划线和汉字等，对于输入的一切非白名单内的字符均认为是非法输入。数据格式如输入的IP地址、电话号码、邮件地址、日期等数据都具有一定的格式规范，只有符合数据规范的输入信息才允许通过检查。</li>
-<li>3：使用随机数改写文件名和文件路径。文件上传如果要执行代码，则需要用户能够访问到这个文件。在某些环境中，用户能上传，但不能访问。如果应用使用随机函数改写了文件名和路径，将极大增加攻击成本。与此同时，像1.php.rar.rar、或者1.xml这种文件，都因为文件名被改写而无法成功实施攻击。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/25/Discuz全版本存储型DOM-XSS/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1250,7 +1238,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 ShowMeShell
+    		&copy; 2019 ShowMeShell
     	</div>
     	<!--统计start-->
       <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
@@ -1347,11 +1335,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">

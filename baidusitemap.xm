@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2019/03/27/unittest-%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2019-03-27T07:34:09.643Z</lastmod>
+    <data>
+        <display>
+        <title>unittest-单元测试</title>
+        <pubTime>2019-03-27T07:22:55.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2018/12/18/%E5%AD%90%E5%9F%9F%E5%90%8D%E6%90%9C%E9%9B%86%E8%84%9A%E6%9C%AC/</loc>
     <lastmod>2018-12-18T09:13:04.676Z</lastmod>
     <data>

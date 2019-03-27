@@ -150,6 +150,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-unittest-单元测试" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/27/unittest-单元测试/">unittest-单元测试</a>
+    </h1>
+  
+
+        
+        <a href="/2019/03/27/unittest-单元测试/" class="archive-article-date">
+  	<time datetime="2019-03-27T07:22:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="selenium基础使用"><a href="#selenium基础使用" class="headerlink" title="selenium基础使用"></a>selenium基础使用</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line">driver = webdriver.Firefox()</span><br><span class="line">driver.implicitly_wait(<span class="number">30</span>)</span><br><span class="line">driver.maximize_window()</span><br><span class="line"></span><br><span class="line">driver.get(<span class="string">"https://www.baidu.com/"</span>)</span><br><span class="line"></span><br><span class="line">search_field = driver.find_element_by_id(<span class="string">'kw'</span>)</span><br><span class="line">search_field.clear()</span><br><span class="line"></span><br><span class="line">search_field.send_keys(<span class="string">'wust'</span>)</span><br><span class="line">search_field.submit()</span><br><span class="line"><span class="comment"># search_field.send_keys(Keys.RETURN)</span></span><br><span class="line"></span><br><span class="line">products = driver.find_elements_by_xpath(<span class="string">"//h3[@class='t']/a"</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Found '</span> + str(len(products)) + <span class="string">' products:'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> product <span class="keyword">in</span> products:</span><br><span class="line">    print(product.text)</span><br><span class="line"></span><br><span class="line">driver.quit()</span><br></pre></td></tr></table></figure>
+<h3 id="使用unitest编写单元测试"><a href="#使用unitest编写单元测试" class="headerlink" title="使用unitest编写单元测试"></a>使用unitest编写单元测试</h3><ul>
+<li>unittest（PyUnit）为任何项目创建全面的测试套件<ul>
+<li>Test Fixture（测试夹具）：通过使用测试夹具，可以定义在单个或多个测试执行之前的准备工作和测试执行后的清理工作</li>
+<li>Test Case（测试用例）</li>
+<li>Test Suite（测试套件）</li>
+<li>Test Runner（测试执行器）</li>
+<li>Test Report（测试报告）</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># searchtests.py</span></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchTests</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setUp</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.driver = webdriver.Firefox()</span><br><span class="line">        self.driver.implicitly_wait(<span class="number">30</span>)</span><br><span class="line">        self.driver.maximize_window()</span><br><span class="line"></span><br><span class="line">        self.driver.get(<span class="string">'https://www.baidu.com'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_search_by_category</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.search_field = self.driver.find_element_by_id(<span class="string">'kw'</span>)</span><br><span class="line">        self.search_field.clear()</span><br><span class="line"></span><br><span class="line">        self.search_field.send_keys(<span class="string">'WUST'</span>)</span><br><span class="line">        self.search_field.submit()</span><br><span class="line"></span><br><span class="line">        products = self.driver.find_elements_by_xpath(<span class="string">"//h3[@class='t']/a"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">7</span>, len(products))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_search_by_name</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.search_field = self.driver.find_element_by_id(<span class="string">'kw'</span>)</span><br><span class="line">        self.search_field.clear()</span><br><span class="line"></span><br><span class="line">        self.search_field.send_keys(<span class="string">'HUST'</span>)</span><br><span class="line">        self.search_field.submit()</span><br><span class="line"></span><br><span class="line">        products = self.driver.find_elements_by_xpath(<span class="string">"//h3[@class='t']/a"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">8</span>, len(products))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tearDown</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.driver.quit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    unittest.main(verbosity=<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># searchtests_with_class_method.py</span></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SearchTests</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setUpClass</span><span class="params">(cls)</span>:</span></span><br><span class="line">        cls.driver = webdriver.Firefox()</span><br><span class="line">        cls.driver.implicitly_wait(<span class="number">30</span>)</span><br><span class="line">        cls.driver.maximize_window()</span><br><span class="line"></span><br><span class="line">        cls.driver.get(<span class="string">'https://www.baidu.com'</span>)</span><br><span class="line">        cls.driver.title</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_search_by_category</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.search_field = self.driver.find_element_by_id(<span class="string">'kw'</span>)</span><br><span class="line">        self.search_field.clear()</span><br><span class="line"></span><br><span class="line">        self.search_field.send_keys(<span class="string">'xxx'</span>)</span><br><span class="line">        self.search_field.submit()</span><br><span class="line"></span><br><span class="line">        products = self.driver.find_elements_by_xpath(<span class="string">"//h3[@class='t']/a"</span>)</span><br><span class="line">        self.assertEqual(<span class="number">3</span>, len(products))</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tearDownClass</span><span class="params">(cls)</span>:</span></span><br><span class="line">        cls.driver.quit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    unittest.main(verbosity=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># homepagetests.py</span></span><br><span class="line"><span class="comment"># Test Suite测试套件，将不同的测试组成一个逻辑组，然后设置统一的测试套件，并通过一个命令来执行测试。</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.common.exceptions <span class="keyword">import</span> NoSuchElementException</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By</span><br><span class="line"><span class="keyword">from</span> builtins <span class="keyword">import</span> classmethod</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HomePageTest</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">setUp</span><span class="params">(cls)</span>:</span></span><br><span class="line">        cls.driver = webdriver.Firefox()</span><br><span class="line">        cls.driver.implicitly_wait(<span class="number">30</span>)</span><br><span class="line">        cls.driver.maximize_window()</span><br><span class="line"></span><br><span class="line">        cls.driver.get(<span class="string">'http://demo-store.seleniumacademy.com/'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_search_field</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># check search field exists on Home page</span></span><br><span class="line">        self.assertTrue(self.is_element_present(By.NAME, <span class="string">'q'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_language_option</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># check language options dropdown on Home page</span></span><br><span class="line">        self.assertTrue(self.is_element_present(By.ID, <span class="string">'select-language'</span>))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_shopping_cart_empty_message</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># check content of My Shopping Cart block on Home page</span></span><br><span class="line">        shopping_cart_icon = self.driver.find_element_by_css_selector(<span class="string">'div.header-minicart span.icon'</span>)</span><br><span class="line">        shopping_cart_icon.click()</span><br><span class="line"></span><br><span class="line">        shopping_cart_status = self.driver.find_element_by_css_selector(<span class="string">'p.empty'</span>).text</span><br><span class="line">        self.assertEqual(<span class="string">'You have no items in your shopping cart'</span>, shopping_cart_status)</span><br><span class="line"></span><br><span class="line">        close_button = self.driver.find_element_by_css_selector(<span class="string">'div.minicart-wrapper a.close'</span>)</span><br><span class="line">        close_button.click()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tearDown</span><span class="params">(cls)</span>:</span></span><br><span class="line">        <span class="comment"># close the browser window</span></span><br><span class="line">        cls.driver.quit()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">is_element_present</span><span class="params">(self, how, what)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Utility method to check presence of an element on page</span></span><br><span class="line"><span class="string">        :params how: By locator type</span></span><br><span class="line"><span class="string">        :params what: locator value</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.driver.find_element(by=how, value=what)</span><br><span class="line">        <span class="keyword">except</span> NoSuchElementException <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    unittest.main(verbosity=<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># smoketests.py</span></span><br><span class="line"><span class="comment"># 用TestSuite类来定义和执行测试套件</span></span><br><span class="line"><span class="comment"># 多个测试加入到一个测试套件中去，用TestLoader和TextTestRunner来创建和运行测试套件</span></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">from</span> searchtests <span class="keyword">import</span> SearchTests</span><br><span class="line"><span class="keyword">from</span> homepagetests <span class="keyword">import</span> HomePageTest</span><br><span class="line"></span><br><span class="line"><span class="comment"># get all tests from SearchProductTest and HomePageTest class</span></span><br><span class="line">search_tests = unittest.TestLoader().loadTestsFromTestCase(SearchTests)</span><br><span class="line">home_page_tests = unittest.TestLoader().loadTestsFromTestCase(HomePageTest)</span><br><span class="line"></span><br><span class="line"><span class="comment"># create a test suite combining search_test and home_page_test</span></span><br><span class="line">smoke_tests = unittest.TestSuite([home_page_tests, search_tests])</span><br><span class="line"></span><br><span class="line"><span class="comment"># run the suite</span></span><br><span class="line">unittest.TextTestRunner(verbosity=<span class="number">2</span>).run(smoke_tests)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># smoketests_with_html_report.py</span></span><br><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"><span class="keyword">import</span> HTMLTestRunner</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> searchtests <span class="keyword">import</span> SearchTests</span><br><span class="line"><span class="keyword">from</span> homepagetests <span class="keyword">import</span> HomePageTest</span><br><span class="line"></span><br><span class="line"><span class="comment"># get the directory path to output report file</span></span><br><span class="line">result_dir = os.getcwd()</span><br><span class="line"></span><br><span class="line"><span class="comment"># get all tests from SearchProductTest and HomePageTest class</span></span><br><span class="line"></span><br><span class="line">search_tests = unittest.TestLoader().loadTestsFromTestCase(SearchTests)</span><br><span class="line">home_page_tests = unittest.TestLoader().loadTestsFromTestCase(HomePageTest)</span><br><span class="line"></span><br><span class="line"><span class="comment"># create a test suite combining search_test and home_page_test</span></span><br><span class="line">smoke_tests = unittest.TestSuite([home_page_tests, search_tests])</span><br><span class="line"></span><br><span class="line"><span class="comment"># open the report file</span></span><br><span class="line">outfile = open(result_dir + <span class="string">'\SmokeTestReport.html'</span>, <span class="string">'w'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># configure.HTMLTestRunner options</span></span><br><span class="line">runner = HTMLTestRunner.HTMLTestRunner(stream=outfile, title=<span class="string">'Test Report'</span>, dscription=<span class="string">'Smoke Testes'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># run the suite using HTMLTestRunner</span></span><br><span class="line">runner.run(smoke_tests)</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/03/27/unittest-单元测试/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-子域名搜集脚本" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -855,416 +944,6 @@
 
 
   
-    <article id="post-基础知识" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/基础知识/">基础知识</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/17/基础知识/" class="archive-article-date">
-  	<time datetime="2018-12-17T07:32:08.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="广度与深度"><a href="#广度与深度" class="headerlink" title="广度与深度"></a>广度与深度</h3><p><code>seebug/TangScan/BugScna平台</code><br><code>sqlmap/mitmproxy/mitmdump</code></p>
-<h3 id="python路线"><a href="#python路线" class="headerlink" title="python路线"></a>python路线</h3><p>python正则表达式/web编程/多线程编程/网络编程/数据库编程</p>
-<h3 id="能力"><a href="#能力" class="headerlink" title="能力"></a>能力</h3><ul>
-<li>目录扫描<br><code>web+多线程{requests+threading+Queue:[后台|敏感文件(svn|upload)|敏感目录(phpmyadmin)]}</code></li>
-<li>信息搜集<br><code>web+数据库{中间件(Tomcat|Jboss)+C段web信息+搜集特定程序}</code></li>
-<li>信息匹配&amp;SQL注入<br><code>web+正则{抓取信息(用户名|邮箱?)+SQL注入}</code></li>
-<li>反弹shell<br><code>网络</code> </li>
-</ul>
-<h2 id="python正则表达式"><a href="#python正则表达式" class="headerlink" title="python正则表达式"></a>python正则表达式</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pattern = re.compile(<span class="string">'hello'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>match = pattern.match(<span class="string">'hello word!'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> match.group()</span><br><span class="line">hello</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>word = re.findall(<span class="string">'hello'</span>,<span class="string">'hello word!'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>word</span><br><span class="line">[<span class="string">'hello'</span>]</span><br></pre></td></tr></table></figure>
-<p>python通过re模块提供对正则表达式的支持<br>1.先将正则表达式的字符串形式编译为pattern实例<br>2.使用Pattern实例处理文本并获得匹配结果；（match/find/search）<br>3.使用实例获得信息，进行其他的操作。</p>
-<p><img src="/2018/12/17/基础知识/python正则表达式.png" alt="python正则表达式"></p>
-<p><img src="/2018/12/17/基础知识/正则.png" alt="正则"></p>
-<h2 id="python-Web"><a href="#python-Web" class="headerlink" title="python-Web"></a>python-Web</h2><ul>
-<li>urllib<ul>
-<li>urllib.urlopen()</li>
-<li>urllib.urlretrieve()</li>
-</ul>
-</li>
-<li>urllib2<ul>
-<li>urllib2.urlopen()</li>
-<li>urllib2.Requests()</li>
-</ul>
-</li>
-<li>requests模块<ul>
-<li>发送网络请求<ul>
-<li>get/post/put/delete/head/options</li>
-</ul>
-</li>
-<li>为URL传递参数<ul>
-<li>payload = {‘key1’:’value1’,’key2’:’value2’}</li>
-<li>r=requests.get(“<a href="http://xx/get&quot;,params=payload" target="_blank" rel="noopener">http://xx/get&quot;,params=payload</a>)</li>
-<li>print(r.url)</li>
-<li><code>http://xx/get?key2=value2&amp;key1=value1</code></li>
-</ul>
-</li>
-<li>响应内容<ul>
-<li>r=request.get(url)</li>
-<li>r.text</li>
-<li>r.encoding ‘utf-8’</li>
-<li>r.encoding=’ISO-8859-1’</li>
-</ul>
-</li>
-<li>二进制响应内容<ul>
-<li>r=request.get(url)</li>
-<li>r.content</li>
-</ul>
-</li>
-<li>定制请求头<ul>
-<li>url=’<a href="http://xx/get&#39;" target="_blank" rel="noopener">http://xx/get&#39;</a></li>
-<li>headers={‘content-type’:’application/json’}</li>
-<li>r=requests.get(url,headers=headers)</li>
-</ul>
-</li>
-<li>复杂的post请求<ul>
-<li>payload={‘key1’:’value1’,’key2’;’value2’}</li>
-<li>r=requests.post(“http:xxx/post0”,data=payload)</li>
-</ul>
-</li>
-<li>响应状态码<ul>
-<li>r=requests.get(‘http:xxx/xx’)</li>
-<li>r.status_code</li>
-</ul>
-</li>
-<li>响应头<ul>
-<li>r.headers</li>
-</ul>
-</li>
-<li>Cookies<ul>
-<li>r.cookies</li>
-<li>r.cookies[‘cookie_name’]</li>
-</ul>
-</li>
-<li>超时<ul>
-<li>requests.get(‘http:xxx’,timeout=0.001)</li>
-</ul>
-</li>
-<li>错误和异常<ul>
-<li>遇到网络问题，如DNS查询失败，拒绝连接时，Requests会抛出一个connecterror异常，遇到罕见的无效http响应时，requests则会抛出HttpError异常。若请求超时，则抛出一个Timeout异常。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://xxxxx'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">lesson</span><span class="params">(url)</span>:</span></span><br><span class="line">    r = requests.get(url)</span><br><span class="line">    url_txt = r.text</span><br><span class="line">    word = re.findall(<span class="string">r"target='_blank' title='(.*?)'&gt;"</span>, url_txt)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> word:</span><br><span class="line">        <span class="keyword">print</span> i</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">10</span>):</span><br><span class="line">    url_end=url+str(i)+<span class="string">'.htm'</span></span><br><span class="line">    lesson(url_end)</span><br></pre></td></tr></table></figure>
-<h2 id="python多线程"><a href="#python多线程" class="headerlink" title="python多线程"></a>python多线程</h2><ul>
-<li><p>进程</p>
-<p>进程是程序一次执行，每个进程都有自己的地址空间，内存，数据栈及其它记录其行为轨迹的辅助数据。</p>
-</li>
-<li><p>线程</p>
-<p>有的线程运行在同一个进程当中，共享相同的运行环境，线程有开始顺序执行和结束三个部分。</p>
-</li>
-</ul>
-<h4 id="thread模块"><a href="#thread模块" class="headerlink" title="thread模块"></a>thread模块</h4><ul>
-<li><p><code>start_new_thread(function,args kwargs=None)</code></p>
-<p>产生一个新的线程，在新的线程中用指定的参数和可选的kwargs来调用这个函数，在使用这种方法时，一定要加time.sleep()，否则每个线程都可能不执行。还有一个缺点，遇到复杂问题时，线程数不易控制。</p>
-</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 扫描C段</span></span><br><span class="line"><span class="comment"># coding =utf-8</span></span><br><span class="line"><span class="keyword">import</span> thread</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> Popen, PIPE</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ping_check</span><span class="params">(ip)</span>:</span></span><br><span class="line">    check = Popen([<span class="string">'/bin/bash'</span>, <span class="string">'-c'</span>, <span class="string">'ping -c 2 '</span> + ip], stdin=PIPE, stdout=PIPE)</span><br><span class="line">    data = check.stdout.read()</span><br><span class="line">    <span class="keyword">if</span> <span class="string">'ttl'</span> <span class="keyword">in</span> data:</span><br><span class="line">        <span class="keyword">print</span> <span class="string">'%s is UP'</span> % ip</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">255</span>):</span><br><span class="line">        ip = <span class="string">'180.97.33.'</span> + str(i)</span><br><span class="line">        thread.start_new_thread(ping_check, (ip,))</span><br><span class="line">        time.sleep(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>thread类</p>
-<ul>
-<li>使用threading模块</li>
-<li>子类化Thread类</li>
-<li>解决了线程可控的问题<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =utf-8</span></span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun1</span><span class="params">()</span>:</span></span><br><span class="line">    time_start = time.time()</span><br><span class="line">    r = requests.get(url=<span class="string">"http://www.baidu.com"</span>)</span><br><span class="line">    times = time.time() - time_start</span><br><span class="line">    sys.stdout.write(<span class="string">'Status:%s---%s---%s\n'</span> % (r.status_code, times, time.strftime(<span class="string">'%H:%M:%s'</span>)))</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    threads = []</span><br><span class="line">    threads_count = <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads_count):</span><br><span class="line">        t = threading.Thread(target=fun1, args=())</span><br><span class="line">        threads.append(t)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads_count):</span><br><span class="line">        threads[i].start()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads_count):</span><br><span class="line">        threads[i].join()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p>生产者-消费者问题和Queue模块</p>
-<ul>
-<li>Queue模块（qsize(),empty(),full(),put(),get())</li>
-<li>完美搭档，Queue+Thread</li>
-<li>解决了生产参数和计算结果时间都不确定的问题。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding =utf-8</span></span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> Queue</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> PIPE, Popen</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DoRun</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, queue)</span>:</span></span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self._queue = queue</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">not</span> self._queue.empty():</span><br><span class="line">            ip = self._queue.get()</span><br><span class="line">            check_ping = Popen([<span class="string">'/bin/bash'</span>, <span class="string">'-c'</span>, <span class="string">'ping -c 2 '</span> + ip], stdin=PIPE, stdout=PIPE)</span><br><span class="line">            data = check_ping.stdout.read()</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'ttl'</span> <span class="keyword">in</span> data:</span><br><span class="line">                sys.stdout.write(ip + <span class="string">' is UP\n'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    threads = []</span><br><span class="line">    threads_count = <span class="number">10</span></span><br><span class="line">    queue = Queue.Queue()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">255</span>):</span><br><span class="line">        queue.put(<span class="string">'192.30.252.'</span> + str(i))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threads_count):</span><br><span class="line">        threads.append(DoRun(queue))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> threads:</span><br><span class="line">        i.start()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> threads:</span><br><span class="line">        i.join()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="python网络编程"><a href="#python网络编程" class="headerlink" title="python网络编程"></a>python网络编程</h2><ul>
-<li>套接字是一种具有通信端点概念的计算机网络数据结构，应用程序开始通信之前必须建立套接字。</li>
-<li>python支持：<code>AF_UNIX,AF_NETLINK,AF_INET</code>，其中<code>AF_INET</code>基于网络的套接字。</li>
-<li>socket模块<ul>
-<li>socket模块的socket()函数用来创建套接字。</li>
-<li><code>socket(socket_family,socket_type,protocol=0)</code></li>
-<li>创建一个TCP/IP套接字，<code>tcpsock=socket(socket.AF_INET,socket.SOCK_STREAM)</code></li>
-</ul>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>服务器端套接字函数</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>s.bind()</td>
-<td>绑定地址(主机，端口)到套接字</td>
-</tr>
-<tr>
-<td>s.listen()</td>
-<td>开始TCP监听</td>
-</tr>
-<tr>
-<td>s.accept()</td>
-<td>被动接受TCP客户端连接，(阻塞式)等待连接的到来。</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>客户端套接字函数</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>s.connect()</td>
-<td>主动初始化TCP服务器连接</td>
-</tr>
-<tr>
-<td>s.connect_ex()</td>
-<td>Connect函数的扩展版本，出错时返回错误代码而不是掏出异常</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th>公共用途套接字函数</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>s.recv()</td>
-<td>接受TCP数据</td>
-</tr>
-<tr>
-<td>s.send()</td>
-<td>发送TCP数据</td>
-</tr>
-<tr>
-<td>s.sendall()</td>
-<td>完整发送TCP数据</td>
-</tr>
-<tr>
-<td>s.recvfrom()</td>
-<td>接受UDP数据</td>
-</tr>
-<tr>
-<td>s.sendto()</td>
-<td>发送UDP数据</td>
-</tr>
-<tr>
-<td>s.getpeemame()</td>
-<td>连接到当前套接字的远端地址</td>
-</tr>
-<tr>
-<td>s.getsockname()</td>
-<td>当前套接字的地址</td>
-</tr>
-<tr>
-<td>s.getsockopt()</td>
-<td>返回指定套接字的参数</td>
-</tr>
-<tr>
-<td>s.setsockopt()</td>
-<td>设置指定套接字的参数</td>
-</tr>
-<tr>
-<td>s.close()</td>
-<td>关闭套接字</td>
-</tr>
-</tbody>
-</table>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#创建一个TCP服务器</span></span><br><span class="line">ss=socket()				<span class="comment">#创建服务器套接字</span></span><br><span class="line">ss.bind()				<span class="comment">#把地址绑定到套接字</span></span><br><span class="line">ss.listen()				<span class="comment">#监听连接</span></span><br><span class="line">inf_loop:				<span class="comment">#服务器无限循环</span></span><br><span class="line">    cs=ss.accept()		<span class="comment">#接受客户端连接</span></span><br><span class="line">cmmon_loop:				<span class="comment">#通信循环</span></span><br><span class="line">    cs.recv()/cs.send()	<span class="comment">#对话（接受与发送）</span></span><br><span class="line">cs.close()    			<span class="comment">#关闭客户端套接字</span></span><br><span class="line"><span class="comment">#创建一个TCP客户端</span></span><br><span class="line">cs.socket()				<span class="comment">#创建客户端套接字</span></span><br><span class="line">cs.connect()			<span class="comment">#尝试连接套接字</span></span><br><span class="line">common_loop:			<span class="comment">#通信循环</span></span><br><span class="line">    cs.recv()/cs.send() <span class="comment">#对话（接受与发送）</span></span><br><span class="line">cs.close()    			<span class="comment">#关闭客户端套接字</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> ctime</span><br><span class="line"><span class="keyword">from</span> subprocess <span class="keyword">import</span> PIPE,Popen</span><br><span class="line">HOST = <span class="string">''</span></span><br><span class="line">PROT = <span class="number">23333</span></span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line"></span><br><span class="line">ADDR = (HOST, PROT)</span><br><span class="line"></span><br><span class="line">tcpServer = socket(AF_INET, SOCK_STREAM)</span><br><span class="line">tcpServer.bind(ADDR)</span><br><span class="line">tcpServer.listen(<span class="number">5</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'waiting for connection....'</span></span><br><span class="line">    tcpClient, addr = tcpServer.accept()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">'..connected from:'</span>, addr</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        data = tcpClient.recv(BUFSIZE)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        cmd=Popen([<span class="string">'/bin/bash'</span>,<span class="string">'-c'</span>,data],stdin=PIPE,stdout=PIPE)</span><br><span class="line">        data=cmd.stdout.read()</span><br><span class="line">        tcpClient.send(<span class="string">'[%s] %s'</span> % (ctime(), data))</span><br><span class="line"></span><br><span class="line">tcpClient.close()</span><br><span class="line">tcpServer.close()</span><br><span class="line"><span class="comment">#**************************************************#</span></span><br><span class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">HOST = <span class="string">'xx.xx.xx.xx'</span></span><br><span class="line">PROT = <span class="number">23333</span></span><br><span class="line">BUFSIZE = <span class="number">1024</span></span><br><span class="line"></span><br><span class="line">ADDR = (HOST, PROT)</span><br><span class="line"></span><br><span class="line">tcpClient = socket(AF_INET, SOCK_STREAM)</span><br><span class="line">tcpClient.connect(ADDR)</span><br><span class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">    data = raw_input(<span class="string">'~:'</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    tcpClient.send(data)</span><br><span class="line">    data = tcpClient.recv(BUFSIZE)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> data:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">print</span> data</span><br><span class="line">    </span><br><span class="line">tcpClient.close()</span><br></pre></td></tr></table></figure>
-<h2 id="python数据库编程"><a href="#python数据库编程" class="headerlink" title="python数据库编程"></a>python数据库编程</h2><ul>
-<li>python DB API包含内容<ul>
-<li>数据库连接对象<code>connection</code></li>
-<li>数据库交互对象<code>cursor</code></li>
-<li>数据库异常类<code>exceptions</code></li>
-<li>过程<ul>
-<li>开始-&gt;创建connection-&gt;获取cursor-&gt;执行查询，执行命令，获取数据，处理数据-&gt;关闭cursor-&gt;关闭connection-&gt;结束</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>数据库连接对象<code>connection</code></p>
-<p>连接对象：建立python客户端与数据库的网络连接</p>
-<p>创建方法：MySQLdb.Connect（参数）</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">参数名</th>
-<th style="text-align:center">类型</th>
-<th style="text-align:center">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">host</td>
-<td style="text-align:center">字符串</td>
-<td style="text-align:center">mysql服务器地址</td>
-</tr>
-<tr>
-<td style="text-align:center">port</td>
-<td style="text-align:center">数字</td>
-<td style="text-align:center">mysql服务器端口号</td>
-</tr>
-<tr>
-<td style="text-align:center">user</td>
-<td style="text-align:center">字符串</td>
-<td style="text-align:center">用户名</td>
-</tr>
-<tr>
-<td style="text-align:center">passwd</td>
-<td style="text-align:center">字符串</td>
-<td style="text-align:center">密码</td>
-</tr>
-<tr>
-<td style="text-align:center">db</td>
-<td style="text-align:center">字符串</td>
-<td style="text-align:center">数据库名</td>
-</tr>
-<tr>
-<td style="text-align:center">charset</td>
-<td style="text-align:center">字符串</td>
-<td style="text-align:center">连接编码</td>
-</tr>
-</tbody>
-</table>
-<p><strong>connection对象支持的方法：</strong></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">方法名</th>
-<th style="text-align:center">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">cursor()</td>
-<td style="text-align:center">使用该连接创建并返回游标</td>
-</tr>
-<tr>
-<td style="text-align:center">commit()</td>
-<td style="text-align:center">提交当前事物</td>
-</tr>
-<tr>
-<td style="text-align:center">rollback()</td>
-<td style="text-align:center">回滚当前事物</td>
-</tr>
-<tr>
-<td style="text-align:center">close()</td>
-<td style="text-align:center">关闭连接</td>
-</tr>
-</tbody>
-</table>
-<p><strong>cursor对象支持的方法：</strong></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">参数名</th>
-<th style="text-align:center">说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">execute(op,[args])</td>
-<td style="text-align:center">执行一个数据库查询命令（select，insert，delete）</td>
-</tr>
-<tr>
-<td style="text-align:center">fetchone()</td>
-<td style="text-align:center">取得结果集里的下一行</td>
-</tr>
-<tr>
-<td style="text-align:center">fetchmany(size)</td>
-<td style="text-align:center">获得结果集里的下几行</td>
-</tr>
-<tr>
-<td style="text-align:center">fetchall()</td>
-<td style="text-align:center">获得结果集剩下的所有行</td>
-</tr>
-<tr>
-<td style="text-align:center">rowcount</td>
-<td style="text-align:center">最后一次execute返回数据的行数或影响行数</td>
-</tr>
-<tr>
-<td style="text-align:center">close()</td>
-<td style="text-align:center">关闭</td>
-</tr>
-</tbody>
-</table>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> MySQLdb</span><br><span class="line"></span><br><span class="line">conn = MySQLdb.connect(</span><br><span class="line">    host=<span class="string">'xx.xx.xx.xx'</span>,</span><br><span class="line">    port=<span class="number">123</span>,</span><br><span class="line">    user=<span class="string">'root'</span>,</span><br><span class="line">    passwd=<span class="string">'xxxx'</span>,</span><br><span class="line">)</span><br><span class="line">cus = conn.cursor()</span><br><span class="line">sql = <span class="string">'select version()'</span></span><br><span class="line">cus.execute(sql)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> cus.fetchone()</span><br><span class="line"></span><br><span class="line">cus.close()</span><br><span class="line">conn.close()</span><br></pre></td></tr></table></figure>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/基础知识/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1279,7 +958,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 ShowMeShell
+    		&copy; 2019 ShowMeShell
     	</div>
     	<!--统计start-->
       <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
@@ -1376,11 +1055,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">reverse</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
