@@ -4,6 +4,23 @@
 
     
   <url>
+    <loc>http://showmeshell.top/2019/04/02/selenium%E8%AF%A6%E8%A7%A3/</loc>
+    <lastmod>2019-04-02T08:24:10.647Z</lastmod>
+    <data>
+        <display>
+        <title>selenium详解</title>
+        <pubTime>2019-04-02T08:22:32.000Z</pubTime>
+        
+        <tag>python</tag>
+         
+         
+           
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>http://showmeshell.top/2019/03/27/selenium%E4%B8%AD%E7%9A%84%E5%85%83%E7%B4%A0%E5%AE%9A%E4%BD%8D/</loc>
     <lastmod>2019-03-27T08:43:04.616Z</lastmod>
     <data>
